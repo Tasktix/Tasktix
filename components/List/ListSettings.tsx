@@ -19,6 +19,10 @@
 import {
   addToast,
   Button,
+  Card,
+  CardBody,
+  Checkbox,
+  Input,
   Modal,
   ModalBody,
   ModalContent,
@@ -26,16 +30,19 @@ import {
   Switch,
   Tab,
   Tabs,
-  useDisclosure
+  useDisclosure,
+  User
 } from '@heroui/react';
 import { useContext } from 'react';
-import { TrashFill, GearWideConnected } from 'react-bootstrap-icons';
+import { TrashFill, GearWideConnected, SendPlus } from 'react-bootstrap-icons';
 import { useRouter } from 'next/navigation';
 
 import { default as api } from '@/lib/api';
 import Tag from '@/lib/model/tag';
 import { NamedColor } from '@/lib/model/color';
 import ConfirmedTextInput from '@/components/ConfirmedTextInput';
+import ListMember from '@/lib/model/listMember';
+import { getBackgroundColor } from '@/lib/color';
 
 import { ListContext } from '../Sidebar';
 import ColorPicker from '../ColorPicker';
@@ -43,6 +50,7 @@ import TagInput from '../TagInput';
 
 export function ListSettings({
   listId,
+  members,
   listName,
   listColor,
   tagsAvailable,
@@ -58,6 +66,7 @@ export function ListSettings({
   addNewTag
 }: {
   listId: string;
+  members: ListMember[];
   listName: string;
   listColor: NamedColor;
   tagsAvailable: Tag[];
@@ -247,6 +256,74 @@ export function ListSettings({
                   >
                     Delete list
                   </Button>
+                </span>
+              </Tab>
+              <Tab
+                className='flex flex-col gap-6 grow shrink justify-between overflow-clip'
+                title='Members'
+              >
+                <span className='flex flex-col gap-4 shrink overflow-y-auto'>
+                  <form className='flex gap-2'>
+                    <Input placeholder='Username...' />
+                    <Button
+                      className='shrink-0'
+                      color='primary'
+                      variant='ghost'
+                    >
+                      <SendPlus />
+                      Send Invite
+                    </Button>
+                  </form>
+                  <Card className='text-xs bg-warning/20 text-warning-600'>
+                    <CardBody>
+                      <p className='text-justify'>
+                        To protect users&apos; privacy and security,
+                        confirmation that an account is associated with the
+                        provided username will only be provided if the user
+                        accepts your invitation to join the list.{' '}
+                        <b>
+                          Double-check that you correctly spell the usernames
+                          before sending invites.
+                        </b>
+                      </p>
+                    </CardBody>
+                  </Card>
+                  <table className='mt-4 w-full overflow-scroll'>
+                    <tr>
+                      <th style={{ flexGrow: 2 }}>Member</th>
+                      <th className='grow font-normal'>Can Add</th>
+                      <th className='grow font-normal'>Can Assign</th>
+                      <th className='grow font-normal'>Can Complete</th>
+                      <th className='grow font-normal'>Can Remove</th>
+                    </tr>
+                    {members.map(member => (
+                      <tr key={member.user.id}>
+                        <td className='py-2'>
+                          <User
+                            avatarProps={{
+                              classNames: {
+                                base: getBackgroundColor(member.user.color)
+                              },
+                              size: 'sm'
+                            }}
+                            name={member.user.username}
+                          />
+                        </td>
+                        <td className='text-center py-2'>
+                          <Checkbox isSelected={member.canAdd} />
+                        </td>
+                        <td className='text-center py-2'>
+                          <Checkbox isSelected={member.canAssign} />
+                        </td>
+                        <td className='text-center py-2'>
+                          <Checkbox isSelected={member.canComplete} />
+                        </td>
+                        <td className='text-center py-2'>
+                          <Checkbox isSelected={member.canRemove} />
+                        </td>
+                      </tr>
+                    ))}
+                  </table>
                 </span>
               </Tab>
               <Tab
