@@ -125,6 +125,7 @@ export default function List({
           listColor={list.color}
           listId={list.id}
           listName={list.name}
+          members={list.members}
           setHasDueDates={(value: boolean) => {
             const newList = structuredClone(list);
 
