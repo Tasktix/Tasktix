@@ -1,24 +1,19 @@
 # <center>Tasktix</center>
 
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=radiantBear_Tasktix&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=radiantBear_Tasktix)
-[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=radiantBear_Tasktix&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=radiantBear_Tasktix)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/cf1631194c2a4320b83570df12b65de9)](https://app.codacy.com/gh/radiantBear/Tasktix/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
-[![DeepSource](https://app.deepsource.com/gh/radiantBear/Tasktix.svg/?label=active+issues&show_trend=true&token=M-Vsi4__XSjUWF4f_7gXjWc7)](https://app.deepsource.com/gh/radiantBear/Tasktix/)
-<br>
-[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=radiantBear_Tasktix&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=radiantBear_Tasktix)
-[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=radiantBear_Tasktix&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=radiantBear_Tasktix)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=Tasktix_Tasktix&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=Tasktix_Tasktix)
+[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=Tasktix_Tasktix&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=Tasktix_Tasktix)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/f5589385fcd14310bc4f766cba51593c)](https://app.codacy.com/gh/Tasktix/Tasktix/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+[![DeepSource](https://app.deepsource.com/gh/Tasktix/Tasktix.svg/?label=active+issues&show_trend=true&token=htsvS3wjjtryq3kgw4BYXNYa)](https://app.deepsource.com/gh/Tasktix/Tasktix/)
+
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=Tasktix_Tasktix&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=Tasktix_Tasktix)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=Tasktix_Tasktix&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=Tasktix_Tasktix)
 [![Semgrep](https://github.com/radiantBear/Tasktix/actions/workflows/semgrep.yml/badge.svg)](https://github.com/radiantBear/Tasktix/actions/workflows/semgrep.yml)
 
-Most free task tracking tools fall short when it comes to advanced functionality. Flexible
-filtering is often missing &mdash; for example, the ability to quickly show tasks
-completed in the past week for use in progress reports. Task planning features such as
-nested subtasks and visually mapped dependencies are also absent. For power users,
-another major gap is automation and integration, like automatically marking items as
-complete and moving them to “Completed” when a GitHub issue is closed. Unfortunately,
-features that truly enhance productivity and make digital tools more powerful than
-pen-and-paper lists are often locked behind a paywall. As Tasktix developers, our goal is
-to build a comprehensive tool that anyone can use for free (or even self-host!) to boost
-efficiency and productivity without those limitations.
+Tasktix is a task-tracking tool for power users, providing increased control and
+flexibility when creating and scheduling tasks. Most free task tracking tools fall short
+when it comes to advanced functionality, either entirely missing them or locking them
+behind paywalls. Our goal is to build a comprehensive tool that anyone can use for free
+(or even self-host!) to boost efficiency and productivity without those limitations.
 
 ## Getting Started
 
