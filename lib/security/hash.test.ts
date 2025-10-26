@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import * as crypto from 'crypto';
+import * as crypto from 'crypto'; // Needed for mocking - skipcq: JS-C1003
 
 import { hash, compare } from './hash';
 
