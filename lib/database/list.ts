@@ -88,9 +88,7 @@ export async function createTag(listId: string, tag: Tag): Promise<boolean> {
 
   const result = await execute(sql, { listId, ...tag });
 
-  if (!result) return false;
-
-  return true;
+  return !!result;
 }
 
 export async function getListById(id: string): Promise<List | false> {
@@ -302,9 +300,7 @@ export async function updateList(list: List): Promise<boolean> {
 
   const result = await execute(sql, { ...list });
 
-  if (!result) return false;
-
-  return true;
+  return !!result;
 }
 
 export async function updateTag(listId: string, tag: Tag): Promise<boolean> {
@@ -319,9 +315,7 @@ export async function updateTag(listId: string, tag: Tag): Promise<boolean> {
 
   const result = await execute(sql, { listId, ...tag });
 
-  if (!result) return false;
-
-  return true;
+  return !!result;
 }
 
 export async function deleteList(id: string): Promise<boolean> {
@@ -332,9 +326,7 @@ export async function deleteList(id: string): Promise<boolean> {
 
   const result = await execute(sql, { id });
 
-  if (!result) return false;
-
-  return true;
+  return !!result;
 }
 
 export async function deleteTag(id: string): Promise<boolean> {
@@ -345,7 +337,5 @@ export async function deleteTag(id: string): Promise<boolean> {
 
   const result = await execute(sql, { id });
 
-  if (!result) return false;
-
-  return true;
+  return !!result;
 }
