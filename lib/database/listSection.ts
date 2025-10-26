@@ -37,7 +37,7 @@ export async function createListSection(
 
   const result = await execute(sql, { listId, ...listSection });
 
-  return !!result;
+  return Boolean(result);
 }
 
 export async function updateListSection(
@@ -52,7 +52,7 @@ export async function updateListSection(
 
   const result = await execute(sql, { id, name });
 
-  return !!result;
+  return Boolean(result);
 }
 
 export async function deleteListSection(id: string): Promise<boolean> {
@@ -63,5 +63,5 @@ export async function deleteListSection(id: string): Promise<boolean> {
 
   const result = await execute(sql, { id });
 
-  return !!result;
+  return Boolean(result);
 }

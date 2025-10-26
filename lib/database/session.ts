@@ -35,7 +35,7 @@ export async function createSession(session: Session): Promise<boolean> {
 
   const result = await execute(sql, session);
 
-  return !!result;
+  return Boolean(result);
 }
 
 export async function getSessionById(id: string): Promise<Session | false> {
@@ -59,5 +59,5 @@ export async function deleteSession(id: string): Promise<boolean> {
 
   const result = await execute(sql, { id });
 
-  return !!result;
+  return Boolean(result);
 }

@@ -362,7 +362,7 @@ function compareFilter(
       if (value instanceof Date) value.setHours(0, 0, 0, 0);
 
       return (
-        !!item.dateCompleted &&
+        item.dateCompleted !== null &&
         value instanceof Date &&
         value.getTime() > item.dateCompleted.getTime()
       );
@@ -379,7 +379,7 @@ function compareFilter(
       }
 
       return (
-        !!item.dateCompleted &&
+        item.dateCompleted !== null &&
         start.getTime() <= item.dateCompleted.getTime() &&
         end.getTime() > item.dateCompleted.getTime()
       );
@@ -387,41 +387,41 @@ function compareFilter(
       if (value instanceof Date) value.setHours(23, 59, 59, 999);
 
       return (
-        !!item.dateCompleted &&
+        item.dateCompleted !== null &&
         value instanceof Date &&
         value.getTime() < item.dateCompleted.getTime()
       );
 
     case 'dueBefore':
       return (
-        !!item.dateDue &&
+        item.dateDue !== null &&
         value instanceof Date &&
         value.getTime() > item.dateDue.getTime()
       );
     case 'dueOn':
       return (
-        !!item.dateDue &&
+        item.dateDue !== null &&
         value instanceof Date &&
         value.getTime() === item.dateDue.getTime()
       );
     case 'dueAfter':
       return (
-        !!item.dateDue &&
+        item.dateDue !== null &&
         value instanceof Date &&
         value.getTime() < item.dateDue.getTime()
       );
 
     case 'expectedTimeBelow':
       return (
-        !!item.expectedMs &&
+        item.expectedMs !== null &&
         typeof value === 'number' &&
         item.expectedMs < value
       );
     case 'expectedTimeAt':
-      return !!item.expectedMs && item.expectedMs === value;
+      return item.expectedMs !== null && item.expectedMs === value;
     case 'expectedTimeAbove':
       return (
-        !!item.expectedMs &&
+        item.expectedMs !== null &&
         typeof value === 'number' &&
         item.expectedMs > value
       );

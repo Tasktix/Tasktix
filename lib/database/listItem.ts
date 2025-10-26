@@ -64,7 +64,7 @@ export async function createListItem(
 
   const result = await execute(sql, { ...listItem, sectionId });
 
-  return !!result;
+  return Boolean(result);
 }
 
 export async function getListItemById(id: string): Promise<ListItem | false> {
@@ -120,7 +120,7 @@ export async function linkTag(itemId: string, tagId: string): Promise<boolean> {
 
   const result = await execute(sql, { itemId, tagId });
 
-  return !!result;
+  return Boolean(result);
 }
 
 export async function linkAssignee(
@@ -143,7 +143,7 @@ export async function linkAssignee(
 
   const result = await execute(sql, { itemId, userId, role });
 
-  return !!result;
+  return Boolean(result);
 }
 
 export async function updateListItem(item: ListItem): Promise<boolean> {
@@ -165,7 +165,7 @@ export async function updateListItem(item: ListItem): Promise<boolean> {
 
   const result = await execute(sql, { ...item });
 
-  return !!result;
+  return Boolean(result);
 }
 
 export async function updateSectionIndices(
@@ -194,7 +194,7 @@ export async function updateSectionIndices(
     indexTwo: Math.max(oldIndex, index)
   });
 
-  return !!result;
+  return Boolean(result);
 }
 
 export async function deleteListItem(id: string): Promise<boolean> {
@@ -205,7 +205,7 @@ export async function deleteListItem(id: string): Promise<boolean> {
 
   const result = await execute(sql, { id });
 
-  return !!result;
+  return Boolean(result);
 }
 
 export async function unlinkTag(
@@ -220,7 +220,7 @@ export async function unlinkTag(
 
   const result = await execute(sql, { itemId, tagId });
 
-  return !!result;
+  return Boolean(result);
 }
 
 export async function unlinkAssignee(
@@ -235,5 +235,5 @@ export async function unlinkAssignee(
 
   const result = await execute(sql, { itemId, userId });
 
-  return !!result;
+  return Boolean(result);
 }
