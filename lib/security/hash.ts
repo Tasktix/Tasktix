@@ -19,7 +19,7 @@
 import { BinaryLike, randomFill, scrypt } from 'crypto';
 
 export async function hash(password: string): Promise<string> {
-  function randomString(length: number = 16): Promise<Uint8Array<ArrayBuffer>> {
+  function randomString(length = 16): Promise<Uint8Array<ArrayBuffer>> {
     return new Promise((resolve, reject) => {
       randomFill(new Uint8Array(length), (err, str) => {
         if (err) reject(err);

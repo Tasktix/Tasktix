@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-export function generateId(length: number = 16): string {
+export function generateId(length = 16): string {
   const array = new Uint32Array(length);
 
   crypto.getRandomValues(array);
@@ -24,7 +24,7 @@ export function generateId(length: number = 16): string {
   const codeAlphabet =
     'ABCDEFGHIJKLMNOPQRSTUVWXYZ' + 'abcdefghijklmnopqrstuvwxyz' + '0123456789';
 
-  let code: string = '';
+  let code = '';
 
   for (let i = 0; i < length; i++)
     code += codeAlphabet[array[i] % codeAlphabet.length];

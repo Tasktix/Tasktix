@@ -31,19 +31,11 @@ export default {
     return request(resource, 'POST', data, encodingType);
   },
 
-  put(
-    resource: string,
-    data: object,
-    encodingType: string = 'application/json'
-  ) {
+  put(resource: string, data: object, encodingType = 'application/json') {
     return request(resource, 'PUT', data, encodingType);
   },
 
-  patch(
-    resource: string,
-    data: object,
-    encodingType: string = 'application/json'
-  ) {
+  patch(resource: string, data: object, encodingType = 'application/json') {
     return request(resource, 'PATCH', data, encodingType);
   },
 
