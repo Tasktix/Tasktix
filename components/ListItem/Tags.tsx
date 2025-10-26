@@ -132,6 +132,7 @@ export default function Tags({
                       </Button>
                     </div>
                   );
+                else return null;
               })
           : null}
         <TagInput

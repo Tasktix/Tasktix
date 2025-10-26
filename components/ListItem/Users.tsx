@@ -146,6 +146,7 @@ export default function Users({
                 </Button>
               </div>
             );
+          else return null;
         })}
       </PopoverContent>
     </Popover>
