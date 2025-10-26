@@ -191,9 +191,7 @@ export default function AddItem({
                 variant='underlined'
                 onValueChange={setDueDate}
               />
-            ) : (
-              <></>
-            )}
+            ) : null}
             <Select
               className={'w-28 -mt-4'}
               classNames={{
@@ -234,9 +232,7 @@ export default function AddItem({
                 variant='underlined'
                 onValueChange={setExpectedDuration}
               />
-            ) : (
-              <></>
-            )}
+            ) : null}
             <Button
               isIconOnly
               color='primary'
@@ -309,9 +305,7 @@ export default function AddItem({
                         variant='underlined'
                         onValueChange={setDueDate}
                       />
-                    ) : (
-                      <></>
-                    )}
+                    ) : null}
                     <Select
                       className={'w-28 -mt-4'}
                       classNames={{
@@ -353,9 +347,7 @@ export default function AddItem({
                         variant='underlined'
                         onValueChange={setExpectedDuration}
                       />
-                    ) : (
-                      <></>
-                    )}
+                    ) : null}
                   </ModalBody>
                   <ModalFooter>
                     <Button color='danger' variant='light' onPress={onClose}>

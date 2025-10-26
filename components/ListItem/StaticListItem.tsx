@@ -403,9 +403,7 @@ export default function StaticListItem({
           >
             <GripVertical />
           </div>
-        ) : (
-          <></>
-        )}
+        ) : null}
 
         <Checkbox
           className='-mr-3'
@@ -455,9 +453,7 @@ export default function StaticListItem({
                 value={_item.dateDue || new Date()}
                 onValueChange={set.dueDate}
               />
-            ) : (
-              <></>
-            )}
+            ) : null}
           </div>
 
           {list && (
@@ -499,9 +495,7 @@ export default function StaticListItem({
             itemId={_item.id}
             members={members}
           />
-        ) : (
-          <></>
-        )}
+        ) : null}
 
         <span className='flex gap-4 items-center justify-end grow md:grow-0 shrink-0 justify-self-end'>
           {hasTimeTracking ? (
@@ -527,9 +521,7 @@ export default function StaticListItem({
                 status={_item.status}
               />
             </span>
-          ) : (
-            <></>
-          )}
+          ) : null}
 
           <More
             addNewTag={addNewTag}

@@ -130,9 +130,7 @@ export default function More({
                       variant='underlined'
                       onValueChange={set.dueDate}
                     />
-                  ) : (
-                    <></>
-                  )}
+                  ) : null}
                 </div>
 
                 <Tags
@@ -153,9 +151,7 @@ export default function More({
                     itemId={item.id}
                     members={members}
                   />
-                ) : (
-                  <></>
-                )}
+                ) : null}
 
                 <div className='flex gap-6 justify-end'>
                   {hasTimeTracking ? (
@@ -181,9 +177,7 @@ export default function More({
                         status={item.status}
                       />
                     </>
-                  ) : (
-                    <></>
-                  )}
+                  ) : null}
                   <Button
                     color='danger'
                     variant='ghost'

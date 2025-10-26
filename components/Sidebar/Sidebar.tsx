@@ -80,9 +80,7 @@ export default function Sidebar({ lists }: { lists: List[] }) {
           ))}
         {addingList ? (
           <NewItem finalize={finalizeNew} remove={removeNew} />
-        ) : (
-          <></>
-        )}
+        ) : null}
       </NavSection>
     </aside>
   );
