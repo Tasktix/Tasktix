@@ -86,7 +86,7 @@ export default function InputElement({
                 <SelectItem
                   key={option.name}
                   className={
-                    option.color ? '!' + getTextColor(option.color) : ''
+                    option.color ? `!${getTextColor(option.color)}` : ''
                   }
                   value={option.name}
                 >

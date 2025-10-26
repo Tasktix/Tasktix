@@ -63,7 +63,7 @@ export default function TimeInput({
     const hourStr = value.slice(0, -2);
     const minStr = value.slice(-2);
 
-    setTime(hourStr + ':' + minStr);
+    setTime(`${hourStr}:${minStr}`);
 
     const ms = (Number(hourStr) * 60 + Number(minStr)) * 60 * 1000;
 

@@ -315,7 +315,7 @@ export default function StaticListItem({
 
           const tag = tagsAvailable?.find(tag => tag.id === id);
 
-          if (!tag) throw Error('Could not find tag with id ' + id);
+          if (!tag) throw Error(`Could not find tag with id ${id}`);
 
           newTags.push(new Tag(tag.name, tag.color, id));
 
@@ -434,8 +434,8 @@ export default function StaticListItem({
             {_item.status === 'Completed' ? (
               <span className='text-xs text-secondary/75 relative top-3'>
                 {_item.dateCompleted
-                  ? 'Completed ' + formatDate(_item.dateCompleted)
-                  : 'Due ' + (_item.dateDue ? formatDate(_item.dateDue) : '')}
+                  ? `Completed ${formatDate(_item.dateCompleted)}`
+                  : `Due ${_item.dateDue ? formatDate(_item.dateDue) : ''}`}
               </span>
             ) : hasDueDates ? (
               <DateInput

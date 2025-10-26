@@ -434,6 +434,6 @@ function compareFilter(
       return typeof value === 'number' && item.elapsedMs > value;
 
     default:
-      throw Error('Invalid option ' + key);
+      throw Error(`Invalid option ${key}`);
   }
 }

@@ -59,9 +59,9 @@ export function formatTime(time: number): string {
   let hours = (hoursMs / 3600000).toString();
   let minutes = (minsMs / 60000).toString();
 
-  if (hours.length < 2) hours = '0' + hours;
+  if (hours.length < 2) hours = `0${hours}`;
 
-  if (minutes.length < 2) minutes = '0' + minutes;
+  if (minutes.length < 2) minutes = `0${minutes}`;
 
   return `${hours}:${minutes}`;
 }
@@ -77,8 +77,8 @@ export function dateToInput(date: Date): string {
   let month = (date.getMonth() + 1).toString();
   let day = date.getDate().toString();
 
-  if (month.length < 2) month = '0' + month;
-  if (day.length < 2) day = '0' + day;
+  if (month.length < 2) month = `0${month}`;
+  if (day.length < 2) day = `0${day}`;
 
   return `${year}-${month}-${day}`;
 }

@@ -77,7 +77,7 @@ async function request(
 
   if (encodingType) options.headers = { 'Content-Type': encodingType };
 
-  const result = await fetch('/api' + resource, options);
+  const result = await fetch(`/api${resource}`, options);
   const parsedResult = await result.json();
 
   const serverResponse: ServerResponse = {
