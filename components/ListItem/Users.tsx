@@ -59,7 +59,7 @@ export default function Users({
         const newAssignees = structuredClone(_assignees);
 
         for (const member of members)
-          if (member.user.id == userId)
+          if (member.user.id === userId)
             newAssignees.push(new Assignee(member.user, ''));
         setAssignees(newAssignees);
       })
@@ -74,7 +74,7 @@ export default function Users({
         const newAssignees = structuredClone(_assignees);
 
         for (let i = 0; i < newAssignees.length; i++)
-          if (newAssignees[i].user.id == userId) newAssignees.splice(i, 1);
+          if (newAssignees[i].user.id === userId) newAssignees.splice(i, 1);
         setAssignees(newAssignees);
       })
       .catch(err => addSnackbar(err.message, 'error'));
@@ -128,7 +128,7 @@ export default function Users({
           </div>
         ))}
         {members.map(member => {
-          if (!_assignees.some(assignee => assignee.user.id == member.user.id))
+          if (!_assignees.some(assignee => assignee.user.id === member.user.id))
             return (
               <div
                 key={member.user.id}

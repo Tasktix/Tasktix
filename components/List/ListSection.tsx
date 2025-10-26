@@ -95,7 +95,7 @@ export default function ListSection({
   );
 
   const [isCollapsed, setIsCollapsed] = useState(
-    !items.reduce((prev, curr) => prev || curr.status != 'Completed', false)
+    !items.reduce((prev, curr) => prev || curr.status !== 'Completed', false)
   );
 
   function setStatus(
@@ -106,7 +106,7 @@ export default function ListSection({
     const newItems = structuredClone(items);
 
     for (const item of newItems)
-      if (item.id == id) {
+      if (item.id === id) {
         item.status = status;
         if (dateCompleted !== undefined) item.dateCompleted = dateCompleted;
       }
@@ -116,21 +116,21 @@ export default function ListSection({
   function updateExpectedMs(id: string, ms: number) {
     const newItems = structuredClone(items);
 
-    for (const item of newItems) if (item.id == id) item.expectedMs = ms;
+    for (const item of newItems) if (item.id === id) item.expectedMs = ms;
     setItems(newItems);
   }
 
   function updatePriority(id: string, priority: ListItemModel['priority']) {
     const newItems = structuredClone(items);
 
-    for (const item of newItems) if (item.id == id) item.priority = priority;
+    for (const item of newItems) if (item.id === id) item.priority = priority;
     setItems(newItems);
   }
 
   function updateDueDate(id: string, date: Date) {
     const newItems = structuredClone(items);
 
-    for (const item of newItems) if (item.id == id) item.dateDue = date;
+    for (const item of newItems) if (item.id === id) item.dateDue = date;
     setItems(newItems);
   }
 
@@ -143,9 +143,9 @@ export default function ListSection({
   }
 
   function reorderItem(item: ListItemModel, lastVisualIndex: number) {
-    const index = items.findIndex(i => i.id == item.id);
+    const index = items.findIndex(i => i.id === item.id);
 
-    if (index == lastVisualIndex) return;
+    if (index === lastVisualIndex) return;
 
     const oldIndex = item.sectionIndex;
     const newIndex =
@@ -153,7 +153,7 @@ export default function ListSection({
         ? items[index - 1].sectionIndex
         : items[index + 1].sectionIndex;
 
-    if (newIndex == oldIndex) return;
+    if (newIndex === oldIndex) return;
 
     api
       .patch(`/list/${listId}/section/${id}/item`, {
@@ -175,7 +175,7 @@ export default function ListSection({
             newItems[i].sectionIndex <= index2
           )
             newItems[i].sectionIndex += oldIndex > newIndex ? 1 : -1;
-          if (newItems[i].id == item.id) newItems[i].sectionIndex = newIndex;
+          if (newItems[i].id === item.id) newItems[i].sectionIndex = newIndex;
         }
         setItems(newItems);
       })
@@ -186,7 +186,7 @@ export default function ListSection({
     const newItems = structuredClone(items);
 
     for (let i = 0; i < newItems.length; i++)
-      if (newItems[i].id == id) newItems.splice(i, 1);
+      if (newItems[i].id === id) newItems.splice(i, 1);
     setItems(newItems);
   }
 
@@ -228,7 +228,7 @@ export default function ListSection({
             </DropdownTrigger>
             <DropdownMenu
               onAction={key => {
-                if (key == 'delete') deleteSection();
+                if (key === 'delete') deleteSection();
               }}
             >
               <DropdownItem
@@ -330,11 +330,11 @@ function compareFilter(
   key: string,
   value: unknown
 ): boolean {
-  if (value == undefined) return false;
+  if (value === undefined) return false;
 
   switch (key) {
     case 'name':
-      return value == item.name;
+      return value === item.name;
 
     case 'priority':
       return value instanceof Set && value.has(item.priority);
@@ -402,7 +402,7 @@ function compareFilter(
       return (
         !!item.dateDue &&
         value instanceof Date &&
-        value.getTime() == item.dateDue.getTime()
+        value.getTime() === item.dateDue.getTime()
       );
     case 'dueAfter':
       return (
@@ -429,7 +429,7 @@ function compareFilter(
     case 'elapsedTimeBelow':
       return typeof value === 'number' && item.elapsedMs < value;
     case 'elapsedTimeAt':
-      return item.elapsedMs == value;
+      return item.elapsedMs === value;
     case 'elapsedTimeAbove':
       return typeof value === 'number' && item.elapsedMs > value;
 

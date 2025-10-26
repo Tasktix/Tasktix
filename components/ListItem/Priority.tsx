@@ -62,7 +62,7 @@ export default function Priority({
       <Select
         className={`w-28 grow-0 shrink-0 ${className || ''}`}
         classNames={classNames}
-        color={`${priority == 'High' ? 'danger' : priority == 'Medium' ? 'warning' : 'success'}`}
+        color={`${priority === 'High' ? 'danger' : priority === 'Medium' ? 'warning' : 'success'}`}
         isDisabled={isComplete}
         label={<span className='ml-2 text-foreground'>Priority</span>}
         labelPlacement='outside'
@@ -71,12 +71,12 @@ export default function Priority({
         size='sm'
         variant='flat'
         onSelectionChange={(keys: Selection) => {
-          const priorityKey = keys != 'all' ? keys.keys().next().value : 'Low';
+          const priorityKey = keys !== 'all' ? keys.keys().next().value : 'Low';
 
           setPriority(
-            priorityKey == 'High'
+            priorityKey === 'High'
               ? 'High'
-              : priorityKey == 'Medium'
+              : priorityKey === 'Medium'
                 ? 'Medium'
                 : 'Low'
           );

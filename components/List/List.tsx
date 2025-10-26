@@ -107,7 +107,7 @@ export default function List({
         const newList = structuredClone(list);
 
         for (let i = 0; i < newList.sections.length; i++)
-          if (newList.sections[i].id == id) newList.sections.splice(i, 1);
+          if (newList.sections[i].id === id) newList.sections.splice(i, 1);
         setList(newList);
       })
       .catch(err => addSnackbar(err.message, 'error'));

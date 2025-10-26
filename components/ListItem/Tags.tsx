@@ -114,7 +114,7 @@ export default function Tags({
           tagsAvailable
             .sort((a, b) => (a.name > b.name ? 1 : -1))
             .map(tag => {
-              if (!tags.some(usedTag => usedTag.id == tag.id))
+              if (!tags.some(usedTag => usedTag.id === tag.id))
                 return (
                   <div
                     key={tag.id}

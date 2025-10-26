@@ -71,7 +71,7 @@ export default function Snackbar() {
 
   removeSnackbar = useCallback((id: string) => {
     setSnackbarQueue(snackbarQueue =>
-      snackbarQueue.filter(item => item.id != id)
+      snackbarQueue.filter(item => item.id !== id)
     );
   }, []);
 

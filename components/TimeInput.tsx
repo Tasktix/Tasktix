@@ -80,7 +80,7 @@ export default function TimeInput({
       labelPlacement={labelPlacement}
       size={size}
       tabIndex={tabIndex}
-      value={value != undefined ? formatTime(value) : time}
+      value={value !== undefined ? formatTime(value) : time}
       variant={variant}
       onValueChange={updateTime}
     />

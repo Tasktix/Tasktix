@@ -143,7 +143,7 @@ export function ListSettings({
       .then(() => {
         setTagsAvailable(
           tagsAvailable.map(t =>
-            t.id == tag.id ? new Tag(name, t.color, t.id) : t
+            t.id === tag.id ? new Tag(name, t.color, t.id) : t
           )
         );
       })
@@ -157,7 +157,7 @@ export function ListSettings({
         .then(() => {
           setTagsAvailable(
             tagsAvailable.map(t =>
-              t.id == tag.id ? new Tag(t.name, color, t.id) : t
+              t.id === tag.id ? new Tag(t.name, color, t.id) : t
             )
           );
         })
@@ -175,7 +175,7 @@ export function ListSettings({
     api
       .delete(`/list/${listId}/tag/${id}`)
       .then(() => {
-        setTagsAvailable(tagsAvailable.filter(tag => tag.id != id));
+        setTagsAvailable(tagsAvailable.filter(tag => tag.id !== id));
       })
       .catch(err => addSnackbar(err.message, 'error'));
   }

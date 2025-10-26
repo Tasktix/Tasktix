@@ -116,11 +116,11 @@ export default function AddItem({
   function createItem(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const priorityKey =
-      values.priority != 'all' ? values.priority.keys().next().value : 'Low';
+      values.priority !== 'all' ? values.priority.keys().next().value : 'Low';
     const priority =
-      priorityKey == 'High'
+      priorityKey === 'High'
         ? 'High'
-        : priorityKey == 'Medium'
+        : priorityKey === 'Medium'
           ? 'Medium'
           : 'Low';
 
@@ -197,10 +197,10 @@ export default function AddItem({
             <Select
               className={'w-28 -mt-4'}
               classNames={{
-                trigger: `${values.priority == 'all' || values.priority.has('High') ? 'border-danger' : values.priority.has('Medium') ? 'border-warning' : 'border-success'}`,
+                trigger: `${values.priority === 'all' || values.priority.has('High') ? 'border-danger' : values.priority.has('Medium') ? 'border-warning' : 'border-success'}`,
                 mainWrapper: '-mt-6'
               }}
-              color={`${values.priority == 'all' || values.priority.has('High') ? 'danger' : values.priority.has('Medium') ? 'warning' : values.priority.has('Low') ? 'success' : 'default'}`}
+              color={`${values.priority === 'all' || values.priority.has('High') ? 'danger' : values.priority.has('Medium') ? 'warning' : values.priority.has('Low') ? 'success' : 'default'}`}
               label={<span className='ml-2 text-foreground'>Priority</span>}
               labelPlacement='outside'
               placeholder='Select...'
@@ -315,10 +315,10 @@ export default function AddItem({
                     <Select
                       className={'w-28 -mt-4'}
                       classNames={{
-                        trigger: `${values.priority == 'all' || values.priority.has('High') ? 'border-danger' : values.priority.has('Medium') ? 'border-warning' : 'border-success'}`,
+                        trigger: `${values.priority === 'all' || values.priority.has('High') ? 'border-danger' : values.priority.has('Medium') ? 'border-warning' : 'border-success'}`,
                         mainWrapper: '-mt-6'
                       }}
-                      color={`${values.priority == 'all' || values.priority.has('High') ? 'danger' : values.priority.has('Medium') ? 'warning' : values.priority.has('Low') ? 'success' : 'default'}`}
+                      color={`${values.priority === 'all' || values.priority.has('High') ? 'danger' : values.priority.has('Medium') ? 'warning' : values.priority.has('Low') ? 'success' : 'default'}`}
                       label={
                         <span className='ml-2 text-foreground'>Priority</span>
                       }

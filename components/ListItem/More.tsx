@@ -78,7 +78,7 @@ export default function More({
   set: SetItem;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
 }) {
-  const isComplete = item.status == 'Completed';
+  const isComplete = item.status === 'Completed';
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
@@ -138,7 +138,7 @@ export default function More({
                 <Tags
                   addNewTag={addNewTag}
                   className='py-2'
-                  isComplete={item.status == 'Completed'}
+                  isComplete={item.status === 'Completed'}
                   linkTag={set.linkedTag}
                   tags={tags}
                   tagsAvailable={tagsAvailable}

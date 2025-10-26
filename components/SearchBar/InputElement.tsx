@@ -81,7 +81,7 @@ export default function InputElement({
           size='sm'
           onSelectionChange={handleInput}
         >
-          {inputOption.type == 'Select' ? (
+          {inputOption.type === 'Select' ? (
             inputOption.selectOptions?.map(option => (
               <SelectItem
                 key={option.name}
