@@ -34,8 +34,20 @@ import Snackbar from '@/components/Snackbar';
 import { default as api } from '@/lib/api';
 import ThemeSwitcher from '@/components/ThemeSwitcher';
 
-export let setLoggedIn: () => void;
-export let setLoggedOut: () => void;
+export function setLoggedIn() {
+  if (!_setLoggedIn) throw Error('Body component not yet mounted');
+
+  return _setLoggedIn();
+}
+
+export function setLoggedOut() {
+  if (!_setLoggedOut) throw Error('Body component not yet mounted');
+
+  return _setLoggedOut();
+}
+
+let _setLoggedIn: () => void;
+let _setLoggedOut: () => void;
 
 export default function Body({
   children,
@@ -46,8 +58,8 @@ export default function Body({
 }) {
   const [isLoggedIn, setIsLoggedIn] = useState(isLoggedInAtStart);
 
-  setLoggedIn = () => setIsLoggedIn(true);
-  setLoggedOut = () => setIsLoggedIn(false);
+  _setLoggedIn = () => setIsLoggedIn(true);
+  _setLoggedOut = () => setIsLoggedIn(false);
 
   return (
     <div className='flex flex-col h-screen'>
