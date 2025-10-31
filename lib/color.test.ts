@@ -18,7 +18,30 @@
 
 import { namedColors, NamedColor } from '@/lib/model/color';
 
-import { getTextColor, getBackgroundColor, randomNamedColor } from './color';
+import {
+  getBackgroundColor,
+  getBorderColor,
+  getPriorityColor,
+  getTextColor,
+  randomNamedColor
+} from './color';
+
+describe('getPriorityColor', () => {
+  test('Returns the correct semantic color for each priority level', () => {
+    expect(getPriorityColor('all')).toBe('danger');
+    expect(getPriorityColor(new Set(['High']))).toBe('danger');
+    expect(getPriorityColor(new Set(['High', 'Medium']))).toBe('danger');
+    expect(getPriorityColor(new Set(['High', 'Low']))).toBe('danger');
+    expect(getPriorityColor(new Set(['High', 'Medium', 'Low']))).toBe('danger');
+
+    expect(getPriorityColor(new Set(['Medium']))).toBe('warning');
+    expect(getPriorityColor(new Set(['Medium', 'Low']))).toBe('warning');
+
+    expect(getPriorityColor(new Set(['Low']))).toBe('success');
+
+    expect(getPriorityColor(new Set(['invalid']))).toBe('success');
+  });
+});
 
 describe('getTextColor', () => {
   test('Returns the correct NextUI text color class for valid semantic colors', () => {
@@ -61,6 +84,28 @@ describe('getBackgroundColor', () => {
     expect(getBackgroundColor('Cyan')).toMatch(/^bg-cyan-(\d{2,3})$/);
     expect(getBackgroundColor('Blue')).toMatch(/^bg-blue-(\d{2,3})$/);
     expect(getBackgroundColor('Violet')).toMatch(/^bg-violet-(\d{2,3})$/);
+  });
+});
+
+describe('getBorderColor', () => {
+  test('Returns the correct NextUI border color class for valid semantic colors', () => {
+    expect(getBorderColor('danger')).toBe('border-danger');
+    expect(getBorderColor('warning')).toBe('border-warning');
+    expect(getBorderColor('success')).toBe('border-success');
+  });
+
+  test('Returns a valid Tailwind border color class for valid named colors', () => {
+    expect(getBorderColor('Pink')).toMatch(/^border-pink-(\d{2,3})$/);
+    expect(getBorderColor('Red')).toMatch(/^border-red-(\d{2,3})$/);
+    expect(getBorderColor('Orange')).toMatch(/^border-orange-(\d{2,3})$/);
+    expect(getBorderColor('Amber')).toMatch(/^border-amber-(\d{2,3})$/);
+    expect(getBorderColor('Yellow')).toMatch(/^border-yellow-(\d{2,3})$/);
+    expect(getBorderColor('Lime')).toMatch(/^border-lime-(\d{2,3})$/);
+    expect(getBorderColor('Green')).toMatch(/^border-green-(\d{2,3})$/);
+    expect(getBorderColor('Emerald')).toMatch(/^border-emerald-(\d{2,3})$/);
+    expect(getBorderColor('Cyan')).toMatch(/^border-cyan-(\d{2,3})$/);
+    expect(getBorderColor('Blue')).toMatch(/^border-blue-(\d{2,3})$/);
+    expect(getBorderColor('Violet')).toMatch(/^border-violet-(\d{2,3})$/);
   });
 });
 
