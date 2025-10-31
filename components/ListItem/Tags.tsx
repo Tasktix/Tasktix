@@ -114,7 +114,8 @@ export default function Tags({
           ? tagsAvailable
               .sort((a, b) => (a.name > b.name ? 1 : -1))
               .map(tag => {
-                if (!tags.some(usedTag => usedTag.id === tag.id))
+                if (tags.some(usedTag => usedTag.id === tag.id)) return null;
+                else
                   return (
                     <div
                       key={tag.id}
@@ -132,7 +133,6 @@ export default function Tags({
                       </Button>
                     </div>
                   );
-                else return null;
               })
           : null}
         <TagInput
