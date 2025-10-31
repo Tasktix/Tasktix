@@ -42,15 +42,17 @@ export function addSnackbar(
   message: SnackbarMessage['message'],
   color: SnackbarMessage['color']
 ) {
-  if (_addSnackbar === undefined)
-    throw new Error('Snackbar component not yet mounted');
+  // The whole point is that this may be called before the fn is defined - skipcq: JS-0357
+  if (!_addSnackbar) throw new Error('Snackbar component not yet mounted');
 
+  // The whole point is that this may be called before the fn is defined - skipcq: JS-0357
   return _addSnackbar(message, color);
 }
 export function removeSnackbar(id: string) {
-  if (_removeSnackbar === undefined)
-    throw new Error('Snackbar component not yet mounted');
+  // The whole point is that this may be called before the fn is defined - skipcq: JS-0357
+  if (!_removeSnackbar) throw new Error('Snackbar component not yet mounted');
 
+  // The whole point is that this may be called before the fn is defined - skipcq: JS-0357
   return _removeSnackbar(id);
 }
 

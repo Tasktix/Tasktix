@@ -35,16 +35,18 @@ import { default as api } from '@/lib/api';
 import ThemeSwitcher from '@/components/ThemeSwitcher';
 
 export function setLoggedIn() {
-  if (_setLoggedIn === undefined)
-    throw new Error('Body component not yet mounted');
+  // The whole point is that this may be called before the fn is defined - skipcq: JS-0357
+  if (!_setLoggedIn) throw new Error('Body component not yet mounted');
 
+  // The whole point is that this may be called before the fn is defined - skipcq: JS-0357
   return _setLoggedIn();
 }
 
 export function setLoggedOut() {
-  if (_setLoggedOut === undefined)
-    throw new Error('Body component not yet mounted');
+  // The whole point is that this may be called before the fn is defined - skipcq: JS-0357
+  if (!_setLoggedOut) throw new Error('Body component not yet mounted');
 
+  // The whole point is that this may be called before the fn is defined - skipcq: JS-0357
   return _setLoggedOut();
 }
 
