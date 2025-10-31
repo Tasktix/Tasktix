@@ -194,6 +194,7 @@ export async function getIsListAssignee(
 
   const result = await query<DB_List>(sql, { userId, listId });
 
+  // Required to make TS happy - skipcq: JS-W1044
   return Boolean(result && result.length);
 }
 
@@ -212,6 +213,7 @@ export async function getIsListAssigneeBySection(
 
   const result = await query<DB_List>(sql, { userId, sectionId });
 
+  // Required to make TS happy - skipcq: JS-W1044
   return Boolean(result && result.length);
 }
 
@@ -231,6 +233,7 @@ export async function getIsListAssigneeByItem(
 
   const result = await query<DB_List>(sql, { userId, itemId });
 
+  // Required to make TS happy - skipcq: JS-W1044
   return Boolean(result && result.length);
 }
 
