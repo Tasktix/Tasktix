@@ -315,7 +315,7 @@ export default function StaticListItem({
 
           const tag = tagsAvailable?.find(tag => tag.id === id);
 
-          if (!tag) throw Error(`Could not find tag with id ${id}`);
+          if (!tag) throw new Error(`Could not find tag with id ${id}`);
 
           newTags.push(new Tag(tag.name, tag.color, id));
 

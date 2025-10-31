@@ -24,7 +24,7 @@ export default function listReducer(lists: List[], action: Action) {
   switch (action.type) {
     case 'add':
       if (!action.name || !action.color)
-        throw Error('Missing required action parameters');
+        throw new Error('Missing required action parameters');
 
       return [
         ...lists,

@@ -42,12 +42,12 @@ export function addSnackbar(
   message: SnackbarMessage['message'],
   color: SnackbarMessage['color']
 ) {
-  if (!_addSnackbar) throw Error('Snackbar component not yet mounted');
+  if (!_addSnackbar) throw new Error('Snackbar component not yet mounted');
 
   return _addSnackbar(message, color);
 }
 export function removeSnackbar(id: string) {
-  if (!_removeSnackbar) throw Error('Snackbar component not yet mounted');
+  if (!_removeSnackbar) throw new Error('Snackbar component not yet mounted');
 
   return _removeSnackbar(id);
 }

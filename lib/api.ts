@@ -59,7 +59,8 @@ async function request(
     if (!encodingType) encodingType = 'application/json';
 
     if (encodingType === 'application/json') body = JSON.stringify(data);
-    else throw Error(`Unknown encoding ${encodingType} for object parameter`);
+    else
+      throw new Error(`Unknown encoding ${encodingType} for object parameter`);
   }
 
   const options: RequestInit = {

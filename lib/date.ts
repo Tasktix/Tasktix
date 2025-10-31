@@ -88,7 +88,7 @@ export function parseTime(time: string): number {
 
   for (const part of timeParts) {
     if (!Number.isInteger(Number(part)))
-      throw Error(`Invalid time to parse: ${time}`);
+      throw new Error(`Invalid time to parse: ${time}`);
   }
 
   if (timeParts.length === 3) {
@@ -107,5 +107,5 @@ export function parseTime(time: string): number {
     return Number(minutes) * 60 * 1000;
   }
 
-  throw Error(`Invalid time to parse: ${time}`);
+  throw new Error(`Invalid time to parse: ${time}`);
 }
