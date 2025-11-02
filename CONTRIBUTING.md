@@ -2,10 +2,9 @@
 
 Thank you for your interest in contributing to **Tasktix**!
 
-Note that while it is recommended that your pull request (PR - for submitting your
-changes) links to an issue (which can be used for discussing the bug / feature you're
-addressing), you do not need to be assigned to the issue - just create the PR and it will
-be reviewed.
+Note that while it is recommended that your pull request (PR) links to an issue (which can
+be used for discussing the bug/feature you're addressing), you do not need to be
+assigned to the issue - just create the PR and it will be reviewed.
 
 This guide explains
 
@@ -15,74 +14,100 @@ This guide explains
 
 ## Code of Conduct
 
-By contributing to this project, you agree to abide by our
-[our Code of Conduct](./CODE_OF_CONDUCT.md) and are entitled to be treated by the
-standards it lays out. Please see the [enforcement](./CODE_OF_CONDUCT.md#enforcement)
+By contributing to this project, you agree to abide by
+[our Code of Conduct](./CODE_OF_CONDUCT.md) and are entitled to be treated according to
+the standards it lays out. Please see the [enforcement](./CODE_OF_CONDUCT.md#enforcement)
 section for information on reporting misconduct.
 
-## Getting Started
+## Setup
 
-### Prerequisites
+Check out [our setup guide](./docs/setup.md) to learn how to set up this project for local
+development.
 
-You will need to install the following software before running Tasktix locally:
+## Branches
 
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (recommended) or
-  [Docker Engine](https://docs.docker.com/engine/install/) (optional for Linux if not
-  using Dev Containers)
-- [Node.js v22](https://nodejs.org/en/download)
+By default, you cannot push changes directly to the `main` branch on GitHub. Instead, you
+need to create a new branch, commit your changes there, and submit a PR to merge your
+changes into `main`. Tasktix uses the features branch strategy. For further reading on
+these concepts, [refer to GitHub's branching documentation](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-branches).
 
-### Setup
+## Pull Requests
 
-Start by cloning the repository:
+All PRs must:
+
+- Follow the Code of Conduct
+- Be narrowly scoped
+  - A PR should only address 1 bug/feature/change
+  - Large features should be split into several steps and, therefore, PRs
+- Pass linting, testing, and code quality checks
+- Follow the PR template
+- Update documentation affected by the changes
+- Include screenshots or logs if UI/UX changes are made
+- Receive **2 maintainers' approval** before being squashed & merged
+
+### Reviews
+
+- Check functionality, clarity, and test coverage
+- Leave actionable comments
+- Follow the Code of Conduct and avoid personal critique
+
+### PR Titles
+
+This project uses [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/#specification)
+for PR titles that become the squashed commits' title. PR titles are linted by Danger; you
+must choose from one of the following types to describe your PR, which should not replace
+the leading verb in your title:
+
+- `feat`: A new feature is implemented
+- `fix`: A bug is resolved
+- `perf`: Only performance improvements; no external/user impact (besides quicker responses)
+- `docs`: Only documentation changes; no external/user impact
+- `style`: Only stylistic changes; no external/user impact
+- `refactor`: Only code structure changes; no external/user impact
+- `test`: Only test coverage improvements; no external/user impact
+- `chore`: Misc. changes that don't fit other categories; no external/user impact
+
+### Documentation
+
+Each new feature or fix must:
+
+- Update the README or `docs/` files as appropriate
+- Add or update [JSDoc docstrings](https://jsdoc.app/#block-tags) for functions/classes
+- Include code comments explaining non-obvious logic
+  - Intuitive, readable structuring is preferred. Comments are a last resort for
+    complicated functionality that cannot be reasonably simplified further
+
+### Style and Linting
+
+Style checks and linting will run in CI and must pass before your PR will be approved. To
+avoid surprises in CI, run the following command before creating your PR:
 
 ```bash
-git clone https://github.com/Tasktix/Tasktix.git
-cd Tasktix
+npm run lint
 ```
 
-We recommend installing an ESLint plugin and spellchecking plugin in your preferred IDE to
-catch simple errors as they're written. If you're using VS Code, you should be
-automatically prompted to install our recommended extensions when first opening the
-project.
+## Testing
 
-If you're not planning to develop from a Dev Container, run the following command to
-locally install dependencies for IntelliSense and ESLint to use:
+All PRs must include tests to validate their change. Coverage should always exceed
+**80%**; PRs without 100% coverage must provide justification for the untested code. To
+run all tests on the repo to validate your PR will pass testing, simply use:
 
 ```bash
-npm install --ignore-scripts
+npm test
 ```
 
-Finally, copy [`.env.example`](./.env.example) to `.env` and update the default values to
-match your environment.
-
-### Starting the Development Server
-
-To preview your changes, you can spin up a webserver and database via:
-
-```bash
-npm start
-```
-
-You can then view the project by visiting [127.0.0.1:3000](http://127.0.0.1:3000) in your
-browser. Any changes you make to `.ts` or `.tsx` files will be immediately reflected via
-Next.js' hot reloading capability.
-
-### Stopping the Development Server
-
-If the server is running as a foregrounded terminal process, pressing <kbd>Ctrl</kbd> +
-<kbd>C</kbd> should be sufficient to stop the server. You could also run:
-
-```bash
-npm stop
-```
-
-To delete the development environment's containers, run:
-
-```bash
-npm run teardown
-```
-
-**Environment Variables**
-
-- `.env` file required for local development (see `.env.example`)
-- Never commit secrets or API tokens.
+- **Jest** should be used for unit tests. To run just Jest tests, run:
+  ```bash
+  npm run test:jest
+  ```
+- **Cypress** should be used for end-to-end tests. To view Cypress tests live for easy
+  development/iteration, run:
+  ```bash
+  npm run start:test
+  npm run cy:open
+  npm run stop:test
+  ```
+  Or, for quick runs, run:
+  ```bash
+  npm run test:cy
+  ```
