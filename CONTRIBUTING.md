@@ -19,6 +19,11 @@ By contributing to this project, you agree to abide by
 the standards it lays out. Please see the [enforcement](./CODE_OF_CONDUCT.md#enforcement)
 section for information on reporting misconduct.
 
+## Security
+
+- Never commit `.env`, API keys, or other secrets to this repository
+- Securely report vulnerabilities as laid out in [our security policy](./SECURITY.md)
+
 ## Setup
 
 Check out [our setup guide](./docs/setup.md) to learn how to set up this project for local
