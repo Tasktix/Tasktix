@@ -19,8 +19,12 @@
 import { danger, fail, warn } from 'danger';
 
 // Regular expression for conventional commits
+// UPDATE CONTRIBUTING.md PR TYPE LIST WHEN MAKING ANY REGEX CHANGES
+// /////////////////////////////////////////////////////////
 const conventionalCommitRegex =
   /^(feat|fix|docs|style|refactor|perf|test|chore)(\((ui|api|)\))?!?: .+/;
+// UPDATE CONTRIBUTING.md PR TYPE LIST WHEN MAKING ANY REGEX CHANGES
+// /////////////////////////////////////////////////////////
 
 // Get the PR title
 const prTitle = danger.github.pr.title;
