@@ -36,7 +36,7 @@ export default function ThemeSwitcher() {
   const [isOpen, setIsOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [themeIcon, setThemeIcon] = useState(
-    theme != 'system'
+    theme !== 'system'
       ? theme
       : window.matchMedia &&
           window.matchMedia('(prefers-color-scheme: dark)').matches
@@ -46,7 +46,7 @@ export default function ThemeSwitcher() {
 
   useEffect(() => {
     setThemeIcon(
-      theme != 'system'
+      theme !== 'system'
         ? theme
         : window.matchMedia &&
             window.matchMedia('(prefers-color-scheme: dark)').matches
@@ -72,11 +72,11 @@ export default function ThemeSwitcher() {
       >
         <Button
           isIconOnly
-          aria-label={`Set ${themeIcon == 'dark' ? 'light' : 'dark'} theme`}
+          aria-label={`Set ${themeIcon === 'dark' ? 'light' : 'dark'} theme`}
           variant='ghost'
-          onClick={() => setTheme(themeIcon == 'dark' ? 'light' : 'dark')}
+          onClick={() => setTheme(themeIcon === 'dark' ? 'light' : 'dark')}
         >
-          {isMounted && themeIcon == 'dark' ? <SunFill /> : <MoonFill />}
+          {isMounted && themeIcon === 'dark' ? <SunFill /> : <MoonFill />}
         </Button>
       </PopoverTrigger>
       <PopoverContent

@@ -110,32 +110,31 @@ export default function Tags({
               </Button>
             </div>
           ))}
-        {tagsAvailable ? (
-          tagsAvailable
-            .sort((a, b) => (a.name > b.name ? 1 : -1))
-            .map(tag => {
-              if (!tags.some(usedTag => usedTag.id == tag.id))
-                return (
-                  <div
-                    key={tag.id}
-                    className={`${getTextColor(tag.color)} flex justify-between items-center w-full p-1.5`}
-                  >
-                    {tag.name}
-                    <Button
-                      isIconOnly
-                      className='rounded-lg w-8 h-8 min-w-8 min-h-8'
-                      color='primary'
-                      variant='flat'
-                      onPress={linkTag.bind(null, tag.id)}
+        {tagsAvailable
+          ? tagsAvailable
+              .sort((a, b) => (a.name > b.name ? 1 : -1))
+              .map(tag => {
+                if (tags.some(usedTag => usedTag.id === tag.id)) return null;
+                else
+                  return (
+                    <div
+                      key={tag.id}
+                      className={`${getTextColor(tag.color)} flex justify-between items-center w-full p-1.5`}
                     >
-                      <Plus />
-                    </Button>
-                  </div>
-                );
-            })
-        ) : (
-          <></>
-        )}
+                      {tag.name}
+                      <Button
+                        isIconOnly
+                        className='rounded-lg w-8 h-8 min-w-8 min-h-8'
+                        color='primary'
+                        variant='flat'
+                        onPress={linkTag.bind(null, tag.id)}
+                      >
+                        <Plus />
+                      </Button>
+                    </div>
+                  );
+              })
+          : null}
         <TagInput
           addNewTag={addNewTag}
           className='p-1.5 pl-1'

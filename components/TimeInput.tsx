@@ -63,7 +63,7 @@ export default function TimeInput({
     const hourStr = value.slice(0, -2);
     const minStr = value.slice(-2);
 
-    setTime(hourStr + ':' + minStr);
+    setTime(`${hourStr}:${minStr}`);
 
     const ms = (Number(hourStr) * 60 + Number(minStr)) * 60 * 1000;
 
@@ -80,7 +80,7 @@ export default function TimeInput({
       labelPlacement={labelPlacement}
       size={size}
       tabIndex={tabIndex}
-      value={value != undefined ? formatTime(value) : time}
+      value={value !== undefined ? formatTime(value) : time}
       variant={variant}
       onValueChange={updateTime}
     />

@@ -35,6 +35,7 @@ import { Check, Plus } from 'react-bootstrap-icons';
 import { default as api } from '@/lib/api';
 import { addSnackbar } from '@/components/Snackbar';
 import ListItem from '@/lib/model/listItem';
+import { getBorderColor, getPriorityColor } from '@/lib/color';
 
 import TimeInput from '../TimeInput';
 import DateInput2 from '../DateInput2';
@@ -116,13 +117,9 @@ export default function AddItem({
   function createItem(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const priorityKey =
-      values.priority != 'all' ? values.priority.keys().next().value : 'Low';
+      values.priority === 'all' ? 'Low' : values.priority.keys().next().value;
     const priority =
-      priorityKey == 'High'
-        ? 'High'
-        : priorityKey == 'Medium'
-          ? 'Medium'
-          : 'Low';
+      priorityKey === 'High' || priorityKey === 'Medium' ? priorityKey : 'Low';
 
     values.dateDue?.setHours(23, 59, 59, 0);
     const newItem = { ...values, sectionId, priority, sectionIndex: nextIndex };
@@ -191,16 +188,14 @@ export default function AddItem({
                 variant='underlined'
                 onValueChange={setDueDate}
               />
-            ) : (
-              <></>
-            )}
+            ) : null}
             <Select
               className={'w-28 -mt-4'}
               classNames={{
-                trigger: `${values.priority == 'all' || values.priority.has('High') ? 'border-danger' : values.priority.has('Medium') ? 'border-warning' : 'border-success'}`,
+                trigger: getBorderColor(getPriorityColor(values.priority)),
                 mainWrapper: '-mt-6'
               }}
-              color={`${values.priority == 'all' || values.priority.has('High') ? 'danger' : values.priority.has('Medium') ? 'warning' : values.priority.has('Low') ? 'success' : 'default'}`}
+              color={getPriorityColor(values.priority)}
               label={<span className='ml-2 text-foreground'>Priority</span>}
               labelPlacement='outside'
               placeholder='Select...'
@@ -234,9 +229,7 @@ export default function AddItem({
                 variant='underlined'
                 onValueChange={setExpectedDuration}
               />
-            ) : (
-              <></>
-            )}
+            ) : null}
             <Button
               isIconOnly
               color='primary'
@@ -309,16 +302,16 @@ export default function AddItem({
                         variant='underlined'
                         onValueChange={setDueDate}
                       />
-                    ) : (
-                      <></>
-                    )}
+                    ) : null}
                     <Select
                       className={'w-28 -mt-4'}
                       classNames={{
-                        trigger: `${values.priority == 'all' || values.priority.has('High') ? 'border-danger' : values.priority.has('Medium') ? 'border-warning' : 'border-success'}`,
+                        trigger: getBorderColor(
+                          getPriorityColor(values.priority)
+                        ),
                         mainWrapper: '-mt-6'
                       }}
-                      color={`${values.priority == 'all' || values.priority.has('High') ? 'danger' : values.priority.has('Medium') ? 'warning' : values.priority.has('Low') ? 'success' : 'default'}`}
+                      color={getPriorityColor(values.priority)}
                       label={
                         <span className='ml-2 text-foreground'>Priority</span>
                       }
@@ -353,9 +346,7 @@ export default function AddItem({
                         variant='underlined'
                         onValueChange={setExpectedDuration}
                       />
-                    ) : (
-                      <></>
-                    )}
+                    ) : null}
                   </ModalBody>
                   <ModalFooter>
                     <Button color='danger' variant='light' onPress={onClose}>

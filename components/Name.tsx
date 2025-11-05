@@ -65,7 +65,7 @@ export default function Name({
       />
       <Button
         isIconOnly
-        className={`rounded-lg w-8 h-8 min-w-8 min-h-8 ${newName == prevName ? 'hidden' : ''} ${showLabel ? 'mt-4' : ''} ${classNames?.button}`}
+        className={`rounded-lg w-8 h-8 min-w-8 min-h-8 ${newName === prevName ? 'hidden' : ''} ${showLabel ? 'mt-4' : ''} ${classNames?.button}`}
         color='primary'
         type='submit'
       >

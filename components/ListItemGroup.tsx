@@ -130,22 +130,22 @@ export default function ListItemGroup({
       {items && items.length ? (
         items
           .sort(sortItems.bind(null, false, false))
-          .filter((item, idx) => item.status != 'Completed' && idx < 10)
+          .filter((item, idx) => item.status !== 'Completed' && idx < 10)
           .map((item, idx) => (
             <StaticListItem
               key={item.id}
               addNewTag={addNewTag.bind(null, item.listId)}
               deleteItem={deleteItem.bind(null, idx)}
               hasDueDates={
-                builtLists.find(list => list.id == item.listId)?.hasDueDates ||
+                builtLists.find(list => list.id === item.listId)?.hasDueDates ||
                 false
               }
               hasTimeTracking={
-                builtLists.find(list => list.id == item.listId)
+                builtLists.find(list => list.id === item.listId)
                   ?.hasTimeTracking || false
               }
               item={item}
-              list={builtLists.find(list => list.id == item.listId)}
+              list={builtLists.find(list => list.id === item.listId)}
               members={item.listId ? parsedMembers[item.listId] : []}
               setCompleted={setStatus.bind(null, idx, 'Completed')}
               setPaused={() => setStatus(idx, 'Paused', null)}

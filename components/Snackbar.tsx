@@ -38,8 +38,26 @@ export interface SnackbarMessage {
   color: 'default' | 'success' | 'warning' | 'error';
 }
 
-export let addSnackbar: SnackbarFns['add'];
-export let removeSnackbar: SnackbarFns['remove'];
+export function addSnackbar(
+  message: SnackbarMessage['message'],
+  color: SnackbarMessage['color']
+) {
+  // The whole point is that this may be called before the fn is defined - skipcq: JS-0357
+  if (!_addSnackbar) throw new Error('Snackbar component not yet mounted');
+
+  // The whole point is that this may be called before the fn is defined - skipcq: JS-0357
+  return _addSnackbar(message, color);
+}
+export function removeSnackbar(id: string) {
+  // The whole point is that this may be called before the fn is defined - skipcq: JS-0357
+  if (!_removeSnackbar) throw new Error('Snackbar component not yet mounted');
+
+  // The whole point is that this may be called before the fn is defined - skipcq: JS-0357
+  return _removeSnackbar(id);
+}
+
+let _addSnackbar: SnackbarFns['add'];
+let _removeSnackbar: SnackbarFns['remove'];
 
 export default function Snackbar() {
   const [snackbarQueue, setSnackbarQueue] = useState<SnackbarMessage[]>([]);
@@ -52,7 +70,7 @@ export default function Snackbar() {
     error: 'bg-danger/20 text-danger dark:text-danger-500'
   };
 
-  addSnackbar = useCallback(
+  _addSnackbar = useCallback(
     (
       message: SnackbarMessage['message'],
       color: SnackbarMessage['color'] = 'default'
@@ -69,9 +87,9 @@ export default function Snackbar() {
     []
   );
 
-  removeSnackbar = useCallback((id: string) => {
+  _removeSnackbar = useCallback((id: string) => {
     setSnackbarQueue(snackbarQueue =>
-      snackbarQueue.filter(item => item.id != id)
+      snackbarQueue.filter(item => item.id !== id)
     );
   }, []);
 

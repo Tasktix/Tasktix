@@ -29,7 +29,7 @@ export function getDayOffset(date: Date): number {
   return Math.floor(getDateDiff(date, today) / day);
 }
 
-export function formatDate(date: Date, pretty: boolean = true): string {
+export function formatDate(date: Date, pretty = true): string {
   const distant: Intl.DateTimeFormatOptions = {
     year: 'numeric',
     month: '2-digit',
@@ -59,9 +59,9 @@ export function formatTime(time: number): string {
   let hours = (hoursMs / 3600000).toString();
   let minutes = (minsMs / 60000).toString();
 
-  if (hours.length < 2) hours = '0' + hours;
+  if (hours.length < 2) hours = `0${hours}`;
 
-  if (minutes.length < 2) minutes = '0' + minutes;
+  if (minutes.length < 2) minutes = `0${minutes}`;
 
   return `${hours}:${minutes}`;
 }
@@ -77,8 +77,8 @@ export function dateToInput(date: Date): string {
   let month = (date.getMonth() + 1).toString();
   let day = date.getDate().toString();
 
-  if (month.length < 2) month = '0' + month;
-  if (day.length < 2) day = '0' + day;
+  if (month.length < 2) month = `0${month}`;
+  if (day.length < 2) day = `0${day}`;
 
   return `${year}-${month}-${day}`;
 }
@@ -88,7 +88,7 @@ export function parseTime(time: string): number {
 
   for (const part of timeParts) {
     if (!Number.isInteger(Number(part)))
-      throw Error(`Invalid time to parse: ${time}`);
+      throw new Error(`Invalid time to parse: ${time}`);
   }
 
   if (timeParts.length === 3) {
@@ -107,5 +107,5 @@ export function parseTime(time: string): number {
     return Number(minutes) * 60 * 1000;
   }
 
-  throw Error(`Invalid time to parse: ${time}`);
+  throw new Error(`Invalid time to parse: ${time}`);
 }

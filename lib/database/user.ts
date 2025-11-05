@@ -38,9 +38,7 @@ export async function createUser(user: User): Promise<boolean> {
 
   const result = await execute(sql, user);
 
-  if (!result) return false;
-
-  return true;
+  return Boolean(result);
 }
 
 export async function updateUser(user: User): Promise<boolean> {
@@ -56,9 +54,7 @@ export async function updateUser(user: User): Promise<boolean> {
 
   const result = await execute(sql, user);
 
-  if (!result) return false;
-
-  return true;
+  return Boolean(result);
 }
 
 export async function getUserById(id: string): Promise<User | false> {

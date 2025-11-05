@@ -16,7 +16,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Color, NamedColor, namedColors } from '@/lib/model/color';
+import { Selection } from '@nextui-org/react';
+
+import {
+  Color,
+  NamedColor,
+  namedColors,
+  SemanticColor
+} from '@/lib/model/color';
+
+export function getPriorityColor(priority: Selection): SemanticColor {
+  if (priority === 'all' || priority.has('High')) return 'danger';
+
+  return priority.has('Medium') ? 'warning' : 'success';
+}
 
 export function getTextColor(color: Color): string {
   switch (color) {
@@ -81,6 +94,39 @@ export function getBackgroundColor(color: Color): string {
       return 'bg-blue-500';
     case 'Violet':
       return 'bg-violet-500';
+  }
+}
+
+export function getBorderColor(color: Color): string {
+  switch (color) {
+    case 'danger':
+      return 'border-danger';
+    case 'warning':
+      return 'border-warning';
+    case 'success':
+      return 'border-success';
+    case 'Pink':
+      return 'border-pink-500';
+    case 'Red':
+      return 'border-red-500';
+    case 'Orange':
+      return 'border-orange-500';
+    case 'Amber':
+      return 'border-amber-500';
+    case 'Yellow':
+      return 'border-yellow-500';
+    case 'Lime':
+      return 'border-lime-500';
+    case 'Green':
+      return 'border-green-500';
+    case 'Emerald':
+      return 'border-emerald-500';
+    case 'Cyan':
+      return 'border-cyan-500';
+    case 'Blue':
+      return 'border-blue-500';
+    case 'Violet':
+      return 'border-violet-500';
   }
 }
 

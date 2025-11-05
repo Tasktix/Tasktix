@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import * as ServerError from './ServerError';
+import { BadGateway, Internal } from './ServerError';
 
 describe('Internal', () => {
   test('Returns a response with status 500 and provided headers and JSON-encoded body representing the message and content fields', async () => {
@@ -24,7 +24,7 @@ describe('Internal', () => {
     const content = 'Extra details';
     const headers = { 'X-Custom': 'some header value' };
 
-    const response = ServerError.Internal(message, content, headers);
+    const response = Internal(message, content, headers);
 
     expect(response.status).toBe(500);
     expect(response.statusText).toBe('Internal Server Error');
@@ -39,7 +39,7 @@ describe('Internal', () => {
   test('Returns a response with status 500 and JSON-encoded body representing just the message when content and headers are not provided', async () => {
     const message = 'Error message';
 
-    const response = ServerError.Internal(message);
+    const response = Internal(message);
 
     expect(response.status).toBe(500);
     expect(response.statusText).toBe('Internal Server Error');
@@ -60,9 +60,7 @@ describe('Internal', () => {
       throw new Error('Stringification failed');
     });
 
-    expect(() => ServerError.Internal(message)).toThrow(
-      'Stringification failed'
-    );
+    expect(() => Internal(message)).toThrow('Stringification failed');
 
     Response.json = originalJson;
   });
@@ -74,7 +72,7 @@ describe('BadGateway', () => {
     const content = 'Extra details';
     const headers = { 'X-Custom': 'some header value' };
 
-    const response = ServerError.BadGateway(message, content, headers);
+    const response = BadGateway(message, content, headers);
 
     expect(response.status).toBe(502);
     expect(response.statusText).toBe('Bad Gateway');
@@ -90,7 +88,7 @@ describe('BadGateway', () => {
   test('Returns a response with status 502 and JSON-encoded body representing just the message when content and headers are not provided', async () => {
     const message = 'Error message';
 
-    const response = ServerError.BadGateway(message);
+    const response = BadGateway(message);
 
     expect(response.status).toBe(502);
     expect(response.statusText).toBe('Bad Gateway');
@@ -111,9 +109,7 @@ describe('BadGateway', () => {
       throw new Error('Stringification failed');
     });
 
-    expect(() => ServerError.BadGateway(message)).toThrow(
-      'Stringification failed'
-    );
+    expect(() => BadGateway(message)).toThrow('Stringification failed');
 
     Response.json = originalJson;
   });

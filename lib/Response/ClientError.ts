@@ -23,7 +23,7 @@ export function BadRequest(
 ): Response {
   return Response.json(
     { message, content },
-    { status: 400, statusText: 'Bad Request', headers: headers }
+    { status: 400, statusText: 'Bad Request', headers }
   );
 }
 
@@ -34,7 +34,7 @@ export function Unauthenticated(
 ): Response {
   return Response.json(
     { message, content },
-    { status: 401, statusText: 'Unauthorized', headers: headers }
+    { status: 401, statusText: 'Unauthorized', headers }
   );
 }
 
@@ -45,7 +45,7 @@ export function Forbidden(
 ): Response {
   return Response.json(
     { message, content },
-    { status: 403, statusText: 'Forbidden', headers: headers }
+    { status: 403, statusText: 'Forbidden', headers }
   );
 }
 
@@ -56,7 +56,7 @@ export function NotFound(
 ): Response {
   return Response.json(
     { message, content },
-    { status: 404, statusText: 'Not Found', headers: headers }
+    { status: 404, statusText: 'Not Found', headers }
   );
 }
 
@@ -67,7 +67,7 @@ export function Conflict(
 ): Response {
   return Response.json(
     { message, content },
-    { status: 409, statusText: 'Conflict', headers: headers }
+    { status: 409, statusText: 'Conflict', headers }
   );
 }
 
@@ -78,7 +78,7 @@ export function Gone(
 ): Response {
   return Response.json(
     { message, content },
-    { status: 410, statusText: 'Gone', headers: headers }
+    { status: 410, statusText: 'Gone', headers }
   );
 }
 
@@ -89,6 +89,6 @@ export function PayloadTooLarge(
 ): Response {
   return Response.json(
     { message, content },
-    { status: 413, statusText: 'Payload Too Large', headers: headers }
+    { status: 413, statusText: 'Payload Too Large', headers }
   );
 }

@@ -284,7 +284,7 @@ export default function StaticListItem({
     },
 
     resetTime: () => {
-      const status = _item.status == 'Completed' ? 'Completed' : 'Unstarted';
+      const status = _item.status === 'Completed' ? 'Completed' : 'Unstarted';
 
       api
         .patch(`/item/${_item.id}`, { dateStarted: null, status, elapsedMs: 0 })
@@ -313,9 +313,9 @@ export default function StaticListItem({
           // Update the internal state
           const newTags = structuredClone(tags);
 
-          const tag = tagsAvailable?.find(tag => tag.id == id);
+          const tag = tagsAvailable?.find(tag => tag.id === id);
 
-          if (!tag) throw Error('Could not find tag with id ' + id);
+          if (!tag) throw new Error(`Could not find tag with id ${id}`);
 
           newTags.push(new Tag(tag.name, tag.color, id));
 
@@ -340,7 +340,7 @@ export default function StaticListItem({
           const newTags = structuredClone(tags);
 
           for (let i = 0; i < newTags.length; i++)
-            if (newTags[i].id == id) newTags.splice(i, 1);
+            if (newTags[i].id === id) newTags.splice(i, 1);
           setTags(newTags);
         })
         .catch(err => addSnackbar(err.message, 'error'));
@@ -371,7 +371,7 @@ export default function StaticListItem({
 
   // Start the timer if it should be running when the component is first rendered
   useEffect(() => {
-    if (_item.status == 'In Progress' && !timer.current)
+    if (_item.status === 'In Progress' && !timer.current)
       timer.current = setTimeout(
         updateTime.current,
         minute - (elapsedLive % minute) + 5
@@ -395,21 +395,19 @@ export default function StaticListItem({
       <span className='flex gap-4 items-center justify-between w-2/5'>
         {reorderControls ? (
           <div
-            className={`px-1 py-2 -mx-3 rounded-lg ${_item.status == 'Completed' ? 'text-foreground/20' : 'text-foreground/50 cursor-grab'} text-lg`}
+            className={`px-1 py-2 -mx-3 rounded-lg ${_item.status === 'Completed' ? 'text-foreground/20' : 'text-foreground/50 cursor-grab'} text-lg`}
             onPointerDown={e => {
               e.preventDefault();
-              if (_item.status != 'Completed') reorderControls.start(e);
+              if (_item.status !== 'Completed') reorderControls.start(e);
             }}
           >
             <GripVertical />
           </div>
-        ) : (
-          <></>
-        )}
+        ) : null}
 
         <Checkbox
           className='-mr-3'
-          isSelected={_item.status == 'Completed'}
+          isSelected={_item.status === 'Completed'}
           tabIndex={0}
           onChange={e => {
             if (e.target.checked) set.complete();
@@ -419,7 +417,7 @@ export default function StaticListItem({
 
         <span className='flex gap-4 items-center justify-start grow flex-wrap'>
           <div className='flex grow shrink-0 flex-col w-64 gap-0 -mt-3 -mb-1'>
-            {_item.status == 'Completed' ? (
+            {_item.status === 'Completed' ? (
               <span className='text-sm line-through text-foreground/50 text-nowrap overflow-hidden'>
                 {_item.name}
               </span>
@@ -433,11 +431,11 @@ export default function StaticListItem({
               </span>
             )}
 
-            {_item.status == 'Completed' ? (
+            {_item.status === 'Completed' ? (
               <span className='text-xs text-secondary/75 relative top-3'>
                 {_item.dateCompleted
-                  ? 'Completed ' + formatDate(_item.dateCompleted)
-                  : 'Due ' + (_item.dateDue ? formatDate(_item.dateDue) : '')}
+                  ? `Completed ${formatDate(_item.dateCompleted)}`
+                  : `Due ${_item.dateDue ? formatDate(_item.dateDue) : ''}`}
               </span>
             ) : hasDueDates ? (
               <DateInput
@@ -455,9 +453,7 @@ export default function StaticListItem({
                 value={_item.dateDue || new Date()}
                 onValueChange={set.dueDate}
               />
-            ) : (
-              <></>
-            )}
+            ) : null}
           </div>
 
           {list && (
@@ -476,7 +472,7 @@ export default function StaticListItem({
       </span>
       <span className='flex gap-4 items-center justify-between w-3/5'>
         <Priority
-          isComplete={_item.status == 'Completed'}
+          isComplete={_item.status === 'Completed'}
           priority={_item.priority}
           setPriority={set.priority}
         />
@@ -484,10 +480,10 @@ export default function StaticListItem({
         <Tags
           addNewTag={addNewTag}
           className='hidden lg:flex'
-          isComplete={_item.status == 'Completed'}
+          isComplete={_item.status === 'Completed'}
           linkNewTag={set.linkedNewTag}
           linkTag={set.linkedTag}
-          tags={tagsAvailable.filter(tag => tags.find(t => tag.id == t.id))}
+          tags={tagsAvailable.filter(tag => tags.find(t => tag.id === t.id))}
           tagsAvailable={tagsAvailable}
           unlinkTag={set.unlinkedTag}
         />
@@ -495,28 +491,26 @@ export default function StaticListItem({
         {members.length > 1 ? (
           <Users
             assignees={_item.assignees}
-            isComplete={_item.status == 'Completed'}
+            isComplete={_item.status === 'Completed'}
             itemId={_item.id}
             members={members}
           />
-        ) : (
-          <></>
-        )}
+        ) : null}
 
         <span className='flex gap-4 items-center justify-end grow md:grow-0 shrink-0 justify-self-end'>
           {hasTimeTracking ? (
             <span className='hidden xl:flex gap-4'>
               <span
-                className={`flex gap-4 ${_item.status == 'Completed' ? 'opacity-50' : ''}`}
+                className={`flex gap-4 ${_item.status === 'Completed' ? 'opacity-50' : ''}`}
               >
                 <ExpectedInput
-                  disabled={_item.status == 'Completed'}
+                  disabled={_item.status === 'Completed'}
                   ms={_item.expectedMs}
                   updateMs={set.expectedMs}
                 />
                 <span className='border-r-1 border-content3' />
                 <ElapsedInput
-                  disabled={_item.status == 'Completed'}
+                  disabled={_item.status === 'Completed'}
                   ms={elapsedLive}
                   resetTime={set.resetTime}
                 />
@@ -527,9 +521,7 @@ export default function StaticListItem({
                 status={_item.status}
               />
             </span>
-          ) : (
-            <></>
-          )}
+          ) : null}
 
           <More
             addNewTag={addNewTag}

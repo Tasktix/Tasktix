@@ -23,7 +23,7 @@ export function OK(
 ): Response {
   return Response.json(
     { message, content },
-    { status: 200, statusText: 'OK', headers: headers }
+    { status: 200, statusText: 'OK', headers }
   );
 }
 

@@ -81,19 +81,19 @@ export default function InputElement({
           size='sm'
           onSelectionChange={handleInput}
         >
-          {inputOption.type == 'Select' ? (
-            inputOption.selectOptions?.map(option => (
-              <SelectItem
-                key={option.name}
-                className={option.color ? '!' + getTextColor(option.color) : ''}
-                value={option.name}
-              >
-                {option.name}
-              </SelectItem>
-            ))
-          ) : (
-            <></>
-          )}
+          {inputOption.type === 'Select'
+            ? inputOption.selectOptions?.map(option => (
+                <SelectItem
+                  key={option.name}
+                  className={
+                    option.color ? `!${getTextColor(option.color)}` : ''
+                  }
+                  value={option.name}
+                >
+                  {option.name}
+                </SelectItem>
+              ))
+            : null}
         </Select>
       );
 

@@ -80,9 +80,7 @@ export default function Sidebar({ lists }: { lists: List[] }) {
           ))}
         {addingList ? (
           <NewItem finalize={finalizeNew} remove={removeNew} />
-        ) : (
-          <></>
-        )}
+        ) : null}
       </NavSection>
     </aside>
   );
@@ -117,7 +115,7 @@ export function NavItem({
   endContent?: ReactNode;
 }) {
   const pathname = usePathname();
-  const isActive = pathname == link;
+  const isActive = pathname === link;
 
   return (
     <span

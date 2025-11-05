@@ -1,4 +1,4 @@
-# <center>Tasktix</center>
+# Tasktix
 
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=Tasktix_Tasktix&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=Tasktix_Tasktix)
 [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=Tasktix_Tasktix&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=Tasktix_Tasktix)

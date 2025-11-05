@@ -17,8 +17,7 @@
  */
 
 import { ClientError, ServerError, Success } from '@/lib/Response';
-import { getIsListAssignee } from '@/lib/database/list';
-import { createTag } from '@/lib/database/list';
+import { createTag, getIsListAssignee } from '@/lib/database/list';
 import Tag, { ZodTag } from '@/lib/model/tag';
 import { getUser } from '@/lib/session';
 

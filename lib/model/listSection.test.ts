@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import * as generateIdModule from '@/lib/generateId';
+import * as generateIdModule from '@/lib/generateId'; // Needed for mocking - skipcq: JS-C1003
 
 import ListItem from './listItem';
 import ListSection from './listSection';

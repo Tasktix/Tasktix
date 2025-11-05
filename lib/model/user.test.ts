@@ -16,8 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import * as generateIdModule from '@/lib/generateId';
-import * as colorModule from '@/lib/color';
+import * as generateIdModule from '@/lib/generateId'; // Needed for mocking - skipcq: JS-C1003
+import * as colorModule from '@/lib/color'; // Needed for mocking - skipcq: JS-C1003
 
 import User from './user';
 

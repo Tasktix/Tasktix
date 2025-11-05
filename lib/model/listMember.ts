@@ -27,10 +27,10 @@ export default class ListMember {
 
   constructor(
     user: User,
-    canAdd: boolean = false,
-    canRemove: boolean = false,
-    canComplete: boolean = false,
-    canAssign: boolean = false
+    canAdd = false,
+    canRemove = false,
+    canComplete = false,
+    canAssign = false
   ) {
     this.user = user;
     this.canAdd = canAdd;

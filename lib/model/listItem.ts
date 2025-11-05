@@ -102,7 +102,7 @@ export default class ListItem {
     this.name = name;
     this.status = status;
     this.priority = priority;
-    this.isUnclear = !!isUnclear;
+    this.isUnclear = Boolean(isUnclear);
     this.expectedMs = expectedMs;
     this.elapsedMs = elapsedMs;
     this.sectionIndex = sectionIndex;
