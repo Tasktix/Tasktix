@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Button, Input } from '@nextui-org/react';
+import { Button, Input } from "@heroui/react";
 import { useEffect, useState } from 'react';
 import { Check } from 'react-bootstrap-icons';
 

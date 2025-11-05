@@ -26,7 +26,7 @@ import {
   Tab,
   Tabs,
   useDisclosure
-} from '@nextui-org/react';
+} from "@heroui/react";
 import { useContext } from 'react';
 import { TrashFill, GearWideConnected } from 'react-bootstrap-icons';
 import { useRouter } from 'next/navigation';

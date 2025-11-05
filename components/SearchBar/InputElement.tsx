@@ -22,7 +22,7 @@ import {
   SelectItem,
   SharedSelection,
   Switch
-} from '@nextui-org/react';
+} from "@heroui/react";
 import { ReactElement } from 'react';
 
 import DateInput from '@/components/DateInput';

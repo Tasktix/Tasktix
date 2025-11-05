@@ -22,7 +22,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger
-} from '@nextui-org/react';
+} from "@heroui/react";
 import { Check } from 'react-bootstrap-icons';
 
 import TimeInput from '../TimeInput';

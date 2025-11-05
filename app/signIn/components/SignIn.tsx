@@ -18,7 +18,7 @@
 
 'use client';
 
-import { Button, Input } from '@nextui-org/react';
+import { Button, Input } from "@heroui/react";
 import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
 

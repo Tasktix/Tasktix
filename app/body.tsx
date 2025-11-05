@@ -25,7 +25,7 @@ import {
   NavbarBrand,
   NavbarContent,
   NavbarItem
-} from '@nextui-org/react';
+} from "@heroui/react";
 import { useRouter } from 'next/navigation';
 import { ReactNode, useState } from 'react';
 import Image from 'next/image';

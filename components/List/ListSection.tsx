@@ -29,7 +29,7 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownTrigger
-} from '@nextui-org/react';
+} from "@heroui/react";
 import { AnimatePresence, motion, Reorder } from 'framer-motion';
 
 import { ListItem, StaticListItem } from '@/components/ListItem';

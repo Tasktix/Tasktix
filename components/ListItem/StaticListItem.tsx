@@ -17,7 +17,7 @@
  */
 
 import { useEffect, useRef, useState } from 'react';
-import { Checkbox, Chip } from '@nextui-org/react';
+import { Checkbox, Chip } from "@heroui/react";
 import { DragControls } from 'framer-motion';
 import { CardChecklist, GripVertical } from 'react-bootstrap-icons';
 import Link from 'next/link';

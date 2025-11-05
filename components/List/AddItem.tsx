@@ -28,7 +28,7 @@ import {
   SelectItem,
   Selection,
   useDisclosure
-} from '@nextui-org/react';
+} from "@heroui/react";
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import { Check, Plus } from 'react-bootstrap-icons';
 

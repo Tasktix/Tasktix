@@ -19,7 +19,7 @@
 'use client';
 
 import React from 'react';
-import { Card, CardBody, Tabs, Tab } from '@nextui-org/react';
+import { Card, CardBody, Tabs, Tab } from "@heroui/react";
 
 import SignUp from './components/SignUp';
 import SignIn from './components/SignIn';

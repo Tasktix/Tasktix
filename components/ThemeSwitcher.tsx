@@ -25,7 +25,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger
-} from '@nextui-org/react';
+} from "@heroui/react";
 import { useTheme } from 'next-themes';
 import { useEffect, useRef, useState } from 'react';
 import { Display, MoonFill, SunFill } from 'react-bootstrap-icons';

@@ -23,7 +23,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger
-} from '@nextui-org/react';
+} from "@heroui/react";
 import { useEffect, useState } from 'react';
 
 import { formatDate } from '@/lib/date';

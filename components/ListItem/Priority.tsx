@@ -21,7 +21,7 @@ import {
   SelectItem,
   Selection,
   SlotsToClasses
-} from '@nextui-org/react';
+} from "@heroui/react";
 
 import ListItem from '@/lib/model/listItem';
 
