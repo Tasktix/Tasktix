@@ -16,9 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-module.exports =  {
+module.exports = {
   plugins: {
     "@tailwindcss/postcss": {},
-    autoprefixer: {}
-  }
+  },
 };

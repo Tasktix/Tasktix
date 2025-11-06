@@ -26,6 +26,7 @@ import {
   NavbarContent,
   NavbarItem
 } from "@heroui/react";
+
 import { useRouter } from 'next/navigation';
 import { ReactNode, useState } from 'react';
 import Image from 'next/image';
@@ -53,13 +54,12 @@ export function setLoggedOut() {
 let _setLoggedIn: () => void;
 let _setLoggedOut: () => void;
 
-export default function Body({
-  children,
-  isLoggedInAtStart
-}: {
+interface BodyProps {
   children: ReactNode;
   isLoggedInAtStart: boolean;
-}) {
+}
+
+export default function Body({ children, isLoggedInAtStart}: BodyProps){
   const [isLoggedIn, setIsLoggedIn] = useState(isLoggedInAtStart);
 
   _setLoggedIn = () => setIsLoggedIn(true);
