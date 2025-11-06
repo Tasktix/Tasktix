@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "dev": "next dev",
     "start": "docker compose build && docker compose watch",
     "stop": "docker compose stop",
     "teardown": "docker compose down",
