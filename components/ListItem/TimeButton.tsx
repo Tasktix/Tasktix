@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Button } from "@heroui/react";
+import { Button } from '@heroui/react';
 import { PauseFill, PlayFill } from 'react-bootstrap-icons';
 
 import ListItem from '@/lib/model/listItem';

@@ -20,7 +20,7 @@
 
 import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, Input } from "@heroui/react";
+import { Button, Input } from '@heroui/react';
 
 import Message, { InputMessage } from '@/components/InputMessage';
 import {

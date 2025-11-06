@@ -22,7 +22,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger
-} from "@heroui/react";
+} from '@heroui/react';
 import { ArrowCounterclockwise } from 'react-bootstrap-icons';
 
 import Time from './Time';

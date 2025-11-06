@@ -28,7 +28,7 @@ import {
   SelectItem,
   Selection,
   useDisclosure
-} from "@heroui/react";
+} from '@heroui/react';
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import { Check, Plus } from 'react-bootstrap-icons';
 
@@ -205,13 +205,13 @@ export default function AddItem({
               variant='underlined'
               onSelectionChange={setPriority}
             >
-              <SelectItem key='High' color='danger' value='High'>
+              <SelectItem key='High' color='danger'>
                 High
               </SelectItem>
-              <SelectItem key='Medium' color='warning' value='Medium'>
+              <SelectItem key='Medium' color='warning'>
                 Medium
               </SelectItem>
-              <SelectItem key='Low' color='success' value='Low'>
+              <SelectItem key='Low' color='success'>
                 Low
               </SelectItem>
             </Select>
@@ -322,13 +322,13 @@ export default function AddItem({
                       variant='underlined'
                       onSelectionChange={setPriority}
                     >
-                      <SelectItem key='High' color='danger' value='High'>
+                      <SelectItem key='High' color='danger'>
                         High
                       </SelectItem>
-                      <SelectItem key='Medium' color='warning' value='Medium'>
+                      <SelectItem key='Medium' color='warning'>
                         Medium
                       </SelectItem>
-                      <SelectItem key='Low' color='success' value='Low'>
+                      <SelectItem key='Low' color='success'>
                         Low
                       </SelectItem>
                     </Select>

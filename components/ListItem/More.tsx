@@ -24,7 +24,7 @@ import {
   ModalContent,
   ModalHeader,
   useDisclosure
-} from "@heroui/react";
+} from '@heroui/react';
 import { ThreeDots, TrashFill } from 'react-bootstrap-icons';
 
 import { NamedColor } from '@/lib/model/color';

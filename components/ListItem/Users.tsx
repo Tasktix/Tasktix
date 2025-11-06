@@ -24,7 +24,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger
-} from "@heroui/react";
+} from '@heroui/react';
 import { useState } from 'react';
 import { PeopleFill, Plus, X } from 'react-bootstrap-icons';
 

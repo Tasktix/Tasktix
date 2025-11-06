@@ -22,7 +22,7 @@ import {
   SelectItem,
   SharedSelection,
   Switch
-} from "@heroui/react";
+} from '@heroui/react';
 import { ReactElement } from 'react';
 
 import DateInput from '@/components/DateInput';
@@ -83,16 +83,15 @@ export default function InputElement({
         >
           {inputOption.type === 'Select'
             ? inputOption.selectOptions?.map(option => (
-                <SelectItem
-                  key={option.name}
-                  className={
-                    option.color ? `!${getTextColor(option.color)}` : ''
-                  }
-                  value={option.name}
-                >
-                  {option.name}
-                </SelectItem>
-              ))
+              <SelectItem
+                key={option.name}
+                className={
+                  option.color ? `!${getTextColor(option.color)}` : ''
+                }
+              >
+                {option.name}
+              </SelectItem>
+            ))
             : null}
         </Select>
       );

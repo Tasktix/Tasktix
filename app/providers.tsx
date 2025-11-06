@@ -32,6 +32,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     () => import('@heroui/react').then(mod => mod.HeroUIProvider),
     { ssr: false }
   );
+  
   return (
     <HeroUIProvider navigate={router.push.bind(router)}>
       <ThemeProvider attribute='class' defaultTheme='system'>

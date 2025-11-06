@@ -21,7 +21,7 @@
 import { setTimeout } from 'timers';
 
 import { ReactNode, useContext, useState } from 'react';
-import { Button, Input, Link } from "@heroui/react";
+import { Button, Input, Link } from '@heroui/react';
 import { Check, Plus } from 'react-bootstrap-icons';
 import { usePathname, useRouter } from 'next/navigation';
 

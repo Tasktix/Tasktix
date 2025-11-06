@@ -25,7 +25,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger
-} from "@heroui/react";
+} from '@heroui/react';
 import { useState } from 'react';
 import { X, Plus, Tags as TagsIcon } from 'react-bootstrap-icons';
 

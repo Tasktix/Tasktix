@@ -18,7 +18,7 @@
 
 'use client';
 
-import { Input } from "@heroui/react";
+import { Input } from '@heroui/react';
 import { useState } from 'react';
 
 import { formatTime } from '@/lib/date';

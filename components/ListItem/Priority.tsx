@@ -21,7 +21,7 @@ import {
   SelectItem,
   Selection,
   SlotsToClasses
-} from "@heroui/react";
+} from '@heroui/react';
 
 import ListItem from '@/lib/model/listItem';
 
@@ -82,13 +82,13 @@ export default function Priority({
           );
         }}
       >
-        <SelectItem key='High' color='danger' value='High'>
+        <SelectItem key='High' color='danger'>
           High
         </SelectItem>
-        <SelectItem key='Medium' color='warning' value='Medium'>
+        <SelectItem key='Medium' color='warning'>
           Medium
         </SelectItem>
-        <SelectItem key='Low' color='success' value='Low'>
+        <SelectItem key='Low' color='success'>
           Low
         </SelectItem>
       </Select>
