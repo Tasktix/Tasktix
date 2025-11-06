@@ -93,14 +93,3 @@ const config: Config = {
 };
 
 export default config;
-
-// Safelists are no longer supported in Tailwind v4, if necessary will need to find workaround
-// safelist: [
-//   {
-//     pattern:
-//       /!?(bg|text)-(pink|red|orange|amber|yellow|lime|green|emerald|cyan|blue|violet)-500/
-//   },
-//   {
-//     pattern: /!?(bg|text)-(danger|warning|success)/
-//   }
-// ]

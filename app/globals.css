@@ -1,2 +1,4 @@
 @import "tailwindcss";
-@config "../tailwind.config.ts"
+@config "../tailwind.config.ts";
+@source inline('!{,}{bg,text}-{danger,warning,success}');
+@source inline('!{,}{bg,text}-{pink,red,orange,amber,yellow,lime,green,emerald,cyan,blue,violet}-500');
