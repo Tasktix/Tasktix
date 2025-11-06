@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "docker compose up --build --watch",
+    "start": "docker compose build && docker compose watch",
     "stop": "docker compose stop",
     "teardown": "docker compose down",
     "test": "npm run test:jest && npm run test:cy",
@@ -44,6 +44,9 @@
   },
   "devDependencies": {
     "@testing-library/cypress": "^10.1.0",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
     "@types/jest": "^29.5.14",
     "@types/jsdom": "^21.1.7",
     "@types/node": "^20.19.2",
