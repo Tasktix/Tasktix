@@ -21,7 +21,7 @@ import z from 'zod';
 import { randomNamedColor } from '../color';
 import { generateId } from '../generateId';
 
-import { NamedColor } from './color';
+import { NamedColor, namedColors } from './color';
 
 export const ZodUser = z.strictObject({
   id: z.string().length(16),
@@ -31,7 +31,8 @@ export const ZodUser = z.strictObject({
     .max(32)
     .regex(/^[a-zA-Z0-9_]*$/),
   email: z.email().max(128),
-  password: z.string().min(10).max(128)
+  password: z.string().min(10).max(128),
+  color: z.enum(namedColors)
 });
 
 export default class User {

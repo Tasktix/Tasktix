@@ -18,52 +18,58 @@
 
 import { Success, ClientError, ServerError } from '@/lib/Response';
 import {
-  createUser,
   getUserByUsername,
-  getUserByEmail
+  getUserByEmail,
+  updateUser
 } from '@/lib/database/user';
-import User, { ZodUser } from '@/lib/model/user';
-import { hash } from '@/lib/security/hash';
+import { ZodUser } from '@/lib/model/user';
+import { getUser } from '@/lib/session';
 
 export const dynamic = 'force-dynamic' as const; // defaults to auto
 
-const PostBody = ZodUser.omit({ id: true, color: true });
+const PatchBody = ZodUser.omit({ id: true, password: true }).partial();
 
 /**
- * Create a new user with `username`, `email`, and `password`
+ * Update a user's `username`, `email`, and/or `color`
  */
-export async function POST(request: Request) {
+export async function PATCH(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
   try {
-    const parseResult = PostBody.safeParse(await request.json());
+    const user = await getUser();
+
+    if (!user) return ClientError.Unauthenticated('Not logged in');
+    if (user.id !== params.id)
+      return ClientError.Forbidden('Insufficient permissions');
+    const parseResult = PatchBody.safeParse(await request.json());
 
     if (!parseResult.success)
       return ClientError.BadRequest('Invalid request body');
 
     const requestBody = parseResult.data;
 
-    const username = requestBody.username;
-    const email = requestBody.email;
-    const password = requestBody.password;
+    if (requestBody.username) {
+      if (await getUserByUsername(requestBody.username))
+        return ClientError.BadRequest('Username unavailable');
+      user.username = requestBody.username;
+    }
 
-    if (await getUserByUsername(username))
-      return ClientError.BadRequest('Username unavailable');
-    if (await getUserByEmail(email))
-      return ClientError.BadRequest('Another account already uses this email');
+    if (requestBody.email) {
+      if (await getUserByEmail(requestBody.email))
+        return ClientError.BadRequest(
+          'Another account already uses this email'
+        );
+      user.email = requestBody.email;
+    }
 
-    const user = new User(
-      username,
-      email,
-      await hash(password),
-      new Date(),
-      new Date(),
-      {}
-    );
+    if (requestBody.color) user.color = requestBody.color;
 
-    const result = await createUser(user);
+    const result = await updateUser(user);
 
-    if (!result) return ServerError.Internal('Could not create user');
+    if (!result) return ServerError.Internal('Could not update user');
 
-    return Success.Created('User Created', `/api/user/${user.id}`);
+    return Success.OK('User updated');
   } catch (error: unknown) {
     return ServerError.Internal(error?.toString() ?? 'Internal Server Error');
   }
