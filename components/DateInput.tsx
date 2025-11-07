@@ -18,12 +18,7 @@
 
 'use client';
 
-import {
-  Button,
-  Popover,
-  PopoverContent,
-  PopoverTrigger
-} from '@heroui/react';
+import { Button, Popover, PopoverContent, PopoverTrigger } from '@heroui/react';
 import { useEffect, useState } from 'react';
 
 import { formatDate } from '@/lib/date';

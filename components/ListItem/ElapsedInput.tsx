@@ -17,12 +17,7 @@
  */
 
 import { useState } from 'react';
-import {
-  Button,
-  Popover,
-  PopoverContent,
-  PopoverTrigger
-} from '@heroui/react';
+import { Button, Popover, PopoverContent, PopoverTrigger } from '@heroui/react';
 import { ArrowCounterclockwise } from 'react-bootstrap-icons';
 
 import Time from './Time';

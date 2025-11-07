@@ -16,12 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {
-  Select,
-  SelectItem,
-  Selection,
-  SlotsToClasses
-} from '@heroui/react';
+import { Select, SelectItem, Selection, SlotsToClasses } from '@heroui/react';
 
 import ListItem from '@/lib/model/listItem';
 

@@ -18,12 +18,7 @@
 
 'use client';
 
-import {
-  Button,
-  Popover,
-  PopoverContent,
-  PopoverTrigger
-} from '@heroui/react';
+import { Button, Popover, PopoverContent, PopoverTrigger } from '@heroui/react';
 import { useState } from 'react';
 import { PaletteFill, X } from 'react-bootstrap-icons';
 
