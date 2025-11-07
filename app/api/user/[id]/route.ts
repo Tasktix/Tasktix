@@ -31,6 +31,11 @@ const PatchBody = ZodUser.omit({ id: true, password: true }).partial();
 
 /**
  * Update a user's `username`, `email`, and/or `color`
+ *
+ * @param params.id The user to update (must match the logged-in user)
+ * @param request.username The new username to use
+ * @param request.email The new email address to use
+ * @param request.color The new profile color to use
  */
 export async function PATCH(
   request: Request,
