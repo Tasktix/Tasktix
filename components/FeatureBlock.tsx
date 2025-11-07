@@ -24,7 +24,7 @@ import { useTheme } from 'next-themes';
 type FeatureBlockProps = {
   title: string;
   description: string;
-  imageBaseName: string; 
+  imageBaseName: string;
   index: number;
 };
 
@@ -41,8 +41,6 @@ export default function FeatureBlock({
   // the file naming convention in /public/screenshots (camelCase + ".dark/.light").
   const normalizedBase = imageBaseName
     .trim()
-    .replaceAll('_', ' ')
-    .replaceAll('-', ' ')
     .split(' ')
     .filter(Boolean)
     .map((word, wordIndex) => {

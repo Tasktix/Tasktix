@@ -23,19 +23,19 @@ const FEATURES = [
     title: 'Time Tracking',
     description:
       'Track expected vs elapsed time for every task with quick Start and Pause buttons.',
-    imageBaseName: 'Time-Tracking'
+    imageBaseName: 'timeTracking'
   },
   {
     title: 'Tag System',
     description:
       'Organize tasks with customizable colored tags for subjects, projects, or contexts.',
-    imageBaseName: 'Tag-System'
+    imageBaseName: 'tagSystem'
   },
   {
     title: 'Priority System',
     description:
       'Mark tasks as Low, Medium, or High priority to stay focused on what matters most.',
-    imageBaseName: 'Priority'
+    imageBaseName: 'priority'
   },
   {
     title: 'Filtering Feature',
@@ -47,18 +47,18 @@ const FEATURES = [
     title: 'Manual Sorting',
     description:
       'Reorder tasks manually by dragging and dropping them within each section.',
-    imageBaseName: 'Sorting'
+    imageBaseName: 'sorting'
   }
 ];
 
 export default function Page() {
   return (
-    <main className='mx-auto max-w-6xl px-4 md:px-6 py-12 space-y-24 bg-white dark:bg-[#0d1117]'>
+    <main className='mx-auto max-w-6xl px-4 md:px-6 py-12 space-y-24'>
       <header className='text-center mb-12'>
-        <h1 className='text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-gray-100'>
+        <h1 className='text-3xl md:text-4xl font-extrabold '>
           Tasktix — Smarter Task Tracking
         </h1>
-        <p className='mt-3 text-gray-600 dark:text-gray-300 text-lg'>
+        <p className='mt-3 text-lg'>
           Stay organized with time tracking, tagging, and smart filtering.
         </p>
       </header>
