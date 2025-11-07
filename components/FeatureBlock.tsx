@@ -24,7 +24,7 @@ import { useTheme } from 'next-themes';
 type FeatureBlockProps = {
   title: string;
   description: string;
-  imageBaseName: string; // e.g., "Time Tracking"
+  imageBaseName: string; 
   index: number;
 };
 
@@ -61,7 +61,6 @@ export default function FeatureBlock({
       className={`flex flex-col items-center gap-8 md:gap-16
                   md:flex-row ${index % 2 === 1 ? 'md:flex-row-reverse' : ''}`}
     >
-      {/* IMAGE */}
       <div className='w-full md:w-1/2'>
         <div className='rounded-xl border shadow-md overflow-hidden border-gray-200 dark:border-gray-800'>
           <Image
@@ -74,8 +73,6 @@ export default function FeatureBlock({
           />
         </div>
       </div>
-
-      {/* TEXT */}
       <div className='w-full md:w-1/2 text-center md:text-left'>
         <h2 className='text-2xl md:text-3xl font-semibold text-gray-900 dark:text-gray-100'>
           {title}
