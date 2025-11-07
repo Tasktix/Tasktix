@@ -163,10 +163,10 @@ export default function List({
       </span>
 
       <div className="flex gap-4 items-center">
-        <Button color='primary' variant='flat'>
+        <Button color='primary' variant='light'>
           List View
         </Button>
-        <Button color='primary' variant='light'>
+        <Button color='primary' variant='flat'>
           Board View
         </Button>
       </div>
