@@ -37,7 +37,24 @@ export default function FeatureBlock({
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === 'dark';
 
-  const imageSrc = `/screenshots/${imageBaseName} ${isDark ? 'Dark' : 'Light'}.png`;
+  // Normalize provided base name (e.g., "Time-Tracking", "Tag System") to match
+  // the file naming convention in /public/screenshots (camelCase + ".dark/.light").
+  const normalizedBase = imageBaseName
+    .trim()
+    .replaceAll('_', ' ')
+    .replaceAll('-', ' ')
+    .split(' ')
+    .filter(Boolean)
+    .map((word, wordIndex) => {
+      const lower = word.toLowerCase();
+
+      return wordIndex === 0
+        ? lower
+        : lower.charAt(0).toUpperCase() + lower.slice(1);
+    })
+    .join('');
+
+  const imageSrc = `/screenshots/${normalizedBase}.${isDark ? 'dark' : 'light'}.png`;
 
   return (
     <section

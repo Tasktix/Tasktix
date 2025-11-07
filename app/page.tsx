@@ -23,13 +23,13 @@ const FEATURES = [
     title: 'Time Tracking',
     description:
       'Track expected vs elapsed time for every task with quick Start and Pause buttons.',
-    imageBaseName: 'Time Tracking'
+    imageBaseName: 'Time-Tracking'
   },
   {
     title: 'Tag System',
     description:
       'Organize tasks with customizable colored tags for subjects, projects, or contexts.',
-    imageBaseName: 'Tag System'
+    imageBaseName: 'Tag-System'
   },
   {
     title: 'Priority System',
@@ -41,7 +41,7 @@ const FEATURES = [
     title: 'Filtering Feature',
     description:
       'Filter tasks by tag, priority, or due date to manage your workload efficiently.',
-    imageBaseName: 'Filtring'
+    imageBaseName: 'filtering'
   },
   {
     title: 'Manual Sorting',
