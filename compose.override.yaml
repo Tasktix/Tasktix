@@ -30,6 +30,7 @@ services:
       - DB_DATABASE=${DB_DATABASE}
       - DB_USER=root
       - DB_PASSWORD=${DB_PASSWORD}
+      - DATABASE_URL=mysql://root:${DB_PASSWORD}@mariadb/${DB_DATABASE}
 
   mariadb:
     volumes:
