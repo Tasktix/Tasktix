@@ -49,3 +49,40 @@ const subject = prTitle.split(':')[1]?.trim();
 if (subject[0] !== subject[0].toLowerCase()) {
   fail('❌ PR title should start with lowercase letter after type/scope.');
 }
+
+const modifiedSchema = danger.git.modified_files.includes(
+  'prisma/schema.prisma'
+);
+const addedMigrations = danger.git.created_files.filter(f =>
+  f.startsWith('prisma/migrations/')
+);
+const deletedMigrations = danger.git.deleted_files.filter(f =>
+  f.startsWith('prisma/migrations/')
+);
+const modifiedMigrations = danger.git.modified_files.filter(f =>
+  f.startsWith('prisma/migrations/')
+);
+
+if (modifiedSchema && addedMigrations.length === 0) {
+  fail(
+    '❌ `prisma/schema.prisma` was modified, but no new migration files were added. Run `npm run prisma:migrate` and commit the generated files.'
+  );
+}
+
+if (!modifiedSchema && addedMigrations.length > 0) {
+  warn(
+    "⚠️ New Prisma migration files were added, but `prisma/schema.prisma` wasn't changed. Did you forget to update the schema?"
+  );
+}
+
+if (deletedMigrations.length > 0) {
+  fail(
+    `❌ Migration files were deleted: \n${deletedMigrations.map(f => `- ${f}`).join('\n')}\nPrisma migrations should never be removed from version control.`
+  );
+}
+
+if (modifiedMigrations.length > 0) {
+  warn(
+    `⚠️ Existing migration files were modified: \n${modifiedMigrations.map(f => `- ${f}`).join('\n')}\nMigration files should be immutable once committed.`
+  );
+}
