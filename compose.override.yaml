@@ -34,7 +34,6 @@ services:
 
   mariadb:
     volumes:
-      - ./scripts/database/create.sql:/docker-entrypoint-initdb.d/create.sql:ro
       - db_data:/var/lib/mysql
 
 volumes:
