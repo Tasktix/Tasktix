@@ -119,7 +119,7 @@ export function NavItem({
 
   return (
     <span
-      className={`pl-2 my-1 flex items-center justify-between border-l-2${isActive ? ' border-primary' : ' border-transparent'} text-sm`}
+      className={`pl-2 my-1 flex items-center justify-between border-l-2 ${isActive ? 'border-primary' : 'border-transparent'} text-sm`}
     >
       <Link color='foreground' href={link}>
         {name}

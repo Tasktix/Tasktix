@@ -150,7 +150,7 @@ export default function AddItem({
 
   return (
     <span>
-      <span className='hidden lg:flex justify-between items-center overflow-y-visible'>
+      <span className='hidden xl:flex justify-between items-center overflow-y-visible'>
         <span className='overflow-x-clip'>
           <form
             className={`flex gap-4 pr-4 transition-transform${isSliderOpen ? '' : ' translate-x-full'}`}
@@ -257,7 +257,7 @@ export default function AddItem({
           />
         </Button>
       </span>
-      <span className='flex lg:hidden'>
+      <span className='flex xl:hidden'>
         <Button
           isIconOnly
           color='primary'
