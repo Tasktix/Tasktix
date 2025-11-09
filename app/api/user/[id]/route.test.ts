@@ -189,7 +189,7 @@ describe('PATCH', () => {
     );
 
     expect(response.status).toBe(400);
-    expect(updateUser).toHaveBeenCalledTimes(0);
+    expect(updateUser).not.toHaveBeenCalled();
   });
 
   test('Rejects invalid username updates', async () => {
@@ -204,7 +204,7 @@ describe('PATCH', () => {
     );
 
     expect(response.status).toBe(400);
-    expect(updateUser).toHaveBeenCalledTimes(0);
+    expect(updateUser).not.toHaveBeenCalled();
   });
 
   test('Rejects invalid email updates', async () => {
@@ -219,7 +219,7 @@ describe('PATCH', () => {
     );
 
     expect(response.status).toBe(400);
-    expect(updateUser).toHaveBeenCalledTimes(0);
+    expect(updateUser).not.toHaveBeenCalled();
   });
 
   test('Rejects invalid color updates', async () => {
@@ -234,6 +234,6 @@ describe('PATCH', () => {
     );
 
     expect(response.status).toBe(400);
-    expect(updateUser).toHaveBeenCalledTimes(0);
+    expect(updateUser).not.toHaveBeenCalled();
   });
 });
