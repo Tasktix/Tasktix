@@ -14,6 +14,7 @@
     "prisma:introspect": "prisma db pull",
     "prisma:migrate": "echo \"Migration name: \" && read NAME && prisma migrate dev --create-only --name ${NAME}",
     "prisma:apply": "prisma migrate dev",
+    "prisma:generate": "prisma generate",
     "prisma:deploy": "prisma migrate deploy",
     "prisma:reset": "prisma migrate reset",
     "test:jest": "jest",
@@ -25,11 +26,11 @@
   },
   "dependencies": {
     "@nextui-org/react": "^2.6.11",
+    "@prisma/client": "^6.19.0",
     "framer-motion": "^11.18.2",
     "mysql2": "^3.14.1",
     "next": "^14.2.30",
     "next-themes": "^0.3.0",
-    "prisma": "^6.19.0",
     "react": "^18.3.1",
     "react-bootstrap-icons": "^1.11.6",
     "react-dom": "^18.3.1",
@@ -63,6 +64,7 @@
     "jest-environment-jsdom": "^29.7.0",
     "postcss": "^8.5.6",
     "prettier": "3.3.3",
+    "prisma": "^6.19.0",
     "tailwindcss": "^3.4.17",
     "ts-jest": "^29.4.0",
     "typescript": "^5.8.3"
