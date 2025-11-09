@@ -36,8 +36,8 @@ enum Status {
 
 model User {
   id           String   @id @db.Char(16)
-  username     String   @db.VarChar(32)
-  email        String   @db.VarChar(128)
+  username     String   @unique @db.VarChar(32)
+  email        String   @unique @db.VarChar(128)
   password     String   @db.Char(205)
   color        Color
   dateCreated  DateTime @db.DateTime(0)
@@ -105,6 +105,7 @@ model Item {
   parent    Item?          @relation("family", fields: [parentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   section   ListSection    @relation(fields: [sectionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
+  @@unique([sectionId, parentId, sectionIndex])
   @@index([sectionId])
   @@index([parentId])
 }
