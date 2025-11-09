@@ -1,4 +1,6 @@
 @import "tailwindcss";
 @config "../tailwind.config.ts";
+
+/* Apply safelist for programatically used classes see https://tailwindcss.com/docs/detecting-classes-in-source-files */
 @source inline('!{,}{bg,text}-{danger,warning,success}');
 @source inline('!{,}{bg,text}-{pink,red,orange,amber,yellow,lime,green,emerald,cyan,blue,violet}-500');

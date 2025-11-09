@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Selection } from '@nextui-org/react';
+import { Selection } from '@heroui/react';
 
 import {
   Color,

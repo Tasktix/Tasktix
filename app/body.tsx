@@ -58,7 +58,10 @@ interface BodyProps {
   isLoggedInAtStart: boolean;
 }
 
-export default function Body({ children, isLoggedInAtStart }: BodyProps) {
+export default function Body({
+  children,
+  isLoggedInAtStart
+}: Readonly<BodyProps>) {
   const [isLoggedIn, setIsLoggedIn] = useState(isLoggedInAtStart);
 
   _setLoggedIn = () => setIsLoggedIn(true);
