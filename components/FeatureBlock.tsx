@@ -19,8 +19,6 @@
 'use client';
 
 import Image from 'next/image';
-import { useTheme } from 'next-themes';
-
 type FeatureBlockProps = {
   title: string;
   description: string;
@@ -34,9 +32,6 @@ export default function FeatureBlock({
   imageBaseName,
   index
 }: FeatureBlockProps) {
-  const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === 'dark';
-
   // Normalize provided base name (e.g., "Time-Tracking", "Tag System") to match
   // the file naming convention in /public/screenshots (camelCase + ".dark/.light").
   const normalizedBase = imageBaseName
@@ -52,8 +47,6 @@ export default function FeatureBlock({
     })
     .join('');
 
-  const imageSrc = `/screenshots/${normalizedBase}.${isDark ? 'dark' : 'light'}.png`;
-
   return (
     <section
       className={`flex flex-col items-center gap-8 md:gap-16
@@ -63,10 +56,18 @@ export default function FeatureBlock({
         <div className='rounded-xl border shadow-md overflow-hidden border-gray-200 dark:border-gray-800'>
           <Image
             alt={`${title} Screenshot`}
-            className='w-full h-auto object-cover'
+            className='w-full h-auto object-cover dark:hidden'
             height={600}
             priority={index === 0}
-            src={imageSrc}
+            src={`/screenshots/${normalizedBase}.light.png`}
+            width={900}
+          />
+          <Image
+            alt={`${title} Screenshot`}
+            className='w-full h-auto object-cover hidden dark:block'
+            height={600}
+            priority={index === 0}
+            src={`/screenshots/${normalizedBase}.dark.png`}
             width={900}
           />
         </div>
