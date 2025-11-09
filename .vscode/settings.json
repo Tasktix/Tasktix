@@ -4,6 +4,9 @@
   "containers.orchestratorClient": "com.microsoft.visualstudio.orchestrators.dockercompose",
   "editor.tabSize": 2,
   "editor.formatOnSave": true,
+  "[prisma]": {
+    "editor.defaultFormatter": "Prisma.prisma"
+  },
   "jest.jestCommandLine": "npm run test:jest --",
   "jest.useDashedArgs": true
 }
