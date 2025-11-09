@@ -18,24 +18,20 @@
 
 'use server';
 
-import ListSection from '@/lib/model/listSection';
-
-import { execute } from './db_connect';
+import { prisma } from './db_connect';
 
 export async function createListSection(
   listId: string,
-  listSection: ListSection
+  sectionId: string,
+  name: string
 ): Promise<boolean> {
-  const sql = `
-    INSERT INTO \`listSections\`(
-      \`ls_id\`,
-      \`ls_l_id\`,
-      \`ls_name\`
-    )
-    VALUES (:id, :listId, :name);
-  `;
-
-  const result = await execute(sql, { listId, ...listSection });
+  const result = await prisma.listSection.create({
+    data: {
+      id: sectionId,
+      name,
+      listId
+    }
+  });
 
   return Boolean(result);
 }
@@ -44,24 +40,24 @@ export async function updateListSection(
   id: string,
   name: string
 ): Promise<boolean> {
-  const sql = `
-    UPDATE \`listSections\`
-    SET \`ls_name\` = name
-    WHERE \`ls_id\` = :id;
-  `;
+  try {
+    await prisma.listSection.update({
+      where: { id },
+      data: { name }
+    });
+  } catch {
+    return false;
+  }
 
-  const result = await execute(sql, { id, name });
-
-  return Boolean(result);
+  return true;
 }
 
 export async function deleteListSection(id: string): Promise<boolean> {
-  const sql = `
-    DELETE FROM \`listSections\`
-    WHERE \`ls_id\` = :id;
-  `;
+  try {
+    await prisma.listSection.delete({ where: { id } });
+  } catch {
+    return false;
+  }
 
-  const result = await execute(sql, { id });
-
-  return Boolean(result);
+  return true;
 }
