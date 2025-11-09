@@ -14,10 +14,10 @@ CREATE TABLE `User` (
 -- CreateTable
 CREATE TABLE `Session` (
     `id` CHAR(128) NOT NULL,
-    `user_id` CHAR(16) NOT NULL,
+    `userId` CHAR(16) NOT NULL,
     `dateExpire` DATETIME(0) NOT NULL,
 
-    INDEX `Session_user_id_idx`(`user_id`),
+    INDEX `Session_userId_idx`(`userId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -37,10 +37,10 @@ CREATE TABLE `List` (
 -- CreateTable
 CREATE TABLE `ListSection` (
     `id` CHAR(16) NOT NULL,
-    `list_id` CHAR(16) NOT NULL,
+    `listId` CHAR(16) NOT NULL,
     `name` VARCHAR(64) NOT NULL,
 
-    INDEX `ListSection_list_id_idx`(`list_id`),
+    INDEX `ListSection_listId_idx`(`listId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -48,21 +48,21 @@ CREATE TABLE `ListSection` (
 CREATE TABLE `Item` (
     `id` CHAR(16) NOT NULL,
     `name` VARCHAR(128) NOT NULL,
-    `status` ENUM('Unstarted', 'In Progress', 'Paused', 'Completed') NOT NULL DEFAULT 'Unstarted',
+    `status` ENUM('Unstarted', 'In_Progress', 'Paused', 'Completed') NOT NULL DEFAULT 'Unstarted',
     `priority` ENUM('High', 'Medium', 'Low') NOT NULL DEFAULT 'Low',
     `isUnclear` BOOLEAN NOT NULL DEFAULT false,
     `expectedMs` INTEGER NULL,
     `elapsedMs` INTEGER NOT NULL DEFAULT 0,
-    `parent_id` CHAR(16) NULL,
-    `section_id` CHAR(16) NOT NULL,
+    `parentId` CHAR(16) NULL,
+    `sectionId` CHAR(16) NOT NULL,
     `sectionIndex` INTEGER NOT NULL DEFAULT 0,
     `dateCreated` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
     `dateDue` DATETIME(0) NULL,
     `dateStarted` DATETIME(0) NULL,
     `dateCompleted` DATETIME(0) NULL,
 
-    INDEX `Item_section_id_idx`(`section_id`),
-    INDEX `Item_parent_id_idx`(`parent_id`),
+    INDEX `Item_sectionId_idx`(`sectionId`),
+    INDEX `Item_parentId_idx`(`parentId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -71,33 +71,33 @@ CREATE TABLE `Tag` (
     `id` CHAR(16) NOT NULL,
     `name` VARCHAR(32) NOT NULL,
     `color` ENUM('Pink', 'Red', 'Orange', 'Amber', 'Yellow', 'Lime', 'Green', 'Emerald', 'Cyan', 'Blue', 'Violet') NOT NULL,
-    `list_id` CHAR(16) NOT NULL,
+    `listId` CHAR(16) NOT NULL,
 
-    INDEX `Tag_list_id_idx`(`list_id`),
+    INDEX `Tag_listId_idx`(`listId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
 CREATE TABLE `ListMember` (
-    `user_id` CHAR(16) NOT NULL,
-    `list_id` CHAR(16) NOT NULL,
+    `userId` CHAR(16) NOT NULL,
+    `listId` CHAR(16) NOT NULL,
     `canAdd` BOOLEAN NOT NULL DEFAULT false,
     `canRemove` BOOLEAN NOT NULL DEFAULT false,
     `canComplete` BOOLEAN NOT NULL DEFAULT false,
     `canAssign` BOOLEAN NOT NULL DEFAULT false,
 
-    INDEX `ListMember_list_id_idx`(`list_id`),
-    PRIMARY KEY (`user_id`, `list_id`)
+    INDEX `ListMember_listId_idx`(`listId`),
+    PRIMARY KEY (`userId`, `listId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
 CREATE TABLE `ItemAssignee` (
-    `user_id` CHAR(16) NOT NULL,
-    `item_id` CHAR(16) NOT NULL,
-    `ia_role` VARCHAR(64) NOT NULL,
+    `userId` CHAR(16) NOT NULL,
+    `itemId` CHAR(16) NOT NULL,
+    `role` VARCHAR(64) NOT NULL,
 
-    INDEX `ItemAssignee_item_id_idx`(`item_id`),
-    PRIMARY KEY (`user_id`, `item_id`)
+    INDEX `ItemAssignee_itemId_idx`(`itemId`),
+    PRIMARY KEY (`userId`, `itemId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
@@ -110,31 +110,31 @@ CREATE TABLE `_ItemToTag` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
-ALTER TABLE `Session` ADD CONSTRAINT `Session_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `Session` ADD CONSTRAINT `Session_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `ListSection` ADD CONSTRAINT `ListSection_list_id_fkey` FOREIGN KEY (`list_id`) REFERENCES `List`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `ListSection` ADD CONSTRAINT `ListSection_listId_fkey` FOREIGN KEY (`listId`) REFERENCES `List`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Item` ADD CONSTRAINT `Item_parent_id_fkey` FOREIGN KEY (`parent_id`) REFERENCES `Item`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `Item` ADD CONSTRAINT `Item_parentId_fkey` FOREIGN KEY (`parentId`) REFERENCES `Item`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Item` ADD CONSTRAINT `Item_section_id_fkey` FOREIGN KEY (`section_id`) REFERENCES `ListSection`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `Item` ADD CONSTRAINT `Item_sectionId_fkey` FOREIGN KEY (`sectionId`) REFERENCES `ListSection`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Tag` ADD CONSTRAINT `Tag_list_id_fkey` FOREIGN KEY (`list_id`) REFERENCES `List`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `Tag` ADD CONSTRAINT `Tag_listId_fkey` FOREIGN KEY (`listId`) REFERENCES `List`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `ListMember` ADD CONSTRAINT `ListMember_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `ListMember` ADD CONSTRAINT `ListMember_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `ListMember` ADD CONSTRAINT `ListMember_list_id_fkey` FOREIGN KEY (`list_id`) REFERENCES `List`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `ListMember` ADD CONSTRAINT `ListMember_listId_fkey` FOREIGN KEY (`listId`) REFERENCES `List`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `ItemAssignee` ADD CONSTRAINT `ItemAssignee_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `ItemAssignee` ADD CONSTRAINT `ItemAssignee_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `ItemAssignee` ADD CONSTRAINT `ItemAssignee_item_id_fkey` FOREIGN KEY (`item_id`) REFERENCES `Item`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `ItemAssignee` ADD CONSTRAINT `ItemAssignee_itemId_fkey` FOREIGN KEY (`itemId`) REFERENCES `Item`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `_ItemToTag` ADD CONSTRAINT `_ItemToTag_A_fkey` FOREIGN KEY (`A`) REFERENCES `Item`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
