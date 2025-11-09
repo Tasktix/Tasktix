@@ -19,19 +19,33 @@
 'use client';
 
 import Image from 'next/image';
+import { createContext, useContext, type PropsWithChildren } from 'react';
 type FeatureBlockProps = {
   title: string;
   description: string;
   imageBaseName: string;
-  index: number;
 };
+
+// Context to provide positional info (e.g., index) without prop drilling
+export const FeatureBlockIndexContext = createContext<number>(0);
+
+export function FeatureBlockIndexProvider({
+  index,
+  children
+}: PropsWithChildren<{ index: number }>) {
+  return (
+    <FeatureBlockIndexContext.Provider value={index}>
+      {children}
+    </FeatureBlockIndexContext.Provider>
+  );
+}
 
 export default function FeatureBlock({
   title,
   description,
-  imageBaseName,
-  index
+  imageBaseName
 }: FeatureBlockProps) {
+  const index = useContext(FeatureBlockIndexContext);
   // Normalize provided base name (e.g., "Time-Tracking", "Tag System") to match
   // the file naming convention in /public/screenshots (camelCase + ".dark/.light").
   const normalizedBase = imageBaseName

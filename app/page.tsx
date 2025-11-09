@@ -16,7 +16,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import FeatureBlock from '@/components/FeatureBlock';
+import FeatureBlock, {
+  FeatureBlockIndexProvider
+} from '@/components/FeatureBlock';
 
 const FEATURES = [
   {
@@ -64,7 +66,9 @@ export default function Page() {
       </header>
 
       {FEATURES.map((f, i) => (
-        <FeatureBlock key={f.title} index={i} {...f} />
+        <FeatureBlockIndexProvider key={f.title} index={i}>
+          <FeatureBlock {...f} />
+        </FeatureBlockIndexProvider>
       ))}
     </main>
   );
