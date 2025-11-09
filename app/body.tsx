@@ -24,7 +24,12 @@ import {
   Navbar,
   NavbarBrand,
   NavbarContent,
-  NavbarItem
+  NavbarItem,
+  Avatar,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem
 } from '@nextui-org/react';
 import { useRouter } from 'next/navigation';
 import { ReactNode, useState } from 'react';
@@ -125,8 +130,14 @@ function AccountButton({ isLoggedIn }: { isLoggedIn: boolean }) {
     );
 
   return (
-    <Button key='signOut' color='primary' variant='flat' onPress={handleClick}>
-      Sign Out
-    </Button>
+    <Dropdown>
+      <DropdownTrigger>
+        <Avatar key='profile' color='primary'/>
+      </DropdownTrigger>
+      <DropdownMenu aria-label="Static Actions" color='primary'>
+        <DropdownItem key="settings" href="/profile">Profile</DropdownItem>
+        <DropdownItem key="signOut" onPress={handleClick}>Log Out</DropdownItem>
+      </DropdownMenu>
+    </Dropdown>
   );
 }
