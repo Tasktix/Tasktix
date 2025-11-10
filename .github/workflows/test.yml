@@ -68,7 +68,7 @@ jobs:
         if: steps.cache-cypress.outputs.cache-hit != 'true'
         run: npx cypress install
       - name: Test
-        run: npm test
+        run: npm ci:test
 
   danger:
     name: Danger
