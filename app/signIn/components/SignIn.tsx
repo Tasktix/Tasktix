@@ -18,11 +18,10 @@
 
 'use client';
 
-import { Button, Input } from '@heroui/react';
+import { addToast, Button, Input } from '@heroui/react';
 import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-import { addSnackbar } from '@/components/Snackbar';
 import { default as api } from '@/lib/api';
 import { setLoggedIn } from '@/app/body';
 
@@ -46,7 +45,11 @@ export default function SignIn() {
         setLoggedIn();
         router.replace('/list');
       })
-      .catch(err => addSnackbar(err.message, 'error'));
+      .catch(err => addToast({
+          title: 'Error',
+          decription: err.message,
+          color: 'warning'
+          }));
   }
 
   return (
