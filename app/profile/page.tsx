@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-'use client';
+//This page should pull the user data, then forward it to edit fields
 
 import { EditFields } from './components/EditFields';
 
@@ -27,8 +27,12 @@ export default async function Page() {
         <h1 className='text-2xl p-4'>
           Profile
         </h1>
-        <EditFields name='Username' />
-        <EditFields name='Email' />
+        <div>
+          <EditFields name='Username' />
+        </div>
+        <div>
+          <EditFields name='Email' />
+        </div>
       </div>
     </main>
   );

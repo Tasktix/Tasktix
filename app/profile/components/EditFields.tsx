@@ -15,24 +15,31 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+'use client';
 
 import {
-  Button
+  Button,
+  Input
 } from '@nextui-org/react';
 
 import { PencilFill } from 'react-bootstrap-icons';
+import { getUser } from '@/lib/session';
 
 export function EditFields({
   name
 }: {
   name: string;
 }) {
+  //const userDetails = getUser();
+
   return (
     <span className='text-base'>
-      {name}
-      <Button isIconOnly color='primary' variant='flat'>
+      <Input label={name} type='text' defaultValue='test' isClearable/>
+      {/* <Input label={name} type='text' defaultValue={userDetails.username} isClearable/> */}
+      {/* <Button isIconOnly color='primary' variant='flat'>
         <PencilFill aria-label='Edit' size={20} />
-      </Button>
+      </Button> */}
+
     </span>
   );
 }
