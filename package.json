@@ -5,7 +5,9 @@
   "private": true,
   "scripts": {
     "start": "docker compose up --build --watch",
+    "start:test": "cross-env DB_HOST=mariadb DB_USER=root DB_PASSWORD=password DB_DATABASE=tasktix_test docker compose -f compose.yaml up --build",
     "stop": "docker compose stop",
+    "stop:test": "docker compose -f compose.yaml down --volumes",
     "teardown": "docker compose down",
     "test": "npm run test:jest && npm run test:cy",
     "lint": "eslint .",
