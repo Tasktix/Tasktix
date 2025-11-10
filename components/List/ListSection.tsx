@@ -162,7 +162,7 @@ export default function ListSection({
         oldIndex: oldIndex
       })
       .then(res => {
-        addToast({title: res.message, color: 'success'});
+        addToast({ title: res.message, color: 'success' });
 
         const index1 = Math.min(newIndex, oldIndex);
         const index2 = Math.max(newIndex, oldIndex);
@@ -179,7 +179,7 @@ export default function ListSection({
         }
         setItems(newItems);
       })
-      .catch(err => addToast({title: err.message, color: 'danger'}));
+      .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
   function deleteItem(id: string) {

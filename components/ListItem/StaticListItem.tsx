@@ -125,7 +125,7 @@ export default function StaticListItem({
           newItem.name = name;
           _setItem(newItem);
         })
-        .catch(err => addToast({title: err.message, color: 'danger'}));
+        .catch(err => addToast({ title: err.message, color: 'danger' }));
     },
 
     dueDate: (date: Date): void => {
@@ -141,7 +141,7 @@ export default function StaticListItem({
           // Send parent the update for reordering items
           updateDueDate(date);
         })
-        .catch(err => addToast({title: err.message, color: 'danger'}));
+        .catch(err => addToast({ title: err.message, color: 'danger' }));
     },
 
     priority: (priority: ListItemModel['priority']): void => {
@@ -157,7 +157,7 @@ export default function StaticListItem({
           // Send parent the update for reordering items
           updatePriority(priority);
         })
-        .catch(err => addToast({title: err.message, color: 'danger'}));
+        .catch(err => addToast({ title: err.message, color: 'danger' }));
     },
 
     incomplete: () => {
@@ -174,7 +174,7 @@ export default function StaticListItem({
           // Send parent the update for reordering items
           setPaused();
         })
-        .catch(err => addToast({title: err.message, color: 'danger'}));
+        .catch(err => addToast({ title: err.message, color: 'danger' }));
     },
 
     complete: () => {
@@ -206,7 +206,7 @@ export default function StaticListItem({
           // Send parent the update for reordering items
           setCompleted(dateCompleted);
         })
-        .catch(err => addToast({title: err.message, color: 'danger'));
+        .catch(err => addToast({ title: err.message, color: 'danger' }));
     },
 
     expectedMs: (ms: number) => {
@@ -222,7 +222,7 @@ export default function StaticListItem({
           // Send parent the update for reordering items
           updateExpectedMs(ms);
         })
-        .catch(err => addToast({title: err.message, color: 'danger'}));
+        .catch(err => addToast({ title: err.message, color: 'danger' }));
     },
 
     startedRunning: () => {
@@ -251,7 +251,7 @@ export default function StaticListItem({
           // Send parent the update for reordering items
           setStatus('In Progress');
         })
-        .catch(err => addToast({title: err.message, color: 'danger'}));
+        .catch(err => addToast({ title: err.message, color: 'danger' }));
     },
 
     pausedRunning: () => {
@@ -279,7 +279,7 @@ export default function StaticListItem({
           // Send parent the update for reordering items
           setStatus('Paused');
         })
-        .catch(err => addToast({title: err.message, color: 'danger'}));
+        .catch(err => addToast({ title: err.message, color: 'danger' }));
     },
 
     resetTime: () => {
@@ -302,7 +302,7 @@ export default function StaticListItem({
           // Send parent the update for reordering items
           setStatus(status);
         })
-        .catch(err => addToast({title: err.message, color: 'danger'}));
+        .catch(err => addToast({ title: err.message, color: 'danger' }));
     },
 
     linkedTag: (id: string) => {
@@ -320,7 +320,7 @@ export default function StaticListItem({
 
           setTags(newTags);
         })
-        .catch(err => addToast({title: err.message, color: 'danger'}));
+        .catch(err => addToast({ title: err.message, color: 'danger' }));
     },
 
     linkedNewTag: (id: string, name: string, color: NamedColor) => {
@@ -342,7 +342,7 @@ export default function StaticListItem({
             if (newTags[i].id === id) newTags.splice(i, 1);
           setTags(newTags);
         })
-        .catch(err => addToast({title: err.message, color: 'danger'}));
+        .catch(err => addToast({ title: err.message, color: 'danger' }));
     },
 
     deleted: () => {
@@ -353,9 +353,9 @@ export default function StaticListItem({
           deleteItem();
 
           // Let the user know we succeeded
-          addSnackbar(res.message, 'success');
+          addToast({ title: res.message, color: 'success' });
         })
-        .catch(err => addToast({title: err.message, color: 'danger'}));
+        .catch(err => addToast({ title: err.message, color: 'danger' }));
     }
   };
 

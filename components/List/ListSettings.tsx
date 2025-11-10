@@ -82,7 +82,7 @@ export function ListSettings({
     api
       .patch(`/list/${listId}`, { hasTimeTracking: value })
       .then(() => setHasTimeTracking(value))
-      .catch(err => addToast({title: err.message, color: 'danger'}));
+      .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
   function updateHasDueDates(value: boolean) {
@@ -91,7 +91,7 @@ export function ListSettings({
     api
       .patch(`/list/${listId}`, { hasDueDates: value })
       .then(() => setHasDueDates(value))
-      .catch(err => addToast({title: err.message, color: 'danger'}));
+      .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
   function updateIsAutoOrdered(value: boolean) {
@@ -100,14 +100,14 @@ export function ListSettings({
     api
       .patch(`/list/${listId}`, { isAutoOrdered: value })
       .then(() => setIsAutoOrdered(value))
-      .catch(err => addToast({title: err.message, color: 'danger'}));
+      .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
   function updateName(name: string) {
     api
       .patch(`/list/${listId}`, { name })
       .then(() => setListName(name))
-      .catch(err => addToast({title: err.message, color: 'danger'}));
+      .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
   function updateColor(color: NamedColor | null) {
@@ -116,7 +116,7 @@ export function ListSettings({
     api
       .patch(`/list/${listId}`, { color })
       .then(() => setListColor(color))
-      .catch(err => addToast({title: err.message, color: 'danger'}));
+      .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
   function deleteList() {
@@ -130,11 +130,11 @@ export function ListSettings({
     api
       .delete(`/list/${listId}`)
       .then(res => {
-        addToast({title: res.message, color: 'success'});
+        addToast({ title: res.message, color: 'success' });
         dispatchEvent({ type: 'remove', id: listId });
         router.replace('/list');
       })
-      .catch(err => addToast({title: err.message, color: 'danger'}));
+      .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
   function updateTagName(tag: Tag, name: string) {
@@ -147,7 +147,7 @@ export function ListSettings({
           )
         );
       })
-      .catch(err => addToast({title: err.message, color: 'danger'}));
+      .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
   function updateTagColor(tag: Tag, color: NamedColor | null) {
@@ -161,7 +161,7 @@ export function ListSettings({
             )
           );
         })
-        .catch(err => addToast({title: err.message, color: 'danger'}));
+        .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
   function deleteTag(id: string) {
@@ -177,7 +177,7 @@ export function ListSettings({
       .then(() => {
         setTagsAvailable(tagsAvailable.filter(tag => tag.id !== id));
       })
-      .catch(err => addToast({title: err.message, color: 'danger'}));
+      .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
   return (

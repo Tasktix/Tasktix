@@ -55,9 +55,9 @@ export default function Users({
       .post(`/item/${itemId}/assignee/${userId}`, {})
       .then(res => {
         addToast({
-            title: res.message,
-            color: 'success'
-            });
+          title: res.message,
+          color: 'success'
+        });
         const newAssignees = structuredClone(_assignees);
 
         for (const member of members)
@@ -67,9 +67,10 @@ export default function Users({
       })
       .catch(err =>
         addToast({
-            title: err.message,
-            color: 'warning'
-            }));
+          title: err.message,
+          color: 'warning'
+        })
+      );
   }
 
   function removeAssignee(userId: string) {
@@ -77,9 +78,9 @@ export default function Users({
       .delete(`/item/${itemId}/assignee/${userId}`)
       .then(res => {
         addToast({
-            title: res.message,
-            color: 'success'
-            });
+          title: res.message,
+          color: 'success'
+        });
         const newAssignees = structuredClone(_assignees);
 
         for (let i = 0; i < newAssignees.length; i++)
@@ -88,9 +89,10 @@ export default function Users({
       })
       .catch(err =>
         addToast({
-            title: err.message,
-            color: 'warning'
-            }));
+          title: err.message,
+          color: 'warning'
+        })
+      );
   }
 
   return (

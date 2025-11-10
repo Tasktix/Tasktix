@@ -43,7 +43,7 @@ export default function AddListSection({
         addListSection(new ListSection(name, [], id));
         setName('');
       })
-      .catch(err => addToast({title: err.message, color: 'danger'}));
+      .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
   return (

@@ -46,14 +46,14 @@ export default function Sidebar({ lists }: { lists: List[] }) {
         const id = res.content?.split('/').at(-1);
 
         if (!id) {
-          addToast({title: 'No list ID returned', color: 'danger'});
+          addToast({ title: 'No list ID returned', color: 'danger' });
 
           return;
         }
         router.push(`${res.content}`);
         dispatchEvent({ type: 'add', id, name, color });
       })
-      .catch(err => addToast({title: err.message, color: 'danger'}));
+      .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
   async function removeNew() {

@@ -42,17 +42,17 @@ export default function TagInput({
     e.preventDefault();
     if (!newTagColor) {
       addToast({
-          title: 'Please specify a tag color',
-          color: 'danger'
-          });
+        title: 'Please specify a tag color',
+        color: 'danger'
+      });
 
       return;
     }
     if (!newTagName) {
       addToast({
-          title: 'Please specify a tag name',
-          color: 'danger'
-          });
+        title: 'Please specify a tag name',
+        color: 'danger'
+      });
 
       return;
     }

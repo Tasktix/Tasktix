@@ -45,10 +45,12 @@ export default function SignIn() {
         setLoggedIn();
         router.replace('/list');
       })
-      .catch(err => addToast({
+      .catch(err =>
+        addToast({
           title: err.message,
           color: 'danger'
-          }));
+        })
+      );
   }
 
   return (

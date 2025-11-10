@@ -145,7 +145,7 @@ export default function AddItem({
 
         setIsSliderOpen(false);
       })
-      .catch(err => addToast({title: err.message, color: 'danger'}));
+      .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
   return (

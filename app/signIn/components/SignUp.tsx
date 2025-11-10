@@ -105,11 +105,11 @@ export default function SignUp() {
             router.replace('/list');
           })
           .catch(err => {
-            addToast({title: err.message, color: 'danger'});
+            addToast({ title: err.message, color: 'danger' });
           });
       })
       .catch(err => {
-        addToast({title: err.message, color: 'danger'});
+        addToast({ title: err.message, color: 'danger' });
       });
   }
 
