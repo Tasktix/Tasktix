@@ -47,8 +47,8 @@ export default function SignIn() {
       })
       .catch(err => addToast({
           title: 'Error',
-          decription: err.message,
-          color: 'warning'
+          description: err.message,
+          color: 'danger'
           }));
   }
 
