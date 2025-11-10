@@ -96,6 +96,7 @@ export default function Body({
       {children}
 
       <Snackbar />
+      <ToastProvider />
     </div>
   );
 }
