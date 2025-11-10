@@ -46,20 +46,6 @@ export default function FeatureBlock({
   imageBaseName
 }: FeatureBlockProps) {
   const index = useContext(FeatureBlockIndexContext);
-  // Normalize provided base name (e.g., "Time-Tracking", "Tag System") to match
-  // the file naming convention in /public/screenshots (camelCase + ".dark/.light").
-  const normalizedBase = imageBaseName
-    .trim()
-    .split(' ')
-    .filter(Boolean)
-    .map((word, wordIndex) => {
-      const lower = word.toLowerCase();
-
-      return wordIndex === 0
-        ? lower
-        : lower.charAt(0).toUpperCase() + lower.slice(1);
-    })
-    .join('');
 
   return (
     <section
@@ -73,7 +59,7 @@ export default function FeatureBlock({
             className='w-full h-auto object-cover dark:hidden'
             height={600}
             priority={index === 0}
-            src={`/screenshots/${normalizedBase}.light.png`}
+            src={`/screenshots/${imageBaseName}.light.png`}
             width={900}
           />
           <Image
@@ -81,7 +67,7 @@ export default function FeatureBlock({
             className='w-full h-auto object-cover hidden dark:block'
             height={600}
             priority={index === 0}
-            src={`/screenshots/${normalizedBase}.dark.png`}
+            src={`/screenshots/${imageBaseName}.dark.png`}
             width={900}
           />
         </div>
