@@ -19,13 +19,13 @@
 'use client';
 
 import {
-  addToast,
   Button,
   Link,
   Navbar,
   NavbarBrand,
   NavbarContent,
-  NavbarItem
+  NavbarItem,
+  ToastProvider
 } from '@heroui/react';
 import { useRouter } from 'next/navigation';
 import { ReactNode, useState } from 'react';
