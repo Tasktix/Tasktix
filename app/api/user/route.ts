@@ -27,7 +27,7 @@ import { hash } from '@/lib/security/hash';
 
 export const dynamic = 'force-dynamic' as const; // defaults to auto
 
-const PostBody = ZodUser.omit({ id: true });
+const PostBody = ZodUser.omit({ id: true, color: true });
 
 /**
  * Create a new user with `username`, `email`, and `password`
