@@ -29,7 +29,7 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownTrigger
-} from '@nextui-org/react';
+} from '@heroui/react';
 import { AnimatePresence, motion, Reorder } from 'framer-motion';
 
 import { ListItem, StaticListItem } from '@/components/ListItem';
@@ -191,7 +191,7 @@ export default function ListSection({
   }
 
   return (
-    <div className='rounded-md w-100 overflow-hidden border-2 border-content3 box-border shrink-0 shadow-lg shadow-content2'>
+    <div className='rounded-md w-full overflow-hidden border-2 border-content3 box-border shrink-0 shadow-lg shadow-content2'>
       <div className='bg-content3 font-bold p-4 h-16 flex items-center justify-between'>
         <span className='min-w-fit shrink-0 flex'>
           <Button

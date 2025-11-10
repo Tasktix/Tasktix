@@ -18,7 +18,7 @@
 
 'use client';
 
-import { Button, Input } from '@nextui-org/react';
+import { Button, Input } from '@heroui/react';
 import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -55,14 +55,15 @@ export default function SignIn() {
         label='Username'
         type='text'
         value={inputs.username}
-        variant='underlined'
+        variant='bordered'
         onValueChange={handleUsernameInput}
       />
       <Input
+        className='py-2'
         label='Password'
         type='password'
         value={inputs.password}
-        variant='underlined'
+        variant='bordered'
         onValueChange={handlePasswordInput}
       />
       <div className='flex justify-center mt-6'>

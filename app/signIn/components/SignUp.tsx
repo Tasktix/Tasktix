@@ -20,7 +20,7 @@
 
 import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, Input } from '@nextui-org/react';
+import { Button, Input } from '@heroui/react';
 
 import Message, { InputMessage } from '@/components/InputMessage';
 import {
@@ -122,7 +122,7 @@ export default function SignUp() {
         label='Username'
         type='text'
         value={inputs.username}
-        variant='underlined'
+        variant='bordered'
         onValueChange={handleUsernameInput}
       />
       <Input
@@ -131,7 +131,7 @@ export default function SignUp() {
         label='Email'
         type='email'
         value={inputs.email}
-        variant='underlined'
+        variant='bordered'
         onValueChange={handleEmailInput}
       />
       <Input
@@ -140,7 +140,7 @@ export default function SignUp() {
         label='Password'
         type='password'
         value={inputs.password}
-        variant='underlined'
+        variant='bordered'
         onValueChange={handlePasswordInput}
       />
       <div className='flex justify-center mt-6'>

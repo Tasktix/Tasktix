@@ -21,7 +21,7 @@
 import { setTimeout } from 'timers';
 
 import { ReactNode, useContext, useState } from 'react';
-import { Button, Input, Link } from '@nextui-org/react';
+import { Button, Input, Link } from '@heroui/react';
 import { Check, Plus } from 'react-bootstrap-icons';
 import { usePathname, useRouter } from 'next/navigation';
 
@@ -119,7 +119,7 @@ export function NavItem({
 
   return (
     <span
-      className={`pl-2 my-1 flex items-center justify-between border-l-2${isActive ? ' border-primary' : ' border-transparent'} text-sm`}
+      className={`pl-2 my-1 flex items-center justify-between border-l-2 ${isActive ? 'border-primary' : 'border-transparent'} text-sm`}
     >
       <Link color='foreground' href={link}>
         {name}
