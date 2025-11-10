@@ -116,7 +116,7 @@ export default function List({
       .catch(err =>
         addToast({
           title: err.message,
-          color: 'error'
+          color: 'danger'
         })
       );
   }
