@@ -18,12 +18,11 @@
 
 import { FormEvent, useState } from 'react';
 import { Check } from 'react-bootstrap-icons';
-import { Button, Input } from '@heroui/react';
+import { addToast, Button, Input } from '@heroui/react';
 
 import { NamedColor } from '@/lib/model/color';
 
 import ColorPicker from './ColorPicker';
-import { addSnackbar } from './Snackbar';
 
 export default function TagInput({
   className,
@@ -42,12 +41,18 @@ export default function TagInput({
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!newTagColor) {
-      addSnackbar('Please specify a tag color', 'error');
+      addToast({
+          title: 'Please specify a tag color',
+          color: 'danger'
+          });
 
       return;
     }
     if (!newTagName) {
-      addSnackbar('Please specify a tag name', 'error');
+      addToast({
+          title: 'Please specify a tag name',
+          color: 'danger'
+          });
 
       return;
     }

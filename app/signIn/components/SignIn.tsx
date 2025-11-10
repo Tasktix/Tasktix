@@ -46,8 +46,7 @@ export default function SignIn() {
         router.replace('/list');
       })
       .catch(err => addToast({
-          title: 'Error',
-          description: err.message,
+          title: err.message,
           color: 'danger'
           }));
   }

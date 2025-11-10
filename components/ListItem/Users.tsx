@@ -55,8 +55,7 @@ export default function Users({
       .post(`/item/${itemId}/assignee/${userId}`, {})
       .then(res => {
         addToast({
-            title: 'Success',
-            description: res.message,
+            title: res.message,
             color: 'success'
             });
         const newAssignees = structuredClone(_assignees);
@@ -68,8 +67,7 @@ export default function Users({
       })
       .catch(err =>
         addToast({
-            title: 'Error',
-            description: err.message,
+            title: err.message,
             color: 'warning'
             }));
   }
@@ -79,8 +77,7 @@ export default function Users({
       .delete(`/item/${itemId}/assignee/${userId}`)
       .then(res => {
         addToast({
-            title: 'Success',
-            description: res.message,
+            title: res.message,
             color: 'success'
             });
         const newAssignees = structuredClone(_assignees);
@@ -91,8 +88,7 @@ export default function Users({
       })
       .catch(err =>
         addToast({
-            title: 'Error',
-            description: err.message,
+            title: err.message,
             color: 'warning'
             }));
   }

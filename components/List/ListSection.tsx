@@ -24,6 +24,7 @@ import {
   TrashFill
 } from 'react-bootstrap-icons';
 import {
+  addToast,
   Button,
   Dropdown,
   DropdownItem,
@@ -45,7 +46,6 @@ import {
 import ListMember from '@/lib/model/listMember';
 import { default as api } from '@/lib/api';
 
-import { addSnackbar } from '../Snackbar';
 import { Filters } from '../SearchBar/types';
 import Name from '../Name';
 
@@ -162,7 +162,7 @@ export default function ListSection({
         oldIndex: oldIndex
       })
       .then(res => {
-        addSnackbar(res.message, 'success');
+        addToast({title: res.message, color: 'success'});
 
         const index1 = Math.min(newIndex, oldIndex);
         const index2 = Math.max(newIndex, oldIndex);
@@ -179,7 +179,7 @@ export default function ListSection({
         }
         setItems(newItems);
       })
-      .catch(err => addSnackbar(err.message, 'error'));
+      .catch(err => addToast({title: err.message, color: 'danger'}));
   }
 
   function deleteItem(id: string) {
