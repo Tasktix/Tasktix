@@ -31,7 +31,6 @@ import { useRouter } from 'next/navigation';
 import { ReactNode, useState } from 'react';
 import Image from 'next/image';
 
-import Snackbar from '@/components/Snackbar';
 import { default as api } from '@/lib/api';
 import ThemeSwitcher from '@/components/ThemeSwitcher';
 
@@ -96,7 +95,6 @@ export default function Body({
 
       {children}
 
-      <Snackbar />
       <ToastProvider />
     </div>
   );
