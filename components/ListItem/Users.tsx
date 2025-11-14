@@ -68,7 +68,7 @@ export default function Users({
       .catch(err =>
         addToast({
           title: err.message,
-          color: 'warning'
+          color: 'danger'
         })
       );
   }
@@ -90,7 +90,7 @@ export default function Users({
       .catch(err =>
         addToast({
           title: err.message,
-          color: 'warning'
+          color: 'danger'
         })
       );
   }
