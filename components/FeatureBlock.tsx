@@ -24,6 +24,7 @@ type FeatureBlockProps = {
   title: string;
   description: string;
   imageBaseName: string;
+  align?: 'default' | 'flipped';
 };
 
 // Context to provide positional info (e.g., index) without prop drilling
@@ -43,14 +44,15 @@ export function FeatureBlockIndexProvider({
 export default function FeatureBlock({
   title,
   description,
-  imageBaseName
+  imageBaseName,
+  align = 'default'
 }: FeatureBlockProps) {
   const index = useContext(FeatureBlockIndexContext);
 
   return (
     <section
       className={`flex flex-col items-center gap-8 md:gap-16
-                  md:flex-row ${index % 2 === 1 ? 'md:flex-row-reverse' : ''}`}
+                  md:flex-row ${align === 'flipped' ? 'md:flex-row-reverse' : ''}`}
     >
       <div className='w-full md:w-1/2'>
         <div className='rounded-xl border shadow-md overflow-hidden border-gray-200 dark:border-gray-800'>

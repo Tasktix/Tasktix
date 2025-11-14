@@ -16,15 +16,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import FeatureBlock, {
-  FeatureBlockIndexProvider
-} from '@/components/FeatureBlock';
+import FeatureBlock from '@/components/FeatureBlock';
 
 const FEATURES = [
   {
     title: 'Time Tracking',
     description:
-      'Track expected vs elapsed time for every task with quick Start and Pause buttons.',
+      'Track expected vs elapsed time for every task with start and pause buttons.',
     imageBaseName: 'timeTracking'
   },
   {
@@ -36,19 +34,19 @@ const FEATURES = [
   {
     title: 'Priority System',
     description:
-      'Mark tasks as Low, Medium, or High priority to stay focused on what matters most.',
+      'Mark tasks as low, medium, or high priority to stay focused on what matters most.',
     imageBaseName: 'priority'
   },
   {
     title: 'Filtering Feature',
     description:
-      'Filter tasks by tag, priority, or due date to manage your workload efficiently.',
+      "Filter tasks using any (or every!) detail that's tracked — whether that's a tag, the due date, the time you've spent working on it, or anything else.",
     imageBaseName: 'filtering'
   },
   {
     title: 'Manual Sorting',
     description:
-      'Reorder tasks manually by dragging and dropping them within each section.',
+      "Tasks are intelligently sorted based on due date and priority. If you need extra control, however, you're also free to arrange them manually.",
     imageBaseName: 'sorting'
   }
 ];
@@ -66,9 +64,11 @@ export default function Page() {
       </header>
 
       {FEATURES.map((f, i) => (
-        <FeatureBlockIndexProvider key={f.title} index={i}>
-          <FeatureBlock {...f} />
-        </FeatureBlockIndexProvider>
+        <FeatureBlock
+          key={f.title}
+          {...f}
+          align={i % 2 === 0 ? 'default' : 'flipped'}
+        />
       ))}
     </main>
   );
