@@ -19,7 +19,7 @@
 'use client';
 
 import Image from 'next/image';
-import { createContext, useContext, type PropsWithChildren } from 'react';
+
 type FeatureBlockProps = {
   title: string;
   description: string;
@@ -27,53 +27,43 @@ type FeatureBlockProps = {
   align?: 'default' | 'flipped';
 };
 
-// Context to provide positional info (e.g., index) without prop drilling
-export const FeatureBlockIndexContext = createContext<number>(0);
-
-export function FeatureBlockIndexProvider({
-  index,
-  children
-}: PropsWithChildren<{ index: number }>) {
-  return (
-    <FeatureBlockIndexContext.Provider value={index}>
-      {children}
-    </FeatureBlockIndexContext.Provider>
-  );
-}
-
 export default function FeatureBlock({
   title,
   description,
   imageBaseName,
   align = 'default'
 }: FeatureBlockProps) {
-  const index = useContext(FeatureBlockIndexContext);
-
   return (
     <section
-      className={`flex flex-col items-center gap-8 md:gap-16
+      className={`flex flex-col items-center gap-8 md:gap-16 
                   md:flex-row ${align === 'flipped' ? 'md:flex-row-reverse' : ''}`}
     >
+      {/* IMAGE SECTION */}
       <div className='w-full md:w-1/2'>
         <div className='rounded-xl border shadow-md overflow-hidden border-gray-200 dark:border-gray-800'>
+          {/* LIGHT MODE IMAGE */}
           <Image
-            alt={`${title} Screenshot`}
+            priority
+            alt={`${title} screenshot`}
             className='w-full h-auto object-cover dark:hidden'
             height={600}
-            priority={index === 0}
             src={`/screenshots/${imageBaseName}.light.png`}
             width={900}
           />
+
+          {/* DARK MODE IMAGE */}
           <Image
-            alt={`${title} Screenshot`}
+            priority
+            alt={`${title} screenshot`}
             className='w-full h-auto object-cover hidden dark:block'
             height={600}
-            priority={index === 0}
             src={`/screenshots/${imageBaseName}.dark.png`}
             width={900}
           />
         </div>
       </div>
+
+      {/* TEXT SECTION */}
       <div className='w-full md:w-1/2 text-center md:text-left'>
         <h2 className='text-2xl md:text-3xl font-semibold text-gray-900 dark:text-gray-100'>
           {title}

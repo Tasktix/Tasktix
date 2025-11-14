@@ -16,46 +16,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import features from '@/data/features.json';
 import FeatureBlock from '@/components/FeatureBlock';
-
-const FEATURES = [
-  {
-    title: 'Time Tracking',
-    description:
-      'Track expected vs elapsed time for every task with start and pause buttons.',
-    imageBaseName: 'timeTracking'
-  },
-  {
-    title: 'Tag System',
-    description:
-      'Organize tasks with customizable colored tags for subjects, projects, or contexts.',
-    imageBaseName: 'tagSystem'
-  },
-  {
-    title: 'Priority System',
-    description:
-      'Mark tasks as low, medium, or high priority to stay focused on what matters most.',
-    imageBaseName: 'priority'
-  },
-  {
-    title: 'Filtering Feature',
-    description:
-      "Filter tasks using any (or every!) detail that's tracked — whether that's a tag, the due date, the time you've spent working on it, or anything else.",
-    imageBaseName: 'filtering'
-  },
-  {
-    title: 'Manual Sorting',
-    description:
-      "Tasks are intelligently sorted based on due date and priority. If you need extra control, however, you're also free to arrange them manually.",
-    imageBaseName: 'sorting'
-  }
-];
 
 export default function Page() {
   return (
     <main className='mx-auto max-w-6xl px-4 md:px-6 py-12 space-y-24'>
       <header className='text-center mb-12'>
-        <h1 className='text-3xl md:text-4xl font-extrabold '>
+        <h1 className='text-3xl md:text-4xl font-extrabold'>
           Tasktix — Smarter Task Tracking
         </h1>
         <p className='mt-3 text-lg'>
@@ -63,11 +31,13 @@ export default function Page() {
         </p>
       </header>
 
-      {FEATURES.map((f, i) => (
+      {features.map((f, i) => (
         <FeatureBlock
           key={f.title}
-          {...f}
           align={i % 2 === 0 ? 'default' : 'flipped'}
+          description={f.description}
+          imageBaseName={f.imageBaseName}
+          title={f.title}
         />
       ))}
     </main>
