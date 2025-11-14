@@ -25,8 +25,11 @@
     "cy:open": "cypress open"
   },
   "dependencies": {
-    "@nextui-org/react": "^2.6.11",
+    "@emotion/is-prop-valid": "^1.4.0",
+    "@heroui/react": "2.8.5",
+    "@heroui/theme": "^2.4.23",
     "@prisma/client": "^6.19.0",
+    "@tailwindcss/postcss": "^4.1.16",
     "framer-motion": "^11.18.2",
     "mysql2": "^3.14.1",
     "next": "^14.2.30",
@@ -44,7 +47,6 @@
     "@types/node": "^20.19.2",
     "@types/react": "^18.3.23",
     "@types/react-dom": "^18.3.7",
-    "autoprefixer": "^10.4.21",
     "cross-env": "^10.0.0",
     "cypress": "^15.1.0",
     "danger": "^13.0.4",
@@ -65,7 +67,7 @@
     "postcss": "^8.5.6",
     "prettier": "3.3.3",
     "prisma": "^6.19.0",
-    "tailwindcss": "^3.4.17",
+    "tailwindcss": "^4.1.16",
     "ts-jest": "^29.4.0",
     "typescript": "^5.8.3"
   }

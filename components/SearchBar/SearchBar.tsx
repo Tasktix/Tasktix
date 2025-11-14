@@ -22,7 +22,7 @@ import {
   Autocomplete,
   AutocompleteItem,
   AutocompleteSection
-} from '@nextui-org/react';
+} from '@heroui/react';
 
 import { Filters, InputOptionGroup } from './types';
 import searchReducer from './searchReducer';

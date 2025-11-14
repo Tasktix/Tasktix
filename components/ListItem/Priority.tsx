@@ -16,12 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {
-  Select,
-  SelectItem,
-  Selection,
-  SlotsToClasses
-} from '@nextui-org/react';
+import { Select, SelectItem, Selection, SlotsToClasses } from '@heroui/react';
 
 import ListItem from '@/lib/model/listItem';
 
@@ -82,13 +77,13 @@ export default function Priority({
           );
         }}
       >
-        <SelectItem key='High' color='danger' value='High'>
+        <SelectItem key='High' color='danger'>
           High
         </SelectItem>
-        <SelectItem key='Medium' color='warning' value='Medium'>
+        <SelectItem key='Medium' color='warning'>
           Medium
         </SelectItem>
-        <SelectItem key='Low' color='success' value='Low'>
+        <SelectItem key='Low' color='success'>
           Low
         </SelectItem>
       </Select>

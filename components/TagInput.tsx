@@ -18,7 +18,7 @@
 
 import { FormEvent, useState } from 'react';
 import { Check } from 'react-bootstrap-icons';
-import { Button, Input } from '@nextui-org/react';
+import { Button, Input } from '@heroui/react';
 
 import { NamedColor } from '@/lib/model/color';
 

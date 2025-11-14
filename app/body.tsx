@@ -25,7 +25,7 @@ import {
   NavbarBrand,
   NavbarContent,
   NavbarItem
-} from '@nextui-org/react';
+} from '@heroui/react';
 import { useRouter } from 'next/navigation';
 import { ReactNode, useState } from 'react';
 import Image from 'next/image';
@@ -53,13 +53,15 @@ export function setLoggedOut() {
 let _setLoggedIn: () => void;
 let _setLoggedOut: () => void;
 
+interface BodyProps {
+  children: ReactNode;
+  isLoggedInAtStart: boolean;
+}
+
 export default function Body({
   children,
   isLoggedInAtStart
-}: {
-  children: ReactNode;
-  isLoggedInAtStart: boolean;
-}) {
+}: Readonly<BodyProps>) {
   const [isLoggedIn, setIsLoggedIn] = useState(isLoggedInAtStart);
 
   _setLoggedIn = () => setIsLoggedIn(true);

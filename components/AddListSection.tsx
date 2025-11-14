@@ -18,7 +18,7 @@
 
 'use client';
 
-import { Button, Input } from '@nextui-org/react';
+import { Button, Input } from '@heroui/react';
 import { FormEvent, useState } from 'react';
 
 import api from '@/lib/api';
@@ -50,7 +50,7 @@ export default function AddListSection({
 
   return (
     <form
-      className='rounded-md w-100 overfLow-hidden border-2 border-content3 bg-content1 p-4 h-18 flex items-center justify-center gap-4 shadow-lg shadow-content2'
+      className='rounded-md w-full overfLow-hidden border-2 border-content3 bg-content1 p-4 h-18 flex items-center justify-center gap-4 shadow-lg shadow-content2'
       onSubmit={createSection}
     >
       <Input
