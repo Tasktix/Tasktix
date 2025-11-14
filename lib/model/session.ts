@@ -20,14 +20,14 @@ import { generateId } from '@/lib/generateId';
 
 export default class Session {
   id: string;
-  userId: string | null;
-  dateExpire: Date | null;
+  userId: string;
+  dateExpire: Date;
 
-  constructor(id?: string) {
+  constructor(userId: string, dateExpire: Date, id?: string) {
     if (!id) id = generateId(128);
 
     this.id = id;
-    this.userId = null;
-    this.dateExpire = null;
+    this.userId = userId;
+    this.dateExpire = dateExpire;
   }
 }

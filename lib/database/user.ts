@@ -18,13 +18,11 @@
 
 'use server';
 
-import { Prisma, User } from '@prisma/client';
+import User from '@/lib/model/user';
 
 import { prisma } from './db_connect';
 
-export async function createUser(
-  user: Prisma.UserCreateInput
-): Promise<boolean> {
+export async function createUser(user: User): Promise<boolean> {
   try {
     await prisma.user.create({
       data: user
@@ -36,13 +34,7 @@ export async function createUser(
   return true;
 }
 
-export async function updateUser(user: {
-  id: string;
-  username: string;
-  email: string;
-  password: string;
-  dateSignedIn: Date;
-}): Promise<boolean> {
+export async function updateUser(user: User): Promise<boolean> {
   const result = await prisma.user.update({
     where: { id: user.id },
     data: user

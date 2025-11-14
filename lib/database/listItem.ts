@@ -18,7 +18,9 @@
 
 'use server';
 
-import { Prisma, Item as ListItem } from '@prisma/client';
+import { Prisma } from '@prisma/client';
+
+import ListItem from '@/lib/model/listItem';
 
 import { prisma } from './db_connect';
 
@@ -39,7 +41,7 @@ export async function createListItem(
 export async function getListItemById(id: string): Promise<ListItem | false> {
   const result = await prisma.item.findUnique({
     where: { id },
-    include: { tags: true, assignees: true }
+    include: { tags: true, assignees: { include: { user: true } } }
   });
 
   return result ?? false;
@@ -48,7 +50,7 @@ export async function getListItemById(id: string): Promise<ListItem | false> {
 export async function getListItemsByUser(userId: string): Promise<ListItem[]> {
   const result = await prisma.item.findMany({
     where: { section: { list: { members: { some: { userId } } } } },
-    include: { tags: true, assignees: true }
+    include: { tags: true, assignees: { include: { user: true } } }
   });
 
   return result;
@@ -91,11 +93,13 @@ export async function linkAssignee(
   return true;
 }
 
-export async function updateListItem(item: ListItem): Promise<boolean> {
+export async function updateListItem(
+  item: Omit<ListItem, 'assignees' | 'tags'>
+): Promise<boolean> {
   try {
     await prisma.item.update({
       where: { id: item.id },
-      data: item
+      data: { ...item, sectionId: undefined }
     });
   } catch {
     return false;

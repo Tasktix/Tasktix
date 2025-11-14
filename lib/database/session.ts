@@ -18,21 +18,17 @@
 
 'use server';
 
-import { Session } from '@prisma/client';
+import Session from '@/lib/model/session';
 
 import { prisma } from './db_connect';
 
-export async function createSession(
-  id: string,
-  userId: string,
-  dateExpire: Date
-): Promise<boolean> {
+export async function createSession(session: Session): Promise<boolean> {
   try {
     await prisma.session.create({
       data: {
-        id,
-        userId,
-        dateExpire
+        id: session.id,
+        userId: session.userId,
+        dateExpire: session.dateExpire
       }
     });
   } catch {

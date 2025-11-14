@@ -18,15 +18,26 @@
 
 'use server';
 
-import { Prisma, List, ListMember, Tag } from '@prisma/client';
+import List from '@/lib/model/list';
+import ListMember from '@/lib/model/listMember';
+import Tag from '@/lib/model/tag';
 
 import { prisma } from './db_connect';
 
 export async function createList(
-  list: Prisma.ListCreateInput
+  list: Omit<List, 'sections'>
 ): Promise<boolean> {
   try {
-    await prisma.list.create({ data: list });
+    await prisma.list.create({
+      data: {
+        ...list,
+        members: {
+          createMany: {
+            data: { ...list.members.map(m => ({ userId: m.user.id, ...m })) }
+          }
+        }
+      }
+    });
   } catch {
     return false;
   }
@@ -34,9 +45,9 @@ export async function createList(
   return true;
 }
 
-export async function createTag(tag: Prisma.TagCreateInput): Promise<boolean> {
+export async function createTag(listId: string, tag: Tag): Promise<boolean> {
   try {
-    await prisma.tag.create({ data: tag });
+    await prisma.tag.create({ data: { listId, ...tag } });
   } catch {
     return false;
   }
@@ -96,7 +107,9 @@ export async function getListBySectionId(id: string): Promise<List | false> {
   return result ?? false;
 }
 
-export async function getListsByUser(id: string): Promise<List[]> {
+export async function getListsByUser(
+  id: string
+): Promise<Omit<List, 'members' | 'sections'>[]> {
   const result = await prisma.list.findMany({
     where: { members: { some: { userId: id } } }
   });
@@ -106,12 +119,12 @@ export async function getListsByUser(id: string): Promise<List[]> {
 
 export async function getListMembersByUser(
   userId: string
-): Promise<{ [id: string]: ListMember[] }> {
+): Promise<{ [id: string]: Omit<ListMember, 'user'>[] }> {
   const result = await prisma.listMember.findMany({
     where: { userId }
   });
 
-  const returnVal: { [id: string]: ListMember[] } = {};
+  const returnVal: { [id: string]: Omit<ListMember, 'user'>[] } = {};
 
   for (const member of result) {
     if (!returnVal[member.listId]) returnVal[member.listId] = [member];
@@ -196,7 +209,9 @@ export async function getTagsByListId(id: string): Promise<Tag[] | false> {
   return result ?? false;
 }
 
-export async function updateList(list: List): Promise<boolean> {
+export async function updateList(
+  list: Omit<List, 'members' | 'sections'>
+): Promise<boolean> {
   try {
     await prisma.list.update({
       where: { id: list.id },

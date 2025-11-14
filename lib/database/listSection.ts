@@ -18,17 +18,18 @@
 
 'use server';
 
+import ListSection from '@/lib/model/listSection';
+
 import { prisma } from './db_connect';
 
 export async function createListSection(
   listId: string,
-  sectionId: string,
-  name: string
+  section: ListSection
 ): Promise<boolean> {
   const result = await prisma.listSection.create({
     data: {
-      id: sectionId,
-      name,
+      id: section.id,
+      name: section.name,
       listId
     }
   });
