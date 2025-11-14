@@ -20,7 +20,7 @@
 
 import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, Input } from '@heroui/react';
+import { addToast, Button, Input } from '@heroui/react';
 
 import Message, { InputMessage } from '@/components/InputMessage';
 import {
@@ -28,7 +28,6 @@ import {
   validateEmail,
   validatePassword
 } from '@/lib/validate';
-import { addSnackbar } from '@/components/Snackbar';
 import { default as api } from '@/lib/api';
 import { setLoggedIn } from '@/app/body';
 
@@ -106,11 +105,11 @@ export default function SignUp() {
             router.replace('/list');
           })
           .catch(err => {
-            addSnackbar(err.message, 'error');
+            addToast({ title: err.message, color: 'danger' });
           });
       })
       .catch(err => {
-        addSnackbar(err.message, 'error');
+        addToast({ title: err.message, color: 'danger' });
       });
   }
 

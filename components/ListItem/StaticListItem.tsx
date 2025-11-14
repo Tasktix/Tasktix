@@ -17,7 +17,7 @@
  */
 
 import { useEffect, useRef, useState } from 'react';
-import { Checkbox, Chip } from '@heroui/react';
+import { addToast, Checkbox, Chip } from '@heroui/react';
 import { DragControls } from 'framer-motion';
 import { CardChecklist, GripVertical } from 'react-bootstrap-icons';
 import Link from 'next/link';
@@ -32,7 +32,6 @@ import List from '@/lib/model/list';
 import { getBackgroundColor, getTextColor } from '@/lib/color';
 
 import DateInput from '../DateInput';
-import { addSnackbar } from '../Snackbar';
 import Name from '../Name';
 
 import ExpectedInput from './ExpectedInput';
@@ -126,7 +125,7 @@ export default function StaticListItem({
           newItem.name = name;
           _setItem(newItem);
         })
-        .catch(err => addSnackbar(err.message, 'error'));
+        .catch(err => addToast({ title: err.message, color: 'danger' }));
     },
 
     dueDate: (date: Date): void => {
@@ -142,7 +141,7 @@ export default function StaticListItem({
           // Send parent the update for reordering items
           updateDueDate(date);
         })
-        .catch(err => addSnackbar(err.message, 'error'));
+        .catch(err => addToast({ title: err.message, color: 'danger' }));
     },
 
     priority: (priority: ListItemModel['priority']): void => {
@@ -158,7 +157,7 @@ export default function StaticListItem({
           // Send parent the update for reordering items
           updatePriority(priority);
         })
-        .catch(err => addSnackbar(err.message, 'error'));
+        .catch(err => addToast({ title: err.message, color: 'danger' }));
     },
 
     incomplete: () => {
@@ -175,7 +174,7 @@ export default function StaticListItem({
           // Send parent the update for reordering items
           setPaused();
         })
-        .catch(err => addSnackbar(err.message, 'error'));
+        .catch(err => addToast({ title: err.message, color: 'danger' }));
     },
 
     complete: () => {
@@ -207,7 +206,7 @@ export default function StaticListItem({
           // Send parent the update for reordering items
           setCompleted(dateCompleted);
         })
-        .catch(err => addSnackbar(err.message, 'error'));
+        .catch(err => addToast({ title: err.message, color: 'danger' }));
     },
 
     expectedMs: (ms: number) => {
@@ -223,7 +222,7 @@ export default function StaticListItem({
           // Send parent the update for reordering items
           updateExpectedMs(ms);
         })
-        .catch(err => addSnackbar(err.message, 'error'));
+        .catch(err => addToast({ title: err.message, color: 'danger' }));
     },
 
     startedRunning: () => {
@@ -252,7 +251,7 @@ export default function StaticListItem({
           // Send parent the update for reordering items
           setStatus('In Progress');
         })
-        .catch(err => addSnackbar(err.message, 'error'));
+        .catch(err => addToast({ title: err.message, color: 'danger' }));
     },
 
     pausedRunning: () => {
@@ -280,7 +279,7 @@ export default function StaticListItem({
           // Send parent the update for reordering items
           setStatus('Paused');
         })
-        .catch(err => addSnackbar(err.message, 'error'));
+        .catch(err => addToast({ title: err.message, color: 'danger' }));
     },
 
     resetTime: () => {
@@ -303,7 +302,7 @@ export default function StaticListItem({
           // Send parent the update for reordering items
           setStatus(status);
         })
-        .catch(err => addSnackbar(err.message, 'error'));
+        .catch(err => addToast({ title: err.message, color: 'danger' }));
     },
 
     linkedTag: (id: string) => {
@@ -321,7 +320,7 @@ export default function StaticListItem({
 
           setTags(newTags);
         })
-        .catch(err => addSnackbar(err.message, 'error'));
+        .catch(err => addToast({ title: err.message, color: 'danger' }));
     },
 
     linkedNewTag: (id: string, name: string, color: NamedColor) => {
@@ -343,7 +342,7 @@ export default function StaticListItem({
             if (newTags[i].id === id) newTags.splice(i, 1);
           setTags(newTags);
         })
-        .catch(err => addSnackbar(err.message, 'error'));
+        .catch(err => addToast({ title: err.message, color: 'danger' }));
     },
 
     deleted: () => {
@@ -354,9 +353,9 @@ export default function StaticListItem({
           deleteItem();
 
           // Let the user know we succeeded
-          addSnackbar(res.message, 'success');
+          addToast({ title: res.message, color: 'success' });
         })
-        .catch(err => addSnackbar(err.message, 'error'));
+        .catch(err => addToast({ title: err.message, color: 'danger' }));
     }
   };
 

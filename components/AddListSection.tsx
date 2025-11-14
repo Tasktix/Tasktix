@@ -18,13 +18,11 @@
 
 'use client';
 
-import { Button, Input } from '@heroui/react';
+import { addToast, Button, Input } from '@heroui/react';
 import { FormEvent, useState } from 'react';
 
 import api from '@/lib/api';
 import ListSection from '@/lib/model/listSection';
-
-import { addSnackbar } from './Snackbar';
 
 export default function AddListSection({
   listId,
@@ -45,7 +43,7 @@ export default function AddListSection({
         addListSection(new ListSection(name, [], id));
         setName('');
       })
-      .catch(err => addSnackbar(err.message, 'error'));
+      .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
   return (
