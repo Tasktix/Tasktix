@@ -18,9 +18,9 @@
     "prisma:deploy": "prisma migrate deploy",
     "prisma:reset": "prisma migrate reset",
     "test:jest": "jest",
-    "test:cy": "CYPRESS_EXIT=0; npm run start:test -- --detach && npm run prisma:reset -- -f && cypress run || CYPRESS_EXIT=$?; npm run stop:test && exit $CYPRESS_EXIT",
+    "test:cy": "CYPRESS_EXIT=0; npm run start:test -- --detach && cypress run || CYPRESS_EXIT=$?; npm run stop:test && exit $CYPRESS_EXIT",
     "start:test": "cross-env DB_HOST=mariadb DB_USER=root DB_PASSWORD=password DB_DATABASE=tasktix_test docker compose -f compose.yaml up --build",
-    "stop:test": "cross-env docker compose -f compose.yaml down --volumes",
+    "stop:test": "docker compose -f compose.yaml down --volumes",
     "testdb:seed": "docker compose exec -T mariadb mariadb -uroot -ppassword tasktix_test < ./scripts/database/seedTests.sql",
     "cy:open": "cypress open"
   },

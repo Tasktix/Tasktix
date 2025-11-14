@@ -18,18 +18,17 @@
 
 'use server';
 
-import { Prisma } from '@prisma/client';
-
 import ListItem from '@/lib/model/listItem';
 
 import { prisma } from './db_connect';
 
 export async function createListItem(
-  item: Prisma.ItemCreateInput
+  sectionId: string,
+  item: Omit<ListItem, 'assignees' | 'tags'>
 ): Promise<boolean> {
   try {
     await prisma.item.create({
-      data: item
+      data: { sectionId, ...item }
     });
   } catch {
     return false;

@@ -232,7 +232,7 @@ export default function StaticListItem({
       api
         .patch(`/item/${_item.id}`, {
           dateStarted: startedDate,
-          status: 'In Progress'
+          status: 'In_Progress'
         })
         .then(() => {
           // Update the timer
@@ -246,11 +246,11 @@ export default function StaticListItem({
           // Update the internal state
           const newItem = structuredClone(_item);
 
-          newItem.status = 'In Progress';
+          newItem.status = 'In_Progress';
           _setItem(newItem);
 
           // Send parent the update for reordering items
-          setStatus('In Progress');
+          setStatus('In_Progress');
         })
         .catch(err => addSnackbar(err.message, 'error'));
     },
@@ -371,7 +371,7 @@ export default function StaticListItem({
 
   // Start the timer if it should be running when the component is first rendered
   useEffect(() => {
-    if (_item.status === 'In Progress' && !timer.current)
+    if (_item.status === 'In_Progress' && !timer.current)
       timer.current = setTimeout(
         updateTime.current,
         minute - (elapsedLive % minute) + 5

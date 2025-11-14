@@ -216,7 +216,7 @@ function getFilterOptions(
       label: 'status',
       selectOptions: [
         { name: 'Unstarted' },
-        { name: 'In Progress' },
+        { name: 'In_Progress' },
         { name: 'Paused' },
         { name: 'Completed' }
       ]

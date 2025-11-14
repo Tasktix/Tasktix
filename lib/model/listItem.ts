@@ -61,7 +61,6 @@ export default class ListItem {
   assignees: Assignee[];
   tags: Tag[];
   listId?: string;
-  sectionId?: string;
 
   constructor(
     name: string,
@@ -79,8 +78,7 @@ export default class ListItem {
       dateCompleted = null,
       assignees = [],
       tags = [],
-      listId,
-      sectionId
+      listId
     }: {
       id?: string;
       status?: Status;
@@ -116,6 +114,5 @@ export default class ListItem {
     this.assignees = assignees;
     this.tags = tags;
     this.listId = listId;
-    this.sectionId = sectionId;
   }
 }

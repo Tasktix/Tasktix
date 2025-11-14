@@ -59,16 +59,12 @@ export async function getListById(id: string): Promise<List | false> {
   const result = await prisma.list.findUnique({
     where: { id },
     include: {
-      members: {
-        include: {
-          user: true
-        }
-      },
+      members: { include: { user: true } },
       sections: {
         include: {
           items: {
             include: {
-              assignees: true,
+              assignees: { include: { user: true } },
               tags: true
             }
           }
@@ -85,16 +81,12 @@ export async function getListBySectionId(id: string): Promise<List | false> {
   const result = await prisma.list.findFirst({
     where: { sections: { some: { id } } },
     include: {
-      members: {
-        include: {
-          user: true
-        }
-      },
+      members: { include: { user: true } },
       sections: {
         include: {
           items: {
             include: {
-              assignees: true,
+              assignees: { include: { user: true } },
               tags: true
             }
           }
@@ -185,7 +177,7 @@ export async function getTagsByUser(
   userId: string
 ): Promise<{ [id: string]: Tag[] } | false> {
   const result = await prisma.tag.findMany({
-    where: { list: { members: { some: { userId: userId } } } }
+    where: { list: { members: { some: { userId } } } }
   });
 
   if (!result) return false;
