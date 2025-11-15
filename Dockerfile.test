@@ -2,7 +2,7 @@ FROM node:lts-alpine
 WORKDIR /app
 
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN npm ci --ignore-scripts
 
 COPY scripts/test_service_entry.sh ./entry.sh
 COPY tsconfig.json prisma.config.ts ./

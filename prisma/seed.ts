@@ -57,7 +57,7 @@ main()
   .then(async () => {
     await prisma.$disconnect();
   })
-  .catch(async () => {
+  .catch(async e => {
     await prisma.$disconnect();
-    process.exit(1);
+    throw e;
   });
