@@ -18,6 +18,8 @@
 
 'use server';
 
+import { Prisma } from '@prisma/client';
+
 import ListItem from '@/lib/model/listItem';
 
 import { prisma } from './db_connect';
@@ -123,18 +125,22 @@ export async function updateSectionIndices(
   const indexOne = Math.min(oldIndex, index);
   const indexTwo = Math.max(oldIndex, index);
 
-  // TODO: validate that inline ternary for index works as expected
   try {
+    // Raw SQL is used here because Prisma's queries aren't powerful enough to perform
+    // this as a single atomic operation. With future potential scaling, this could lead
+    // to weird, difficult-to-reproduce race conditions. It's not clear that even using a
+    // transaction would prevent these race conditions, and any that do would have a
+    // significant performance overhead by preventing concurrent database operations.
     await prisma.$executeRaw`
-      UPDATE \`items\`
-      SET \`i_sectionIndex\` = CASE 
-        WHEN i_id = ${itemId}
+      UPDATE \`Item\`
+      SET \`sectionIndex\` = CASE 
+        WHEN id = ${itemId}
           THEN ${index}
-          ELSE \`i_sectionIndex\` ${oldIndex > index ? '+ 1' : '- 1'}
+          ELSE \`sectionIndex\` ${oldIndex > index ? Prisma.sql`+ 1` : Prisma.sql`- 1`}
         END
-      WHERE i_ls_id = ${sectionId}
-        AND i_sectionIndex >= ${indexOne}
-        AND i_sectionIndex <= ${indexTwo};
+      WHERE sectionId = ${sectionId}
+        AND sectionIndex >= ${indexOne}
+        AND sectionIndex <= ${indexTwo};
     `;
   } catch {
     return false;
