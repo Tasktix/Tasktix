@@ -34,13 +34,11 @@ export async function createList(
         sections: undefined,
         members: {
           createMany: {
-            data: [
-              ...list.members.map(m => ({
-                ...m,
-                user: undefined,
-                userId: m.user.id
-              }))
-            ]
+            data: list.members.map(m => ({
+              ...m,
+              user: undefined,
+              userId: m.user.id
+            }))
           }
         }
       }

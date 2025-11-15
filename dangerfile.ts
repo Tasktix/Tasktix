@@ -76,13 +76,17 @@ if (!modifiedSchema && addedMigrations.length > 0) {
 }
 
 if (deletedMigrations.length > 0) {
+  const fileList = deletedMigrations.map(f => `- ${f}`).join('\n');
+
   fail(
-    `❌ Migration files were deleted: \n${deletedMigrations.map(f => `- ${f}`).join('\n')}\nPrisma migrations should never be removed from version control.`
+    `❌ Migration files were deleted: \n${fileList}\nPrisma migrations should never be removed from version control.`
   );
 }
 
 if (modifiedMigrations.length > 0) {
+  const fileList = modifiedMigrations.map(f => `- ${f}`).join('\n');
+
   warn(
-    `⚠️ Existing migration files were modified: \n${modifiedMigrations.map(f => `- ${f}`).join('\n')}\nMigration files should be immutable once committed.`
+    `⚠️ Existing migration files were modified: \n${fileList}\nMigration files should be immutable once committed.`
   );
 }

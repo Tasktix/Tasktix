@@ -71,7 +71,7 @@ export async function getUserBySessionId(id: string): Promise<User | false> {
 
   if (!result) return false;
 
-  if (result.dateExpire.getTime() < new Date().getTime()) return false;
+  if (result.dateExpire.getTime() < Date.now()) return false;
 
   return result.user;
 }

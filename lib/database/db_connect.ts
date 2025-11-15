@@ -22,7 +22,7 @@ import { PrismaClient } from '@prisma/client';
 // development server hot reloads. See Prisma Next.js best practices:
 // https://www.prisma.io/docs/orm/more/help-and-troubleshooting/nextjs-help#best-practices-for-using-prisma-client-in-development
 
-const globalForPrisma = global as unknown as { prisma: PrismaClient };
+const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 
 export const prisma = globalForPrisma.prisma || new PrismaClient();
 
