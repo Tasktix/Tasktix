@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import features from '@/data/features.json';
+import features from '@/public/data/features.json';
 import FeatureBlock from '@/components/FeatureBlock';
 
 export default function Page() {
