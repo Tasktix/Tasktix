@@ -1,0 +1,11 @@
+FROM node:lts-alpine
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+COPY scripts/test_service_entry.sh ./entry.sh
+COPY tsconfig.json prisma.config.ts ./
+COPY prisma ./prisma
+
+CMD [ "sh", "entry.sh" ]
