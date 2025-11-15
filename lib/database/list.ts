@@ -31,9 +31,16 @@ export async function createList(
     await prisma.list.create({
       data: {
         ...list,
+        sections: undefined,
         members: {
           createMany: {
-            data: { ...list.members.map(m => ({ userId: m.user.id, ...m })) }
+            data: [
+              ...list.members.map(m => ({
+                ...m,
+                user: undefined,
+                userId: m.user.id
+              }))
+            ]
           }
         }
       }
@@ -207,7 +214,12 @@ export async function updateList(
   try {
     await prisma.list.update({
       where: { id: list.id },
-      data: list
+      data: {
+        ...list,
+        members: undefined,
+        sections: undefined,
+        tags: undefined
+      }
     });
   } catch {
     return false;

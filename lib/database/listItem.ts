@@ -28,7 +28,7 @@ export async function createListItem(
 ): Promise<boolean> {
   try {
     await prisma.item.create({
-      data: { sectionId, ...item }
+      data: { ...item, assignees: undefined, tags: undefined, sectionId }
     });
   } catch {
     return false;
@@ -98,7 +98,12 @@ export async function updateListItem(
   try {
     await prisma.item.update({
       where: { id: item.id },
-      data: { ...item, sectionId: undefined }
+      data: {
+        ...item,
+        tags: undefined,
+        assignees: undefined,
+        sectionId: undefined
+      }
     });
   } catch {
     return false;
