@@ -60,7 +60,6 @@ describe('ListItem constructor', () => {
     expect(listItem.assignees).toHaveLength(0);
     expect(listItem.tags).toHaveLength(0);
     expect(listItem.listId).toBeUndefined();
-    expect(listItem.sectionId).toBeUndefined();
   });
 
   test('Assigns all properties correctly', () => {
@@ -93,7 +92,6 @@ describe('ListItem constructor', () => {
       assignees,
       tags,
       listId: 'listId',
-      sectionId: 'sectionId',
       id: 'provided-id'
     });
 
@@ -111,7 +109,6 @@ describe('ListItem constructor', () => {
     expect(listItem.assignees).toBe(assignees);
     expect(listItem.tags).toBe(tags);
     expect(listItem.listId).toBe('listId');
-    expect(listItem.sectionId).toBe('sectionId');
     expect(listItem.id).toBe('provided-id');
   });
 });

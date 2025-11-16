@@ -18,163 +18,114 @@
 
 'use server';
 
-import ListMember from '@/lib/model/listMember';
 import List from '@/lib/model/list';
+import ListMember from '@/lib/model/listMember';
 import Tag from '@/lib/model/tag';
 
-import { execute, query } from './db_connect';
-import {
-  DB_List,
-  extractListFromRow,
-  extractListsFromRows
-} from './model/list';
-import { extractListMemberFromRow } from './model/listMember';
-import { DB_Tag, extractTagFromRow } from './model/tag';
+import { prisma } from './db_connect';
 
-export async function createList(list: List): Promise<boolean> {
-  const sql = `
-    INSERT INTO \`lists\`(
-      \`l_id\`,
-      \`l_name\`,
-      \`l_color\`
-    )
-    VALUES (:id, :name, :color);
-  `;
-
-  const result = await execute(sql, list);
-
-  if (!result) return false;
-
-  for (const member of list.members) {
-    const sql = `
-      INSERT INTO \`listMembers\`(
-        \`lm_u_id\`,
-        \`lm_l_id\`,
-        \`lm_canAdd\`,
-        \`lm_canRemove\`,
-        \`lm_canComplete\`,
-        \`lm_canAssign\`
-      )
-      VALUES (:userId, :listId, :canAdd, :canRemove, :canComplete, :canAssign);
-    `;
-
-    const result = await execute(sql, {
-      ...member,
-      userId: member.user.id,
-      listId: list.id
+export async function createList(
+  list: Omit<List, 'sections'>
+): Promise<boolean> {
+  try {
+    await prisma.list.create({
+      data: {
+        ...list,
+        sections: undefined,
+        members: {
+          createMany: {
+            data: list.members.map(m => ({
+              ...m,
+              user: undefined,
+              userId: m.user.id
+            }))
+          }
+        }
+      }
     });
-
-    if (!result) return false;
+  } catch {
+    return false;
   }
 
   return true;
 }
 
 export async function createTag(listId: string, tag: Tag): Promise<boolean> {
-  const sql = `
-    INSERT INTO \`tags\`(
-      \`t_id\`,
-      \`t_name\`,
-      \`t_color\`,
-      \`t_l_id\`
-    )
-    VALUES (
-      :id,
-      :name,
-      :color,
-      :listId
-    );
-  `;
+  try {
+    await prisma.tag.create({ data: { listId, ...tag } });
+  } catch {
+    return false;
+  }
 
-  const result = await execute(sql, { listId, ...tag });
-
-  return Boolean(result);
+  return true;
 }
 
 export async function getListById(id: string): Promise<List | false> {
-  const sql = `
-    SELECT * FROM \`lists\`
-      LEFT JOIN \`listMembers\` ON \`listMembers\`.\`lm_l_id\` = \`lists\`.\`l_id\`
-      LEFT JOIN \`users\` ON \`users\`.\`u_id\` = \`listMembers\`.\`lm_u_id\`
-      LEFT JOIN \`listSections\` ON \`listSections\`.\`ls_l_id\` = \`lists\`.\`l_id\`
-      LEFT JOIN \`items\` ON \`items\`.\`i_ls_id\` = \`listSections\`.\`ls_id\`
-      LEFT JOIN \`itemTags\` ON \`itemTags\`.\`it_i_id\` = \`items\`.\`i_id\`
-      LEFT JOIN \`tags\` ON \`tags\`.\`t_id\` = \`itemTags\`.\`it_t_id\`
-      LEFT JOIN \`itemAssignees\` ON \`itemAssignees\`.\`ia_i_id\` = \`items\`.\`i_id\`
-    WHERE \`l_id\` = :id
-    ORDER BY \`listSections\`.\`ls_name\` ASC, \`items\`.\`i_id\` ASC;
-  `;
+  const result = await prisma.list.findUnique({
+    where: { id },
+    include: {
+      members: { include: { user: true } },
+      sections: {
+        include: {
+          items: {
+            include: {
+              assignees: { include: { user: true } },
+              tags: true
+            }
+          }
+        }
+      },
+      tags: true
+    }
+  });
 
-  const result = await query<DB_List>(sql, { id });
-
-  if (!result) return false;
-
-  return extractListsFromRows(result)[0];
+  return result ?? false;
 }
 
 export async function getListBySectionId(id: string): Promise<List | false> {
-  const sql = `
-    SELECT * FROM \`lists\`
-      LEFT JOIN \`listMembers\` ON \`listMembers\`.\`lm_l_id\` = \`lists\`.\`l_id\`
-      LEFT JOIN \`users\` ON \`users\`.\`u_id\` = \`listMembers\`.\`lm_u_id\`
-      LEFT JOIN \`listSections\` ON \`listSections\`.\`ls_l_id\` = \`lists\`.\`l_id\`
-      LEFT JOIN \`items\` ON \`items\`.\`i_ls_id\` = \`listSections\`.\`ls_id\`
-      LEFT JOIN \`itemTags\` ON \`itemTags\`.\`it_i_id\` = \`items\`.\`i_id\`
-      LEFT JOIN \`tags\` ON \`tags\`.\`t_id\` = \`itemTags\`.\`it_t_id\`
-      LEFT JOIN \`itemAssignees\` ON \`itemAssignees\`.\`ia_i_id\` = \`items\`.\`i_id\`
-    WHERE \`l_id\` IN (
-      SELECT \`listSections\`.\`ls_l_id\` FROM \`listSections\`
-      WHERE \`listSections\`.\`ls_id\` = :id
-    )
-    ORDER BY \`listSections\`.\`ls_name\` ASC, \`items\`.\`i_id\` ASC;
-  `;
+  const result = await prisma.list.findFirst({
+    where: { sections: { some: { id } } },
+    include: {
+      members: { include: { user: true } },
+      sections: {
+        include: {
+          items: {
+            include: {
+              assignees: { include: { user: true } },
+              tags: true
+            }
+          }
+        }
+      },
+      tags: true
+    }
+  });
 
-  const result = await query<DB_List>(sql, { id });
-
-  if (!result) return false;
-
-  return extractListsFromRows(result)[0];
+  return result ?? false;
 }
 
-export async function getListsByUser(id: string): Promise<List[] | false> {
-  const sql = `
-    SELECT \`lists\`.* FROM \`lists\`
-    INNER JOIN \`listMembers\` ON \`listMembers\`.\`lm_l_id\` = \`lists\`.\`l_id\`
-    WHERE \`listMembers\`.\`lm_u_id\` = :id
-    ORDER BY \`lists\`.\`l_name\` ASC;
-  `;
+export async function getListsByUser(
+  id: string
+): Promise<Omit<List, 'members' | 'sections'>[]> {
+  const result = await prisma.list.findMany({
+    where: { members: { some: { userId: id } } }
+  });
 
-  const result = await query<DB_List>(sql, { id });
-
-  if (!result) return false;
-
-  return result.map(extractListFromRow);
+  return result;
 }
 
 export async function getListMembersByUser(
   userId: string
-): Promise<{ [id: string]: ListMember[] } | false> {
-  const sql = `
-    SELECT * FROM \`lists\`
-      LEFT JOIN \`listMembers\` ON \`listMembers\`.\`lm_l_id\` = \`lists\`.\`l_id\`
-      LEFT JOIN \`listSections\` ON \`listSections\`.\`ls_l_id\` = \`lists\`.\`l_id\`
-    WHERE \`lists\`.\`l_id\` IN (
-      SELECT \`listMembers\`.\`lm_l_id\` FROM \`listMembers\`
-      WHERE \`listMembers\`.\`lm_u_id\` = :userId
-    )
-    ORDER BY \`lists\`.\`l_id\` ASC;
-  `;
+): Promise<{ [id: string]: Omit<ListMember, 'user'>[] }> {
+  const result = await prisma.listMember.findMany({
+    where: { userId }
+  });
 
-  const result = await query<DB_List>(sql, { userId });
+  const returnVal: { [id: string]: Omit<ListMember, 'user'>[] } = {};
 
-  if (!result) return false;
-
-  const returnVal: { [id: string]: ListMember[] } = {};
-
-  for (const row of result) {
-    if (!returnVal[row.l_id])
-      returnVal[row.l_id] = [extractListMemberFromRow(row)];
-    else returnVal[row.l_id].push(extractListMemberFromRow(row));
+  for (const member of result) {
+    if (!returnVal[member.listId]) returnVal[member.listId] = [member];
+    else returnVal[member.listId].push(member);
   }
 
   return returnVal;
@@ -184,161 +135,126 @@ export async function getIsListAssignee(
   userId: string,
   listId: string
 ): Promise<boolean> {
-  const sql = `
-    SELECT * FROM \`lists\`
-    INNER JOIN \`listMembers\` ON \`listMembers\`.\`lm_l_id\` = \`lists\`.\`l_id\`
-    WHERE \`listMembers\`.\`lm_u_id\` = :userId
-      AND \`lists\`.\`l_id\` = :listId
-    ORDER BY \`lists\`.\`l_name\` ASC;
-  `;
+  const result = await prisma.list.count({
+    where: { id: listId, members: { some: { userId } } }
+  });
 
-  const result = await query<DB_List>(sql, { userId, listId });
-
-  // Required to make TS happy - skipcq: JS-W1044
-  return Boolean(result && result.length);
+  return result > 0;
 }
 
 export async function getIsListAssigneeBySection(
   userId: string,
   sectionId: string
 ): Promise<boolean> {
-  const sql = `
-    SELECT * FROM \`lists\`
-    INNER JOIN \`listMembers\` ON \`listMembers\`.\`lm_l_id\` = \`lists\`.\`l_id\`
-    INNER JOIN \`listSections\` ON \`listSections\`.\`ls_l_id\` = \`lists\`.\`l_id\`
-    WHERE \`listMembers\`.\`lm_u_id\` = :userId
-      AND \`listSections\`.\`ls_id\` = :sectionId
-    ORDER BY \`lists\`.\`l_name\` ASC;
-  `;
+  const result = await prisma.list.count({
+    where: {
+      members: { some: { userId } },
+      sections: { some: { id: sectionId } }
+    }
+  });
 
-  const result = await query<DB_List>(sql, { userId, sectionId });
-
-  // Required to make TS happy - skipcq: JS-W1044
-  return Boolean(result && result.length);
+  return result > 0;
 }
 
 export async function getIsListAssigneeByItem(
   userId: string,
   itemId: string
 ): Promise<boolean> {
-  const sql = `
-    SELECT * FROM \`lists\`
-    INNER JOIN \`listMembers\` ON \`listMembers\`.\`lm_l_id\` = \`lists\`.\`l_id\`
-    INNER JOIN \`listSections\` ON \`listSections\`.\`ls_l_id\` = \`lists\`.\`l_id\`
-    INNER JOIN \`items\` ON \`items\`.\`i_ls_id\` = \`listSections\`.\`ls_id\`
-    WHERE \`listMembers\`.\`lm_u_id\` = :userId
-      AND \`items\`.\`i_id\` = :itemId
-    ORDER BY \`lists\`.\`l_name\` ASC;
-  `;
+  const result = await prisma.list.count({
+    where: {
+      members: { some: { userId } },
+      sections: { some: { items: { some: { id: itemId } } } }
+    }
+  });
 
-  const result = await query<DB_List>(sql, { userId, itemId });
-
-  // Required to make TS happy - skipcq: JS-W1044
-  return Boolean(result && result.length);
+  return result > 0;
 }
 
 export async function getTagById(id: string): Promise<Tag | false> {
-  const sql = `
-    SELECT * FROM \`tags\`
-    WHERE \`tags\`.\`t_id\` = :id;
-  `;
+  const result = await prisma.tag.findUnique({
+    where: { id }
+  });
 
-  const result = await query<DB_Tag>(sql, { id });
-
-  if (!result) return false;
-
-  return extractTagFromRow(result[0]);
+  return result ?? false;
 }
 
 export async function getTagsByUser(
   userId: string
 ): Promise<{ [id: string]: Tag[] } | false> {
-  const sql = `
-    SELECT * FROM \`lists\`
-      LEFT JOIN \`tags\` ON \`tags\`.\`t_l_id\` = \`lists\`.\`l_id\`
-      INNER JOIN \`listMembers\` ON \`listMembers\`.\`lm_l_id\` = \`lists\`.\`l_id\`
-    WHERE \`listMembers\`.\`lm_u_id\` = :userId
-    ORDER BY \`lists\`.\`l_id\` ASC, \`tags\`.\`t_name\` ASC;
-  `;
-
-  const result = await query<DB_Tag>(sql, { userId });
+  const result = await prisma.tag.findMany({
+    where: { list: { members: { some: { userId } } } }
+  });
 
   if (!result) return false;
 
   const returnVal: { [id: string]: Tag[] } = {};
 
-  for (const row of result) {
-    if (!returnVal[row.l_id]) returnVal[row.l_id] = [extractTagFromRow(row)];
-    else returnVal[row.l_id].push(extractTagFromRow(row));
+  for (const tag of result) {
+    if (!returnVal[tag.listId]) returnVal[tag.listId] = [tag];
+    else returnVal[tag.listId].push(tag);
   }
 
   return returnVal;
 }
 
 export async function getTagsByListId(id: string): Promise<Tag[] | false> {
-  const sql = `
-    SELECT * FROM \`tags\`
-    WHERE \`tags\`.\`t_l_id\` = :id
-    ORDER BY \`tags\`.\`t_name\` ASC;
-  `;
+  const result = await prisma.tag.findMany({
+    where: { listId: id },
+    orderBy: { name: 'asc' }
+  });
 
-  const result = await query<DB_Tag>(sql, { id });
-
-  if (!result) return false;
-
-  return result.map(extractTagFromRow);
+  return result ?? false;
 }
 
-export async function updateList(list: List): Promise<boolean> {
-  const sql = `
-    UPDATE \`lists\` 
-    SET
-      \`l_name\` = :name,
-      \`l_color\` = :color,
-      \`l_hasTimeTracking\` = :hasTimeTracking,
-      \`l_hasDueDates\` = :hasDueDates,
-      \`l_isAutoOrdered\` = :isAutoOrdered
-    WHERE \`l_id\` = :id;
-  `;
+export async function updateList(
+  list: Omit<List, 'members' | 'sections'>
+): Promise<boolean> {
+  try {
+    await prisma.list.update({
+      where: { id: list.id },
+      data: {
+        ...list,
+        members: undefined,
+        sections: undefined,
+        tags: undefined
+      }
+    });
+  } catch {
+    return false;
+  }
 
-  const result = await execute(sql, { ...list });
-
-  return Boolean(result);
+  return true;
 }
 
-export async function updateTag(listId: string, tag: Tag): Promise<boolean> {
-  const sql = `
-    UPDATE \`tags\`
-    SET
-      \`t_name\` = :name,
-      \`t_color\` = :color,
-      \`t_l_id\` = :listId
-    WHERE \`t_id\` = :id;
-  `;
+export async function updateTag(tag: Tag): Promise<boolean> {
+  try {
+    await prisma.tag.update({
+      where: { id: tag.id },
+      data: tag
+    });
+  } catch {
+    return false;
+  }
 
-  const result = await execute(sql, { listId, ...tag });
-
-  return Boolean(result);
+  return true;
 }
 
 export async function deleteList(id: string): Promise<boolean> {
-  const sql = `
-  DELETE FROM \`lists\`
-  WHERE \`l_id\` = :id;
-  `;
+  try {
+    await prisma.list.delete({ where: { id } });
+  } catch {
+    return false;
+  }
 
-  const result = await execute(sql, { id });
-
-  return Boolean(result);
+  return true;
 }
 
 export async function deleteTag(id: string): Promise<boolean> {
-  const sql = `
-  DELETE FROM \`tags\`
-  WHERE \`t_id\` = :id;
-  `;
+  try {
+    await prisma.tag.delete({ where: { id } });
+  } catch {
+    return false;
+  }
 
-  const result = await execute(sql, { id });
-
-  return Boolean(result);
+  return true;
 }
