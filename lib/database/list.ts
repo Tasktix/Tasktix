@@ -171,7 +171,7 @@ export async function getIsListAssigneeByItem(
 }
 
 export async function getTagById(id: string): Promise<Tag | false> {
-  const result = await prisma.tag.findFirst({
+  const result = await prisma.tag.findUnique({
     where: { id }
   });
 
