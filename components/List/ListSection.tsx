@@ -159,7 +159,7 @@ export default function ListSection({
       .patch(`/list/${listId}/section/${id}/item`, {
         itemId: item.id,
         index: newIndex,
-        oldIndex: oldIndex
+        oldIndex
       })
       .then(res => {
         addToast({ title: res.message, color: 'success' });
