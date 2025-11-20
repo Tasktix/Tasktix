@@ -18,7 +18,7 @@
 
 'use client';
 
-import Image from 'next/image';
+import { Image as HeroImage } from '@nextui-org/image';
 
 type FeatureBlockProps = {
   title: string;
@@ -40,25 +40,23 @@ export default function FeatureBlock({
     >
       {/* IMAGE SECTION */}
       <div className='w-full md:w-1/2'>
-        <div className='rounded-xl border shadow-md overflow-hidden border-gray-200 dark:border-gray-800'>
+        <div className='rounded-xl border shadow-md overflow-hidden border-default dark:border-default-400'>
           {/* LIGHT MODE IMAGE */}
-          <Image
-            priority
+          <HeroImage
             alt={`${title} screenshot`}
-            className='w-full h-auto object-cover dark:hidden'
-            height={600}
+            className='dark:hidden'
+            radius='lg'
+            shadow='md'
             src={`/screenshots/${imageBaseName}.light.png`}
-            width={900}
           />
 
           {/* DARK MODE IMAGE */}
-          <Image
-            priority
+          <HeroImage
             alt={`${title} screenshot`}
-            className='w-full h-auto object-cover hidden dark:block'
-            height={600}
+            className='hidden dark:block'
+            radius='lg'
+            shadow='md'
             src={`/screenshots/${imageBaseName}.dark.png`}
-            width={900}
           />
         </div>
       </div>
