@@ -323,7 +323,7 @@ export default function ListSection({
 
 function checkItemFilter(item: ListItemModel, filters: Filters): boolean {
   for (const key in filters)
-    if (!compareFilter(item, key, filters[key])) return false;
+    if (!compareFilter(item, key, filters.get(key))) return false;
 
   return true;
 }
