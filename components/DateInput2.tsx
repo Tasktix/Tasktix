@@ -68,7 +68,6 @@ export default function DateInput2({
     | 'warning'
     | 'success';
   size?: 'sm' | 'md' | 'lg';
-  tabIndex?: number;
   variant?: 'flat' | 'faded' | 'bordered' | 'underlined';
   disabled?: boolean;
   value?: Date;
