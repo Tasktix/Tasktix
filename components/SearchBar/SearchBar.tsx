@@ -96,8 +96,8 @@ export default function SearchBar({
     const optionName = input.slice(0, -1);
 
     if (
-      inputOptions.find(option =>
-        option.options.find(option => option.label === optionName)
+      inputOptions.some(option =>
+        option.options.some(option => option.label === optionName)
       )
     )
       addUsedOption(optionName);
