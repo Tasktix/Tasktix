@@ -57,6 +57,4 @@ export type InputAction = { callback: (value: Filters) => unknown } & (
     }
 );
 
-export type Filters = {
-  [key: InputValueAction['label']]: InputValueAction['value'];
-};
+export type Filters = Map<InputValueAction['label'], InputValueAction['value']>;
