@@ -18,8 +18,6 @@
 
 'use client';
 
-import { setTimeout } from 'node:timers';
-
 import { ReactNode, useContext, useState } from 'react';
 import { Button, Input, Link } from '@heroui/react';
 import { Check, Plus } from 'react-bootstrap-icons';
@@ -57,12 +55,7 @@ export default function Sidebar({ lists }: { lists: List[] }) {
       .catch(err => addSnackbar(err.message, 'error'));
   }
 
-  async function removeNew() {
-    function delay(ms: number) {
-      return new Promise(res => setTimeout(res, ms));
-    }
-
-    await delay(100);
+  function removeNew() {
     setAddingList(false);
   }
 
