@@ -77,7 +77,7 @@ interface SetItem {
 }
 
 export default function StaticListItem({
-  item: item,
+  item,
   list,
   members,
   tagsAvailable,

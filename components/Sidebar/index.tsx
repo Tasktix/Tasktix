@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-export { default as default } from './Sidebar';
+export { default } from './Sidebar';
 
 export { default as listReducer } from './listReducer';
 
