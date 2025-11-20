@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import fs from 'fs';
+import fs from 'node:fs';
 
 import { defineConfig } from 'cypress';
 
