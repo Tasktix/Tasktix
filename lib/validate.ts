@@ -27,7 +27,7 @@ interface InputResult {
 }
 
 export function validateUsername(username: string): InputResult {
-  const usernameRegex = /^[a-zA-Z0-9_]*$/;
+  const usernameRegex = /^\w*$/;
 
   if (!usernameRegex.test(username))
     return {

@@ -25,11 +25,7 @@ import { NamedColor, namedColors } from './color';
 
 export const ZodUser = z.strictObject({
   id: z.string().length(16),
-  username: z
-    .string()
-    .min(3)
-    .max(32)
-    .regex(/^[a-zA-Z0-9_]*$/),
+  username: z.string().min(3).max(32).regex(/^\w*$/),
   email: z.email().max(128),
   password: z.string().min(10).max(128),
   color: z.enum(namedColors)
