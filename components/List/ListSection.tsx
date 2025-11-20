@@ -83,8 +83,8 @@ export default function ListSection({
   // TODO: Update to use hashmap: don't iterate over every value when finding the right one to modify
   const [items, setItems] = useState<Item[]>(
     startingItems
-      .sort(sortItemsByIndex)
-      .sort(sortItemsByCompleted)
+      .toSorted(sortItemsByIndex)
+      .toSorted(sortItemsByCompleted)
       .map((item, i) => {
         const newItem: Item = structuredClone(item);
 
@@ -260,7 +260,7 @@ export default function ListSection({
             {isAutoOrdered ? (
               items
                 .filter(item => checkItemFilter(item, filters))
-                .sort(sortItems.bind(null, hasTimeTracking, hasDueDates))
+                .toSorted(sortItems.bind(null, hasTimeTracking, hasDueDates))
                 .map(item => (
                   <StaticListItem
                     key={item.id}
@@ -283,7 +283,9 @@ export default function ListSection({
               <Reorder.Group
                 axis='y'
                 values={items}
-                onReorder={items => setItems(items.sort(sortItemsByCompleted))}
+                onReorder={items =>
+                  setItems(items.toSorted(sortItemsByCompleted))
+                }
               >
                 {items
                   .filter(item => checkItemFilter(item, filters))

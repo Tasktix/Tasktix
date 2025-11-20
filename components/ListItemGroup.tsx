@@ -129,7 +129,7 @@ export default function ListItemGroup({
     <div className='rounded-md w-full border-2 border-content3 box-border shadow-lg shadow-content2'>
       {items?.length ? (
         items
-          .sort(sortItems.bind(null, false, false))
+          .toSorted(sortItems.bind(null, false, false))
           .filter((item, idx) => item.status !== 'Completed' && idx < 10)
           .map((item, idx) => (
             <StaticListItem

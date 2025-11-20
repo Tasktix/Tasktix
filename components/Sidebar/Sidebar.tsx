@@ -66,7 +66,7 @@ export default function Sidebar({ lists }: { lists: List[] }) {
         name='Lists'
       >
         {lists
-          .sort((a, b) => (a.name > b.name ? 1 : 0))
+          .toSorted((a, b) => (a.name > b.name ? 1 : 0))
           .map(list => (
             <NavItem key={list.id} link={`/list/${list.id}`} name={list.name} />
           ))}
