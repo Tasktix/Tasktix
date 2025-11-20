@@ -50,7 +50,7 @@ export default function SearchBar({
 
   const inputFields: ReactElement[] = [];
 
-  for (const key in filters) {
+  for (const key of Object.keys(filters)) {
     const option = _options.find(option => option.label === key);
 
     if (!option) return;
