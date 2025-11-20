@@ -366,7 +366,7 @@ function compareFilter(
         value instanceof Date &&
         value.getTime() > item.dateCompleted.getTime()
       );
-    case 'completedOn':
+    case 'completedOn': {
       if (!(value instanceof Date)) return false;
 
       const start = structuredClone(value);
@@ -383,6 +383,7 @@ function compareFilter(
         start.getTime() <= item.dateCompleted.getTime() &&
         end.getTime() > item.dateCompleted.getTime()
       );
+    }
     case 'completedAfter':
       if (value instanceof Date) value.setHours(23, 59, 59, 999);
 
