@@ -19,7 +19,7 @@
 'use client';
 
 import { Button } from '@heroui/react';
-import { ReactNode, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'react-bootstrap-icons';
 
 export default function CalendarInput({
@@ -28,9 +28,7 @@ export default function CalendarInput({
   value,
   onValueChange
 }: {
-  placeholder?: string;
   defaultValue?: Date;
-  displayContent?: ReactNode;
   color?:
     | 'default'
     | 'primary'
