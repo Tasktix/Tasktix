@@ -35,7 +35,7 @@ export default function SearchBar({
 }: {
   inputOptions: InputOptionGroup[];
   onValueChange: (value: Filters) => unknown;
-}) {
+}): ReactElement | undefined {
   const [usedOptions, setUsedOptions] = useState<Set<string>>(new Set());
   const [value, setValue] = useState('');
   const [filters, dispatchFilters] = useReducer(searchReducer, {});
