@@ -106,7 +106,9 @@ function AccountButton({ isLoggedIn }: { isLoggedIn: boolean }) {
   function handleClick() {
     api
       .delete('/session')
-      .catch(_ => {})
+      .catch(_ => {
+        /* Suppress errors on logout */
+      })
       .finally(() => {
         setLoggedOut();
         router.replace('/');
