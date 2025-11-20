@@ -21,6 +21,9 @@ import List from '@/lib/model/list';
 import { Action } from './types';
 
 export default function listReducer(lists: List[], action: Action) {
+  // Default case intentionally omitted to surface TS error if not all cases are
+  // explicitly handled (e.g. because the Action type was expanded). All VALID code paths
+  // (based on the Action type) do return - skipcq: JS-0045
   switch (action.type) {
     case 'add':
       if (!action.name || !action.color)
