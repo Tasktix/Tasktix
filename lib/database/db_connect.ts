@@ -51,10 +51,11 @@ export async function query<T extends RowDataPacket>(
 
     return false;
   } catch {
-    /* Don't let ending the connection cause an error if it's having issues too */
     try {
       await conn?.end();
-    } catch {}
+    } catch {
+      /* Don't let ending the connection cause an error if it's having issues too */
+    }
 
     return false;
   }
@@ -78,10 +79,11 @@ export async function execute(
 
     return result;
   } catch {
-    /* Don't let ending the connection cause an error if it's having issues too */
     try {
       await conn?.end();
-    } catch {}
+    } catch {
+      /* Don't let ending the connection cause an error if it's having issues too */
+    }
 
     return false;
   }
