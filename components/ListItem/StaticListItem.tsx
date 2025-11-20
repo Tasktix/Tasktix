@@ -488,7 +488,7 @@ export default function StaticListItem({
 
         {members.length > 1 ? (
           <Users
-            assignees={_item.assignees}
+            initialAssignees={_item.assignees}
             isComplete={_item.status === 'Completed'}
             itemId={_item.id}
             members={members}
