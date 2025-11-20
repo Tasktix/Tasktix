@@ -70,7 +70,7 @@ export async function POST(request: Request) {
     priority,
     expectedMs,
     sectionIndex,
-    dateDue: dateDue
+    dateDue
   });
 
   const result = await createListItem(sectionId, listItem);
