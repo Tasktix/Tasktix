@@ -53,7 +53,7 @@ export default function CalendarInput({
   }, [value]);
 
   function handleSelect(date: number) {
-    const newDate = new Date(currentRange.getTime());
+    const newDate = new Date(currentRange);
 
     newDate.setDate(date);
 
@@ -129,10 +129,10 @@ function CalendarInputBody({
     current.getMonth() === month.getMonth();
   const monthNum = month.getMonth();
 
-  const monthStart = new Date(month.getTime());
+  const monthStart = new Date(month);
 
   monthStart.setDate(1);
-  const monthEnd = new Date(month.getTime());
+  const monthEnd = new Date(month);
 
   monthEnd.setMonth(monthEnd.getMonth() + 1);
   monthEnd.setDate(0);
