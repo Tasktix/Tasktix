@@ -36,18 +36,18 @@ afterAll(() => {
 });
 
 describe('getDateDiff', () => {
-  test('Returns positive difference when a is later than b', () => {
-    const a = new Date('2023-01-02');
-    const b = new Date('2023-01-01');
+  test('Returns positive difference when the first date is later than the second', () => {
+    const first = new Date('2023-01-02');
+    const second = new Date('2023-01-01');
 
-    expect(getDateDiff(a, b)).toBe(24 * 60 * 60 * 1000);
+    expect(getDateDiff(first, second)).toBe(24 * 60 * 60 * 1000);
   });
 
-  test('Returns negative difference when a is earlier than b', () => {
-    const a = new Date('2023-01-01');
-    const b = new Date('2023-01-02');
+  test('Returns negative difference when the first date is earlier is earlier than b', () => {
+    const first = new Date('2023-01-01');
+    const second = new Date('2023-01-02');
 
-    expect(getDateDiff(a, b)).toBe(-(24 * 60 * 60 * 1000));
+    expect(getDateDiff(first, second)).toBe(-(24 * 60 * 60 * 1000));
   });
 });
 
