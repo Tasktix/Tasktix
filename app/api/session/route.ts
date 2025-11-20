@@ -47,16 +47,14 @@ export async function POST(request: Request) {
 
   if (!user) return ClientError.BadRequest('Invalid username or password');
 
-  // TODO: should only update login time after successful login
-  user.dateSignedIn = new Date();
-  /* _ = */ await updateUser(user);
-
   if (!user.password)
     return ClientError.BadRequest('Invalid username or password');
   const match = await compare(password, user.password);
 
   if (!match) return ClientError.BadRequest('Invalid username or password');
 
+  user.dateSignedIn = new Date();
+  /* _ = */ await updateUser(user);
   const result = await setUser(user.id);
 
   if (!result) return ServerError.Internal('Storing session failed');
