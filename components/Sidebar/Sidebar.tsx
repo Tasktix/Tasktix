@@ -158,7 +158,7 @@ function NewItem({
 
   return (
     <form
-      className={`pl-1 flex items-center justify-between gap-2 text-sm`}
+      className='pl-1 flex items-center justify-between gap-2 text-sm'
       onSubmit={e => {
         e.preventDefault();
         finalize(name);
