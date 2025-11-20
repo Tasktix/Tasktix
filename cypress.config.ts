@@ -29,11 +29,11 @@ export default defineConfig({
         if (!results) return;
         if ('status' in results) return; // Only CypressFailedRunResults has a status
 
-        results.runs.forEach(specRun => {
+        for (const specRun of results.runs) {
           if (specRun.stats.failures === 0 && specRun.video) {
             fs.unlinkSync(specRun.video);
           }
-        });
+        }
       });
     }
   }
