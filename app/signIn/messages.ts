@@ -34,15 +34,15 @@ export function getUsernameMessage(input: string): InputMessage {
 
 export function getEmailMessage(input: string): InputMessage {
   if (input)
-    if (!validateEmail(input))
-      return {
-        message: 'Please enter a valid email',
-        color: 'danger'
-      };
-    else
+    if (validateEmail(input))
       return {
         message: '',
         color: 'success'
+      };
+    else
+      return {
+        message: 'Please enter a valid email',
+        color: 'danger'
       };
   else
     return {
