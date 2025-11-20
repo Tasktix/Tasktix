@@ -68,6 +68,8 @@ export default function TagInput({
     <form
       key='add'
       className={`flex w-full gap-2 ${className}`}
+      // void operator needed to ignore promise since `onSubmit` expects a non-async
+      // function - skipcq: JS-0098
       onSubmit={e => void handleSubmit(e)}
     >
       <Input
