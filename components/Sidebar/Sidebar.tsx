@@ -18,7 +18,7 @@
 
 'use client';
 
-import { setTimeout } from 'timers';
+import { setTimeout } from 'node:timers';
 
 import { ReactNode, useContext, useState } from 'react';
 import { addToast, Button, Input, Link } from '@heroui/react';
