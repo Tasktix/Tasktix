@@ -37,26 +37,26 @@ import { addSnackbar } from '../Snackbar';
 
 export default function Users({
   itemId,
-  assignees,
+  initialAssignees,
   members,
   isComplete,
   className
 }: {
   itemId: string;
-  assignees: Assignee[];
+  initialAssignees: Assignee[];
   members: ListMember[];
   isComplete: boolean;
   className?: string;
 }) {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  const [_assignees, setAssignees] = useState(assignees);
+  const [assignees, setAssignees] = useState(initialAssignees);
 
   function addAssignee(userId: string) {
     api
       .post(`/item/${itemId}/assignee/${userId}`, {})
       .then(res => {
         addSnackbar(res.message, 'success');
-        const newAssignees = structuredClone(_assignees);
+        const newAssignees = structuredClone(assignees);
 
         for (const member of members)
           if (member.user.id === userId)
@@ -71,7 +71,7 @@ export default function Users({
       .delete(`/item/${itemId}/assignee/${userId}`)
       .then(res => {
         addSnackbar(res.message, 'success');
-        const newAssignees = structuredClone(_assignees);
+        const newAssignees = structuredClone(assignees);
 
         for (let i = 0; i < newAssignees.length; i++)
           if (newAssignees[i].user.id === userId) newAssignees.splice(i, 1);
@@ -98,7 +98,7 @@ export default function Users({
             className={`ml-4 ${isComplete ? 'opacity-50' : ''}`}
             max={4}
           >
-            {_assignees.map(assignee => (
+            {assignees.map(assignee => (
               <Avatar
                 key={assignee.user.id}
                 classNames={{ base: getBackgroundColor(assignee.user.color) }}
@@ -110,7 +110,7 @@ export default function Users({
         </Card>
       </PopoverTrigger>
       <PopoverContent className='w-52'>
-        {_assignees.map(assignee => (
+        {assignees.map(assignee => (
           <div
             key={assignee.user.id}
             className={`${assignee.user.color ? getTextColor(assignee.user.color) : null} flex justify-between items-center w-full p-1.5`}
@@ -128,7 +128,7 @@ export default function Users({
           </div>
         ))}
         {members.map(member => {
-          if (_assignees.some(assignee => assignee.user.id === member.user.id))
+          if (assignees.some(assignee => assignee.user.id === member.user.id))
             return null;
 
           return (
