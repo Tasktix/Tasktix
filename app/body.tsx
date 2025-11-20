@@ -31,7 +31,7 @@ import { ReactNode, useState } from 'react';
 import Image from 'next/image';
 
 import Snackbar from '@/components/Snackbar';
-import { default as api } from '@/lib/api';
+import api from '@/lib/api';
 import ThemeSwitcher from '@/components/ThemeSwitcher';
 
 export function setLoggedIn() {

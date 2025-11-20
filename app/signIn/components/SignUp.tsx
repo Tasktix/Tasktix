@@ -29,7 +29,7 @@ import {
   validatePassword
 } from '@/lib/validate';
 import { addSnackbar } from '@/components/Snackbar';
-import { default as api } from '@/lib/api';
+import api from '@/lib/api';
 import { setLoggedIn } from '@/app/body';
 
 import {

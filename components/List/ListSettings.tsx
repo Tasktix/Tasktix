@@ -31,7 +31,7 @@ import { useContext } from 'react';
 import { TrashFill, GearWideConnected } from 'react-bootstrap-icons';
 import { useRouter } from 'next/navigation';
 
-import { default as api } from '@/lib/api';
+import api from '@/lib/api';
 import Tag from '@/lib/model/tag';
 import { NamedColor } from '@/lib/model/color';
 import Name from '@/components/Name';

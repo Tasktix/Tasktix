@@ -23,7 +23,7 @@ import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { addSnackbar } from '@/components/Snackbar';
-import { default as api } from '@/lib/api';
+import api from '@/lib/api';
 import { setLoggedIn } from '@/app/body';
 
 export default function SignIn() {

@@ -22,7 +22,7 @@ import { DragControls } from 'framer-motion';
 import { CardChecklist, GripVertical } from 'react-bootstrap-icons';
 import Link from 'next/link';
 
-import { default as api } from '@/lib/api';
+import api from '@/lib/api';
 import { formatDate } from '@/lib/date';
 import { NamedColor } from '@/lib/model/color';
 import ListItemModel from '@/lib/model/listItem';
