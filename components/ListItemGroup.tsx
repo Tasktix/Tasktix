@@ -127,7 +127,7 @@ export default function ListItemGroup({
 
   return (
     <div className='rounded-md w-full border-2 border-content3 box-border shadow-lg shadow-content2'>
-      {items && items.length ? (
+      {items?.length ? (
         items
           .sort(sortItems.bind(null, false, false))
           .filter((item, idx) => item.status !== 'Completed' && idx < 10)
