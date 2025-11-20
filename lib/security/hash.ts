@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { BinaryLike, randomFill, scrypt } from 'node:crypto';
+import { BinaryLike, randomFill, scrypt } from 'crypto';
 
 export async function hash(password: string): Promise<string> {
   function randomString(length = 16): Promise<Uint8Array<ArrayBuffer>> {

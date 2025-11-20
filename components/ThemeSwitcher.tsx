@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { clearTimeout, setTimeout } from 'node:timers';
+import { clearTimeout, setTimeout } from 'timers';
 
 import {
   Button,
