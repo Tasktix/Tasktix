@@ -55,6 +55,8 @@ export default function DateInput({
   const [isOpen, setIsOpen] = useState(autoFocus);
   const [date, setDate] = useState(value || defaultValue || null);
 
+  const displayedDate = date ? formatDate(date) : placeholder || 'Choose date';
+
   // Respect the `value` prop if there is one
   useEffect(() => {
     if (value !== undefined) setDate(value);
@@ -76,7 +78,7 @@ export default function DateInput({
         >
           {displayContent
             ? `${label || ''} ${displayContent}`
-            : `${label || ''} ${date ? formatDate(date) : placeholder || 'Choose date'}`}
+            : `${label || ''} ${displayedDate}`}
         </Button>
       </PopoverTrigger>
       <PopoverContent className='p-0 overflow-hidden'>

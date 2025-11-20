@@ -31,29 +31,21 @@ import { useEffect, useRef, useState } from 'react';
 import { Display, MoonFill, SunFill } from 'react-bootstrap-icons';
 
 export default function ThemeSwitcher() {
+  const systemTheme = window?.matchMedia('(prefers-color-scheme: dark)').matches
+    ? 'dark'
+    : 'light';
+
   const timer = useRef<NodeJS.Timeout>();
   const { theme, setTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [themeIcon, setThemeIcon] = useState(
-    theme !== 'system'
-      ? theme
-      : window.matchMedia &&
-          window.matchMedia('(prefers-color-scheme: dark)').matches
-        ? 'dark'
-        : 'light'
+    theme === 'system' ? systemTheme : theme
   );
 
   useEffect(() => {
-    setThemeIcon(
-      theme !== 'system'
-        ? theme
-        : window.matchMedia &&
-            window.matchMedia('(prefers-color-scheme: dark)').matches
-          ? 'dark'
-          : 'light'
-    );
-  }, [theme]);
+    setThemeIcon(theme === 'system' ? systemTheme : theme);
+  }, [systemTheme, theme]);
 
   useEffect(() => setIsMounted(true), []);
 
