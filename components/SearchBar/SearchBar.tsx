@@ -38,7 +38,7 @@ export default function SearchBar({
 }): ReactElement | undefined {
   const [usedOptions, setUsedOptions] = useState<Set<string>>(new Set());
   const [value, setValue] = useState('');
-  const [filters, dispatchFilters] = useReducer(searchReducer, {});
+  const [filters, dispatchFilters] = useReducer(searchReducer, new Map());
 
   const _options = inputOptions.flatMap(optionGrp => optionGrp.options);
   const remainingOptions = inputOptions.map(o => {
