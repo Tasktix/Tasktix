@@ -143,7 +143,7 @@ function CalendarInputBody({
   for (let i = 0; i < before; i++)
     blanks.push(<div key={`blank${i}`} className='w-6 min-w-6 h-6 min-h-6' />);
 
-  let hoverColor = 'data-[hover=true]:text-default';
+  let hoverColor: string;
 
   switch (color) {
     case 'primary':
