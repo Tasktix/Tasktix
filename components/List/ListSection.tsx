@@ -44,7 +44,7 @@ import {
   sortItemsByIndex
 } from '@/lib/sortItems';
 import ListMember from '@/lib/model/listMember';
-import { default as api } from '@/lib/api';
+import api from '@/lib/api';
 
 import { Filters } from '../SearchBar/types';
 import ConfirmedTextInput from '../ConfirmedTextInput';

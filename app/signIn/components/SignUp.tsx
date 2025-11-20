@@ -28,7 +28,7 @@ import {
   validateEmail,
   validatePassword
 } from '@/lib/validate';
-import { default as api } from '@/lib/api';
+import api from '@/lib/api';
 import { setLoggedIn } from '@/app/body';
 
 import {

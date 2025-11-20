@@ -33,7 +33,7 @@ import {
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import { Check, Plus } from 'react-bootstrap-icons';
 
-import { default as api } from '@/lib/api';
+import api from '@/lib/api';
 import ListItem from '@/lib/model/listItem';
 import { getBorderColor, getPriorityColor } from '@/lib/color';
 

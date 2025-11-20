@@ -25,7 +25,7 @@ import { addToast, Button, Input, Link } from '@heroui/react';
 import { Check, Plus } from 'react-bootstrap-icons';
 import { usePathname, useRouter } from 'next/navigation';
 
-import { default as api } from '@/lib/api';
+import api from '@/lib/api';
 import { validateListName } from '@/lib/validate';
 import List from '@/lib/model/list';
 import { randomNamedColor } from '@/lib/color';

@@ -36,7 +36,7 @@ import { useRouter } from 'next/navigation';
 import { ReactNode, useState } from 'react';
 import Image from 'next/image';
 
-import { default as api } from '@/lib/api';
+import api from '@/lib/api';
 import ThemeSwitcher from '@/components/ThemeSwitcher';
 
 export function setLoggedIn() {
