@@ -106,7 +106,7 @@ export default function ListItemGroup({
     name: string,
     color: NamedColor
   ): Promise<string> {
-    if (!listId) return new Promise((_, reject) => reject(Error('No list ID')));
+    if (!listId) return Promise.reject(Error('No list ID'));
 
     return new Promise((resolve, reject) => {
       api
