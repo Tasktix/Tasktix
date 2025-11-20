@@ -61,7 +61,7 @@ export default function List({
   const [tagsAvailable, setTagsAvailable] = useState<Tag[]>(
     JSON.parse(startingTagsAvailable)
   );
-  const [filters, setFilters] = useState<Filters>({});
+  const [filters, setFilters] = useState<Filters>(new Map());
 
   const filterOptions = getFilterOptions(list, tagsAvailable);
 

@@ -183,7 +183,6 @@ export default function AddItem({
                 color='primary'
                 label='Due'
                 size='sm'
-                tabIndex={isSliderOpen ? 0 : 1}
                 value={values.dateDue}
                 variant='underlined'
                 onValueChange={setDueDate}
