@@ -27,6 +27,9 @@ import { ReactElement } from 'react';
 
 import { InputOption } from './types';
 
+// Default case intentionally omitted to surface TS error if not all cases are
+// explicitly handled (e.g. because the InputOption['type'] type was expanded). All VALID
+// code paths (based on the InputOption['type'] type) do return - skipcq: JS-0045
 export function getIcon(type: InputOption['type']): ReactElement {
   switch (type) {
     case 'String':
