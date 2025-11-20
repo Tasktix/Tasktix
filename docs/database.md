@@ -39,7 +39,7 @@ and apply it to your environment:
 ## Database Interaction During Tests
 
 End-to-end tests require a running web server, which relies on also having a database
-server running. To avoid flaky tests, the testings need to control the database's state at
+server running. To avoid flaky tests, the tests need to control the database's state at
 the start of each test. In the [default testing infrastructure](/compose.test.yaml), this
 access is provided by the `test` container. Tests will run:
 
