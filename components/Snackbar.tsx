@@ -18,7 +18,7 @@
 
 'use client';
 
-import { setTimeout } from 'node:timers';
+import { setTimeout } from 'timers';
 
 import { useCallback, useEffect, useState } from 'react';
 
