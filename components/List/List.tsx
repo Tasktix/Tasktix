@@ -19,9 +19,9 @@
 'use client';
 
 import { useState } from 'react';
+import { addToast } from '@heroui/react';
 
 import AddListSection from '@/components/AddListSection';
-import { addSnackbar } from '@/components/Snackbar';
 import { default as api } from '@/lib/api';
 import { default as ListModel } from '@/lib/model/list';
 import { default as ListSectionModel } from '@/lib/model/listSection';
@@ -102,7 +102,10 @@ export default function List({
     api
       .delete(`/list/${list.id}/section/${id}`)
       .then(res => {
-        addSnackbar(res.message, 'success');
+        addToast({
+          title: res.message,
+          color: 'success'
+        });
 
         const newList = structuredClone(list);
 
@@ -110,7 +113,12 @@ export default function List({
           if (newList.sections[i].id === id) newList.sections.splice(i, 1);
         setList(newList);
       })
-      .catch(err => addSnackbar(err.message, 'error'));
+      .catch(err =>
+        addToast({
+          title: err.message,
+          color: 'danger'
+        })
+      );
   }
 
   return (
