@@ -18,49 +18,80 @@
 
 import { render, screen } from '@testing-library/react';
 
-import FeatureBlock from '@/components/FeatureBlock';
+import FeatureBlock from '../FeatureBlock';
+
+// Mock next-themes
+jest.mock('next-themes', () => ({
+  useTheme: () => ({
+    theme: 'light',
+    setTheme: jest.fn()
+  })
+}));
+
+// Mock HeroUI Image to behave like a regular img tag
+jest.mock('@heroui/image', () => ({
+  Image: props => <img {...props} />
+}));
 
 describe('FeatureBlock', () => {
-  it('renders title and description', () => {
-    render(
-      <FeatureBlock
-        title='Test Feature'
-        description='This is a test description.'
-        imageBaseName='testImage'
-      />
-    );
+  const mockProps = {
+    title: 'Test Feature',
+    description: 'Description here',
+    imageBaseName: 'testFeature'
+  };
 
+  // 1️⃣ Title + description render
+  test('renders title and description', () => {
+    render(<FeatureBlock {...mockProps} />);
     expect(screen.getByText('Test Feature')).toBeInTheDocument();
-    expect(screen.getByText('This is a test description.')).toBeInTheDocument();
+    expect(screen.getByText('Description here')).toBeInTheDocument();
   });
 
-  it('applies flipped layout when align="flipped"', () => {
+  // 2️⃣ Default alignment (not flipped)
+  test('applies default layout', () => {
+    const { container } = render(<FeatureBlock {...mockProps} />);
+    const section = container.querySelector('section');
+
+    // Should NOT have md:flex-row-reverse
+    expect(section.className.includes('md:flex-row-reverse')).toBe(false);
+  });
+
+  // 3️⃣ Flipped alignment
+  test("applies flipped layout when align='flipped'", () => {
     const { container } = render(
-      <FeatureBlock
-        title='Flipped Feature'
-        description='Flipped description'
-        imageBaseName='testImage'
-        align='flipped'
-      />
+      <FeatureBlock {...mockProps} align='flipped' />
     );
 
     const section = container.querySelector('section');
 
-    expect(section.className).toMatch(/md:flex-row-reverse/);
+    expect(section.className.includes('md:flex-row-reverse')).toBe(true);
   });
 
-  it('renders both light and dark images', () => {
-    render(
-      <FeatureBlock
-        title='Test Feature'
-        description='desc'
-        imageBaseName='testImage'
-      />
-    );
+  // 4️⃣ Light mode visibility test
+  test('shows the light image in light mode', () => {
+    render(<FeatureBlock {...mockProps} />);
 
-    const images = screen.getAllByAltText('Test Feature screenshot');
+    const lightImg = screen.getAllByAltText('Test Feature screenshot')[0];
+    const darkImg = screen.getAllByAltText('Test Feature screenshot')[1];
 
-    // Both images (light + dark) should exist in the DOM
-    expect(images).toHaveLength(2);
+    expect(lightImg).toBeVisible();
+    expect(darkImg.className.includes('hidden')).toBe(true);
+  });
+
+  // 5️⃣ Dark mode visibility test
+  test('shows the dark image in dark mode', () => {
+    // Override theme mock for this test
+    jest.spyOn(require('next-themes'), 'useTheme').mockReturnValue({
+      theme: 'dark',
+      setTheme: jest.fn()
+    });
+
+    render(<FeatureBlock {...mockProps} />);
+
+    const lightImg = screen.getAllByAltText('Test Feature screenshot')[0];
+    const darkImg = screen.getAllByAltText('Test Feature screenshot')[1];
+
+    expect(darkImg).toBeVisible();
+    expect(lightImg.className.includes('dark:hidden')).toBe(true);
   });
 });

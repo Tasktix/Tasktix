@@ -18,7 +18,7 @@
 
 'use client';
 
-import { Image as HeroImage } from '@nextui-org/image';
+import { Image as HeroImage } from '@heroui/image';
 
 type FeatureBlockProps = {
   title: string;
@@ -33,40 +33,42 @@ export default function FeatureBlock({
   imageBaseName,
   align = 'default'
 }: FeatureBlockProps) {
+  const isFlipped = align === 'flipped';
+
   return (
     <section
       className={`flex flex-col items-center gap-8 md:gap-16 
-                  md:flex-row ${align === 'flipped' ? 'md:flex-row-reverse' : ''}`}
+                  md:flex-row ${isFlipped ? 'md:flex-row-reverse' : ''}`}
     >
-      {/* IMAGE SECTION */}
-      <div className='w-full md:w-1/2'>
-        <div className='rounded-xl border shadow-md overflow-hidden border-default dark:border-default-400'>
-          {/* LIGHT MODE IMAGE */}
+      {/* IMAGE */}
+      <div className="w-full md:w-1/2">
+        <div className="rounded-large border border-default shadow-md overflow-hidden">
+          {/* LIGHT MODE */}
           <HeroImage
-            alt={`${title} screenshot`}
-            className='dark:hidden'
-            radius='lg'
-            shadow='md'
             src={`/screenshots/${imageBaseName}.light.png`}
+            alt={`${title} screenshot`}
+            width={900}
+            height={600}
+            className="w-full h-auto object-cover dark:hidden"
           />
 
-          {/* DARK MODE IMAGE */}
+          {/* DARK MODE */}
           <HeroImage
-            alt={`${title} screenshot`}
-            className='hidden dark:block'
-            radius='lg'
-            shadow='md'
             src={`/screenshots/${imageBaseName}.dark.png`}
+            alt={`${title} screenshot`}
+            width={900}
+            height={600}
+            className="w-full h-auto object-cover hidden dark:block"
           />
         </div>
       </div>
 
-      {/* TEXT SECTION */}
-      <div className='w-full md:w-1/2 text-center md:text-left'>
-        <h2 className='text-2xl md:text-3xl font-semibold text-gray-900 dark:text-gray-100'>
+      {/* TEXT */}
+      <div className="w-full md:w-1/2 text-center md:text-left">
+        <h2 className="text-2xl md:text-3xl font-semibold text-gray-900 dark:text-gray-100">
           {title}
         </h2>
-        <p className='mt-3 text-gray-600 dark:text-gray-300 text-base md:text-lg leading-relaxed'>
+        <p className="mt-3 text-gray-600 dark:text-gray-300 text-base md:text-lg leading-relaxed">
           {description}
         </p>
       </div>
