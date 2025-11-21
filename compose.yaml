@@ -7,10 +7,7 @@ services:
     ports:
       - 127.0.0.1:3000:3000
     environment:
-      - DB_HOST=${DB_HOST}
-      - DB_DATABASE=${DB_DATABASE}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
+      - DATABASE_URL=mysql://root:${DB_PASSWORD}@mariadb/${DB_DATABASE}
 
   mariadb:
     image: mariadb:latest
@@ -18,5 +15,3 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: ${DB_DATABASE}
-    volumes:
-      - ./scripts/database/create.sql:/docker-entrypoint-initdb.d/create.sql:ro

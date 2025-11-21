@@ -47,7 +47,7 @@ export default function TimeButton({
           Start
         </Button>
       );
-    case 'In Progress':
+    case 'In_Progress':
       return (
         <Button
           className='w-24'

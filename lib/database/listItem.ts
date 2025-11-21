@@ -18,109 +18,60 @@
 
 'use server';
 
+import { Prisma } from '@prisma/client';
+
 import ListItem from '@/lib/model/listItem';
 
-import { execute, query } from './db_connect';
-import { DB_ListItem, extractListItemsFromRows } from './model/listItem';
+import { prisma } from './db_connect';
 
 export async function createListItem(
   sectionId: string,
-  listItem: ListItem
+  item: Omit<ListItem, 'assignees' | 'tags'>
 ): Promise<boolean> {
-  const sql = `
-    INSERT INTO \`items\`(
-      \`i_id\`,
-      \`i_name\`,
-      \`i_status\`,
-      \`i_priority\`,
-      \`i_isUnclear\`,
-      \`i_expectedMs\`,
-      \`i_elapsedMs\`,
-      \`i_parentId\`,
-      \`i_ls_id\`,
-      \`i_sectionIndex\`,
-      \`i_dateCreated\`,
-      \`i_dateDue\`,
-      \`i_dateStarted\`,
-      \`i_dateCompleted\`
-    )
-    VALUES (
-      :id,
-      :name,
-      :status,
-      :priority,
-      :isUnclear,
-      :expectedMs,
-      :elapsedMs,
-      NULL,
-      :sectionId,
-      :sectionIndex,
-      :dateCreated,
-      :dateDue,
-      :dateStarted,
-      :dateCompleted
-    );
-  `;
+  try {
+    await prisma.item.create({
+      data: { ...item, assignees: undefined, tags: undefined, sectionId }
+    });
+  } catch {
+    return false;
+  }
 
-  const result = await execute(sql, { ...listItem, sectionId });
-
-  return Boolean(result);
+  return true;
 }
 
 export async function getListItemById(id: string): Promise<ListItem | false> {
-  const sql = `
-    SELECT * FROM \`items\`
-      LEFT JOIN \`itemTags\` ON \`itemTags\`.\`it_i_id\` = \`items\`.\`i_id\`
-      LEFT JOIN \`tags\` ON \`tags\`.\`t_id\` = \`itemTags\`.\`it_t_id\`
-      LEFT JOIN \`itemAssignees\` ON \`itemAssignees\`.\`ia_i_id\` = \`items\`.\`i_id\`
-    WHERE \`i_id\` = :id
-    ORDER BY \`tags\`.\`t_name\` ASC;
-  `;
+  const result = await prisma.item.findUnique({
+    where: { id },
+    include: { tags: true, assignees: { include: { user: true } } }
+  });
 
-  const result = await query<DB_ListItem>(sql, { id });
-
-  if (!result) return false;
-
-  return extractListItemsFromRows(result)[0];
+  return result ?? false;
 }
 
-export async function getListItemsByUser(
-  userId: string
-): Promise<ListItem[] | false> {
-  const sql = `
-    SELECT * FROM \`items\`
-      LEFT JOIN \`itemTags\` ON \`itemTags\`.\`it_i_id\` = \`items\`.\`i_id\`
-      LEFT JOIN \`tags\` ON \`tags\`.\`t_id\` = \`itemTags\`.\`it_t_id\`
-      LEFT JOIN \`itemAssignees\` ON \`itemAssignees\`.\`ia_i_id\` = \`items\`.\`i_id\`
-      INNER JOIN \`listSections\` ON \`listSections\`.\`ls_id\` = \`items\`.\`i_ls_id\`
-      INNER JOIN \`lists\` ON \`lists\`.\`l_id\` = \`listSections\`.\`ls_l_id\`
-      INNER JOIN \`listMembers\` ON \`listMembers\`.\`lm_l_id\` = \`listSections\`.\`ls_l_id\`
-    WHERE \`listMembers\`.\`lm_u_id\` = :userId
-    ORDER BY \`items\`.\`i_id\` ASC, \`tags\`.\`t_name\` ASC;
-  `;
+export async function getListItemsByUser(userId: string): Promise<ListItem[]> {
+  const result = await prisma.item.findMany({
+    where: { section: { list: { members: { some: { userId } } } } },
+    include: { tags: true, assignees: { include: { user: true } } }
+  });
 
-  const result = await query<DB_ListItem>(sql, { userId });
-
-  if (!result) return false;
-
-  return extractListItemsFromRows(result);
+  return result;
 }
 
 export async function linkTag(itemId: string, tagId: string): Promise<boolean> {
-  const sql = `
-    INSERT INTO \`itemTags\`(
-      \`it_i_id\`,
-      \`it_t_id\`
-    )
-    VALUES (
-      :itemId,
-      :tagId
-    );
-  `;
+  try {
+    await prisma.item.update({
+      where: { id: itemId },
+      data: {
+        tags: {
+          connect: { id: tagId }
+        }
+      }
+    });
+  } catch {
+    return false;
+  }
 
-  const result = await execute(sql, { itemId, tagId });
-
-  return Boolean(result);
+  return true;
 }
 
 export async function linkAssignee(
@@ -128,44 +79,39 @@ export async function linkAssignee(
   userId: string,
   role: string
 ): Promise<boolean> {
-  const sql = `
-    INSERT INTO \`itemAssignees\`(
-      \`ia_i_id\`,
-      \`ia_u_id\`,
-      \`ia_role\`
-    )
-    VALUES (
-      :itemId,
-      :userId,
-      :role
-    );
-  `;
+  try {
+    await prisma.itemAssignee.create({
+      data: {
+        itemId,
+        userId,
+        role
+      }
+    });
+  } catch {
+    return false;
+  }
 
-  const result = await execute(sql, { itemId, userId, role });
-
-  return Boolean(result);
+  return true;
 }
 
-export async function updateListItem(item: ListItem): Promise<boolean> {
-  const sql = `
-    UPDATE \`items\` SET 
-      \`i_name\` = :name,
-      \`i_status\` = :status,
-      \`i_priority\` = :priority,
-      \`i_isUnclear\` = :isUnclear,
-      \`i_expectedMs\` = :expectedMs,
-      \`i_elapsedMs\` = :elapsedMs,
-      \`i_sectionIndex\` = :sectionIndex,
-      \`i_dateCreated\` = :dateCreated,
-      \`i_dateDue\` = :dateDue,
-      \`i_dateStarted\` = :dateStarted,
-      \`i_dateCompleted\` = :dateCompleted
-    WHERE \`i_id\` = :id;
-  `;
+export async function updateListItem(
+  item: Omit<ListItem, 'assignees' | 'tags'>
+): Promise<boolean> {
+  try {
+    await prisma.item.update({
+      where: { id: item.id },
+      data: {
+        ...item,
+        tags: undefined,
+        assignees: undefined,
+        sectionId: undefined
+      }
+    });
+  } catch {
+    return false;
+  }
 
-  const result = await execute(sql, { ...item });
-
-  return Boolean(result);
+  return true;
 }
 
 export async function updateSectionIndices(
@@ -174,66 +120,76 @@ export async function updateSectionIndices(
   index: number,
   oldIndex: number
 ): Promise<boolean> {
-  const sql = `
-    UPDATE \`items\`
-    SET \`i_sectionIndex\` = CASE 
-      WHEN i_id = :itemId 
-        THEN :index
-        ELSE \`i_sectionIndex\` ${oldIndex > index ? '+ 1' : '- 1'}
-      END
-    WHERE i_ls_id = :sectionId
-      AND i_sectionIndex >= :indexOne
-      AND i_sectionIndex <= :indexTwo;
-  `;
+  // Raw SQL preserved here to avoid potential concurrency issues with database writes
+  // without slowing things down by using the SERIALIZABLE isolation level
+  const indexOne = Math.min(oldIndex, index);
+  const indexTwo = Math.max(oldIndex, index);
 
-  const result = await execute(sql, {
-    sectionId,
-    itemId,
-    index,
-    indexOne: Math.min(oldIndex, index),
-    indexTwo: Math.max(oldIndex, index)
-  });
+  try {
+    // Raw SQL is used here because Prisma's queries aren't powerful enough to perform
+    // this as a single atomic operation. With future potential scaling, this could lead
+    // to weird, difficult-to-reproduce race conditions. It's not clear that even using a
+    // transaction would prevent these race conditions, and any that do would have a
+    // significant performance overhead by preventing concurrent database operations.
+    await prisma.$executeRaw`
+      UPDATE \`Item\`
+      SET \`sectionIndex\` = CASE 
+        WHEN id = ${itemId}
+          THEN ${index}
+          ELSE \`sectionIndex\` ${oldIndex > index ? Prisma.sql`+ 1` : Prisma.sql`- 1`}
+        END
+      WHERE sectionId = ${sectionId}
+        AND sectionIndex >= ${indexOne}
+        AND sectionIndex <= ${indexTwo};
+    `;
+  } catch {
+    return false;
+  }
 
-  return Boolean(result);
+  return true;
 }
 
 export async function deleteListItem(id: string): Promise<boolean> {
-  const sql = `
-    DELETE FROM \`items\`
-    WHERE \`i_id\` = :id;
-  `;
+  try {
+    await prisma.item.delete({ where: { id } });
+  } catch {
+    return false;
+  }
 
-  const result = await execute(sql, { id });
-
-  return Boolean(result);
+  return true;
 }
 
 export async function unlinkTag(
   itemId: string,
   tagId: string
 ): Promise<boolean> {
-  const sql = `
-    DELETE FROM \`itemTags\`
-    WHERE \`it_i_id\` = :itemId
-      AND \`it_t_id\` = :tagId;
-  `;
+  try {
+    await prisma.item.update({
+      where: { id: itemId },
+      data: {
+        tags: {
+          disconnect: { id: tagId }
+        }
+      }
+    });
+  } catch {
+    return false;
+  }
 
-  const result = await execute(sql, { itemId, tagId });
-
-  return Boolean(result);
+  return true;
 }
 
 export async function unlinkAssignee(
   itemId: string,
   userId: string
 ): Promise<boolean> {
-  const sql = `
-    DELETE FROM \`itemAssignees\`
-    WHERE \`ia_i_id\` = :itemId
-      AND \`ia_u_id\` = :userId;
-  `;
+  try {
+    await prisma.itemAssignee.delete({
+      where: { userId_itemId: { itemId, userId } }
+    });
+  } catch {
+    return false;
+  }
 
-  const result = await execute(sql, { itemId, userId });
-
-  return Boolean(result);
+  return true;
 }

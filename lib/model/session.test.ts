@@ -20,6 +20,11 @@ import * as generateIdModule from '@/lib/generateId'; // Needed for mocking - sk
 
 import Session from './session';
 
+beforeAll(() => {
+  jest.useFakeTimers();
+  jest.setSystemTime(new Date('2023-01-01 00:00:00'));
+});
+
 beforeEach(() => {
   jest
     .spyOn(generateIdModule, 'generateId')
@@ -30,24 +35,28 @@ afterEach(() => {
   jest.restoreAllMocks();
 });
 
+afterAll(() => {
+  jest.useRealTimers();
+});
+
 test('Generates an id if none provided', () => {
-  const session = new Session();
+  const session = new Session('user-id', new Date());
 
   expect(session.id).toBe('mock-generated-id');
   expect(generateIdModule.generateId).toHaveBeenCalled();
 });
 
 test('Uses the provided id', () => {
-  const session = new Session('provided-id');
+  const session = new Session('user-id', new Date(), 'provided-id');
 
   expect(session.id).toBe('provided-id');
   expect(generateIdModule.generateId).not.toHaveBeenCalled();
 });
 
 test('Assigns all properties correctly', () => {
-  const session = new Session('provided-id');
+  const session = new Session('user-id', new Date(), 'provided-id');
 
   expect(session.id).toBe('provided-id');
-  expect(session.userId).toBeNull();
-  expect(session.dateExpire).toBeNull();
+  expect(session.userId).toBe('user-id');
+  expect(session.dateExpire).toEqual(new Date());
 });

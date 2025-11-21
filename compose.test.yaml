@@ -1,0 +1,39 @@
+services:
+  web:
+    depends_on:
+      test:
+        condition: service_healthy
+
+  mariadb:
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'mariadb-admin',
+          'ping',
+          '-h',
+          'localhost',
+          '-u',
+          'root',
+          '-p${DB_PASSWORD}'
+        ]
+      interval: 2s
+      timeout: 1s
+      retries: 5
+      start_period: 2s
+
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: mysql://root:${DB_PASSWORD}@mariadb/${DB_DATABASE}
+    healthcheck:
+      test: ['CMD', 'test', '-f', '/tmp/prisma-ready']
+      interval: 2s
+      timeout: 1s
+      retries: 5
+      start_period: 5s
