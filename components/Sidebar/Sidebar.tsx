@@ -18,14 +18,12 @@
 
 'use client';
 
-import { setTimeout } from 'timers';
-
 import { ReactNode, useContext, useState } from 'react';
 import { addToast, Button, Input, Link } from '@heroui/react';
 import { Check, Plus } from 'react-bootstrap-icons';
 import { usePathname, useRouter } from 'next/navigation';
 
-import { default as api } from '@/lib/api';
+import api from '@/lib/api';
 import { validateListName } from '@/lib/validate';
 import List from '@/lib/model/list';
 import { randomNamedColor } from '@/lib/color';
@@ -56,12 +54,7 @@ export default function Sidebar({ lists }: { lists: List[] }) {
       .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
-  async function removeNew() {
-    function delay(ms: number) {
-      return new Promise(res => setTimeout(res, ms));
-    }
-
-    await delay(100);
+  function removeNew() {
     setAddingList(false);
   }
 
@@ -73,7 +66,7 @@ export default function Sidebar({ lists }: { lists: List[] }) {
         name='Lists'
       >
         {lists
-          .sort((a, b) => (a.name > b.name ? 1 : 0))
+          .toSorted((a, b) => (a.name > b.name ? 1 : 0))
           .map(list => (
             <NavItem key={list.id} link={`/list/${list.id}`} name={list.name} />
           ))}
@@ -157,7 +150,7 @@ function NewItem({
 
   return (
     <form
-      className={`pl-1 flex items-center justify-between gap-2 text-sm`}
+      className='pl-1 flex items-center justify-between gap-2 text-sm'
       onSubmit={e => {
         e.preventDefault();
         finalize(name);

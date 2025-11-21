@@ -22,7 +22,7 @@ import { DragControls } from 'framer-motion';
 import { CardChecklist, GripVertical } from 'react-bootstrap-icons';
 import Link from 'next/link';
 
-import { default as api } from '@/lib/api';
+import api from '@/lib/api';
 import { formatDate } from '@/lib/date';
 import { NamedColor } from '@/lib/model/color';
 import ListItemModel from '@/lib/model/listItem';
@@ -77,7 +77,7 @@ interface SetItem {
 }
 
 export default function StaticListItem({
-  item: item,
+  item,
   list,
   members,
   tagsAvailable,
@@ -387,6 +387,18 @@ export default function StaticListItem({
     }
   }
 
+  const dueDateInput = hasDueDates ? (
+    <DateInput
+      className='h-fit'
+      color={_item.dateDue && _item.dateDue < today ? 'danger' : 'secondary'}
+      displayContent={
+        _item.dateDue ? `Due ${formatDate(_item.dateDue)}` : 'Set due date'
+      }
+      value={_item.dateDue || new Date()}
+      onValueChange={set.dueDate}
+    />
+  ) : null;
+
   return (
     <div
       className={`p-4 bg-content1 flex gap-4 items-center justify-between w-full ${reorderControls ? '' : 'border-b-1 border-content3 last:border-b-0'}`}
@@ -436,23 +448,9 @@ export default function StaticListItem({
                   ? `Completed ${formatDate(_item.dateCompleted)}`
                   : `Due ${_item.dateDue ? formatDate(_item.dateDue) : ''}`}
               </span>
-            ) : hasDueDates ? (
-              <DateInput
-                className='h-fit'
-                color={
-                  _item.dateDue && _item.dateDue < today
-                    ? 'danger'
-                    : 'secondary'
-                }
-                displayContent={
-                  _item.dateDue
-                    ? `Due ${formatDate(_item.dateDue)}`
-                    : 'Set due date'
-                }
-                value={_item.dateDue || new Date()}
-                onValueChange={set.dueDate}
-              />
-            ) : null}
+            ) : (
+              dueDateInput
+            )}
           </div>
 
           {list && (
@@ -489,7 +487,7 @@ export default function StaticListItem({
 
         {members.length > 1 ? (
           <Users
-            assignees={_item.assignees}
+            initialAssignees={_item.assignees}
             isComplete={_item.status === 'Completed'}
             itemId={_item.id}
             members={members}

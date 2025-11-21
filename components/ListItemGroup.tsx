@@ -22,7 +22,7 @@ import { useState } from 'react';
 
 import { StaticListItem } from '@/components/ListItem';
 import { sortItems } from '@/lib/sortItems';
-import { default as api } from '@/lib/api';
+import api from '@/lib/api';
 import ListItemModel from '@/lib/model/listItem';
 import Tag from '@/lib/model/tag';
 import ListMember from '@/lib/model/listMember';
@@ -106,7 +106,7 @@ export default function ListItemGroup({
     name: string,
     color: NamedColor
   ): Promise<string> {
-    if (!listId) return new Promise((_, reject) => reject(Error('No list ID')));
+    if (!listId) return Promise.reject(new Error('No list ID'));
 
     return new Promise((resolve, reject) => {
       api
@@ -127,9 +127,9 @@ export default function ListItemGroup({
 
   return (
     <div className='rounded-md w-full border-2 border-content3 box-border shadow-lg shadow-content2'>
-      {items && items.length ? (
+      {items?.length ? (
         items
-          .sort(sortItems.bind(null, false, false))
+          .toSorted(sortItems.bind(null, false, false))
           .filter((item, idx) => item.status !== 'Completed' && idx < 10)
           .map((item, idx) => (
             <StaticListItem

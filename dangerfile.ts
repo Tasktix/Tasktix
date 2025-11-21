@@ -32,7 +32,7 @@ const prTitle = danger.github.pr.title;
 // Check if the title matches Conventional Commits
 if (!conventionalCommitRegex.test(prTitle)) {
   fail(
-    `❌ PR title does not follow Conventional Commits format.\n` +
+    '❌ PR title does not follow Conventional Commits format.\n' +
       'Expected format: `type(scope?): subject` where:\n' +
       '- type is one of: feat, fix, docs, style, refactor, perf, test, or chore.\n' +
       '- scope is one of: ui, api, or db.\n' +

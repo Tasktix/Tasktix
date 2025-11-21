@@ -22,20 +22,20 @@ export default function searchReducer(
   state: Filters,
   action: InputAction
 ): Filters {
-  let newState = structuredClone(state);
+  const newState = structuredClone(state);
 
   switch (action.type) {
     case 'Add':
     case 'Update':
-      newState[action.label] = action.value;
+      newState.set(action.label, action.value);
       break;
 
     case 'Remove':
-      delete newState[action.label];
+      newState.delete(action.label);
       break;
 
     case 'Clear':
-      newState = {};
+      newState.clear();
       break;
   }
 

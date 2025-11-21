@@ -19,6 +19,7 @@
 import { Select, SelectItem, Selection, SlotsToClasses } from '@heroui/react';
 
 import ListItem from '@/lib/model/listItem';
+import { getPriorityColor } from '@/lib/color';
 
 export default function Priority({
   isComplete,
@@ -57,7 +58,7 @@ export default function Priority({
       <Select
         className={`w-28 grow-0 shrink-0 ${className || ''}`}
         classNames={classNames}
-        color={`${priority === 'High' ? 'danger' : priority === 'Medium' ? 'warning' : 'success'}`}
+        color={`${getPriorityColor(_priority)}`}
         isDisabled={isComplete}
         label={<span className='ml-2 text-foreground'>Priority</span>}
         labelPlacement='outside'
@@ -66,15 +67,8 @@ export default function Priority({
         size='sm'
         variant='flat'
         onSelectionChange={(keys: Selection) => {
-          const priorityKey = keys !== 'all' ? keys.keys().next().value : 'Low';
-
-          setPriority(
-            priorityKey === 'High'
-              ? 'High'
-              : priorityKey === 'Medium'
-                ? 'Medium'
-                : 'Low'
-          );
+          if (keys === 'all' || keys.has('High')) setPriority('High');
+          else setPriority(keys.has('Medium') ? 'Medium' : 'Low');
         }}
       >
         <SelectItem key='High' color='danger'>

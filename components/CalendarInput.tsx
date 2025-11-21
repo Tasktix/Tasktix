@@ -19,7 +19,7 @@
 'use client';
 
 import { Button } from '@heroui/react';
-import { ReactNode, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'react-bootstrap-icons';
 
 export default function CalendarInput({
@@ -28,9 +28,7 @@ export default function CalendarInput({
   value,
   onValueChange
 }: {
-  placeholder?: string;
   defaultValue?: Date;
-  displayContent?: ReactNode;
   color?:
     | 'default'
     | 'primary'
@@ -53,7 +51,7 @@ export default function CalendarInput({
   }, [value]);
 
   function handleSelect(date: number) {
-    const newDate = new Date(currentRange.getTime());
+    const newDate = new Date(currentRange);
 
     newDate.setDate(date);
 
@@ -129,10 +127,10 @@ function CalendarInputBody({
     current.getMonth() === month.getMonth();
   const monthNum = month.getMonth();
 
-  const monthStart = new Date(month.getTime());
+  const monthStart = new Date(month);
 
   monthStart.setDate(1);
-  const monthEnd = new Date(month.getTime());
+  const monthEnd = new Date(month);
 
   monthEnd.setMonth(monthEnd.getMonth() + 1);
   monthEnd.setDate(0);
@@ -143,7 +141,7 @@ function CalendarInputBody({
   for (let i = 0; i < before; i++)
     blanks.push(<div key={`blank${i}`} className='w-6 min-w-6 h-6 min-h-6' />);
 
-  let hoverColor = 'data-[hover=true]:text-default';
+  let hoverColor: string;
 
   switch (color) {
     case 'primary':

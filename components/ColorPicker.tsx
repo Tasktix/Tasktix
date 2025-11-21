@@ -66,7 +66,7 @@ export default function ColorPicker({
           key='clear'
           isIconOnly
           aria-label='clear'
-          className={`rounded-md w-6 h-6 min-w-6 min-h-6`}
+          className='rounded-md w-6 h-6 min-w-6 min-h-6'
           onPress={pickColor.bind(null, null)}
         >
           <X />
