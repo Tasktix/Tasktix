@@ -33,7 +33,7 @@ import { getBackgroundColor, getTextColor } from '@/lib/color';
 
 import DateInput from '../DateInput';
 import { addSnackbar } from '../Snackbar';
-import Name from '../Name';
+import ConfirmedTextInput from '../ConfirmedTextInput';
 
 import ExpectedInput from './ExpectedInput';
 import ElapsedInput from './ElapsedInput';
@@ -100,11 +100,11 @@ export default function StaticListItem({
   today.setHours(0, 0, 0, 0);
 
   const timer = useRef<NodeJS.Timeout>();
-  const updateTime = useRef(() => {});
+  const updateTime = useRef(() => { });
   const lastTime = useRef(new Date());
   const [elapsedLive, setElapsedLive] = useState(
     item.elapsedMs +
-      (item.dateStarted ? Date.now() - item.dateStarted.getTime() : 0)
+    (item.dateStarted ? Date.now() - item.dateStarted.getTime() : 0)
   );
   const [_item, _setItem] = useState(item);
   const [tags, setTags] = useState<Tag[]>(item.tags);
@@ -423,7 +423,7 @@ export default function StaticListItem({
               </span>
             ) : (
               <span className={`-ml-1 flex ${hasDueDates || 'mt-1'}`}>
-                <Name
+                <ConfirmedTextInput
                   className='shrink'
                   name={_item.name}
                   updateName={set.name}

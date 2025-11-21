@@ -19,27 +19,62 @@
 
 import {
   Button,
-  Input
+  Input,
+  Form
 } from '@nextui-org/react';
 
-import { PencilFill } from 'react-bootstrap-icons';
-import { getUser } from '@/lib/session';
+import { useEffect, useState } from 'react';
+import { Check } from 'react-bootstrap-icons';
+import User from '@/lib/model/user';
 
 export function EditFields({
-  name
+  name,
+  value,
+  type,
+  propType,
+  updateValue
 }: {
   name: string;
+  value: string;
+  type: string;
+  propType: string;
+  updateValue: (value: Partial<User>) => unknown;
 }) {
-  //const userDetails = getUser();
+  const [newValue, setNewValue] = useState(value);
+  const [prevValue, setPrevValue] = useState(value);
+
+  
+
+  useEffect(() => setPrevValue(value), [value]);
 
   return (
-    <span className='text-base'>
-      <Input label={name} type='text' defaultValue='test' isClearable/>
-      {/* <Input label={name} type='text' defaultValue={userDetails.username} isClearable/> */}
-      {/* <Button isIconOnly color='primary' variant='flat'>
-        <PencilFill aria-label='Edit' size={20} />
-      </Button> */}
+    <form
+      className='flex grow shrink w-full'
+      onSubmit={e => {
+        e.preventDefault();
+        updateValue({propType: value});
+      }}
+    >
+      <Input label={name} type={type} defaultValue={value} onValueChange={setNewValue} isClearable/>
+      <Button
+        isIconOnly
+        color='primary'
+        type='submit'
+      >
+        <Check />
+      </Button>
+    </form>
+    // <Form className='text-base'>
+    //   {/* <Input label={name} type='text' defaultValue='test' isClearable/> */}
+    //   <Input label={name} type={type} defaultValue={value} isClearable/>
+    //   {/* <Button color='primary' type='submit'>
+    //     Submit
+    //   </Button> */}
 
-    </span>
+    //   {/* <Button isIconOnly color='primary' variant='flat'>
+    //     <PencilFill aria-label='Edit' size={20} />
+    //   </Button> */}
+
+    // </Form>
   );
 }

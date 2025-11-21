@@ -15,11 +15,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-//This page should pull the user data, then forward it to edit fields
 
-import { EditFields } from './components/EditFields';
+import { getUser } from '@/lib/session';
+import SetUserProps from './components/SetUserProps'
 
 export default async function Page() {
+  const userDetails = await getUser();
 
   return(
     <main className='flex p-6 justify-center'>
@@ -28,10 +29,7 @@ export default async function Page() {
           Profile
         </h1>
         <div>
-          <EditFields name='Username' />
-        </div>
-        <div>
-          <EditFields name='Email' />
+          <SetUserProps user={JSON.stringify(userDetails)} />
         </div>
       </div>
     </main>

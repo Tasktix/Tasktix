@@ -15,12 +15,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+'use client';
 
 import { Button, Input } from '@nextui-org/react';
 import { useEffect, useState } from 'react';
 import { Check } from 'react-bootstrap-icons';
 
-export default function Name({
+export default function ConfirmedTextInput({
   name,
   showLabel,
   showUnderline,
@@ -47,6 +48,7 @@ export default function Name({
       className='flex grow shrink w-full'
       onSubmit={e => {
         e.preventDefault();
+        console.log("confirmedtextinput\n");
         updateName(newName);
       }}
     >

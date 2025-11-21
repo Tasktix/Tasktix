@@ -34,7 +34,7 @@ import { useRouter } from 'next/navigation';
 import { default as api } from '@/lib/api';
 import Tag from '@/lib/model/tag';
 import { NamedColor } from '@/lib/model/color';
-import Name from '@/components/Name';
+import ConfirmedTextInput from '@/components/ConfirmedTextInput';
 
 import { ListContext } from '../Sidebar';
 import ColorPicker from '../ColorPicker';
@@ -204,7 +204,7 @@ export function ListSettings({
               >
                 <span className='flex flex-col gap-4 overflow-y-auto'>
                   <span className='flex gap-4 mb-2'>
-                    <Name
+                    <ConfirmedTextInput
                       showUnderline
                       classNames={{ input: 'text-md' }}
                       name={listName}
@@ -255,7 +255,7 @@ export function ListSettings({
                 <span className='flex flex-col gap-4 shrink overflow-y-auto'>
                   {tagsAvailable.map(tag => (
                     <span key={tag.id} className='flex gap-2 items-center'>
-                      <Name
+                      <ConfirmedTextInput
                         showUnderline
                         name={tag.name}
                         updateName={updateTagName.bind(null, tag)}

@@ -33,7 +33,7 @@ import Tag from '@/lib/model/tag';
 import ListMember from '@/lib/model/listMember';
 
 import DateInput2 from '../DateInput2';
-import Name from '../Name';
+import ConfirmedTextInput from '../ConfirmedTextInput';
 
 import Priority from './Priority';
 import Tags from './Tags';
@@ -104,7 +104,7 @@ export default function More({
                     }}
                   />
                   <span className='flex grow'>
-                    <Name
+                    <ConfirmedTextInput
                       showLabel
                       disabled={isComplete}
                       name={item.name}

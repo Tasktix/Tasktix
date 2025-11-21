@@ -47,7 +47,7 @@ import { default as api } from '@/lib/api';
 
 import { addSnackbar } from '../Snackbar';
 import { Filters } from '../SearchBar/types';
-import Name from '../Name';
+import ConfirmedTextInput from '../ConfirmedTextInput';
 
 interface Item extends ListItemModel {
   visualIndex?: number;
@@ -201,7 +201,7 @@ export default function ListSection({
           >
             {isCollapsed ? <ChevronExpand /> : <ChevronContract />}
           </Button>
-          <Name
+          <ConfirmedTextInput
             className='mt-0.5'
             classNames={{ input: 'text-md' }}
             name={name}
