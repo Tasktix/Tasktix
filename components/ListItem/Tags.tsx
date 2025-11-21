@@ -21,11 +21,10 @@
 import {
   Button,
   Chip,
-  Card,
   Popover,
   PopoverContent,
   PopoverTrigger
-} from '@nextui-org/react';
+} from '@heroui/react';
 import { useState } from 'react';
 import { X, Plus, Tags as TagsIcon } from 'react-bootstrap-icons';
 
@@ -60,12 +59,13 @@ export default function Tags({
     <Popover
       isOpen={isPopoverOpen}
       placement='bottom'
+      shouldCloseOnBlur={false} // Prevent closing popover when tag color selection opens nested popover
       onOpenChange={open => {
         if (!isComplete) setIsPopoverOpen(open);
       }}
     >
       <PopoverTrigger>
-        <Card
+        <Button
           className={`px-4 basis-1/6 grow shrink flex flex-row items-center justify-start overflow-hidden flex-nowrap h-10 shadow-none cursor-pointer bg-transparent ${isComplete ? 'opacity-50 cursor-default' : 'hover:bg-foreground/10 focus:z-10 focus:outline-2 focus:outline-focus focus:outline-offset-2'} ${className}`}
           tabIndex={isComplete ? 1 : 0}
         >
@@ -88,7 +88,7 @@ export default function Tags({
                 </Chip>
               ))}
           </span>
-        </Card>
+        </Button>
       </PopoverTrigger>
       <PopoverContent>
         {tags
@@ -110,32 +110,31 @@ export default function Tags({
               </Button>
             </div>
           ))}
-        {tagsAvailable ? (
-          tagsAvailable
-            .sort((a, b) => (a.name > b.name ? 1 : -1))
-            .map(tag => {
-              if (!tags.some(usedTag => usedTag.id == tag.id))
-                return (
-                  <div
-                    key={tag.id}
-                    className={`${getTextColor(tag.color)} flex justify-between items-center w-full p-1.5`}
-                  >
-                    {tag.name}
-                    <Button
-                      isIconOnly
-                      className='rounded-lg w-8 h-8 min-w-8 min-h-8'
-                      color='primary'
-                      variant='flat'
-                      onPress={linkTag.bind(null, tag.id)}
+        {tagsAvailable
+          ? tagsAvailable
+              .sort((a, b) => (a.name > b.name ? 1 : -1))
+              .map(tag => {
+                if (tags.some(usedTag => usedTag.id === tag.id)) return null;
+                else
+                  return (
+                    <div
+                      key={tag.id}
+                      className={`${getTextColor(tag.color)} flex justify-between items-center w-full p-1.5`}
                     >
-                      <Plus />
-                    </Button>
-                  </div>
-                );
-            })
-        ) : (
-          <></>
-        )}
+                      {tag.name}
+                      <Button
+                        isIconOnly
+                        className='rounded-lg w-8 h-8 min-w-8 min-h-8'
+                        color='primary'
+                        variant='flat'
+                        onPress={linkTag.bind(null, tag.id)}
+                      >
+                        <Plus />
+                      </Button>
+                    </div>
+                  );
+              })
+          : null}
         <TagInput
           addNewTag={addNewTag}
           className='p-1.5 pl-1'

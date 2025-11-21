@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "docker compose build && docker compose watch",
+    "start": "docker compose up --build --watch",
     "stop": "docker compose stop",
     "teardown": "docker compose down",
     "test": "npm run test:jest && npm run test:cy",
@@ -20,7 +20,10 @@
     "cy:open": "cypress open"
   },
   "dependencies": {
-    "@nextui-org/react": "^2.6.11",
+    "@emotion/is-prop-valid": "^1.4.0",
+    "@heroui/react": "2.8.5",
+    "@heroui/theme": "^2.4.23",
+    "@tailwindcss/postcss": "^4.1.16",
     "framer-motion": "^11.18.2",
     "mysql2": "^3.14.1",
     "next": "^14.2.30",
@@ -63,7 +66,7 @@
     "jest-environment-jsdom": "^29.7.0",
     "postcss": "^8.5.6",
     "prettier": "3.3.3",
-    "tailwindcss": "^3.4.17",
+    "tailwindcss": "^4.1.16",
     "typescript": "^5.8.3"
   }
 }

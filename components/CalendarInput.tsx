@@ -18,7 +18,7 @@
 
 'use client';
 
-import { Button } from '@nextui-org/react';
+import { Button } from '@heroui/react';
 import { ReactNode, useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'react-bootstrap-icons';
 
@@ -125,8 +125,8 @@ function CalendarInputBody({
 }) {
   const isCurrentMonth =
     current &&
-    current.getFullYear() == month.getFullYear() &&
-    current.getMonth() == month.getMonth();
+    current.getFullYear() === month.getFullYear() &&
+    current.getMonth() === month.getMonth();
   const monthNum = month.getMonth();
 
   const monthStart = new Date(month.getTime());
@@ -169,7 +169,7 @@ function CalendarInputBody({
   const days = [];
 
   for (let i = 1; i <= monthEnd.getDate(); i++)
-    if (isCurrentMonth && current.getDate() == i)
+    if (isCurrentMonth && current.getDate() === i)
       days.push(
         <Button
           key={`${monthNum}:${i}`}

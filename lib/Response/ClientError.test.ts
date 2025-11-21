@@ -16,7 +16,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import * as ClientError from './ClientError';
+import {
+  BadRequest,
+  Conflict,
+  Forbidden,
+  Gone,
+  NotFound,
+  PayloadTooLarge,
+  Unauthenticated
+} from './ClientError';
 
 describe('BadRequest', () => {
   test('Returns a response with status 400 and provided headers and JSON-encoded body representing the message and content fields', async () => {
@@ -24,7 +32,7 @@ describe('BadRequest', () => {
     const content = 'Extra details';
     const headers = { 'X-Custom': 'some header value' };
 
-    const response = ClientError.BadRequest(message, content, headers);
+    const response = BadRequest(message, content, headers);
 
     expect(response.status).toBe(400);
     expect(response.statusText).toBe('Bad Request');
@@ -39,7 +47,7 @@ describe('BadRequest', () => {
   test('Returns a response with status 400 and JSON-encoded body representing just the message when content and headers are not provided', async () => {
     const message = 'Error message';
 
-    const response = ClientError.BadRequest(message);
+    const response = BadRequest(message);
 
     expect(response.status).toBe(400);
     expect(response.statusText).toBe('Bad Request');
@@ -60,9 +68,7 @@ describe('BadRequest', () => {
       throw new Error('Stringification failed');
     });
 
-    expect(() => ClientError.BadRequest(message)).toThrow(
-      'Stringification failed'
-    );
+    expect(() => BadRequest(message)).toThrow('Stringification failed');
 
     Response.json = originalJson;
   });
@@ -74,7 +80,7 @@ describe('Unauthenticated', () => {
     const content = 'Extra details';
     const headers = { 'X-Custom': 'some header value' };
 
-    const response = ClientError.Unauthenticated(message, content, headers);
+    const response = Unauthenticated(message, content, headers);
 
     expect(response.status).toBe(401);
     expect(response.statusText).toBe('Unauthorized');
@@ -89,7 +95,7 @@ describe('Unauthenticated', () => {
   test('Returns a response with status 401 and JSON-encoded body representing just the message when content and headers are not provided', async () => {
     const message = 'Error message';
 
-    const response = ClientError.Unauthenticated(message);
+    const response = Unauthenticated(message);
 
     expect(response.status).toBe(401);
     expect(response.statusText).toBe('Unauthorized');
@@ -110,9 +116,7 @@ describe('Unauthenticated', () => {
       throw new Error('Stringification failed');
     });
 
-    expect(() => ClientError.Unauthenticated(message)).toThrow(
-      'Stringification failed'
-    );
+    expect(() => Unauthenticated(message)).toThrow('Stringification failed');
 
     Response.json = originalJson;
   });
@@ -124,7 +128,7 @@ describe('Forbidden', () => {
     const content = 'Extra details';
     const headers = { 'X-Custom': 'some header value' };
 
-    const response = ClientError.Forbidden(message, content, headers);
+    const response = Forbidden(message, content, headers);
 
     expect(response.status).toBe(403);
     expect(response.statusText).toBe('Forbidden');
@@ -139,7 +143,7 @@ describe('Forbidden', () => {
   test('Returns a response with status 403 and JSON-encoded body representing just the message when content and headers are not provided', async () => {
     const message = 'Error message';
 
-    const response = ClientError.Forbidden(message);
+    const response = Forbidden(message);
 
     expect(response.status).toBe(403);
     expect(response.statusText).toBe('Forbidden');
@@ -160,9 +164,7 @@ describe('Forbidden', () => {
       throw new Error('Stringification failed');
     });
 
-    expect(() => ClientError.Forbidden(message)).toThrow(
-      'Stringification failed'
-    );
+    expect(() => Forbidden(message)).toThrow('Stringification failed');
 
     Response.json = originalJson;
   });
@@ -174,7 +176,7 @@ describe('NotFound', () => {
     const content = 'Extra details';
     const headers = { 'X-Custom': 'some header value' };
 
-    const response = ClientError.NotFound(message, content, headers);
+    const response = NotFound(message, content, headers);
 
     expect(response.status).toBe(404);
     expect(response.statusText).toBe('Not Found');
@@ -189,7 +191,7 @@ describe('NotFound', () => {
   test('Returns a response with status 404 and JSON-encoded body representing just the message when content and headers are not provided', async () => {
     const message = 'Error message';
 
-    const response = ClientError.NotFound(message);
+    const response = NotFound(message);
 
     expect(response.status).toBe(404);
     expect(response.statusText).toBe('Not Found');
@@ -210,9 +212,7 @@ describe('NotFound', () => {
       throw new Error('Stringification failed');
     });
 
-    expect(() => ClientError.NotFound(message)).toThrow(
-      'Stringification failed'
-    );
+    expect(() => NotFound(message)).toThrow('Stringification failed');
 
     Response.json = originalJson;
   });
@@ -224,7 +224,7 @@ describe('Conflict', () => {
     const content = 'Extra details';
     const headers = { 'X-Custom': 'some header value' };
 
-    const response = ClientError.Conflict(message, content, headers);
+    const response = Conflict(message, content, headers);
 
     expect(response.status).toBe(409);
     expect(response.statusText).toBe('Conflict');
@@ -239,7 +239,7 @@ describe('Conflict', () => {
   test('Returns a response with status 409 and JSON-encoded body representing just the message when content and headers are not provided', async () => {
     const message = 'Error message';
 
-    const response = ClientError.Conflict(message);
+    const response = Conflict(message);
 
     expect(response.status).toBe(409);
     expect(response.statusText).toBe('Conflict');
@@ -260,9 +260,7 @@ describe('Conflict', () => {
       throw new Error('Stringification failed');
     });
 
-    expect(() => ClientError.Conflict(message)).toThrow(
-      'Stringification failed'
-    );
+    expect(() => Conflict(message)).toThrow('Stringification failed');
 
     Response.json = originalJson;
   });
@@ -274,7 +272,7 @@ describe('Gone', () => {
     const content = 'Extra details';
     const headers = { 'X-Custom': 'some header value' };
 
-    const response = ClientError.Gone(message, content, headers);
+    const response = Gone(message, content, headers);
 
     expect(response.status).toBe(410);
     expect(response.statusText).toBe('Gone');
@@ -289,7 +287,7 @@ describe('Gone', () => {
   test('Returns a response with status 410 and JSON-encoded body representing just the message when content and headers are not provided', async () => {
     const message = 'Error message';
 
-    const response = ClientError.Gone(message);
+    const response = Gone(message);
 
     expect(response.status).toBe(410);
     expect(response.statusText).toBe('Gone');
@@ -310,7 +308,7 @@ describe('Gone', () => {
       throw new Error('Stringification failed');
     });
 
-    expect(() => ClientError.Gone(message)).toThrow('Stringification failed');
+    expect(() => Gone(message)).toThrow('Stringification failed');
 
     Response.json = originalJson;
   });
@@ -322,7 +320,7 @@ describe('PayloadTooLarge', () => {
     const content = 'Extra details';
     const headers = { 'X-Custom': 'some header value' };
 
-    const response = ClientError.PayloadTooLarge(message, content, headers);
+    const response = PayloadTooLarge(message, content, headers);
 
     expect(response.status).toBe(413);
     expect(response.statusText).toBe('Payload Too Large');
@@ -337,7 +335,7 @@ describe('PayloadTooLarge', () => {
   test('Returns a response with status 413 and JSON-encoded body representing just the message when content and headers are not provided', async () => {
     const message = 'Error message';
 
-    const response = ClientError.PayloadTooLarge(message);
+    const response = PayloadTooLarge(message);
 
     expect(response.status).toBe(413);
     expect(response.statusText).toBe('Payload Too Large');
@@ -358,9 +356,7 @@ describe('PayloadTooLarge', () => {
       throw new Error('Stringification failed');
     });
 
-    expect(() => ClientError.PayloadTooLarge(message)).toThrow(
-      'Stringification failed'
-    );
+    expect(() => PayloadTooLarge(message)).toThrow('Stringification failed');
 
     Response.json = originalJson;
   });

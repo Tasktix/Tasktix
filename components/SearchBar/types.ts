@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { SharedSelection } from '@nextui-org/react';
+import { SharedSelection } from '@heroui/react';
 
 import { Color } from '@/lib/model/color';
 

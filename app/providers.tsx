@@ -18,18 +18,26 @@
 
 'use client';
 
-import { NextUIProvider } from '@nextui-org/react';
 import { ThemeProvider } from 'next-themes';
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
+  // Defer importing HeroUIProvider to client
+  // The HeroUI library is extremely finicky and even importing it on server (not just server side rendering)
+  // causes 500 error. Root layout (which implements providers) needs to be server side for async functions.
+  const HeroUIProvider = dynamic(
+    () => import('@heroui/react').then(mod => mod.HeroUIProvider),
+    { ssr: false }
+  );
+
   return (
-    <NextUIProvider navigate={router.push.bind(router)}>
+    <HeroUIProvider navigate={router.push.bind(router)}>
       <ThemeProvider attribute='class' defaultTheme='system'>
         {children}
       </ThemeProvider>
-    </NextUIProvider>
+    </HeroUIProvider>
   );
 }

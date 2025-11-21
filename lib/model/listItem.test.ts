@@ -90,8 +90,8 @@ describe('ListItem constructor', () => {
       dateDue: new Date('2021-01-02'),
       dateStarted: new Date('2021-01-01'),
       dateCompleted: new Date('2021-01-02'),
-      assignees: assignees,
-      tags: tags,
+      assignees,
+      tags,
       listId: 'listId',
       sectionId: 'sectionId',
       id: 'provided-id'

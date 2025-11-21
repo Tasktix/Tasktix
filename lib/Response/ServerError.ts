@@ -23,7 +23,7 @@ export function Internal(
 ): Response {
   return Response.json(
     { message, content },
-    { status: 500, statusText: 'Internal Server Error', headers: headers }
+    { status: 500, statusText: 'Internal Server Error', headers }
   );
 }
 
@@ -34,6 +34,6 @@ export function BadGateway(
 ): Response {
   return Response.json(
     { message, content },
-    { status: 502, statusText: 'Bad Gateway', headers: headers }
+    { status: 502, statusText: 'Bad Gateway', headers }
   );
 }

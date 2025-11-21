@@ -23,8 +23,9 @@ import {
   Card,
   Popover,
   PopoverContent,
-  PopoverTrigger
-} from '@nextui-org/react';
+  PopoverTrigger,
+  addToast
+} from '@heroui/react';
 import { useState } from 'react';
 import { PeopleFill, Plus, X } from 'react-bootstrap-icons';
 
@@ -32,8 +33,6 @@ import Assignee from '@/lib/model/assignee';
 import { getBackgroundColor, getTextColor } from '@/lib/color';
 import ListMember from '@/lib/model/listMember';
 import { default as api } from '@/lib/api';
-
-import { addSnackbar } from '../Snackbar';
 
 export default function Users({
   itemId,
@@ -55,29 +54,45 @@ export default function Users({
     api
       .post(`/item/${itemId}/assignee/${userId}`, {})
       .then(res => {
-        addSnackbar(res.message, 'success');
+        addToast({
+          title: res.message,
+          color: 'success'
+        });
         const newAssignees = structuredClone(_assignees);
 
         for (const member of members)
-          if (member.user.id == userId)
+          if (member.user.id === userId)
             newAssignees.push(new Assignee(member.user, ''));
         setAssignees(newAssignees);
       })
-      .catch(err => addSnackbar(err.message, 'error'));
+      .catch(err =>
+        addToast({
+          title: err.message,
+          color: 'danger'
+        })
+      );
   }
 
   function removeAssignee(userId: string) {
     api
       .delete(`/item/${itemId}/assignee/${userId}`)
       .then(res => {
-        addSnackbar(res.message, 'success');
+        addToast({
+          title: res.message,
+          color: 'success'
+        });
         const newAssignees = structuredClone(_assignees);
 
         for (let i = 0; i < newAssignees.length; i++)
-          if (newAssignees[i].user.id == userId) newAssignees.splice(i, 1);
+          if (newAssignees[i].user.id === userId) newAssignees.splice(i, 1);
         setAssignees(newAssignees);
       })
-      .catch(err => addSnackbar(err.message, 'error'));
+      .catch(err =>
+        addToast({
+          title: err.message,
+          color: 'danger'
+        })
+      );
   }
 
   return (
@@ -128,24 +143,26 @@ export default function Users({
           </div>
         ))}
         {members.map(member => {
-          if (!_assignees.some(assignee => assignee.user.id == member.user.id))
-            return (
-              <div
-                key={member.user.id}
-                className={`${getTextColor(member.user.color)} flex justify-between items-center w-full p-1.5`}
+          if (_assignees.some(assignee => assignee.user.id === member.user.id))
+            return null;
+
+          return (
+            <div
+              key={member.user.id}
+              className={`${getTextColor(member.user.color)} flex justify-between items-center w-full p-1.5`}
+            >
+              {member.user.username}
+              <Button
+                isIconOnly
+                className='rounded-lg w-8 h-8 min-w-8 min-h-8'
+                color='primary'
+                variant='flat'
+                onPress={addAssignee.bind(null, member.user.id)}
               >
-                {member.user.username}
-                <Button
-                  isIconOnly
-                  className='rounded-lg w-8 h-8 min-w-8 min-h-8'
-                  color='primary'
-                  variant='flat'
-                  onPress={addAssignee.bind(null, member.user.id)}
-                >
-                  <Plus />
-                </Button>
-              </div>
-            );
+                <Plus />
+              </Button>
+            </div>
+          );
         })}
       </PopoverContent>
     </Popover>

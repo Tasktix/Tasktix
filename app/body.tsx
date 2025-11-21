@@ -24,30 +24,48 @@ import {
   Navbar,
   NavbarBrand,
   NavbarContent,
-  NavbarItem
-} from '@nextui-org/react';
+  NavbarItem,
+  ToastProvider
+} from '@heroui/react';
 import { useRouter } from 'next/navigation';
 import { ReactNode, useState } from 'react';
 import Image from 'next/image';
 
-import Snackbar from '@/components/Snackbar';
 import { default as api } from '@/lib/api';
 import ThemeSwitcher from '@/components/ThemeSwitcher';
 
-export let setLoggedIn: () => void;
-export let setLoggedOut: () => void;
+export function setLoggedIn() {
+  // The whole point is that this may be called before the fn is defined - skipcq: JS-0357
+  if (!_setLoggedIn) throw new Error('Body component not yet mounted');
+
+  // The whole point is that this may be called before the fn is defined - skipcq: JS-0357
+  return _setLoggedIn();
+}
+
+export function setLoggedOut() {
+  // The whole point is that this may be called before the fn is defined - skipcq: JS-0357
+  if (!_setLoggedOut) throw new Error('Body component not yet mounted');
+
+  // The whole point is that this may be called before the fn is defined - skipcq: JS-0357
+  return _setLoggedOut();
+}
+
+let _setLoggedIn: () => void;
+let _setLoggedOut: () => void;
+
+interface BodyProps {
+  children: ReactNode;
+  isLoggedInAtStart: boolean;
+}
 
 export default function Body({
   children,
   isLoggedInAtStart
-}: {
-  children: ReactNode;
-  isLoggedInAtStart: boolean;
-}) {
+}: Readonly<BodyProps>) {
   const [isLoggedIn, setIsLoggedIn] = useState(isLoggedInAtStart);
 
-  setLoggedIn = () => setIsLoggedIn(true);
-  setLoggedOut = () => setIsLoggedIn(false);
+  _setLoggedIn = () => setIsLoggedIn(true);
+  _setLoggedOut = () => setIsLoggedIn(false);
 
   return (
     <div className='flex flex-col h-screen'>
@@ -77,7 +95,7 @@ export default function Body({
 
       {children}
 
-      <Snackbar />
+      <ToastProvider />
     </div>
   );
 }

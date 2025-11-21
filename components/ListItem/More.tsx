@@ -24,7 +24,7 @@ import {
   ModalContent,
   ModalHeader,
   useDisclosure
-} from '@nextui-org/react';
+} from '@heroui/react';
 import { ThreeDots, TrashFill } from 'react-bootstrap-icons';
 
 import { NamedColor } from '@/lib/model/color';
@@ -78,7 +78,7 @@ export default function More({
   set: SetItem;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
 }) {
-  const isComplete = item.status == 'Completed';
+  const isComplete = item.status === 'Completed';
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
@@ -130,15 +130,13 @@ export default function More({
                       variant='underlined'
                       onValueChange={set.dueDate}
                     />
-                  ) : (
-                    <></>
-                  )}
+                  ) : null}
                 </div>
 
                 <Tags
                   addNewTag={addNewTag}
                   className='py-2'
-                  isComplete={item.status == 'Completed'}
+                  isComplete={item.status === 'Completed'}
                   linkTag={set.linkedTag}
                   tags={tags}
                   tagsAvailable={tagsAvailable}
@@ -153,9 +151,7 @@ export default function More({
                     itemId={item.id}
                     members={members}
                   />
-                ) : (
-                  <></>
-                )}
+                ) : null}
 
                 <div className='flex gap-6 justify-end'>
                   {hasTimeTracking ? (
@@ -181,9 +177,7 @@ export default function More({
                         status={item.status}
                       />
                     </>
-                  ) : (
-                    <></>
-                  )}
+                  ) : null}
                   <Button
                     color='danger'
                     variant='ghost'

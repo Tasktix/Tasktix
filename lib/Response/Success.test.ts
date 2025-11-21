@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import * as Success from './Success';
+import { OK, Created } from './Success';
 
 describe('OK', () => {
   test('Returns a response with status 200 and provided headers and JSON-encoded body representing the message and content fields', async () => {
@@ -24,7 +24,7 @@ describe('OK', () => {
     const content = 'Extra details';
     const headers = { 'X-Custom': 'some header value' };
 
-    const response = Success.OK(message, content, headers);
+    const response = OK(message, content, headers);
 
     expect(response.status).toBe(200);
     expect(response.statusText).toBe('OK');
@@ -39,7 +39,7 @@ describe('OK', () => {
   test('Returns a response with status 200 and JSON-encoded body representing just the message when content and headers are not provided', async () => {
     const message = 'Success message';
 
-    const response = Success.OK(message);
+    const response = OK(message);
 
     expect(response.status).toBe(200);
     expect(response.statusText).toBe('OK');
@@ -60,7 +60,7 @@ describe('OK', () => {
       throw new Error('Stringification failed');
     });
 
-    expect(() => Success.OK(message)).toThrow('Stringification failed');
+    expect(() => OK(message)).toThrow('Stringification failed');
 
     Response.json = originalJson;
   });
@@ -72,7 +72,7 @@ describe('Created', () => {
     const location = '/new/resource';
     const headers = { 'X-Custom': 'some header value' };
 
-    const response = Success.Created(message, location, headers);
+    const response = Created(message, location, headers);
 
     expect(response.status).toBe(201);
     expect(response.statusText).toBe('Created');
@@ -90,7 +90,7 @@ describe('Created', () => {
     const message = 'Success message';
     const location = '/new/resource';
 
-    const response = Success.Created(message, location);
+    const response = Created(message, location);
 
     expect(response.status).toBe(201);
     expect(response.statusText).toBe('Created');
@@ -114,9 +114,7 @@ describe('Created', () => {
       throw new Error('Stringification failed');
     });
 
-    expect(() => Success.Created(message, location)).toThrow(
-      'Stringification failed'
-    );
+    expect(() => Created(message, location)).toThrow('Stringification failed');
 
     Response.json = originalJson;
   });

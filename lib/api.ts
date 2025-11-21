@@ -31,19 +31,11 @@ export default {
     return request(resource, 'POST', data, encodingType);
   },
 
-  put(
-    resource: string,
-    data: object,
-    encodingType: string = 'application/json'
-  ) {
+  put(resource: string, data: object, encodingType = 'application/json') {
     return request(resource, 'PUT', data, encodingType);
   },
 
-  patch(
-    resource: string,
-    data: object,
-    encodingType: string = 'application/json'
-  ) {
+  patch(resource: string, data: object, encodingType = 'application/json') {
     return request(resource, 'PATCH', data, encodingType);
   },
 
@@ -67,7 +59,8 @@ async function request(
     if (!encodingType) encodingType = 'application/json';
 
     if (encodingType === 'application/json') body = JSON.stringify(data);
-    else throw Error(`Unknown encoding ${encodingType} for object parameter`);
+    else
+      throw new Error(`Unknown encoding ${encodingType} for object parameter`);
   }
 
   const options: RequestInit = {
@@ -77,7 +70,7 @@ async function request(
 
   if (encodingType) options.headers = { 'Content-Type': encodingType };
 
-  const result = await fetch('/api' + resource, options);
+  const result = await fetch(`/api${resource}`, options);
   const parsedResult = await result.json();
 
   const serverResponse: ServerResponse = {

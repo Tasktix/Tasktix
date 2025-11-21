@@ -17,6 +17,7 @@
  */
 
 import {
+  addToast,
   Button,
   Modal,
   ModalBody,
@@ -26,7 +27,7 @@ import {
   Tab,
   Tabs,
   useDisclosure
-} from '@nextui-org/react';
+} from '@heroui/react';
 import { useContext } from 'react';
 import { TrashFill, GearWideConnected } from 'react-bootstrap-icons';
 import { useRouter } from 'next/navigation';
@@ -38,7 +39,6 @@ import Name from '@/components/Name';
 
 import { ListContext } from '../Sidebar';
 import ColorPicker from '../ColorPicker';
-import { addSnackbar } from '../Snackbar';
 import TagInput from '../TagInput';
 
 export function ListSettings({
@@ -82,7 +82,7 @@ export function ListSettings({
     api
       .patch(`/list/${listId}`, { hasTimeTracking: value })
       .then(() => setHasTimeTracking(value))
-      .catch(err => addSnackbar(err.message, 'error'));
+      .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
   function updateHasDueDates(value: boolean) {
@@ -91,7 +91,7 @@ export function ListSettings({
     api
       .patch(`/list/${listId}`, { hasDueDates: value })
       .then(() => setHasDueDates(value))
-      .catch(err => addSnackbar(err.message, 'error'));
+      .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
   function updateIsAutoOrdered(value: boolean) {
@@ -100,14 +100,14 @@ export function ListSettings({
     api
       .patch(`/list/${listId}`, { isAutoOrdered: value })
       .then(() => setIsAutoOrdered(value))
-      .catch(err => addSnackbar(err.message, 'error'));
+      .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
   function updateName(name: string) {
     api
       .patch(`/list/${listId}`, { name })
       .then(() => setListName(name))
-      .catch(err => addSnackbar(err.message, 'error'));
+      .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
   function updateColor(color: NamedColor | null) {
@@ -116,7 +116,7 @@ export function ListSettings({
     api
       .patch(`/list/${listId}`, { color })
       .then(() => setListColor(color))
-      .catch(err => addSnackbar(err.message, 'error'));
+      .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
   function deleteList() {
@@ -130,11 +130,11 @@ export function ListSettings({
     api
       .delete(`/list/${listId}`)
       .then(res => {
-        addSnackbar(res.message, 'success');
+        addToast({ title: res.message, color: 'success' });
         dispatchEvent({ type: 'remove', id: listId });
         router.replace('/list');
       })
-      .catch(err => addSnackbar(err.message, 'error'));
+      .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
   function updateTagName(tag: Tag, name: string) {
@@ -143,11 +143,11 @@ export function ListSettings({
       .then(() => {
         setTagsAvailable(
           tagsAvailable.map(t =>
-            t.id == tag.id ? new Tag(name, t.color, t.id) : t
+            t.id === tag.id ? new Tag(name, t.color, t.id) : t
           )
         );
       })
-      .catch(err => addSnackbar(err.message, 'error'));
+      .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
   function updateTagColor(tag: Tag, color: NamedColor | null) {
@@ -157,11 +157,11 @@ export function ListSettings({
         .then(() => {
           setTagsAvailable(
             tagsAvailable.map(t =>
-              t.id == tag.id ? new Tag(t.name, color, t.id) : t
+              t.id === tag.id ? new Tag(t.name, color, t.id) : t
             )
           );
         })
-        .catch(err => addSnackbar(err.message, 'error'));
+        .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
   function deleteTag(id: string) {
@@ -175,9 +175,9 @@ export function ListSettings({
     api
       .delete(`/list/${listId}/tag/${id}`)
       .then(() => {
-        setTagsAvailable(tagsAvailable.filter(tag => tag.id != id));
+        setTagsAvailable(tagsAvailable.filter(tag => tag.id !== id));
       })
-      .catch(err => addSnackbar(err.message, 'error'));
+      .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
   return (

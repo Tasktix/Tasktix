@@ -22,7 +22,7 @@ import {
   Autocomplete,
   AutocompleteItem,
   AutocompleteSection
-} from '@nextui-org/react';
+} from '@heroui/react';
 
 import { Filters, InputOptionGroup } from './types';
 import searchReducer from './searchReducer';
@@ -51,7 +51,7 @@ export default function SearchBar({
   const inputFields: ReactElement[] = [];
 
   for (const key in filters) {
-    const option = _options.find(option => option.label == key);
+    const option = _options.find(option => option.label === key);
 
     if (!option) return;
 
@@ -87,7 +87,7 @@ export default function SearchBar({
   }
 
   function handleInput(input: string) {
-    if (input.at(-1) != ':') {
+    if (input.at(-1) !== ':') {
       setValue(input);
 
       return;
@@ -97,7 +97,7 @@ export default function SearchBar({
 
     if (
       inputOptions.find(option =>
-        option.options.find(option => option.label == optionName)
+        option.options.find(option => option.label === optionName)
       )
     )
       addUsedOption(optionName);
@@ -106,7 +106,7 @@ export default function SearchBar({
   }
 
   function handleSelectionChange(selection: Key | null) {
-    if (selection != null) addUsedOption(selection.toString());
+    if (selection !== null) addUsedOption(selection.toString());
 
     setValue('');
   }

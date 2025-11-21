@@ -36,7 +36,7 @@ export default async function RootLayout({
     <html suppressHydrationWarning lang='en'>
       <body>
         <Providers>
-          <Body isLoggedInAtStart={!!(await getUser())}>{children}</Body>
+          <Body isLoggedInAtStart={Boolean(await getUser())}>{children}</Body>
         </Providers>
       </body>
     </html>

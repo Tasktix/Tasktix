@@ -18,11 +18,10 @@
 
 'use client';
 
-import { Button, Input } from '@nextui-org/react';
+import { addToast, Button, Input } from '@heroui/react';
 import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-import { addSnackbar } from '@/components/Snackbar';
 import { default as api } from '@/lib/api';
 import { setLoggedIn } from '@/app/body';
 
@@ -46,7 +45,12 @@ export default function SignIn() {
         setLoggedIn();
         router.replace('/list');
       })
-      .catch(err => addSnackbar(err.message, 'error'));
+      .catch(err =>
+        addToast({
+          title: err.message,
+          color: 'danger'
+        })
+      );
   }
 
   return (
@@ -55,14 +59,15 @@ export default function SignIn() {
         label='Username'
         type='text'
         value={inputs.username}
-        variant='underlined'
+        variant='bordered'
         onValueChange={handleUsernameInput}
       />
       <Input
+        className='py-2'
         label='Password'
         type='password'
         value={inputs.password}
-        variant='underlined'
+        variant='bordered'
         onValueChange={handlePasswordInput}
       />
       <div className='flex justify-center mt-6'>

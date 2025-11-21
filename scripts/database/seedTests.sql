@@ -14,14 +14,14 @@
 -- You should have received a copy of the GNU Affero General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-INSERT INTO `users` (
-  `u_id`,
-  `u_username`,
-  `u_email`,
-  `u_password`,
-  `u_color`,
-  `u_dateCreated`,
-  `u_dateSignedIn`
+INSERT INTO users (
+  u_id,
+  u_username,
+  u_email,
+  u_password,
+  u_color,
+  u_dateCreated,
+  u_dateSignedIn
 ) 
 VALUES (
   'testuser00000000',

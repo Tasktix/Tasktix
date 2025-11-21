@@ -16,12 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {
-  Select,
-  SelectItem,
-  Selection,
-  SlotsToClasses
-} from '@nextui-org/react';
+import { Select, SelectItem, Selection, SlotsToClasses } from '@heroui/react';
 
 import ListItem from '@/lib/model/listItem';
 
@@ -62,7 +57,7 @@ export default function Priority({
       <Select
         className={`w-28 grow-0 shrink-0 ${className || ''}`}
         classNames={classNames}
-        color={`${priority == 'High' ? 'danger' : priority == 'Medium' ? 'warning' : 'success'}`}
+        color={`${priority === 'High' ? 'danger' : priority === 'Medium' ? 'warning' : 'success'}`}
         isDisabled={isComplete}
         label={<span className='ml-2 text-foreground'>Priority</span>}
         labelPlacement='outside'
@@ -71,24 +66,24 @@ export default function Priority({
         size='sm'
         variant='flat'
         onSelectionChange={(keys: Selection) => {
-          const priorityKey = keys != 'all' ? keys.keys().next().value : 'Low';
+          const priorityKey = keys !== 'all' ? keys.keys().next().value : 'Low';
 
           setPriority(
-            priorityKey == 'High'
+            priorityKey === 'High'
               ? 'High'
-              : priorityKey == 'Medium'
+              : priorityKey === 'Medium'
                 ? 'Medium'
                 : 'Low'
           );
         }}
       >
-        <SelectItem key='High' color='danger' value='High'>
+        <SelectItem key='High' color='danger'>
           High
         </SelectItem>
-        <SelectItem key='Medium' color='warning' value='Medium'>
+        <SelectItem key='Medium' color='warning'>
           Medium
         </SelectItem>
-        <SelectItem key='Low' color='success' value='Low'>
+        <SelectItem key='Low' color='success'>
           Low
         </SelectItem>
       </Select>
