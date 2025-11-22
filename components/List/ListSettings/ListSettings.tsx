@@ -51,6 +51,7 @@ export default function ListSettings({
   setHasTimeTracking,
   setHasDueDates,
   setIsAutoOrdered,
+  setMembers,
   addNewTag
 }: {
   listId: string;
@@ -67,6 +68,7 @@ export default function ListSettings({
   setHasTimeTracking: (value: boolean) => unknown;
   setHasDueDates: (value: boolean) => unknown;
   setIsAutoOrdered: (value: boolean) => unknown;
+  setMembers: (members: ListMember[]) => unknown;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
 }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -111,7 +113,11 @@ export default function ListSettings({
                 className='flex flex-col gap-6 grow shrink justify-between overflow-clip'
                 title='Members'
               >
-                <MemberSettings members={members} />
+                <MemberSettings
+                  listId={listId}
+                  members={members}
+                  setMembers={setMembers}
+                />
               </Tab>
               <Tab
                 className='flex flex-col gap-6 grow shrink justify-between overflow-clip'
