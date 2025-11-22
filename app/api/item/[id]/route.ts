@@ -17,7 +17,7 @@
  */
 
 import { ClientError, ServerError, Success } from '@/lib/Response';
-import { getIsListAssigneeByItem } from '@/lib/database/list';
+import { getListMemberByItem } from '@/lib/database/list';
 import {
   deleteListItem,
   getListItemById,
@@ -44,9 +44,9 @@ export async function PATCH(
 
   if (!item) return ClientError.NotFound('List item not found');
 
-  const isMember = await getIsListAssigneeByItem(user.id, params.id);
+  const member = await getListMemberByItem(user.id, params.id);
 
-  if (!isMember) return ClientError.BadRequest('List item not found');
+  if (!member) return ClientError.BadRequest('List item not found');
 
   const parseResult = PatchBody.safeParse(await request.json());
 
@@ -56,7 +56,13 @@ export async function PATCH(
   const requestBody = parseResult.data;
 
   if (requestBody.name) item.name = requestBody.name;
-  if (requestBody.status) item.status = requestBody.status;
+  if (requestBody.status) {
+    if (requestBody.status === 'Completed' && !member.canComplete)
+      return ClientError.BadRequest(
+        'Insufficient permissions to complete item'
+      );
+    item.status = requestBody.status;
+  }
   if (requestBody.priority) item.priority = requestBody.priority;
   if (requestBody.dateDue) item.dateDue = new Date(requestBody.dateDue);
   if (requestBody.expectedMs) item.expectedMs = requestBody.expectedMs;
@@ -82,9 +88,15 @@ export async function DELETE(
   _: Request,
   { params }: { params: { id: string } }
 ) {
-  const session = await getUser();
+  const user = await getUser();
 
-  if (!session) return ClientError.Unauthenticated('Not logged in');
+  if (!user) return ClientError.Unauthenticated('Not logged in');
+
+  const member = await getListMemberByItem(user.id, params.id);
+
+  if (!member) return ClientError.BadRequest('List not found');
+  if (!member.canRemove)
+    return ClientError.BadRequest('Insufficient permissions to remove item');
 
   const result = await deleteListItem(params.id);
 
