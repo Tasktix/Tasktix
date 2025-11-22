@@ -25,6 +25,14 @@ import { ZodUser } from '@/lib/model/user';
 
 const PostBody = ZodUser.pick({ username: true });
 
+/**
+ * Add a user as a member of the list so they can view it and be assigned items to
+ * complete. When first added, members will have no permissions & must be granted them
+ * after
+ *
+ * @param params.id The list to add the member to
+ * @param request.username The username of the member to add to the list
+ */
 export async function POST(
   request: Request,
   { params }: { params: { id: string } }
