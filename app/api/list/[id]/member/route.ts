@@ -48,7 +48,7 @@ export async function POST(
 
   const newUser = await getUserByUsername(requestBody.username);
 
-  if (!newUser) return ClientError.BadRequest('User not found');
+  if (!newUser) return ClientError.NotFound('User not found');
 
   if (await getIsListAssignee(newUser.id, params.id))
     return ClientError.Conflict('User is already a member');
