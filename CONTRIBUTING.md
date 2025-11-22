@@ -67,10 +67,24 @@ the leading verb in your title:
 - `fix`: A bug is resolved
 - `perf`: Only performance improvements; no external/user impact (besides quicker responses)
 - `docs`: Only documentation changes; no external/user impact
-- `style`: Only stylistic changes; no external/user impact
+- `style`: Only UI stylistic changes; no external/user impact
 - `refactor`: Only code structure changes; no external/user impact
 - `test`: Only test coverage improvements; no external/user impact
 - `chore`: Misc. changes that don't fit other categories; no external/user impact
+
+This should be followed by an exclamation point (`!`) if your PR introduces breaking (i.e.
+non-backward compatible) changes. In all cases, this prefix should then be followed by a
+colon and space (`: `) and a title explaining the purpose of the PR.
+
+These conventional commit messages will be parsed by the Continuous Deployment pipeline to
+determine the SemVer version tag to assign to the PR after it's merged:
+
+- `MAJOR` will be incremented when there's an exclamation point (`!`) at the end of the
+  prefix, otherwise
+- `MINOR` will be incremented for `feat:` prefixes,
+- `PATCH` will be incremented for `fix:`, `perf:`, `style:`, `refactor:`, and `chore:`
+  prefixes, and
+- No version tag will be assigned for `docs:`, or `test:` prefixes.
 
 ### Documentation
 
