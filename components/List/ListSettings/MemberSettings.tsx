@@ -59,6 +59,35 @@ export default function MemberSettings({
       .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
+  function handleUpdatePermissions(
+    userId: string,
+    values: {
+      canAdd?: boolean;
+      canRemove?: boolean;
+      canAssign?: boolean;
+      canComplete?: boolean;
+    }
+  ) {
+    api
+      .patch(`/list/${listId}/member/${userId}`, values)
+      .then(() => {
+        setMembers(
+          members.map(m =>
+            m.user.id === userId
+              ? new ListMember(
+                  m.user,
+                  values.canAdd ?? m.canAdd,
+                  values.canRemove ?? m.canRemove,
+                  values.canComplete ?? m.canComplete,
+                  values.canAssign ?? m.canAssign
+                )
+              : m
+          )
+        );
+      })
+      .catch(err => addToast({ title: err.message, color: 'danger' }));
+  }
+
   return (
     <span className='flex flex-col gap-4 shrink overflow-y-auto'>
       <form className='flex gap-2' onSubmit={handleAddMember}>
@@ -99,16 +128,44 @@ export default function MemberSettings({
               />
             </td>
             <td className='text-center py-2'>
-              <Checkbox isSelected={member.canAdd} />
+              <Checkbox
+                isSelected={member.canAdd}
+                onValueChange={selected =>
+                  handleUpdatePermissions(member.user.id, {
+                    canAdd: selected
+                  })
+                }
+              />
             </td>
             <td className='text-center py-2'>
-              <Checkbox isSelected={member.canAssign} />
+              <Checkbox
+                isSelected={member.canAssign}
+                onValueChange={selected =>
+                  handleUpdatePermissions(member.user.id, {
+                    canAssign: selected
+                  })
+                }
+              />
             </td>
             <td className='text-center py-2'>
-              <Checkbox isSelected={member.canComplete} />
+              <Checkbox
+                isSelected={member.canComplete}
+                onValueChange={selected =>
+                  handleUpdatePermissions(member.user.id, {
+                    canComplete: selected
+                  })
+                }
+              />
             </td>
             <td className='text-center py-2'>
-              <Checkbox isSelected={member.canRemove} />
+              <Checkbox
+                isSelected={member.canRemove}
+                onValueChange={selected =>
+                  handleUpdatePermissions(member.user.id, {
+                    canRemove: selected
+                  })
+                }
+              />
             </td>
           </tr>
         ))}
