@@ -35,7 +35,7 @@ import {
 } from '@/components/SearchBar/types';
 
 import ListSection from './ListSection';
-import { ListSettings } from './ListSettings';
+import ListSettings from './ListSettings';
 
 export default function List({
   startingList,
