@@ -16,35 +16,59 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Button, Card, CardBody, Checkbox, Input, User } from '@heroui/react';
+import { addToast, Button, Checkbox, Input, User } from '@heroui/react';
 import { SendPlus } from 'react-bootstrap-icons';
+import { FormEvent, useState } from 'react';
 
 import { getBackgroundColor } from '@/lib/color';
 import ListMember from '@/lib/model/listMember';
+import api from '@/lib/api';
 
-export default function MemberSettings({ members }: { members: ListMember[] }) {
+export default function MemberSettings({
+  listId,
+  members,
+  setMembers
+}: {
+  listId: string;
+  members: ListMember[];
+  setMembers: (members: ListMember[]) => unknown;
+}) {
+  const [newUsername, setNewUsername] = useState('');
+
+  function handleAddMember(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setNewUsername('');
+
+    api
+      .post(`/list/${listId}/member`, { username: newUsername })
+      .then(res => {
+        if (!res.content) throw new Error('User added, but unable to display');
+
+        const listMember = JSON.parse(res.content) as ListMember;
+
+        setMembers([...members, listMember]);
+      })
+      .catch(err => addToast({ title: err.message, color: 'danger' }));
+  }
+
   return (
     <span className='flex flex-col gap-4 shrink overflow-y-auto'>
-      <form className='flex gap-2'>
-        <Input placeholder='Username...' />
-        <Button className='shrink-0' color='primary' variant='ghost'>
+      <form className='flex gap-2' onSubmit={handleAddMember}>
+        <Input
+          placeholder='Username...'
+          value={newUsername}
+          onValueChange={setNewUsername}
+        />
+        <Button
+          className='shrink-0'
+          color='primary'
+          type='submit'
+          variant='ghost'
+        >
           <SendPlus />
           Send Invite
         </Button>
       </form>
-      <Card className='text-xs bg-warning/20 text-warning-600'>
-        <CardBody>
-          <p className='text-justify'>
-            To protect users&apos; privacy and security, confirmation that an
-            account is associated with the provided username will only be
-            provided if the user accepts your invitation to join the list.{' '}
-            <b>
-              Double-check that you correctly spell the usernames before sending
-              invites.
-            </b>
-          </p>
-        </CardBody>
-      </Card>
       <table className='mt-4 w-full overflow-scroll'>
         <tr>
           <th style={{ flexGrow: 2 }}>Member</th>

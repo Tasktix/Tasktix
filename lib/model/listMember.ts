@@ -16,7 +16,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import z from 'zod';
+
 import User from './user';
+
+export const ZodListMember = z.strictObject({
+  userId: z.string().length(16),
+  listId: z.string().length(16),
+  canAdd: z.boolean(),
+  canRemove: z.boolean(),
+  canComplete: z.boolean(),
+  canAssign: z.boolean()
+});
 
 export default class ListMember {
   user: User;
