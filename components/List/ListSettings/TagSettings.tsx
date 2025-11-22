@@ -26,6 +26,14 @@ import Tag from '@/lib/model/tag';
 import api from '@/lib/api';
 import { NamedColor } from '@/lib/model/color';
 
+/**
+ * Displays all tags in the List and allows tags to be added, edited, and deleted
+ *
+ * @param listId The list the tags are for
+ * @param tagsAvailable All tags currently part of the list
+ * @param addNewTag A callback for adding a tag to the list
+ * @param setTagsAvailable A callback for updating React state with changes to the tags
+ */
 export default function TagSettings({
   listId,
   tagsAvailable,

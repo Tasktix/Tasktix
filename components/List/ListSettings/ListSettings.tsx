@@ -36,6 +36,30 @@ import GeneralSettings from './GeneralSettings';
 import MemberSettings from './MemberSettings';
 import TagSettings from './TagSettings';
 
+/**
+ * Displays and allows a variety of list-wide settings to be changed, including the list
+ * name, whether certain features are enabled, members with access to the list and their
+ * permissions, and tags that list items can have.
+ *
+ * @param listId The list the settings are for
+ * @param members All members of the list
+ * @param listName The list's current name
+ * @param listColor The list's current color
+ * @param tagsAvailable All tags currently part of the list
+ * @param hasTimeTracking Whether time tracking is currently enabled for the list
+ * @param isAutoOrdered Whether auto-ordering is currently enabled for the list
+ * @param hasDueDates Whether due dates are currently enabled for the list
+ * @param setListName A callback for updating React state with a new list name
+ * @param setListColor A callback for updating React state with a new list color
+ * @param setTagsAvailable A callback for updating React state with changes to the tags
+ * @param setHasTimeTracking A callback for updating React state when time tracking is
+ *  toggled
+ * @param setHasDueDates A callback for updating React state when due dates are toggled
+ * @param setIsAutoOrdered A callback for updating React state when auto-ordering is
+ *  toggled
+ * @param setMembers A callback for updating React state with changes to the members
+ * @param addNewTag A callback for adding a tag to the list
+ */
 export default function ListSettings({
   listId,
   members,

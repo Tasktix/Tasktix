@@ -24,6 +24,14 @@ import { getBackgroundColor } from '@/lib/color';
 import ListMember from '@/lib/model/listMember';
 import api from '@/lib/api';
 
+/**
+ * Displays all list members and their permissions. Allows adding new members and updating
+ * current members' permissions
+ *
+ * @param listId The list the members are for
+ * @param members All members of the list
+ * @param setMembers A callback for updating React state with changes to the members
+ */
 export default function MemberSettings({
   listId,
   members,

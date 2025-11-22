@@ -27,6 +27,16 @@ import { getUser } from '@/lib/session';
 
 const PatchBody = ZodListMember.omit({ listId: true, userId: true }).partial();
 
+/**
+ * Update a member's permissions for a specific list
+ *
+ * @param params.id The list to modify the member for
+ * @param params.userId The user to modify membership data for
+ * @param request.canAdd Whether the user can add items to the list
+ * @param request.canRemove Whether the user can delete items from the list
+ * @param request.canComplete Whether the user can mark items as completed
+ * @param request.canAssign Whether the user can assign items to other users
+ */
 export async function PATCH(
   request: Request,
   { params }: { params: { id: string; userId: string } }

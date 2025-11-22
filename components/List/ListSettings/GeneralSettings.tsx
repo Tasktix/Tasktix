@@ -27,6 +27,24 @@ import { NamedColor } from '@/lib/model/color';
 import api from '@/lib/api';
 import { ListContext } from '@/components/Sidebar';
 
+/**
+ * Displays list settings such as its name, whether due dates are enabled, etc. Allows
+ * those settings to be modified and allows the list to be deleted
+ *
+ * @param listId The list the settings are for
+ * @param listName The list's current name
+ * @param listColor The list's current color
+ * @param hasDueDates Whether due dates are currently enabled for the list
+ * @param hasTimeTracking Whether time tracking is currently enabled for the list
+ * @param isAutoOrdered Whether auto-ordering is currently enabled for the list
+ * @param setListName A callback for updating React state with a new list name
+ * @param setListColor A callback for updating React state with a new list color
+ * @param setHasTimeTracking A callback for updating React state when time tracking is
+ *  toggled
+ * @param setHasDueDates A callback for updating React state when due dates are toggled
+ * @param setIsAutoOrdered A callback for updating React state when auto-ordering is
+ *  toggled
+ */
 export default function GeneralSettings({
   listId,
   listName,
