@@ -156,6 +156,7 @@ export async function getListMember(
 
   return result ?? false;
 }
+
 export async function getListMemberByItem(
   userId: string,
   itemId: string
@@ -178,20 +179,6 @@ export async function getIsListAssignee(
 ): Promise<boolean> {
   const result = await prisma.list.count({
     where: { id: listId, members: { some: { userId } } }
-  });
-
-  return result > 0;
-}
-
-export async function getIsListAssigneeBySection(
-  userId: string,
-  sectionId: string
-): Promise<boolean> {
-  const result = await prisma.list.count({
-    where: {
-      members: { some: { userId } },
-      sections: { some: { id: sectionId } }
-    }
   });
 
   return result > 0;
