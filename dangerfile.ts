@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { danger, fail, warn } from 'danger';
+import { danger, fail, warn, message } from 'danger';
 
 // Regular expression for conventional commits
 // UPDATE CONTRIBUTING.md PR TYPE LIST WHEN MAKING ANY REGEX CHANGES
@@ -62,6 +62,11 @@ const deletedMigrations = danger.git.deleted_files.filter(f =>
 const modifiedMigrations = danger.git.modified_files.filter(f =>
   f.startsWith('prisma/migrations/')
 );
+
+if (modifiedSchema)
+  message(
+    '`prisma/schema.prisma` was modified. Is the [dbdiagram.io schema](<https://dbdiagram.io/d/Tasktix-691fa53e228c5bbc1ad3060f>) up to date?'
+  );
 
 if (modifiedSchema && addedMigrations.length === 0) {
   fail(
