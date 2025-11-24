@@ -51,7 +51,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserAccount'
+              allOf:
+                - $ref: '#/components/schemas/UserAccount'
+                - type: object
+                - required: [username, email, color]
         required: true
       responses:
         "200":
@@ -534,7 +537,7 @@ paths:
         "500":
           description: Internal Server Error
     delete:
-      summary: Remove a tag from a list by item by id
+      summary: Remove a tag from a list item by id
       tags: 
         - item
         - tags
@@ -562,7 +565,7 @@ paths:
           description: Internal Server Error
   /item/{id}/assignee/{userId}:
     post:
-      summary: Assign a user id to a list item
+      summary: Assign a user to a list item
       tags:
         - item
         - user
@@ -570,7 +573,7 @@ paths:
         - name: id
           in: path
           required: true
-          description: the list item id to add the tag to
+          description: the list item id to add the assignee to
           schema:
             type: string
         - name: userId
@@ -589,7 +592,7 @@ paths:
         "500":
           description: Internal Server Error
     delete:
-      summary: Remove an assignee from a list item by id
+      summary: Unassign a user to a list item
       tags:
         - item
         - user
