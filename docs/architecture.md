@@ -1,3 +1,8 @@
+# System Architecture
+
+Tasktix is built from many pieces, shown in the diagram below along with the protocols the
+components communicate via.
+
 ```mermaid
 ---
 title: Tasktix System Architecture
@@ -20,63 +25,78 @@ flowchart LR
     a[Auth provider]
   end
 
-  c <--> s <--> d
-  s <--> w <--> c
-  g --> s
-  c --> a
-  a <--> s
+  c <-->|HTTP| s <-->|MySQL| d
+  s <-->|WS| w <-->|WS| c
+  g -->|HTTP| s
+  c -->|HTTP| a
+  a <-->|HTTP| s
 ```
+
+Some key notes about the architecture design:
+
+- The web server is responsible for performing all persistent state updates after
+  authentication & authorization checks. These state updates include starting/ending user
+  sessions and persisting user-entered data.
+- The websocket server is responsible for letting all clients know when a state change has
+  occurred for the list they are viewing (i.e. from another user's interaction). This is
+  separated from the main web server because Next.js doesn't natively support websockets.
+  Also, AWS Lambda functions scale to zero when not in use, helping reduce costs while our
+  user base remains small.
+- Tasktix can communicate with other services (e.g. GitHub) over HTTP via webhooks those
+  services expose.
+
+## Example Connection Flows
+
+To better understand how the architecture works together, it may be beneficial to look at
+some example connections.
+
+This first diagram shows the process of an already-logged in user establishing a
+connection to the Tasktix infrastructure. Note the web server's connection to the database
+is already active:
 
 ```mermaid
 ---
 title: Client Setup
 ---
-flowchart LR
-  c[Client]
-  subgraph AWS EC2
+sequenceDiagram
+  participant c as Client
+  participant w as Websocket server
+  participant s as Server
+  participant d as Database
 
-    s[Web server]
+  w<<->>s: Internal state messages
 
-    d@{shape: cyl, label: Database}
-
-  end
-  subgraph AWS Lambda
-    w[Websocket server]
-  end
-
-  c -->|Request page| s
-  s -->|Requested page| c
-
-  s -->|SQL query| d
-  d -->|Query results| s
-
-  s<-->|Internal state messages|w
-  c-->|Connect to ws|w
+  c->>s: Request page
+  c->>w: Initiate WebSocket connection
+  s->>d: SQL query
+  d->>s: Query results
+  s->>c: Requested page
 ```
+
+After the client has the list data, they can then trigger a request to update the data:
 
 ```mermaid
 ---
 title: Client Update
 ---
-flowchart LR
-  c@{shape: processes, label: Clients}
+sequenceDiagram
+  participant Other_clients@{type: collections}
+  participant c as Client
+  participant w as Websocket server
+  participant s as Server
+  participant d as Database
 
-  subgraph AWS EC2
-
-    s[Web server]
-
-    d@{shape: cyl, label: Database}
-
-  end
-  subgraph AWS Lambda
-    w[Websocket server]
+  par
+    w<<->>Other_clients: Persistent pipe
+    w<<->>s: Internal state messages
   end
 
-  c -->|New content| s
-  s -->|Response status| c
+  c->>s: New content
+  s->>d: SQL query
+  d->>s: Query results
+  s->>c: Response status
+  s->>w: New content
 
-  s <-->|SQL query/results| d
-
-  s-->|New content|w
-  w-->|Broadcast new content|c
+  w->>c: Broadcast new content
+  w->>Other_clients:
 ```
