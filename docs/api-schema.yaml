@@ -1,11 +1,11 @@
 openapi: 3.0.0
 info:
   description: A Task Tracking Tool for Power Users
-  version: "1.0.0"
+  version: '1.0.0'
   title: Tasktix API
   license:
     name: AGPL 3.0
-    url: "https://www.gnu.org/licenses/agpl-3.0.txt"
+    url: 'https://www.gnu.org/licenses/agpl-3.0.txt'
 paths:
   /user:
     post:
@@ -22,7 +22,7 @@ paths:
                 - required: [username, email, password]
         required: true
       responses:
-        "201":
+        '201':
           description: User Successfully Created
           content:
             application/json:
@@ -31,9 +31,9 @@ paths:
               example:
                 message: User Created
                 content: /api/user/{userid}
-        "400":
+        '400':
           description: Invalid Request Body
-        "500":
+        '500':
           description: Internal server error
   /user/{id}:
     patch:
@@ -57,13 +57,13 @@ paths:
                 - required: [username, email, color]
         required: true
       responses:
-        "200":
+        '200':
           description: User updated
-        "400":
+        '400':
           description: Invalid Request Body
-        "403":
+        '403':
           description: Insufficent Permissions
-        "500":
+        '500':
           description: Internal Server Error
   /session:
     get:
@@ -71,9 +71,9 @@ paths:
       tags:
         - session
       responses:
-        "200":
+        '200':
           description: User is logged in
-        "404":
+        '404':
           description: User is not logged
     post:
       summary: Starts a session for a given user
@@ -84,12 +84,12 @@ paths:
           application/json:
             schema:
               allOf:
-              - $ref: '#/components/schemas/UserAccount'
-              - type: object
-                required: [username, password]
+                - $ref: '#/components/schemas/UserAccount'
+                - type: object
+                  required: [username, password]
         required: true
       responses:
-        "201":
+        '201':
           description: Session Started
           content:
             application/json:
@@ -98,20 +98,20 @@ paths:
               example:
                 message: Session Started
                 content: /api/session/{sessionToken}
-        "400":
+        '400':
           description: Invalid Request Body
-        "500":
+        '500':
           description: Internal Server Error
     delete:
       summary: Deletes the current User Session
       tags:
         - session
       responses:
-        "200":
+        '200':
           description: Session deleted
-        "404":
+        '404':
           description: No user session to delete
-        "500":
+        '500':
           description: Failed to delete session
   /list:
     post:
@@ -128,7 +128,7 @@ paths:
               required: [name, color]
         required: true
       responses:
-        "201":
+        '201':
           description: List Created
           content:
             application/json:
@@ -137,11 +137,11 @@ paths:
               example:
                 message: List Created
                 content: /list/{listId}
-        "400":
+        '400':
           description: Invalid Request Body
-        "401":
+        '401':
           description: No Logged in User
-        "500":
+        '500':
           description: Internal Server Error
   /list/{id}:
     patch:
@@ -160,22 +160,22 @@ paths:
           application/json:
             schema:
               allOf:
-              - $ref: '#/components/schemas/List'
-              - type: object
+                - $ref: '#/components/schemas/List'
+                - type: object
         required: true
       responses:
-        "200":
+        '200':
           description: List updated
-        "400":
+        '400':
           description: Invalid Request Body
-        "401": 
+        '401':
           description: No logged in User
-        "404":
+        '404':
           description: List not found
-        "500":
+        '500':
           description: Internal Server Error
     delete:
-      summary: Deletes a list by id 
+      summary: Deletes a list by id
       tags:
         - list
       parameters:
@@ -186,13 +186,13 @@ paths:
           schema:
             type: string
       responses:
-        "200":
+        '200':
           description: List deleted
-        "400":
+        '400':
           description: List not found
-        "401":
+        '401':
           description: No logged in user
-        "500": 
+        '500':
           description: Internal Server Error
   /list/{id}/tag:
     post:
@@ -211,12 +211,12 @@ paths:
           application/json:
             schema:
               allOf:
-              - $ref: '#/components/schemas/Tag'
-              - type: object
-                required: [name, color]
+                - $ref: '#/components/schemas/Tag'
+                - type: object
+                  required: [name, color]
         required: true
       responses:
-        "201":
+        '201':
           description: Tag Created
           content:
             application/json:
@@ -225,11 +225,11 @@ paths:
               example:
                 message: Tag Created
                 content: /item/{id}/tag/${tagId}
-        "400":
+        '400':
           description: Invalid Request Data
-        "401":
+        '401':
           description: No logged in user
-        "500": 
+        '500':
           description: Internal Server Error
   /list/{id}/tag/{tagid}:
     patch:
@@ -258,13 +258,13 @@ paths:
                 - type: object
         required: true
       responses:
-        "200":
+        '200':
           description: Tag updated
-        "400":
+        '400':
           description: Invalid Request Data
-        "401":
+        '401':
           description: No logged in user
-        "500":
+        '500':
           description: Internal Server Error
     delete:
       summary: Deletes a tag by id
@@ -284,13 +284,13 @@ paths:
           schema:
             type: string
       responses:
-        "200":
+        '200':
           description: Tag Deleted
-        "400":
+        '400':
           description: Invalid Request Data
-        "401":
+        '401':
           description: No logged in user
-        "500": 
+        '500':
           description: Internal Server Error
   /list/{id}/section:
     post:
@@ -314,7 +314,7 @@ paths:
                 - required: [name]
         required: true
       responses:
-        "201":
+        '201':
           description: Section Created
           content:
             application/json:
@@ -323,11 +323,11 @@ paths:
               example:
                 message: Section Created
                 content: /list/{id}/tag/${sectionId}
-        "400":
+        '400':
           description: Invalid Request Data
-        "401":
+        '401':
           description: Not Logged In
-        "500": 
+        '500':
           description: Internal Server Error
   /list/{id}/section/{sectionId}:
     patch:
@@ -357,13 +357,13 @@ paths:
                 - required: [name]
         required: true
       responses:
-        "200":
+        '200':
           description: Section Renamed
-        "400":
+        '400':
           description: List Not Found
-        "401":
+        '401':
           description: Not Logged In
-        "500": 
+        '500':
           description: Internal Server Error
     delete:
       summary: Deletes a section by id
@@ -383,13 +383,13 @@ paths:
           schema:
             type: string
       responses:
-        "200":
+        '200':
           description: Section Deleted
-        "400":
+        '400':
           description: List Not Found
-        "401":
+        '401':
           description: Not Logged In
-        "500": 
+        '500':
           description: Internal Server Error
   /list/{id}/section/{sectionId}/item:
     patch:
@@ -419,13 +419,13 @@ paths:
                 - required: [itemId, index, oldIndex]
         required: true
       responses:
-        "200":
+        '200':
           description: Items reordered
-        "400":
+        '400':
           description: Invalid Request Data
-        "401":
+        '401':
           description: Not Logged In
-        "500": 
+        '500':
           description: Internal Server Error
   /item:
     post:
@@ -442,7 +442,7 @@ paths:
                 - required: [name, priority, sectionId, sectionIndex]
         required: true
       responses:
-        "201":
+        '201':
           description: List item Created
           content:
             application/json:
@@ -451,11 +451,11 @@ paths:
               example:
                 message: Item Created
                 content: /item/{itemId}
-        "400":
+        '400':
           description: Invalid Request Data
-        "401":
+        '401':
           description: Not Logged In
-        "500": 
+        '500':
           description: Internal Server Error
   /item/{id}:
     patch:
@@ -478,15 +478,15 @@ paths:
                 - type: object
         required: true
       responses:
-        "200":
+        '200':
           description: List Item updated
-        "400":
+        '400':
           description: Invalid Request Data
-        "401":
+        '401':
           description: No logged in user
-        "404":
+        '404':
           description: List Item Not Found
-        "500":
+        '500':
           description: Internal Server Error
     delete:
       summary: Deletes a list item by id
@@ -500,13 +500,13 @@ paths:
           schema:
             type: string
       responses:
-        "200":
+        '200':
           description: List Item Deleted
-        "400":
+        '400':
           description: Invalid Request Data
-        "401":
+        '401':
           description: No logged in user
-        "500":
+        '500':
           description: Internal Server Error
   /item/{id}/tag/{tagId}:
     post:
@@ -528,17 +528,17 @@ paths:
           schema:
             type: string
       responses:
-        "200":
+        '200':
           description: Tag Added
-        "400":
+        '400':
           description: List item not found
-        "401":
+        '401':
           description: Not Logged In
-        "500":
+        '500':
           description: Internal Server Error
     delete:
       summary: Remove a tag from a list item by id
-      tags: 
+      tags:
         - item
         - tags
       parameters:
@@ -555,13 +555,13 @@ paths:
           schema:
             type: string
       responses:
-        "200":
+        '200':
           description: Tag Removed
-        "400":
+        '400':
           description: List item not found
-        "401":
+        '401':
           description: Not Logged in
-        "500":
+        '500':
           description: Internal Server Error
   /item/{id}/assignee/{userId}:
     post:
@@ -583,13 +583,13 @@ paths:
           schema:
             type: string
       responses:
-        "200":
+        '200':
           description: Assignee Added
-        "400":
+        '400':
           description: List item not found
-        "401":
+        '401':
           description: Not Logged In
-        "500":
+        '500':
           description: Internal Server Error
     delete:
       summary: Unassign a user to a list item
@@ -610,13 +610,13 @@ paths:
           schema:
             type: string
       responses:
-        "200":
+        '200':
           description: Assignee Removed
-        "400":
+        '400':
           description: List item not found
-        "401":
+        '401':
           description: Not Logged in
-        "500":
+        '500':
           description: Internal Server Error
 
 components:
@@ -627,7 +627,7 @@ components:
         id:
           type: string
           example: 8ef67e7cf7addbb1946c13778f51f8bfa3ee261b1016f6828796dd9fca632fc4
-        username: 
+        username:
           type: string
           example: newuser
         email:
@@ -647,8 +647,8 @@ components:
         name:
           type: string
           example: My List
-        color: 
-           $ref: '#/components/schemas/Color'
+        color:
+          $ref: '#/components/schemas/Color'
         hasTimeTracking:
           type: boolean
         hasDueDates:
@@ -664,8 +664,8 @@ components:
         name:
           type: string
           example: My Tag
-        color: 
-           $ref: '#/components/schemas/Color'
+        color:
+          $ref: '#/components/schemas/Color'
     Item:
       type: object
       properties:
@@ -732,14 +732,14 @@ components:
         - yellow
         - black
         - white
-      example: red  
+      example: red
     ItemReorder:
       type: object
       properties:
         itemId:
           type: string
           example: asd8uUASD98y
-        index: 
+        index:
           type: integer
           example: 5
         oldIndex:
