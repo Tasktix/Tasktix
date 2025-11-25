@@ -37,7 +37,7 @@ paths:
           description: Internal server error
   /user/{id}:
     patch:
-      summary: Update a user account field (e.g email, password, color)
+      summary: Update a user account
       tags:
         - user
       parameters:
@@ -67,7 +67,7 @@ paths:
           description: Internal Server Error
   /session:
     get:
-      summary: Determines if there is an active user session
+      summary: Determine if there is an active user session
       tags:
         - session
       responses:
@@ -76,7 +76,7 @@ paths:
         '404':
           description: User is not logged
     post:
-      summary: Starts a session for a given user
+      summary: Start a session for the given user
       tags:
         - session
       requestBody:
@@ -103,7 +103,7 @@ paths:
         '500':
           description: Internal Server Error
     delete:
-      summary: Deletes the current User Session
+      summary: Delete the current user's session
       tags:
         - session
       responses:
@@ -115,7 +115,7 @@ paths:
           description: Failed to delete session
   /list:
     post:
-      summary: Creates a new list for the logged in user
+      summary: Create a new list for the logged in user
       tags:
         - list
       requestBody:
@@ -145,7 +145,7 @@ paths:
           description: Internal Server Error
   /list/{id}:
     patch:
-      summary: Updates a List Metadata (e.g Name, Color, Time Tracking, etc.)
+      summary: Update the list's metadata (e.g name, color, whether time tracking is enabled, etc.)
       tags:
         - list
       parameters:
@@ -175,7 +175,7 @@ paths:
         '500':
           description: Internal Server Error
     delete:
-      summary: Deletes a list by id
+      summary: Delete the list
       tags:
         - list
       parameters:
@@ -196,7 +196,7 @@ paths:
           description: Internal Server Error
   /list/{id}/tag:
     post:
-      summary: Adds a new tag to a list by id
+      summary: Add a new tag to the list
       tags:
         - tags
       parameters:
@@ -233,7 +233,7 @@ paths:
           description: Internal Server Error
   /list/{id}/tag/{tagid}:
     patch:
-      summary: Updates a tag by id
+      summary: Update the tag
       tags:
         - tags
       parameters:
@@ -267,7 +267,7 @@ paths:
         '500':
           description: Internal Server Error
     delete:
-      summary: Deletes a tag by id
+      summary: Delete the tag
       tags:
         - tags
       parameters:
@@ -294,7 +294,7 @@ paths:
           description: Internal Server Error
   /list/{id}/section:
     post:
-      summary: Create a new section in a list
+      summary: Create a new section in the list
       tags:
         - section
       parameters:
@@ -331,7 +331,7 @@ paths:
           description: Internal Server Error
   /list/{id}/section/{sectionId}:
     patch:
-      summary: Updates an section name by id
+      summary: Update the section's metadata (i.e. name)
       tags:
         - section
       parameters:
@@ -366,7 +366,7 @@ paths:
         '500':
           description: Internal Server Error
     delete:
-      summary: Deletes a section by id
+      summary: Delete the section
       tags:
         - section
       parameters:
@@ -393,7 +393,7 @@ paths:
           description: Internal Server Error
   /list/{id}/section/{sectionId}/item:
     patch:
-      summary: Reorders an item within a list
+      summary: Reorder an item within the section
       tags:
         - section
       parameters:
@@ -429,7 +429,7 @@ paths:
           description: Internal Server Error
   /item:
     post:
-      summary: Creates a new task/item in a section
+      summary: Create a new task/item in the given section
       tags:
         - item
       requestBody:
@@ -459,7 +459,7 @@ paths:
           description: Internal Server Error
   /item/{id}:
     patch:
-      summary: Updates a the name, priority, duedate or any other field of a list item by id
+      summary: Update the item's metadata (e.g. name, priority, due date)
       tags:
         - item
       parameters:
@@ -510,7 +510,7 @@ paths:
           description: Internal Server Error
   /item/{id}/tag/{tagId}:
     post:
-      summary: Add a tag to a list item by id
+      summary: Add a tag to the list item
       tags:
         - item
         - tags
@@ -537,7 +537,7 @@ paths:
         '500':
           description: Internal Server Error
     delete:
-      summary: Remove a tag from a list item by id
+      summary: Remove a tag from the list item
       tags:
         - item
         - tags
@@ -592,7 +592,7 @@ paths:
         '500':
           description: Internal Server Error
     delete:
-      summary: Unassign a user to a list item
+      summary: Unassign a user from a list item
       tags:
         - item
         - user
