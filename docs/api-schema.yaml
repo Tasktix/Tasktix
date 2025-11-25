@@ -23,16 +23,16 @@ paths:
         required: true
       responses:
         '201':
-          description: User Successfully Created
+          description: User successfully created
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CreationResponse'
               example:
-                message: User Created
+                message: User created
                 content: /api/user/{userid}
         '400':
-          description: Invalid Request Body
+          description: Invalid request body
         '500':
           description: Internal server error
   /user/{id}:
@@ -44,7 +44,7 @@ paths:
         - name: id
           in: path
           required: true
-          description: The user id to update
+          description: The ID of the user to update
           schema:
             type: string
       requestBody:
@@ -60,11 +60,11 @@ paths:
         '200':
           description: User updated
         '400':
-          description: Invalid Request Body
+          description: Invalid request body
         '403':
-          description: Insufficent Permissions
+          description: Insufficent permissions
         '500':
-          description: Internal Server Error
+          description: Internal server error
   /session:
     get:
       summary: Determine if there is an active user session
@@ -90,18 +90,18 @@ paths:
         required: true
       responses:
         '201':
-          description: Session Started
+          description: Session started
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CreationResponse'
               example:
-                message: Session Started
+                message: Session started
                 content: /api/session/{sessionToken}
         '400':
-          description: Invalid Request Body
+          description: Invalid request body
         '500':
-          description: Internal Server Error
+          description: Internal server error
     delete:
       summary: Delete the current user's session
       tags:
@@ -138,11 +138,11 @@ paths:
                 message: List Created
                 content: /list/{listId}
         '400':
-          description: Invalid Request Body
+          description: Invalid request body
         '401':
-          description: No Logged in User
+          description: No logged in user
         '500':
-          description: Internal Server Error
+          description: Internal server error
   /list/{id}:
     patch:
       summary: Update the list's metadata (e.g name, color, whether time tracking is enabled, etc.)
@@ -152,7 +152,7 @@ paths:
         - name: id
           in: path
           required: true
-          description: The list id to update
+          description: The ID of the list to update
           schema:
             type: string
       requestBody:
@@ -167,13 +167,13 @@ paths:
         '200':
           description: List updated
         '400':
-          description: Invalid Request Body
+          description: Invalid request body
         '401':
-          description: No logged in User
+          description: No logged in user
         '404':
           description: List not found
         '500':
-          description: Internal Server Error
+          description: Internal server error
     delete:
       summary: Delete the list
       tags:
@@ -182,7 +182,7 @@ paths:
         - name: id
           in: path
           required: true
-          description: The list id to delete
+          description: The ID of the list to delete
           schema:
             type: string
       responses:
@@ -193,7 +193,7 @@ paths:
         '401':
           description: No logged in user
         '500':
-          description: Internal Server Error
+          description: Internal server error
   /list/{id}/tag:
     post:
       summary: Add a new tag to the list
@@ -203,7 +203,7 @@ paths:
         - name: id
           in: path
           required: true
-          description: The list id to add the tag to
+          description: The ID of the list to add the tag to
           schema:
             type: string
       requestBody:
@@ -223,14 +223,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/CreationResponse'
               example:
-                message: Tag Created
+                message: Tag created
                 content: /item/{id}/tag/${tagId}
         '400':
-          description: Invalid Request Data
+          description: Invalid request data
         '401':
           description: No logged in user
         '500':
-          description: Internal Server Error
+          description: Internal server error
   /list/{id}/tag/{tagid}:
     patch:
       summary: Update the tag
@@ -240,13 +240,13 @@ paths:
         - name: id
           in: path
           required: true
-          description: The list id that contains the tag
+          description: The ID of the list that contains the tag
           schema:
             type: string
         - name: tagid
           in: path
           required: true
-          description: The tag id to update
+          description: The ID of the tag to update
           schema:
             type: string
       requestBody:
@@ -261,11 +261,11 @@ paths:
         '200':
           description: Tag updated
         '400':
-          description: Invalid Request Data
+          description: Invalid request data
         '401':
           description: No logged in user
         '500':
-          description: Internal Server Error
+          description: Internal server error
     delete:
       summary: Delete the tag
       tags:
@@ -274,24 +274,24 @@ paths:
         - name: id
           in: path
           required: true
-          description: The list id to delete the tag from
+          description: The ID of the list to delete the tag from
           schema:
             type: string
         - name: tagid
           in: path
           required: true
-          description: The tag id to delete
+          description: The ID of the tag to delete
           schema:
             type: string
       responses:
         '200':
           description: Tag Deleted
         '400':
-          description: Invalid Request Data
+          description: Invalid request data
         '401':
           description: No logged in user
         '500':
-          description: Internal Server Error
+          description: Internal server error
   /list/{id}/section:
     post:
       summary: Create a new section in the list
@@ -301,7 +301,7 @@ paths:
         - name: id
           in: path
           required: true
-          description: The list id to create the section in
+          description: The ID of the list to create the section in
           schema:
             type: string
       requestBody:
@@ -315,20 +315,20 @@ paths:
         required: true
       responses:
         '201':
-          description: Section Created
+          description: Section created
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CreationResponse'
               example:
-                message: Section Created
+                message: Section created
                 content: /list/{id}/tag/${sectionId}
         '400':
-          description: Invalid Request Data
+          description: Invalid request data
         '401':
-          description: Not Logged In
+          description: Not logged in
         '500':
-          description: Internal Server Error
+          description: Internal server error
   /list/{id}/section/{sectionId}:
     patch:
       summary: Update the section's metadata (i.e. name)
@@ -338,13 +338,13 @@ paths:
         - name: id
           in: path
           required: true
-          description: The list id that contains the section
+          description: The ID of the list that contains the section
           schema:
             type: string
         - name: sectionId
           in: path
           required: true
-          description: The section id to update
+          description: The ID of the section to update
           schema:
             type: string
       requestBody:
@@ -358,13 +358,13 @@ paths:
         required: true
       responses:
         '200':
-          description: Section Renamed
+          description: Section renamed
         '400':
-          description: List Not Found
+          description: List not found
         '401':
-          description: Not Logged In
+          description: Not logged in
         '500':
-          description: Internal Server Error
+          description: Internal server error
     delete:
       summary: Delete the section
       tags:
@@ -373,24 +373,24 @@ paths:
         - name: id
           in: path
           required: true
-          description: The list id to delete the section from
+          description: The ID of the list to delete the section from
           schema:
             type: string
         - name: sectionId
           in: path
           required: true
-          description: The section id to delete
+          description: The ID of the section to delete
           schema:
             type: string
       responses:
         '200':
-          description: Section Deleted
+          description: Section deleted
         '400':
-          description: List Not Found
+          description: List not found
         '401':
-          description: Not Logged In
+          description: Not logged in
         '500':
-          description: Internal Server Error
+          description: Internal server error
   /list/{id}/section/{sectionId}/item:
     patch:
       summary: Reorder an item within the section
@@ -400,13 +400,13 @@ paths:
         - name: id
           in: path
           required: true
-          description: The list id that contains the sectionId
+          description: The ID of the list that contains the section
           schema:
             type: string
         - name: sectionId
           in: path
           required: true
-          description: The section id that contains the item to reorder
+          description: The ID of the section that contains the item to reorder
           schema:
             type: string
       requestBody:
@@ -422,11 +422,11 @@ paths:
         '200':
           description: Items reordered
         '400':
-          description: Invalid Request Data
+          description: Invalid request data
         '401':
-          description: Not Logged In
+          description: Not logged in
         '500':
-          description: Internal Server Error
+          description: Internal server error
   /item:
     post:
       summary: Create a new task/item in the given section
@@ -443,7 +443,7 @@ paths:
         required: true
       responses:
         '201':
-          description: List item Created
+          description: List item created
           content:
             application/json:
               schema:
@@ -452,11 +452,11 @@ paths:
                 message: Item Created
                 content: /item/{itemId}
         '400':
-          description: Invalid Request Data
+          description: Invalid request data
         '401':
-          description: Not Logged In
+          description: Not logged in
         '500':
-          description: Internal Server Error
+          description: Internal server error
   /item/{id}:
     patch:
       summary: Update the item's metadata (e.g. name, priority, due date)
@@ -466,7 +466,7 @@ paths:
         - name: id
           in: path
           required: true
-          description: the list item id to update
+          description: The ID of the list item to update
           schema:
             type: string
       requestBody:
@@ -479,15 +479,15 @@ paths:
         required: true
       responses:
         '200':
-          description: List Item updated
+          description: List item updated
         '400':
-          description: Invalid Request Data
+          description: Invalid request data
         '401':
           description: No logged in user
         '404':
-          description: List Item Not Found
+          description: List item not found
         '500':
-          description: Internal Server Error
+          description: Internal server error
     delete:
       summary: Deletes a list item by id
       tags:
@@ -496,18 +496,18 @@ paths:
         - name: id
           in: path
           required: true
-          description: the list item id to delete
+          description: The ID of the list item to delete
           schema:
             type: string
       responses:
         '200':
-          description: List Item Deleted
+          description: List item deleted
         '400':
-          description: Invalid Request Data
+          description: Invalid request data
         '401':
           description: No logged in user
         '500':
-          description: Internal Server Error
+          description: Internal server error
   /item/{id}/tag/{tagId}:
     post:
       summary: Add a tag to the list item
@@ -518,24 +518,24 @@ paths:
         - name: id
           in: path
           required: true
-          description: the list item id to add the tag to
+          description: The ID of the list item to add the tag to
           schema:
             type: string
         - name: tagId
           in: path
           required: true
-          description: the tag id to add
+          description: The ID of the tag to add
           schema:
             type: string
       responses:
         '200':
-          description: Tag Added
+          description: Tag added
         '400':
           description: List item not found
         '401':
-          description: Not Logged In
+          description: Not logged in
         '500':
-          description: Internal Server Error
+          description: Internal server error
     delete:
       summary: Remove a tag from the list item
       tags:
@@ -545,24 +545,24 @@ paths:
         - name: id
           in: path
           required: true
-          description: the list item id to remove the tag from
+          description: The ID of the list item to remove the tag from
           schema:
             type: string
         - name: tagId
           in: path
           required: true
-          description: the tag id to remove
+          description: The ID of the tag to remove
           schema:
             type: string
       responses:
         '200':
-          description: Tag Removed
+          description: Tag removed
         '400':
           description: List item not found
         '401':
-          description: Not Logged in
+          description: Not logged in
         '500':
-          description: Internal Server Error
+          description: Internal server error
   /item/{id}/assignee/{userId}:
     post:
       summary: Assign a user to a list item
@@ -573,24 +573,24 @@ paths:
         - name: id
           in: path
           required: true
-          description: the list item id to add the assignee to
+          description: The ID of the list item to add the assignee to
           schema:
             type: string
         - name: userId
           in: path
           required: true
-          description: the user id to assign
+          description: The ID of the user to assign
           schema:
             type: string
       responses:
         '200':
-          description: Assignee Added
+          description: Assignee added
         '400':
           description: List item not found
         '401':
-          description: Not Logged In
+          description: Not logged in
         '500':
-          description: Internal Server Error
+          description: Internal server error
     delete:
       summary: Unassign a user from a list item
       tags:
@@ -600,24 +600,24 @@ paths:
         - name: id
           in: path
           required: true
-          description: the list item id to remove the assignee from
+          description: The ID of the list item to remove the assignee from
           schema:
             type: string
         - name: userId
           in: path
           required: true
-          description: the userId of the assignee to remove
+          description: The user ID of the assignee to remove
           schema:
             type: string
       responses:
         '200':
-          description: Assignee Removed
+          description: Assignee removed
         '400':
           description: List item not found
         '401':
-          description: Not Logged in
+          description: Not logged in
         '500':
-          description: Internal Server Error
+          description: Internal server error
 
 components:
   schemas:
@@ -750,7 +750,7 @@ components:
       properties:
         message:
           type: string
-          example: User Created
+          example: User created
         content:
           description: Response payload
           type: string
