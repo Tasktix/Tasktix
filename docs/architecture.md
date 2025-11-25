@@ -5,11 +5,11 @@ title: Tasktix System Architecture
 flowchart LR
   c[Client]
   subgraph AWS EC2
-    
+
     s[Web server]
-    
+
     d@{shape: cyl, label: Database}
-  
+
   end
   subgraph AWS Lambda
     w[Websocket server]
@@ -25,7 +25,8 @@ flowchart LR
   g --> s
   c --> a
   a <--> s
-``` 
+```
+
 ```mermaid
 ---
 title: Client Setup
@@ -33,11 +34,11 @@ title: Client Setup
 flowchart LR
   c[Client]
   subgraph AWS EC2
-    
+
     s[Web server]
-      
+
     d@{shape: cyl, label: Database}
-  
+
   end
   subgraph AWS Lambda
     w[Websocket server]
@@ -52,19 +53,20 @@ flowchart LR
   s<-->|Internal state messages|w
   c-->|Connect to ws|w
 ```
+
 ```mermaid
 ---
 title: Client Update
 ---
 flowchart LR
   c@{shape: processes, label: Clients}
-  
+
   subgraph AWS EC2
-    
+
     s[Web server]
-    
+
     d@{shape: cyl, label: Database}
-  
+
   end
   subgraph AWS Lambda
     w[Websocket server]
