@@ -28,6 +28,7 @@ export default function ConfirmedTextInput({
   disabled,
   className,
   classNames,
+  variant,
   updateName
 }: {
   name: string;
@@ -36,6 +37,7 @@ export default function ConfirmedTextInput({
   disabled?: boolean;
   className?: string;
   classNames?: { input?: string; button?: string };
+  variant?: string;
   updateName: (name: string) => unknown;
 }) {
   const [newName, setNewName] = useState(name);
@@ -62,7 +64,7 @@ export default function ConfirmedTextInput({
         label={showLabel && 'Name'}
         size='sm'
         value={newName}
-        variant='underlined'
+        variant={variant}
         onValueChange={setNewName}
       />
       <Button

@@ -209,6 +209,7 @@ export function ListSettings({
                       classNames={{ input: 'text-md' }}
                       name={listName}
                       updateName={updateName}
+                      variant='underlined'
                     />
                     <ColorPicker
                       value={listColor}
@@ -259,6 +260,7 @@ export function ListSettings({
                         showUnderline
                         name={tag.name}
                         updateName={updateTagName.bind(null, tag)}
+                        variant='underlined'
                       />
                       <ColorPicker
                         value={tag.color}

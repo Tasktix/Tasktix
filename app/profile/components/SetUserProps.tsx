@@ -51,17 +51,25 @@ export default function SetUserProps({ user }: { user: string} ){
       .catch(err => addSnackbar(err.message, 'error'));
   }
 
-  //Email still not working for some reason
   return(
     <div>
-      <ConfirmedTextInput 
-        name={_user.username}
-        updateName={setUsername}
-      />
-      <ConfirmedTextInput 
-        name={_user.email}
-        updateName={setEmail}
-      />
+      <div className='m-4'>
+        <h2>Username: </h2>
+        <ConfirmedTextInput
+          name={_user.username}
+          updateName={setUsername}
+          variant='flat'
+        />
+      </div>
+
+      <div className='m-4'>
+        <h2>Email: </h2>
+        <ConfirmedTextInput 
+          name={_user.email}
+          updateName={setEmail}
+          variant='flat'
+        />
+      </div>
     </div>
   )
 

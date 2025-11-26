@@ -24,11 +24,11 @@ export default async function Page() {
 
   return(
     <main className='flex p-6 justify-center'>
-      <div>
+      <div className='bg-content1 w-1/2 m-4 rounded-lg px-4 h-full'>
         <h1 className='text-2xl p-4'>
           Profile
         </h1>
-        <div>
+        <div className='pr-80'>
           <SetUserProps user={JSON.stringify(userDetails)} />
         </div>
       </div>

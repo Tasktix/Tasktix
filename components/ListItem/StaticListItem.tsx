@@ -427,6 +427,7 @@ export default function StaticListItem({
                   className='shrink'
                   name={_item.name}
                   updateName={set.name}
+                  variant='underlined'
                 />
               </span>
             )}

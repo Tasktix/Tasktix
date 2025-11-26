@@ -109,6 +109,7 @@ export default function More({
                       disabled={isComplete}
                       name={item.name}
                       updateName={set.name}
+                      variant='underlined'
                     />
                   </span>
                 </div>

@@ -206,6 +206,7 @@ export default function ListSection({
             classNames={{ input: 'text-md' }}
             name={name}
             updateName={() => null}
+            variant='underlined'
           />
         </span>
         <span className='flex gap-4'>
