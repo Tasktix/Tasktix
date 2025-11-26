@@ -17,7 +17,6 @@
  */
 'use client';
 
-import { getUser } from '@/lib/session';
 import { useState } from 'react';
 import { default as api } from '@/lib/api';
 import { addSnackbar } from '@/components/Snackbar';
@@ -29,7 +28,6 @@ export default function SetUserProps({ user }: { user: string} ){
   const [_user, _setUser] = useState(userDetails);
 
   async function setUsername(username: string) {
-
     api
       .patch(`/user/${_user.id}`, { username })
       .then(() => {
@@ -42,9 +40,6 @@ export default function SetUserProps({ user }: { user: string} ){
   }
 
   async function setEmail(email: string) {
-    const userDetails = await getUser();
-    const [_user, _setUser] = useState(userDetails);
-
     api
       .patch(`/user/${_user.id}`, { email })
       .then(() => {
@@ -63,10 +58,10 @@ export default function SetUserProps({ user }: { user: string} ){
         name={_user.username}
         updateName={setUsername}
       />
-      {/* <ConfirmedTextInput 
+      <ConfirmedTextInput 
         name={_user.email}
         updateName={setEmail}
-      /> */}
+      />
     </div>
   )
 
