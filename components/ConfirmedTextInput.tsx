@@ -21,6 +21,18 @@ import { Button, Input } from '@heroui/react';
 import { useEffect, useState } from 'react';
 import { Check } from 'react-bootstrap-icons';
 
+/**
+ * A text input that automatically fills with text. When changed, a confirmation button appears. The confirmation button executes a function. Used for changing information in the database.
+ *
+ * @param name The text that should automatically fill the field. Will also be used as an input for the function.
+ * @param showLabel Shows a "Name" label within the input
+ * @param showUnderline Shows an underline within the input
+ * @param disabled Whether the input is disabled
+ * @param className Classname for applying Tailwind CSS
+ * @param classNames Classname for applying Tailwind CSS to individual HTML components
+ * @param variant Dictates the style of the input field
+ * @param updateName The function that executes when the user confirms. Must take in a string param.
+ */
 export default function ConfirmedTextInput({
   name,
   showLabel,

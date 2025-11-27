@@ -23,10 +23,20 @@ import { addSnackbar } from '@/components/Snackbar';
 import User from '@/lib/model/user';
 import ConfirmedTextInput from '@/components/ConfirmedTextInput';
 
+/**
+ * Handles client-side functions for the profile page
+ *
+ * @param user A JSON string that contains the current user data
+ */
 export default function SetUserProps({ user }: { user: string} ){
   const userDetails: User = JSON.parse(user) || [];
   const [_user, _setUser] = useState(userDetails);
 
+  /**
+   * Sets the user's username
+   *
+   * @param username The user's new username
+   */
   async function setUsername(username: string) {
     api
       .patch(`/user/${_user.id}`, { username })
@@ -39,6 +49,11 @@ export default function SetUserProps({ user }: { user: string} ){
       .catch(err => addSnackbar(err.message, 'error'));
   }
 
+  /**
+ * Sets the user's email
+ *
+ * @param email The user's new email
+ */
   async function setEmail(email: string) {
     api
       .patch(`/user/${_user.id}`, { email })
