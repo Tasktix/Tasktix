@@ -21,7 +21,7 @@ import { useState } from 'react';
 import { default as api } from '@/lib/api';
 import { addSnackbar } from '@/components/Snackbar';
 import User from '@/lib/model/user';
-import ConfirmedTextInput from '@/components/ConfirmedTextInput'
+import ConfirmedTextInput from '@/components/ConfirmedTextInput';
 
 export default function SetUserProps({ user }: { user: string} ){
   const userDetails: User = JSON.parse(user) || [];
