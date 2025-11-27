@@ -18,13 +18,11 @@
 
 'use client';
 
-import { Button, Input } from '@nextui-org/react';
+import { addToast, Button, Input } from '@heroui/react';
 import { FormEvent, useState } from 'react';
 
 import api from '@/lib/api';
 import ListSection from '@/lib/model/listSection';
-
-import { addSnackbar } from './Snackbar';
 
 export default function AddListSection({
   listId,
@@ -45,12 +43,12 @@ export default function AddListSection({
         addListSection(new ListSection(name, [], id));
         setName('');
       })
-      .catch(err => addSnackbar(err.message, 'error'));
+      .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
   return (
     <form
-      className='rounded-md w-100 overfLow-hidden border-2 border-content3 bg-content1 p-4 h-18 flex items-center justify-center gap-4 shadow-lg shadow-content2'
+      className='rounded-md w-full overfLow-hidden border-2 border-content3 bg-content1 p-4 h-18 flex items-center justify-center gap-4 shadow-lg shadow-content2'
       onSubmit={createSection}
     >
       <Input

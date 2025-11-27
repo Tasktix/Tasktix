@@ -18,7 +18,7 @@
 
 'use client';
 
-import { Button } from '@nextui-org/react';
+import { Button } from '@heroui/react';
 import { ReactNode, useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'react-bootstrap-icons';
 

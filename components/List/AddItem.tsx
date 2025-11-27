@@ -17,6 +17,7 @@
  */
 
 import {
+  addToast,
   Button,
   Input,
   Modal,
@@ -28,12 +29,11 @@ import {
   SelectItem,
   Selection,
   useDisclosure
-} from '@nextui-org/react';
+} from '@heroui/react';
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import { Check, Plus } from 'react-bootstrap-icons';
 
 import { default as api } from '@/lib/api';
-import { addSnackbar } from '@/components/Snackbar';
 import ListItem from '@/lib/model/listItem';
 import { getBorderColor, getPriorityColor } from '@/lib/color';
 
@@ -145,12 +145,12 @@ export default function AddItem({
 
         setIsSliderOpen(false);
       })
-      .catch(err => addSnackbar(err.message, 'error'));
+      .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
   return (
     <span>
-      <span className='hidden lg:flex justify-between items-center overflow-y-visible'>
+      <span className='hidden xl:flex justify-between items-center overflow-y-visible'>
         <span className='overflow-x-clip'>
           <form
             className={`flex gap-4 pr-4 transition-transform${isSliderOpen ? '' : ' translate-x-full'}`}
@@ -205,13 +205,13 @@ export default function AddItem({
               variant='underlined'
               onSelectionChange={setPriority}
             >
-              <SelectItem key='High' color='danger' value='High'>
+              <SelectItem key='High' color='danger'>
                 High
               </SelectItem>
-              <SelectItem key='Medium' color='warning' value='Medium'>
+              <SelectItem key='Medium' color='warning'>
                 Medium
               </SelectItem>
-              <SelectItem key='Low' color='success' value='Low'>
+              <SelectItem key='Low' color='success'>
                 Low
               </SelectItem>
             </Select>
@@ -257,7 +257,7 @@ export default function AddItem({
           />
         </Button>
       </span>
-      <span className='flex lg:hidden'>
+      <span className='flex xl:hidden'>
         <Button
           isIconOnly
           color='primary'
@@ -322,13 +322,13 @@ export default function AddItem({
                       variant='underlined'
                       onSelectionChange={setPriority}
                     >
-                      <SelectItem key='High' color='danger' value='High'>
+                      <SelectItem key='High' color='danger'>
                         High
                       </SelectItem>
-                      <SelectItem key='Medium' color='warning' value='Medium'>
+                      <SelectItem key='Medium' color='warning'>
                         Medium
                       </SelectItem>
-                      <SelectItem key='Low' color='success' value='Low'>
+                      <SelectItem key='Low' color='success'>
                         Low
                       </SelectItem>
                     </Select>

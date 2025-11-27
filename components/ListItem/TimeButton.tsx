@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Button } from '@nextui-org/react';
+import { Button } from '@heroui/react';
 import { PauseFill, PlayFill } from 'react-bootstrap-icons';
 
 import ListItem from '@/lib/model/listItem';
@@ -47,7 +47,7 @@ export default function TimeButton({
           Start
         </Button>
       );
-    case 'In Progress':
+    case 'In_Progress':
       return (
         <Button
           className='w-24'

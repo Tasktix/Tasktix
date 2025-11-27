@@ -20,7 +20,7 @@
 
 import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, Input } from '@nextui-org/react';
+import { addToast, Button, Input } from '@heroui/react';
 
 import Message, { InputMessage } from '@/components/InputMessage';
 import {
@@ -28,7 +28,6 @@ import {
   validateEmail,
   validatePassword
 } from '@/lib/validate';
-import { addSnackbar } from '@/components/Snackbar';
 import { default as api } from '@/lib/api';
 import { setLoggedIn } from '@/app/body';
 
@@ -106,11 +105,11 @@ export default function SignUp() {
             router.replace('/list');
           })
           .catch(err => {
-            addSnackbar(err.message, 'error');
+            addToast({ title: err.message, color: 'danger' });
           });
       })
       .catch(err => {
-        addSnackbar(err.message, 'error');
+        addToast({ title: err.message, color: 'danger' });
       });
   }
 
@@ -122,7 +121,7 @@ export default function SignUp() {
         label='Username'
         type='text'
         value={inputs.username}
-        variant='underlined'
+        variant='bordered'
         onValueChange={handleUsernameInput}
       />
       <Input
@@ -131,7 +130,7 @@ export default function SignUp() {
         label='Email'
         type='email'
         value={inputs.email}
-        variant='underlined'
+        variant='bordered'
         onValueChange={handleEmailInput}
       />
       <Input
@@ -140,7 +139,7 @@ export default function SignUp() {
         label='Password'
         type='password'
         value={inputs.password}
-        variant='underlined'
+        variant='bordered'
         onValueChange={handlePasswordInput}
       />
       <div className='flex justify-center mt-6'>

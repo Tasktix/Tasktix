@@ -31,6 +31,12 @@ locally install dependencies for IntelliSense and ESLint to use:
 npm install --ignore-scripts
 ```
 
+And run this command to configure Prisma ORM with the appropriate database types:
+
+```bash
+npm run prisma:generate
+```
+
 Finally, copy [`.env.example`](./.env.example) to `.env` and update the default values to
 match your environment. Sensitive values (e.g. secrets) should be stored in this file to
 avoid exposure on GitHub.
@@ -43,9 +49,20 @@ To preview your changes, you can spin up a webserver and database via:
 npm start
 ```
 
-You can then view the project by visiting [127.0.0.1:3000](http://127.0.0.1:3000) in your
-browser. Any changes you make to `.ts` or `.tsx` files will be immediately reflected via
-Next.js' hot reloading capability.
+You'll also need to pull database changes. If you're not using devcontainers, you'll need
+to `exec` into your Next.js web server to run the commands necessary to update the
+database:
+
+```bash
+docker compose exec web npm run prisma:apply
+```
+
+You'll need to do the same to run any other `prisma:*` commands.
+
+After your webserver is started and your database is up to date, you can view the project
+by visiting [127.0.0.1:3000](http://127.0.0.1:3000) in your browser. Any changes you make
+to `.ts` or `.tsx` files will be immediately reflected via Next.js' hot reloading
+capability.
 
 ## Stopping the Development Server
 

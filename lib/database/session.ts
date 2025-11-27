@@ -20,44 +20,36 @@
 
 import Session from '@/lib/model/session';
 
-import { execute, query } from './db_connect';
-import { DB_Session, extractSessionFromRow } from './model/session';
+import { prisma } from './db_connect';
 
 export async function createSession(session: Session): Promise<boolean> {
-  const sql = `
-    INSERT INTO \`sessions\`(
-      \`s_id\`,
-      \`s_u_id\`,
-      \`s_dateExpire\`
-    )
-    VALUES (:id, :userId, :dateExpire);
-  `;
+  try {
+    await prisma.session.create({
+      data: {
+        id: session.id,
+        userId: session.userId,
+        dateExpire: session.dateExpire
+      }
+    });
+  } catch {
+    return false;
+  }
 
-  const result = await execute(sql, session);
-
-  return Boolean(result);
+  return true;
 }
 
 export async function getSessionById(id: string): Promise<Session | false> {
-  const sql = `
-    SELECT * FROM \`sessions\`
-    WHERE \`s_id\` = :id;
-  `;
+  const result = await prisma.session.findUnique({ where: { id } });
 
-  const result = await query<DB_Session>(sql, { id });
-
-  if (!result) return false;
-
-  return extractSessionFromRow(result[0]);
+  return result ?? false;
 }
 
 export async function deleteSession(id: string): Promise<boolean> {
-  const sql = `
-    DELETE FROM \`sessions\`
-    WHERE \`s_id\` = :id;
-  `;
+  try {
+    await prisma.session.delete({ where: { id } });
+  } catch {
+    return false;
+  }
 
-  const result = await execute(sql, { id });
-
-  return Boolean(result);
+  return true;
 }

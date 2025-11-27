@@ -24,7 +24,7 @@ import {
   PopoverContent,
   PopoverTrigger,
   SlotsToClasses
-} from '@nextui-org/react';
+} from '@heroui/react';
 import { useEffect, useRef, useState } from 'react';
 
 import { formatDate } from '@/lib/date';

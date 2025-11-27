@@ -21,12 +21,11 @@
 import { setTimeout } from 'timers';
 
 import { ReactNode, useContext, useState } from 'react';
-import { Button, Input, Link } from '@nextui-org/react';
+import { addToast, Button, Input, Link } from '@heroui/react';
 import { Check, Plus } from 'react-bootstrap-icons';
 import { usePathname, useRouter } from 'next/navigation';
 
 import { default as api } from '@/lib/api';
-import { addSnackbar } from '@/components/Snackbar';
 import { validateListName } from '@/lib/validate';
 import List from '@/lib/model/list';
 import { randomNamedColor } from '@/lib/color';
@@ -47,14 +46,14 @@ export default function Sidebar({ lists }: { lists: List[] }) {
         const id = res.content?.split('/').at(-1);
 
         if (!id) {
-          addSnackbar('No list ID returned', 'error');
+          addToast({ title: 'No list ID returned', color: 'danger' });
 
           return;
         }
         router.push(`${res.content}`);
         dispatchEvent({ type: 'add', id, name, color });
       })
-      .catch(err => addSnackbar(err.message, 'error'));
+      .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
   async function removeNew() {
@@ -119,7 +118,7 @@ export function NavItem({
 
   return (
     <span
-      className={`pl-2 my-1 flex items-center justify-between border-l-2${isActive ? ' border-primary' : ' border-transparent'} text-sm`}
+      className={`pl-2 my-1 flex items-center justify-between border-l-2 ${isActive ? 'border-primary' : 'border-transparent'} text-sm`}
     >
       <Link color='foreground' href={link}>
         {name}

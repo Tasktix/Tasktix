@@ -42,6 +42,7 @@ export async function PATCH(
 
   const tag = await getTagById(params.tagId);
 
+  // TODO: need to handle security gap: editing someone else's tag
   if (!tag) return ClientError.BadRequest('Tag not found');
 
   const parseResult = PatchBody.safeParse(await request.json());
@@ -54,7 +55,7 @@ export async function PATCH(
   if (requestBody.name) tag.name = requestBody.name;
   if (requestBody.color) tag.color = requestBody.color;
 
-  const result = await updateTag(params.id, tag);
+  const result = await updateTag(tag);
 
   if (!result) return ServerError.Internal('Could not add tag');
 

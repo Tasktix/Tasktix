@@ -26,13 +26,11 @@ import Session from '@/lib/model/session';
 import User from '@/lib/model/user';
 
 export async function setUser(userId: string): Promise<string | false> {
-  const session = new Session();
   const date = new Date();
 
   date.setDate(date.getDate() + 1);
 
-  session.userId = userId;
-  session.dateExpire = date;
+  const session = new Session(userId, date);
 
   const result = await createSession(session);
 

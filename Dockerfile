@@ -14,17 +14,17 @@ RUN npm ci --ignore-scripts
 FROM base AS app
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
-COPY ./next.config.mjs ./next.config.mjs
-COPY ./tsconfig.json ./tsconfig.json
-COPY ./postcss.config.js ./postcss.config.js
-COPY ./tailwind.config.ts ./tailwind.config.ts
+COPY ./tailwind.config.ts ./postcss.config.cjs ./tsconfig.json ./next.config.mjs ./
 COPY ./package.json ./package.json
+COPY ./public ./public
+COPY ./prisma ./prisma
 COPY ./app ./app
 COPY ./components ./components
 COPY ./lib ./lib
-COPY ./public ./public
 
 ENV NEXT_TELEMETRY_DISABLED=1
+
+RUN npm run prisma:generate
 
 # Rebuild the source code only when needed
 FROM app AS builder

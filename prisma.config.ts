@@ -16,18 +16,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { RowDataPacket } from 'mysql2/promise';
+import path from 'node:path';
 
-import { NamedColor } from '@/lib/model/color';
-import Tag from '@/lib/model/tag';
+import { defineConfig } from 'prisma/config';
 
-export interface DB_Tag extends RowDataPacket {
-  t_id: string;
-  t_name: string;
-  t_color: NamedColor;
-  t_i_id: string;
-}
-
-export function extractTagFromRow(row: DB_Tag): Tag {
-  return new Tag(row.t_name, row.t_color, row.t_id);
-}
+export default defineConfig({
+  migrations: {
+    seed: `ts-node ${path.join('prisma', 'seed.ts')}`
+  }
+});

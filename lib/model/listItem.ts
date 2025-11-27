@@ -24,14 +24,17 @@ import { generateId } from '@/lib/generateId';
 import Assignee from './assignee';
 import Tag from './tag';
 
-export type Status = 'Unstarted' | 'In Progress' | 'Paused' | 'Completed';
+const statuses = ['Unstarted', 'In_Progress', 'Paused', 'Completed'] as const;
+const priorities = ['Low', 'Medium', 'High'] as const;
+
+export type Status = (typeof statuses)[number];
 export type Priority = 'Low' | 'Medium' | 'High';
 
 export const ZodListItem = z.strictObject({
   id: z.string().length(16),
   name: z.string().min(1).max(128),
-  status: z.enum(['Unstarted', 'In Progress', 'Paused', 'Completed']),
-  priority: z.enum(['High', 'Medium', 'Low']),
+  status: z.enum(statuses),
+  priority: z.enum(priorities),
   isUnclear: z.boolean(),
   expectedMs: z.number().min(0).max(DATABASE_LIMITS.INT_MAX).nullable(),
   elapsedMs: z.number().min(0).max(DATABASE_LIMITS.INT_MAX),
@@ -58,7 +61,6 @@ export default class ListItem {
   assignees: Assignee[];
   tags: Tag[];
   listId?: string;
-  sectionId?: string;
 
   constructor(
     name: string,
@@ -76,8 +78,7 @@ export default class ListItem {
       dateCompleted = null,
       assignees = [],
       tags = [],
-      listId,
-      sectionId
+      listId
     }: {
       id?: string;
       status?: Status;
@@ -113,6 +114,5 @@ export default class ListItem {
     this.assignees = assignees;
     this.tags = tags;
     this.listId = listId;
-    this.sectionId = sectionId;
   }
 }

@@ -24,12 +24,13 @@ import {
   TrashFill
 } from 'react-bootstrap-icons';
 import {
+  addToast,
   Button,
   Dropdown,
   DropdownItem,
   DropdownMenu,
   DropdownTrigger
-} from '@nextui-org/react';
+} from '@heroui/react';
 import { AnimatePresence, motion, Reorder } from 'framer-motion';
 
 import { ListItem, StaticListItem } from '@/components/ListItem';
@@ -45,7 +46,6 @@ import {
 import ListMember from '@/lib/model/listMember';
 import { default as api } from '@/lib/api';
 
-import { addSnackbar } from '../Snackbar';
 import { Filters } from '../SearchBar/types';
 import ConfirmedTextInput from '../ConfirmedTextInput';
 
@@ -162,7 +162,7 @@ export default function ListSection({
         oldIndex: oldIndex
       })
       .then(res => {
-        addSnackbar(res.message, 'success');
+        addToast({ title: res.message, color: 'success' });
 
         const index1 = Math.min(newIndex, oldIndex);
         const index2 = Math.max(newIndex, oldIndex);
@@ -179,7 +179,7 @@ export default function ListSection({
         }
         setItems(newItems);
       })
-      .catch(err => addSnackbar(err.message, 'error'));
+      .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
   function deleteItem(id: string) {
@@ -191,7 +191,7 @@ export default function ListSection({
   }
 
   return (
-    <div className='rounded-md w-100 overflow-hidden border-2 border-content3 box-border shrink-0 shadow-lg shadow-content2'>
+    <div className='rounded-md w-full overflow-hidden border-2 border-content3 box-border shrink-0 shadow-lg shadow-content2'>
       <div className='bg-content3 font-bold p-4 h-16 flex items-center justify-between'>
         <span className='min-w-fit shrink-0 flex'>
           <Button

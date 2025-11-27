@@ -25,17 +25,12 @@ import {
   NavbarBrand,
   NavbarContent,
   NavbarItem,
-  Avatar,
-  Dropdown,
-  DropdownTrigger,
-  DropdownMenu,
-  DropdownItem
-} from '@nextui-org/react';
+  ToastProvider
+} from '@heroui/react';
 import { useRouter } from 'next/navigation';
 import { ReactNode, useState } from 'react';
 import Image from 'next/image';
 
-import Snackbar from '@/components/Snackbar';
 import { default as api } from '@/lib/api';
 import ThemeSwitcher from '@/components/ThemeSwitcher';
 
@@ -58,13 +53,15 @@ export function setLoggedOut() {
 let _setLoggedIn: () => void;
 let _setLoggedOut: () => void;
 
+interface BodyProps {
+  children: ReactNode;
+  isLoggedInAtStart: boolean;
+}
+
 export default function Body({
   children,
   isLoggedInAtStart
-}: {
-  children: ReactNode;
-  isLoggedInAtStart: boolean;
-}) {
+}: Readonly<BodyProps>) {
   const [isLoggedIn, setIsLoggedIn] = useState(isLoggedInAtStart);
 
   _setLoggedIn = () => setIsLoggedIn(true);
@@ -98,7 +95,7 @@ export default function Body({
 
       {children}
 
-      <Snackbar />
+      <ToastProvider />
     </div>
   );
 }
