@@ -21,12 +21,12 @@
 import { Image as HeroImage } from '@heroui/image';
 import { useTheme } from 'next-themes';
 
-type FeatureBlockProps = {
+type FeatureBlockProps = Readonly<{
   title: string;
   description: string;
   imageBaseName: string;
   align?: 'default' | 'flipped';
-};
+}>;
 
 export default function FeatureBlock({
   title,
