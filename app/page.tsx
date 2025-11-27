@@ -14,6 +14,23 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ *
+ * Renders the Tasktix homepage.
+ *
+ * This page displays a hero section with a title and subtitle describing the
+ * purpose of the application, followed by a set of feature showcase sections.
+ * Feature content (title, description, and image base name) is loaded from
+ * `/public/data/features.json` to keep the page content configurable without modifying
+ * application code.
+ *
+ * Each feature is rendered using the `FeatureBlock` component, which handles
+ * themed screenshots (light/dark mode) and optional layout flipping. The layout
+ * alternates between left- and right-aligned images to create a visually
+ * balanced presentation.
+ *
+ * @returns The homepage layout containing the hero section and a list of
+ * feature showcase blocks.
  */
 
 import features from '@/public/data/features.json';

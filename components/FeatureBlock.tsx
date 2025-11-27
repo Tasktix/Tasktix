@@ -20,14 +20,37 @@
 
 import { Image as HeroImage } from '@heroui/image';
 import { useTheme } from 'next-themes';
-
+/**
+ * Props for the FeatureBlock component.
+ *
+ * @property title - The name of the feature being showcased.
+ * @property description - A short explanation of what the feature does.
+ * @property imageBaseName - Base filename used to load themed screenshots
+ * (e.g. "priority" → "priority.light.png" and "priority.dark.png").
+ * @property align - Determines whether the image is placed on the left or right.
+ * Defaults to "default".
+ */
 type FeatureBlockProps = Readonly<{
   title: string;
   description: string;
   imageBaseName: string;
   align?: 'default' | 'flipped';
 }>;
-
+/**
+ * Renders a feature showcase block on the homepage.
+ *
+ * Displays a title, description, and a themed screenshot for a given feature.
+ * The image automatically switches between light and dark variants based
+ * on the active theme from `next-themes`. Layout can be optionally flipped
+ * for alternating left/right visual alignment.
+ *
+ * @param {string} title - The name of the feature being described.
+ * @param {string} description - A short explanation of what the feature does.
+ * @param {string} imageBaseName - Base filename used to load the appropriate
+ * light or dark screenshot (e.g., "timeTracking" → "timeTracking.light.png").
+ * @param {"default" | "flipped"} [align="default"] - Determines whether the
+ * image appears on the left or the right of the text.
+ */
 export default function FeatureBlock({
   title,
   description,
@@ -35,13 +58,21 @@ export default function FeatureBlock({
   align = 'default'
 }: FeatureBlockProps) {
   const { theme } = useTheme();
-
+  /**
+   * Determines which screenshot to display based on the current theme.
+   *
+   * @returns The full URL of either the light-mode or dark-mode screenshot.
+   */
   const themedSrc =
     theme === 'dark'
       ? `/screenshots/${imageBaseName}.dark.png`
       : `/screenshots/${imageBaseName}.light.png`;
 
   return (
+    /**
+     * Controls whether the feature block layout is left-to-right or reversed.
+     * When `align` is "flipped", the screenshot appears on the right instead of the left.
+     */
     <section
       className={`flex flex-col items-center gap-8 md:gap-16
         md:flex-row ${align === 'flipped' ? 'md:flex-row-reverse' : ''}`}
