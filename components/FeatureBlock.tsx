@@ -46,7 +46,6 @@ export default function FeatureBlock({
       className={`flex flex-col items-center gap-8 md:gap-16
         md:flex-row ${align === 'flipped' ? 'md:flex-row-reverse' : ''}`}
     >
-      {/* IMAGE */}
       <div className='w-full md:w-1/2'>
         <div className='rounded-xl border shadow-md overflow-hidden border-default dark:border-default-400'>
           <HeroImage
@@ -59,7 +58,6 @@ export default function FeatureBlock({
         </div>
       </div>
 
-      {/* TEXT */}
       <div className='w-full md:w-1/2 text-center md:text-left'>
         <h2 className='text-2xl md:text-3xl font-semibold text-gray-900 dark:text-gray-100'>
           {title}
