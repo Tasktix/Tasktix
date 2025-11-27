@@ -76,4 +76,22 @@ describe('FeatureBlock', () => {
 
     expect(section).toHaveClass('md:flex-row-reverse');
   });
+
+  test('uses default (non-flipped) layout when no align is provided', () => {
+    const { container } = render(<FeatureBlock {...baseProps} />);
+
+    const section = container.querySelector('section');
+
+    expect(section).not.toHaveClass('md:flex-row-reverse');
+  });
+
+  test("does not flip layout when align='default'", () => {
+    const { container } = render(
+      <FeatureBlock {...baseProps} align='default' />
+    );
+
+    const section = container.querySelector('section');
+
+    expect(section).not.toHaveClass('md:flex-row-reverse');
+  });
 });

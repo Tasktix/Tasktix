@@ -28,7 +28,6 @@ import { useTheme } from 'next-themes';
  * @property imageBaseName - Base filename used to load themed screenshots
  * (e.g. "priority" → "priority.light.png" and "priority.dark.png").
  * @property align - Determines whether the image is placed on the left or right.
- * Defaults to "default".
  */
 type FeatureBlockProps = Readonly<{
   title: string;
@@ -37,19 +36,15 @@ type FeatureBlockProps = Readonly<{
   align?: 'default' | 'flipped';
 }>;
 /**
- * Renders a feature showcase block on the homepage.
+ * Displays a homepage feature section with a screenshot, title, and description.
  *
- * Displays a title, description, and a themed screenshot for a given feature.
- * The image automatically switches between light and dark variants based
- * on the active theme from `next-themes`. Layout can be optionally flipped
- * for alternating left/right visual alignment.
+ * The component automatically selects an appropriate light or dark screenshot
+ * based on the active theme from `next-themes`. The align feature determines whether the
+ * image appears on the left (default) or the right (flipped) side of the text.
  *
- * @param {string} title - The name of the feature being described.
- * @param {string} description - A short explanation of what the feature does.
- * @param {string} imageBaseName - Base filename used to load the appropriate
- * light or dark screenshot (e.g., "timeTracking" → "timeTracking.light.png").
- * @param {"default" | "flipped"} [align="default"] - Determines whether the
- * image appears on the left or the right of the text.
+ * The content for each feature is provided by the parent component (e.g.,
+ * feature title, description, and base image name), allowing the homepage to
+ * be fully data-driven through `features.json`
  */
 export default function FeatureBlock({
   title,
@@ -58,21 +53,12 @@ export default function FeatureBlock({
   align = 'default'
 }: FeatureBlockProps) {
   const { theme } = useTheme();
-  /**
-   * Determines which screenshot to display based on the current theme.
-   *
-   * @returns The full URL of either the light-mode or dark-mode screenshot.
-   */
   const themedSrc =
     theme === 'dark'
       ? `/screenshots/${imageBaseName}.dark.png`
       : `/screenshots/${imageBaseName}.light.png`;
 
   return (
-    /**
-     * Controls whether the feature block layout is left-to-right or reversed.
-     * When `align` is "flipped", the screenshot appears on the right instead of the left.
-     */
     <section
       className={`flex flex-col items-center gap-8 md:gap-16
         md:flex-row ${align === 'flipped' ? 'md:flex-row-reverse' : ''}`}
@@ -90,10 +76,10 @@ export default function FeatureBlock({
       </div>
 
       <div className='w-full md:w-1/2 text-center md:text-left'>
-        <h2 className='text-2xl md:text-3xl font-semibold text-gray-900 dark:text-gray-100'>
+        <h2 className='text-2xl md:text-3xl font-semibold text-foreground'>
           {title}
         </h2>
-        <p className='mt-3 text-gray-600 dark:text-gray-300 text-base md:text-lg leading-relaxed'>
+        <p className='mt-3 text-default text-base md:text-lg leading-relaxed'>
           {description}
         </p>
       </div>

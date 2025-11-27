@@ -15,8 +15,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
- *
- * Renders the Tasktix homepage.
+ */
+
+import features from '@/public/data/features.json';
+import FeatureBlock from '@/components/FeatureBlock';
+
+/* Renders the Tasktix homepage.
  *
  * This page displays a hero section with a title and subtitle describing the
  * purpose of the application, followed by a set of feature showcase sections.
@@ -32,10 +36,6 @@
  * @returns The homepage layout containing the hero section and a list of
  * feature showcase blocks.
  */
-
-import features from '@/public/data/features.json';
-import FeatureBlock from '@/components/FeatureBlock';
-
 export default function Page() {
   return (
     <main className='mx-auto max-w-6xl px-4 md:px-6 py-12 space-y-24'>
