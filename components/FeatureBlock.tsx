@@ -41,10 +41,6 @@ type FeatureBlockProps = Readonly<{
  * The component automatically selects an appropriate light or dark screenshot
  * based on the active theme from `next-themes`. The align feature determines whether the
  * image appears on the left (default) or the right (flipped) side of the text.
- *
- * The content for each feature is provided by the parent component (e.g.,
- * feature title, description, and base image name), allowing the homepage to
- * be fully data-driven through `features.json`
  */
 export default function FeatureBlock({
   title,
@@ -64,7 +60,7 @@ export default function FeatureBlock({
         md:flex-row ${align === 'flipped' ? 'md:flex-row-reverse' : ''}`}
     >
       <div className='w-full md:w-1/2'>
-        <div className='rounded-xl border shadow-md overflow-hidden border-default dark:border-default-400'>
+        <div className='rounded-xl border shadow-md overflow-hidden border-default'>
           <HeroImage
             alt={`${title} screenshot`}
             className='w-full h-auto object-contain'
