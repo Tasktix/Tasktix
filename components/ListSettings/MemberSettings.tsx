@@ -54,6 +54,9 @@ export default function MemberSettings({
 
         const listMember = JSON.parse(res.content) as ListMember;
 
+        listMember.user.dateCreated = new Date(listMember.user.dateCreated);
+        listMember.user.dateSignedIn = new Date(listMember.user.dateSignedIn);
+
         setMembers([...members, listMember]);
       })
       .catch(err => addToast({ title: err.message, color: 'danger' }));
