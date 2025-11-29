@@ -20,6 +20,7 @@
 
 import { Image as HeroImage } from '@heroui/image';
 import { useTheme } from 'next-themes';
+
 /**
  * Props for the FeatureBlock component.
  *
@@ -35,6 +36,7 @@ type FeatureBlockProps = Readonly<{
   imageBaseName: string;
   align?: 'default' | 'flipped';
 }>;
+
 /**
  * Highlights a key application feature with a themed screenshot and a descriptive
  * explanation. Displays the feature image alongside supporting text, with an
