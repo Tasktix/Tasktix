@@ -36,11 +36,11 @@ export default function MemberSettings({
   listId,
   members,
   setMembers
-}: {
+}: Readonly<{
   listId: string;
   members: ListMember[];
   setMembers: (members: ListMember[]) => unknown;
-}) {
+}>) {
   const [newUsername, setNewUsername] = useState('');
 
   function handleAddMember(e: FormEvent<HTMLFormElement>) {

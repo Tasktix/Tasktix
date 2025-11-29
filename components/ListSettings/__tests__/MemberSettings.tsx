@@ -21,8 +21,7 @@
 import '@testing-library/jest-dom';
 import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { HeroUIProvider } from '@heroui/react';
-import { addToast } from '@heroui/react';
+import { addToast, HeroUIProvider } from '@heroui/react';
 
 import ListMember from '@/lib/model/listMember';
 import User from '@/lib/model/user';

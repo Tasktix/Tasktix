@@ -39,12 +39,12 @@ export default function TagSettings({
   tagsAvailable,
   addNewTag,
   setTagsAvailable
-}: {
+}: Readonly<{
   listId: string;
   tagsAvailable: Tag[];
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
   setTagsAvailable: (value: Tag[]) => unknown;
-}) {
+}>) {
   function updateTagName(tag: Tag, name: string) {
     api
       .patch(`/list/${listId}/tag/${tag.id}`, { ...tag, name })

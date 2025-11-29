@@ -57,7 +57,7 @@ export default function GeneralSettings({
   setHasTimeTracking,
   setHasDueDates,
   setIsAutoOrdered
-}: {
+}: Readonly<{
   listId: string;
   listName: string;
   listColor: NamedColor;
@@ -69,7 +69,7 @@ export default function GeneralSettings({
   setHasTimeTracking: (value: boolean) => unknown;
   setHasDueDates: (value: boolean) => unknown;
   setIsAutoOrdered: (value: boolean) => unknown;
-}) {
+}>) {
   const router = useRouter();
   const dispatchEvent = useContext(ListContext);
 

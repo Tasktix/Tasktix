@@ -77,7 +77,7 @@ export default function ListSettings({
   setIsAutoOrdered,
   setMembers,
   addNewTag
-}: {
+}: Readonly<{
   listId: string;
   members: ListMember[];
   listName: string;
@@ -94,7 +94,7 @@ export default function ListSettings({
   setIsAutoOrdered: (value: boolean) => unknown;
   setMembers: (members: ListMember[]) => unknown;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
-}) {
+}>) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   return (
