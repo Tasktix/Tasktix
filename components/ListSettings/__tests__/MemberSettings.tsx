@@ -30,10 +30,14 @@ import api from '@/lib/api';
 
 import MemberSettings from '../MemberSettings';
 
-jest.mock('@heroui/react', () => ({
-  ...jest.requireActual('@heroui/react'),
-  addToast: jest.fn()
-}));
+jest.mock(
+  '@heroui/react',
+  () =>
+    ({
+      ...jest.requireActual('@heroui/react'),
+      addToast: jest.fn()
+    }) as typeof import('@heroui/react')
+);
 jest.mock('@/lib/api');
 
 beforeEach(() => {
