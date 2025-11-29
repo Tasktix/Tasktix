@@ -107,68 +107,72 @@ export default function MemberSettings({
         </Button>
       </form>
       <table className='mt-4 w-full overflow-scroll'>
-        <tr>
-          <th style={{ flexGrow: 2 }}>Member</th>
-          <th className='grow font-normal'>Can Add</th>
-          <th className='grow font-normal'>Can Assign</th>
-          <th className='grow font-normal'>Can Complete</th>
-          <th className='grow font-normal'>Can Remove</th>
-        </tr>
-        {members.map(member => (
-          <tr key={member.user.id}>
-            <td className='py-2'>
-              <User
-                avatarProps={{
-                  classNames: {
-                    base: getBackgroundColor(member.user.color)
-                  },
-                  size: 'sm'
-                }}
-                name={member.user.username}
-              />
-            </td>
-            <td className='text-center py-2'>
-              <Checkbox
-                isSelected={member.canAdd}
-                onValueChange={selected =>
-                  handleUpdatePermissions(member.user.id, {
-                    canAdd: selected
-                  })
-                }
-              />
-            </td>
-            <td className='text-center py-2'>
-              <Checkbox
-                isSelected={member.canAssign}
-                onValueChange={selected =>
-                  handleUpdatePermissions(member.user.id, {
-                    canAssign: selected
-                  })
-                }
-              />
-            </td>
-            <td className='text-center py-2'>
-              <Checkbox
-                isSelected={member.canComplete}
-                onValueChange={selected =>
-                  handleUpdatePermissions(member.user.id, {
-                    canComplete: selected
-                  })
-                }
-              />
-            </td>
-            <td className='text-center py-2'>
-              <Checkbox
-                isSelected={member.canRemove}
-                onValueChange={selected =>
-                  handleUpdatePermissions(member.user.id, {
-                    canRemove: selected
-                  })
-                }
-              />
-            </td>
+        <thead>
+          <tr>
+            <th style={{ flexGrow: 2 }}>Member</th>
+            <th className='grow font-normal'>Can Add</th>
+            <th className='grow font-normal'>Can Assign</th>
+            <th className='grow font-normal'>Can Complete</th>
+            <th className='grow font-normal'>Can Remove</th>
           </tr>
-        ))}
+        </thead>
+        <tbody>
+          {members.map(member => (
+            <tr key={member.user.id}>
+              <td className='py-2'>
+                <User
+                  avatarProps={{
+                    classNames: {
+                      base: getBackgroundColor(member.user.color)
+                    },
+                    size: 'sm'
+                  }}
+                  name={member.user.username}
+                />
+              </td>
+              <td className='text-center py-2'>
+                <Checkbox
+                  isSelected={member.canAdd}
+                  onValueChange={selected =>
+                    handleUpdatePermissions(member.user.id, {
+                      canAdd: selected
+                    })
+                  }
+                />
+              </td>
+              <td className='text-center py-2'>
+                <Checkbox
+                  isSelected={member.canAssign}
+                  onValueChange={selected =>
+                    handleUpdatePermissions(member.user.id, {
+                      canAssign: selected
+                    })
+                  }
+                />
+              </td>
+              <td className='text-center py-2'>
+                <Checkbox
+                  isSelected={member.canComplete}
+                  onValueChange={selected =>
+                    handleUpdatePermissions(member.user.id, {
+                      canComplete: selected
+                    })
+                  }
+                />
+              </td>
+              <td className='text-center py-2'>
+                <Checkbox
+                  isSelected={member.canRemove}
+                  onValueChange={selected =>
+                    handleUpdatePermissions(member.user.id, {
+                      canRemove: selected
+                    })
+                  }
+                />
+              </td>
+            </tr>
+          ))}
+        </tbody>
       </table>
     </span>
   );
