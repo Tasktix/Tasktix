@@ -36,11 +36,21 @@ type FeatureBlockProps = Readonly<{
   align?: 'default' | 'flipped';
 }>;
 /**
- * Displays a homepage feature section with a screenshot, title, and description.
+ * Highlights a key application feature with a themed screenshot and a descriptive
+ * explanation. Displays the feature image alongside supporting text, with an
+ * optional layout flip to alternate the visual arrangement when used in a list.
  *
- * The component automatically selects an appropriate light or dark screenshot
- * based on the active theme from `next-themes`. The align feature determines whether the
- * image appears on the left (default) or the right (flipped) side of the text.
+ * The displayed screenshot automatically switches between light and dark
+ * variants based on the active theme using the provided `imageBaseName`.
+ *
+ * @param title - The name of the feature being highlighted.
+ * @param description - A concise explanation of the feature's capabilities or value.
+ * @param imageBaseName - The base filename used to load the appropriate themed
+ * screenshot. For example, an `imageBaseName` of `"timeTracking"` will load
+ * `"public/screenshots/timeTracking.light.png"` in light mode and
+ * `"public/screenshots/timeTracking.dark.png"` in dark mode.
+ * @param align - Controls whether the image appears before (`default`) or after
+ * (`flipped`) the text content.
  */
 export default function FeatureBlock({
   title,
