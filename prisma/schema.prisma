@@ -1,0 +1,150 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Color {
+  Pink
+  Red
+  Orange
+  Amber
+  Yellow
+  Lime
+  Green
+  Emerald
+  Cyan
+  Blue
+  Violet
+}
+
+enum Priority {
+  High
+  Medium
+  Low
+}
+
+enum Status {
+  Unstarted
+  In_Progress
+  Paused
+  Completed
+}
+
+model User {
+  id           String   @id @db.Char(16)
+  username     String   @unique @db.VarChar(32)
+  email        String   @unique @db.VarChar(128)
+  password     String   @db.Char(205)
+  color        Color
+  dateCreated  DateTime @db.DateTime(0)
+  dateSignedIn DateTime @default(now()) @db.DateTime(0)
+
+  assignedItems ItemAssignee[]
+  memberships   ListMember[]
+  sessions      Session[]
+}
+
+model Session {
+  id         String   @id @db.Char(128)
+  userId     String   @db.Char(16)
+  dateExpire DateTime @db.DateTime(0)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([userId])
+}
+
+model List {
+  id              String  @id @db.Char(16)
+  name            String  @db.VarChar(64)
+  color           Color
+  description     String? @db.Text
+  hasTimeTracking Boolean @default(true)
+  hasDueDates     Boolean @default(true)
+  isAutoOrdered   Boolean @default(true)
+
+  members  ListMember[]
+  sections ListSection[]
+  tags     Tag[]
+}
+
+model ListSection {
+  id     String @id @db.Char(16)
+  listId String @db.Char(16)
+  name   String @db.VarChar(64)
+
+  items Item[]
+  list  List   @relation(fields: [listId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([listId])
+}
+
+model Item {
+  id            String    @id @db.Char(16)
+  name          String    @db.VarChar(128)
+  status        Status    @default(Unstarted)
+  priority      Priority  @default(Low)
+  isUnclear     Boolean   @default(false)
+  expectedMs    Int?
+  elapsedMs     Int       @default(0)
+  parentId      String?   @db.Char(16)
+  sectionId     String    @db.Char(16)
+  sectionIndex  Int       @default(0)
+  dateCreated   DateTime  @default(now()) @db.DateTime(0)
+  dateDue       DateTime? @db.DateTime(0)
+  dateStarted   DateTime? @db.DateTime(0)
+  dateCompleted DateTime? @db.DateTime(0)
+
+  children  Item[]         @relation("family")
+  assignees ItemAssignee[]
+  tags      Tag[]
+  parent    Item?          @relation("family", fields: [parentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  section   ListSection    @relation(fields: [sectionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([sectionId, parentId, sectionIndex])
+  @@index([sectionId])
+  @@index([parentId])
+}
+
+model Tag {
+  id     String @id @db.Char(16)
+  name   String @db.VarChar(32)
+  color  Color
+  listId String @db.Char(16)
+
+  items Item[]
+  list  List   @relation(fields: [listId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([listId])
+}
+
+model ListMember {
+  userId      String  @db.Char(16)
+  listId      String  @db.Char(16)
+  canAdd      Boolean @default(false)
+  canRemove   Boolean @default(false)
+  canComplete Boolean @default(false)
+  canAssign   Boolean @default(false)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  list List @relation(fields: [listId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@id([userId, listId])
+  @@index([listId])
+}
+
+model ItemAssignee {
+  userId String @db.Char(16)
+  itemId String @db.Char(16)
+  role   String @db.VarChar(64)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  item Item @relation(fields: [itemId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@id([userId, itemId])
+  @@index([itemId])
+}

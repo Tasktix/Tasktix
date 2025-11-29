@@ -26,14 +26,10 @@ services:
           path: tsconfig.json
     environment:
       - NODE_ENV=development
-      - DB_HOST=mariadb
-      - DB_DATABASE=${DB_DATABASE}
-      - DB_USER=root
-      - DB_PASSWORD=${DB_PASSWORD}
+      - DATABASE_URL=mysql://root:${DB_PASSWORD}@mariadb/${DB_DATABASE}
 
   mariadb:
     volumes:
-      - ./scripts/database/create.sql:/docker-entrypoint-initdb.d/create.sql:ro
       - db_data:/var/lib/mysql
 
 volumes:

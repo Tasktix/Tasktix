@@ -16,73 +16,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import mysql, { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
+import { PrismaClient } from '@prisma/client';
 
-async function connect(): Promise<mysql.Connection> {
-  const conn = await mysql.createConnection({
-    host: process.env.DB_HOST,
-    database: process.env.DB_DATABASE,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD
-  });
+// This file's logic ensures only 1 copy of the Prisma client is created, even when the
+// development server hot reloads. See Prisma Next.js best practices:
+// https://www.prisma.io/docs/orm/more/help-and-troubleshooting/nextjs-help#best-practices-for-using-prisma-client-in-development
 
-  conn.config.namedPlaceholders = true;
+const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 
-  return conn;
-}
+export const prisma = globalForPrisma.prisma || new PrismaClient();
 
-export async function query<T extends RowDataPacket>(
-  sql: string,
-  values: unknown
-): Promise<T[] | false> {
-  let conn;
-
-  try {
-    conn = await connect();
-
-    let result;
-
-    if (values) [result] = await conn.query<T[]>(sql, values);
-    else [result] = await conn.query<T[]>(sql);
-
-    await conn.end();
-
-    if (result.length) return result;
-
-    return false;
-  } catch {
-    /* Don't let ending the connection cause an error if it's having issues too */
-    try {
-      await conn?.end();
-    } catch {}
-
-    return false;
-  }
-}
-
-export async function execute(
-  sql: string,
-  values: unknown
-): Promise<ResultSetHeader | false> {
-  let conn;
-
-  try {
-    conn = await connect();
-
-    let result;
-
-    if (values) [result] = await conn.execute<ResultSetHeader>(sql, values);
-    else [result] = await conn.execute<ResultSetHeader>(sql);
-
-    await conn.end();
-
-    return result;
-  } catch {
-    /* Don't let ending the connection cause an error if it's having issues too */
-    try {
-      await conn?.end();
-    } catch {}
-
-    return false;
-  }
-}
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
