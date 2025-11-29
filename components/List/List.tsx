@@ -34,9 +34,9 @@ import {
   InputOptionGroup
 } from '@/components/SearchBar/types';
 import ListMember from '@/lib/model/listMember';
+import ListSettings from '@/components/ListSettings';
 
 import ListSection from './ListSection';
-import ListSettings from './ListSettings';
 
 export default function List({
   startingList,
