@@ -39,7 +39,7 @@ const MOCK_NEW_USER = new User(
   new Date(),
   { color: 'Amber' }
 );
-const MEMBER_PATH = `http://localhost/api/list/some-list-id/member` as const;
+const MEMBER_PATH = 'http://localhost/api/list/some-list-id/member' as const;
 
 jest.mock('@/lib/session');
 jest.mock('@/lib/database/list');

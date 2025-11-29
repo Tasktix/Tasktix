@@ -190,9 +190,11 @@ describe('Updating permissions', () => {
       />
     );
 
+    // Another test already assures the non-null assertion is okay - skipcq: JS-0339
     const user1Row = getByText('user1').closest('tr')!;
     const user1Checkboxes = within(user1Row).getAllByRole('checkbox');
 
+    // Another test already assures the non-null assertion is okay - skipcq: JS-0339
     const user2Row = getByText('user2').closest('tr')!;
     const user2Checkboxes = within(user2Row).getAllByRole('checkbox');
 
@@ -223,6 +225,7 @@ describe('Updating permissions', () => {
       />
     );
 
+    // Another test already assures the non-null assertion is okay - skipcq: JS-0339
     const user1Row = getByText('user1').closest('tr')!;
     const user1Checkboxes = within(user1Row).getAllByRole('checkbox');
 
@@ -252,6 +255,7 @@ describe('Updating permissions', () => {
       />
     );
 
+    // Another test already assures the non-null assertion is okay - skipcq: JS-0339
     const user1Row = getByText('user1').closest('tr')!;
     const user1Checkboxes = within(user1Row).getAllByRole('checkbox');
 
@@ -281,6 +285,7 @@ describe('Updating permissions', () => {
       />
     );
 
+    // Another test already assures the non-null assertion is okay - skipcq: JS-0339
     const user1Row = getByText('user1').closest('tr')!;
     const user1Checkboxes = within(user1Row).getAllByRole('checkbox');
 
@@ -310,6 +315,7 @@ describe('Updating permissions', () => {
       />
     );
 
+    // Another test already assures the non-null assertion is okay - skipcq: JS-0339
     const user1Row = getByText('user1').closest('tr')!;
     const user1Checkboxes = within(user1Row).getAllByRole('checkbox');
 
