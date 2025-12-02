@@ -4,7 +4,10 @@ services:
       target: app
     command: npm run local:dev
     depends_on:
-      - mariadb
+      mariadb:
+        condition: service_healthy
+    post_start:
+      - command: npm run prisma:apply
     develop:
       watch:
         - path: ./app
@@ -29,6 +32,22 @@ services:
       - DATABASE_URL=mysql://root:${DB_PASSWORD}@mariadb/${DB_DATABASE}
 
   mariadb:
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'mariadb-admin',
+          'ping',
+          '-h',
+          'localhost',
+          '-u',
+          'root',
+          '-p${DB_PASSWORD}'
+        ]
+      interval: 2s
+      timeout: 1s
+      retries: 5
+      start_period: 2s
     volumes:
       - db_data:/var/lib/mysql
 
