@@ -17,5 +17,5 @@
  */
 
 export default function Page() {
-  return <main />;
+  return <main className='grow' />;
 }

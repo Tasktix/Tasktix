@@ -34,7 +34,7 @@ export default async function Page() {
   const members = await getListMembersByUser(user ? user.id : '');
 
   return (
-    <main className='p-8 w-full flex flex-col gap-8 overflow-y-scroll'>
+    <main className='p-8 w-full flex grow flex-col gap-8 overflow-y-scroll'>
       <ListItemGroup
         alternate="You're all caught up!"
         members={JSON.stringify(members)}
