@@ -17,7 +17,11 @@
  */
 
 import User from '@/lib/model/user';
-import { updateUser } from '@/lib/database/user';
+import {
+  getUserByEmail,
+  getUserByUsername,
+  updateUser
+} from '@/lib/database/user';
 import { getUser } from '@/lib/session';
 
 import { PATCH } from './route';
@@ -235,5 +239,69 @@ describe('PATCH', () => {
 
     expect(response.status).toBe(400);
     expect(updateUser).not.toHaveBeenCalled();
+  });
+
+  test('Rejects the request if the username is unavailable', async () => {
+    (getUser as jest.Mock).mockReturnValue(MOCK_USER);
+    (getUserByUsername as jest.Mock).mockReturnValue(MOCK_USER);
+
+    const response = await PATCH(
+      new Request(USER_PATH, {
+        method: 'patch',
+        body: JSON.stringify({ username: 'taken_name' })
+      }),
+      { params: { id: MOCK_USER.id } }
+    );
+
+    expect(response.status).toBe(400);
+    expect(updateUser).not.toHaveBeenCalled();
+  });
+
+  test('Rejects the request if the email is unavailable', async () => {
+    (getUser as jest.Mock).mockReturnValue(MOCK_USER);
+    (getUserByEmail as jest.Mock).mockReturnValue(MOCK_USER);
+
+    const response = await PATCH(
+      new Request(USER_PATH, {
+        method: 'patch',
+        body: JSON.stringify({ email: 'taken_email@example.com' })
+      }),
+      { params: { id: MOCK_USER.id } }
+    );
+
+    expect(response.status).toBe(400);
+    expect(updateUser).not.toHaveBeenCalled();
+  });
+
+  test('Warns the user if updating the member failed', async () => {
+    (getUser as jest.Mock).mockReturnValue(MOCK_USER);
+    (updateUser as jest.Mock).mockReturnValue(false);
+
+    const response = await PATCH(
+      new Request(USER_PATH, {
+        method: 'patch',
+        body: JSON.stringify({ username: 'new_name' })
+      }),
+      { params: { id: MOCK_USER.id } }
+    );
+
+    expect(response.status).toBe(500);
+  });
+
+  test('Warns the user if an unexpected error occurs', async () => {
+    (getUser as jest.Mock).mockReturnValue(MOCK_USER);
+    (updateUser as jest.Mock).mockImplementation(() => {
+      throw new Error();
+    });
+
+    const response = await PATCH(
+      new Request(USER_PATH, {
+        method: 'patch',
+        body: JSON.stringify({ username: 'new_name' })
+      }),
+      { params: { id: MOCK_USER.id } }
+    );
+
+    expect(response.status).toBe(500);
   });
 });
