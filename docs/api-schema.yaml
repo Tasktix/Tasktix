@@ -1,0 +1,759 @@
+openapi: 3.0.0
+info:
+  description: A Task Tracking Tool for Power Users
+  version: '1.0.0'
+  title: Tasktix API
+  license:
+    name: AGPL 3.0
+    url: 'https://www.gnu.org/licenses/agpl-3.0.txt'
+paths:
+  /user:
+    post:
+      summary: Create a new user account
+      tags:
+        - user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/UserAccount'
+                - type: object
+                - required: [username, email, password]
+        required: true
+      responses:
+        '201':
+          description: User successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreationResponse'
+              example:
+                message: User created
+                content: /api/user/{userid}
+        '400':
+          description: Invalid request body
+        '500':
+          description: Internal server error
+  /user/{id}:
+    patch:
+      summary: Update a user account
+      tags:
+        - user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the user to update
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/UserAccount'
+                - type: object
+                - required: [username, email, color]
+        required: true
+      responses:
+        '200':
+          description: User updated
+        '400':
+          description: Invalid request body
+        '403':
+          description: Insufficent permissions
+        '500':
+          description: Internal server error
+  /session:
+    get:
+      summary: Determine if there is an active user session
+      tags:
+        - session
+      responses:
+        '200':
+          description: User is logged in
+        '404':
+          description: User is not logged
+    post:
+      summary: Start a session for the given user
+      tags:
+        - session
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/UserAccount'
+                - type: object
+                  required: [username, password]
+        required: true
+      responses:
+        '201':
+          description: Session started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreationResponse'
+              example:
+                message: Session started
+                content: /api/session/{sessionToken}
+        '400':
+          description: Invalid request body
+        '500':
+          description: Internal server error
+    delete:
+      summary: Delete the current user's session
+      tags:
+        - session
+      responses:
+        '200':
+          description: Session deleted
+        '404':
+          description: No user session to delete
+        '500':
+          description: Failed to delete session
+  /list:
+    post:
+      summary: Create a new list for the logged in user
+      tags:
+        - list
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/List'
+                - type: object
+              required: [name, color]
+        required: true
+      responses:
+        '201':
+          description: List Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreationResponse'
+              example:
+                message: List Created
+                content: /list/{listId}
+        '400':
+          description: Invalid request body
+        '401':
+          description: No logged in user
+        '500':
+          description: Internal server error
+  /list/{id}:
+    patch:
+      summary: Update the list's metadata (e.g name, color, whether time tracking is enabled, etc.)
+      tags:
+        - list
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the list to update
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/List'
+                - type: object
+        required: true
+      responses:
+        '200':
+          description: List updated
+        '400':
+          description: Invalid request body
+        '401':
+          description: No logged in user
+        '404':
+          description: List not found
+        '500':
+          description: Internal server error
+    delete:
+      summary: Delete the list
+      tags:
+        - list
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the list to delete
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List deleted
+        '400':
+          description: List not found
+        '401':
+          description: No logged in user
+        '500':
+          description: Internal server error
+  /list/{id}/tag:
+    post:
+      summary: Add a new tag to the list
+      tags:
+        - tags
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the list to add the tag to
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/Tag'
+                - type: object
+                  required: [name, color]
+        required: true
+      responses:
+        '201':
+          description: Tag Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreationResponse'
+              example:
+                message: Tag created
+                content: /item/{id}/tag/${tagId}
+        '400':
+          description: Invalid request data
+        '401':
+          description: No logged in user
+        '500':
+          description: Internal server error
+  /list/{id}/tag/{tagid}:
+    patch:
+      summary: Update the tag
+      tags:
+        - tags
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the list that contains the tag
+          schema:
+            type: string
+        - name: tagid
+          in: path
+          required: true
+          description: The ID of the tag to update
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/Tag'
+                - type: object
+        required: true
+      responses:
+        '200':
+          description: Tag updated
+        '400':
+          description: Invalid request data
+        '401':
+          description: No logged in user
+        '500':
+          description: Internal server error
+    delete:
+      summary: Delete the tag
+      tags:
+        - tags
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the list to delete the tag from
+          schema:
+            type: string
+        - name: tagid
+          in: path
+          required: true
+          description: The ID of the tag to delete
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Tag Deleted
+        '400':
+          description: Invalid request data
+        '401':
+          description: No logged in user
+        '500':
+          description: Internal server error
+  /list/{id}/section:
+    post:
+      summary: Create a new section in the list
+      tags:
+        - section
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the list to create the section in
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/Section'
+                - type: object
+                - required: [name]
+        required: true
+      responses:
+        '201':
+          description: Section created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreationResponse'
+              example:
+                message: Section created
+                content: /list/{id}/tag/${sectionId}
+        '400':
+          description: Invalid request data
+        '401':
+          description: Not logged in
+        '500':
+          description: Internal server error
+  /list/{id}/section/{sectionId}:
+    patch:
+      summary: Update the section's metadata (i.e. name)
+      tags:
+        - section
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the list that contains the section
+          schema:
+            type: string
+        - name: sectionId
+          in: path
+          required: true
+          description: The ID of the section to update
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/Section'
+                - type: object
+                - required: [name]
+        required: true
+      responses:
+        '200':
+          description: Section renamed
+        '400':
+          description: List not found
+        '401':
+          description: Not logged in
+        '500':
+          description: Internal server error
+    delete:
+      summary: Delete the section
+      tags:
+        - section
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the list to delete the section from
+          schema:
+            type: string
+        - name: sectionId
+          in: path
+          required: true
+          description: The ID of the section to delete
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Section deleted
+        '400':
+          description: List not found
+        '401':
+          description: Not logged in
+        '500':
+          description: Internal server error
+  /list/{id}/section/{sectionId}/item:
+    patch:
+      summary: Reorder an item within the section
+      tags:
+        - section
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the list that contains the section
+          schema:
+            type: string
+        - name: sectionId
+          in: path
+          required: true
+          description: The ID of the section that contains the item to reorder
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/ItemReorder'
+                - type: object
+                - required: [itemId, index, oldIndex]
+        required: true
+      responses:
+        '200':
+          description: Items reordered
+        '400':
+          description: Invalid request data
+        '401':
+          description: Not logged in
+        '500':
+          description: Internal server error
+  /item:
+    post:
+      summary: Create a new task/item in the given section
+      tags:
+        - item
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/Item'
+                - type: object
+                - required: [name, priority, sectionId, sectionIndex]
+        required: true
+      responses:
+        '201':
+          description: List item created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreationResponse'
+              example:
+                message: Item Created
+                content: /item/{itemId}
+        '400':
+          description: Invalid request data
+        '401':
+          description: Not logged in
+        '500':
+          description: Internal server error
+  /item/{id}:
+    patch:
+      summary: Update the item's metadata (e.g. name, priority, due date)
+      tags:
+        - item
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the list item to update
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/Item'
+                - type: object
+        required: true
+      responses:
+        '200':
+          description: List item updated
+        '400':
+          description: Invalid request data
+        '401':
+          description: No logged in user
+        '404':
+          description: List item not found
+        '500':
+          description: Internal server error
+    delete:
+      summary: Deletes a list item by id
+      tags:
+        - item
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the list item to delete
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List item deleted
+        '400':
+          description: Invalid request data
+        '401':
+          description: No logged in user
+        '500':
+          description: Internal server error
+  /item/{id}/tag/{tagId}:
+    post:
+      summary: Add a tag to the list item
+      tags:
+        - item
+        - tags
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the list item to add the tag to
+          schema:
+            type: string
+        - name: tagId
+          in: path
+          required: true
+          description: The ID of the tag to add
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Tag added
+        '400':
+          description: List item not found
+        '401':
+          description: Not logged in
+        '500':
+          description: Internal server error
+    delete:
+      summary: Remove a tag from the list item
+      tags:
+        - item
+        - tags
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the list item to remove the tag from
+          schema:
+            type: string
+        - name: tagId
+          in: path
+          required: true
+          description: The ID of the tag to remove
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Tag removed
+        '400':
+          description: List item not found
+        '401':
+          description: Not logged in
+        '500':
+          description: Internal server error
+  /item/{id}/assignee/{userId}:
+    post:
+      summary: Assign a user to a list item
+      tags:
+        - item
+        - user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the list item to add the assignee to
+          schema:
+            type: string
+        - name: userId
+          in: path
+          required: true
+          description: The ID of the user to assign
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Assignee added
+        '400':
+          description: List item not found
+        '401':
+          description: Not logged in
+        '500':
+          description: Internal server error
+    delete:
+      summary: Unassign a user from a list item
+      tags:
+        - item
+        - user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the list item to remove the assignee from
+          schema:
+            type: string
+        - name: userId
+          in: path
+          required: true
+          description: The user ID of the assignee to remove
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Assignee removed
+        '400':
+          description: List item not found
+        '401':
+          description: Not logged in
+        '500':
+          description: Internal server error
+
+components:
+  schemas:
+    UserAccount:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 8ef67e7cf7addbb1946c13778f51f8bfa3ee261b1016f6828796dd9fca632fc4
+        username:
+          type: string
+          example: newuser
+        email:
+          type: string
+          example: email@example.com
+        password:
+          type: string
+          example: password123
+        color:
+          $ref: '#/components/schemas/Color'
+    List:
+      type: object
+      properties:
+        id:
+          type: string
+          example: asd8uUASD98y
+        name:
+          type: string
+          example: My List
+        color:
+          $ref: '#/components/schemas/Color'
+        hasTimeTracking:
+          type: boolean
+        hasDueDates:
+          type: boolean
+        isAutoOrdered:
+          type: boolean
+    Tag:
+      type: object
+      properties:
+        id:
+          type: string
+          example: asd8uUASD98y
+        name:
+          type: string
+          example: My Tag
+        color:
+          $ref: '#/components/schemas/Color'
+    Item:
+      type: object
+      properties:
+        id:
+          type: string
+          example: asd8uUASD98y
+        name:
+          type: string
+          example: My List Item
+        status:
+          type: string
+          enum:
+            - Unstarted
+            - In Progress
+            - Paused
+            - Completed
+          example: In Progress
+        priortiy:
+          type: string
+          enum:
+            - High
+            - Medium
+            - Low
+          example: High
+        isUnclear:
+          type: boolean
+          example: True
+        expectedMs:
+          type: number
+          example: 54332345
+        elapsedMs:
+          type: number
+          example: 54332345
+        sectionIndex:
+          type: number
+          example: 54332345
+        dateDue:
+          type: string
+          format: date-time
+        dateStarted:
+          type: string
+          format: date-time
+        dateCompleted:
+          type: string
+          format: date-time
+        sectionId:
+          type: string
+          example: asd8uUASD98y
+    Section:
+      type: object
+      properties:
+        id:
+          type: string
+          example: asd8uUASD98y
+        name:
+          type: string
+          example: Section 1
+    Color:
+      type: string
+      enum:
+        - red
+        - green
+        - blue
+        - yellow
+        - black
+        - white
+      example: red
+    ItemReorder:
+      type: object
+      properties:
+        itemId:
+          type: string
+          example: asd8uUASD98y
+        index:
+          type: integer
+          example: 5
+        oldIndex:
+          type: integer
+          example: 7
+    CreationResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: User created
+        content:
+          description: Response payload
+          type: string
+      required:
+        - message
+        - content
