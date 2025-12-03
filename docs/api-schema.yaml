@@ -292,6 +292,84 @@ paths:
           description: No logged in user
         '500':
           description: Internal server error
+  /list/{id}/member:
+    post:
+      summary: Add a new member to the list
+      tags:
+        - list
+        - user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the list to add the user to
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/UserAccount'
+                - type: object
+                - required: [username]
+        required: true
+      responses:
+        '200':
+          description: User successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Member'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Not logged in
+        '404':
+          description: List or user not found
+        '409':
+          description: User is already a list member
+        '500':
+          description: Internal server error
+  /list/{id}/member/{userId}:
+    patch:
+      summary: Update the member's permissions for interacting with the list
+      tags:
+        - list
+        - user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the list to the user is a member of
+          schema:
+            type: string
+        - name: userId
+          in: path
+          required: true
+          description: The user ID of the member to update
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/Member'
+                - type: object
+                - required: [userId, listId]
+        required: true
+      responses:
+        '200':
+          description: User updated
+        '400':
+          description: Invalid request body
+        '401':
+          description: Not logged in
+        '404':
+          description: List or user not found
+        '500':
+          description: Internal server error
   /list/{id}/section:
     post:
       summary: Create a new section in the list
@@ -309,9 +387,9 @@ paths:
           application/json:
             schema:
               allOf:
-                - $ref: '#/components/schemas/Section'
+                - $ref: '#/components/schemas/UserAccount'
                 - type: object
-                - required: [name]
+                - required: [username]
         required: true
       responses:
         '201':
@@ -430,6 +508,7 @@ paths:
   /item:
     post:
       summary: Create a new task/item in the given section
+      description: The user hitting this API endpoint must have permission to add items to the list
       tags:
         - item
       requestBody:
@@ -460,6 +539,7 @@ paths:
   /item/{id}:
     patch:
       summary: Update the item's metadata (e.g. name, priority, due date)
+      description: The user hitting this API endpoint must have sufficient permissions as a list member for the part of the item they're modifying (e.g. "canComplete" to change "status" to "Complete")
       tags:
         - item
       parameters:
@@ -566,6 +646,7 @@ paths:
   /item/{id}/assignee/{userId}:
     post:
       summary: Assign a user to a list item
+      description: The user hitting this API endpoint must have "assign" permissions for the list
       tags:
         - item
         - user
@@ -638,6 +719,23 @@ components:
           example: password123
         color:
           $ref: '#/components/schemas/Color'
+    Member:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/UserAccount'
+        userId:
+          type: string
+        listId:
+          type: string
+        canAdd:
+          type: boolean
+        canRemove:
+          type: boolean
+        canComplete:
+          type: boolean
+        canAssign:
+          type: boolean
     List:
       type: object
       properties:
