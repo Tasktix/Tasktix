@@ -59,12 +59,12 @@ jobs:
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci
       - name: Test
-        run: npm run test:jest
+        run: npm run test:jest -- --coverageReporters=cobertura
       - name: Report coverage to DeepSource
         uses: deepsourcelabs/test-coverage-action@master
         with:
           key: javascript
-          coverage-file: ./coverage/lcov.info
+          coverage-file: ./coverage/cobertura-coverage.xml
           dsn: ${{ secrets.DEEPSOURCE_DSN }}
           fail-ci-on-error: true
 
