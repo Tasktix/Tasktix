@@ -15,9 +15,7 @@ name = "javascript"
   plugins = ["react"]
   environment = [
     "nodejs",
-    "browser",
-    "jest",
-    "cypress"
+    "browser"
   ]
 
 [[analyzers]]
