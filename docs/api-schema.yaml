@@ -387,9 +387,9 @@ paths:
           application/json:
             schema:
               allOf:
-                - $ref: '#/components/schemas/UserAccount'
+                - $ref: '#/components/schemas/Section'
                 - type: object
-                - required: [username]
+                - required: [name]
         required: true
       responses:
         '201':
