@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 @config "../tailwind.config.ts";
 
 /* Apply safelist for programatically used classes see https://tailwindcss.com/docs/detecting-classes-in-source-files */

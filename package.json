@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "docker compose build && docker compose watch",
+    "start": "docker compose up --build --watch",
     "stop": "docker compose stop",
     "teardown": "docker compose down",
     "test": "npm run test:jest && npm run test:cy",

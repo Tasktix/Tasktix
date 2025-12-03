@@ -1,5 +1,5 @@
 {
-  "cSpell.words": ["nextui", "Reorderable", "Tasktix", "Unstarted"],
+  "cSpell.words": ["heroui", "nextui", "Reorderable", "Tasktix", "Unstarted"],
   "containers.containerClient": "com.microsoft.visualstudio.containers.docker",
   "containers.orchestratorClient": "com.microsoft.visualstudio.orchestrators.dockercompose",
   "editor.tabSize": 2,
