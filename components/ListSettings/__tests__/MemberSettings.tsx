@@ -121,7 +121,7 @@ describe('Adding members', () => {
       color: 'danger',
       title: 'Server message about failure'
     });
-    expect(setMembers).toHaveBeenCalledTimes(0);
+    expect(setMembers).not.toHaveBeenCalled();
   });
 
   it("Displays an error message after adding a member if the server doesn't return the new member", async () => {
@@ -156,7 +156,7 @@ describe('Adding members', () => {
       color: 'danger',
       title: 'User added, but unable to display'
     });
-    expect(setMembers).toHaveBeenCalledTimes(0);
+    expect(setMembers).not.toHaveBeenCalled();
   });
 });
 
