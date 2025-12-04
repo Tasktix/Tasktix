@@ -20,6 +20,10 @@ import { getUser } from '@/lib/session';
 
 import SetUserProps from './components/SetUserProps';
 
+/**
+ * Gets current user information and sends it to SetUserProps
+ *
+ */
 export default async function Page() {
   const userDetails = await getUser();
 
