@@ -9,5 +9,6 @@
   },
   "jest.jestCommandLine": "npm run test:jest --",
   "jest.useDashedArgs": true,
+  "files.eol": "\n",
   "editor.defaultFormatter": "esbenp.prettier-vscode"
 }
