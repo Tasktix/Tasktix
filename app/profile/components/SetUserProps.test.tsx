@@ -14,6 +14,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * @jest-environment jsdom
  */
 
 //Test Ideas:
@@ -21,33 +22,20 @@
 //3 and 4: Setting functions calling api with no value
 //5: Rendering the test input
 
-import { render } from '@testing-library/react';
+import { render, within } from '@testing-library/react';
 
 import SetUserProps from './SetUserProps';
 
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
 import { HeroUIProvider } from '@heroui/react';
+import api from '@/lib/api';
 
-jest.mock('./SetUserProps', () => () => jest.fn());
+jest.mock('@/lib/api');
 
-jest.mock('@/lib/api', () => () => jest.fn());
-
-jest.mock('@heroui/react', () => ({
-  addToast: jest.fn()
-}));
-
-// jest.mock('@/components/ConfirmedTextInput', () => {
-//   return function MockInput({ updateName }: any) {
-//     return (
-//       <button onClick={() => updateName("newName")}>
-//         username-update
-//       </button>
-//     );
-//   };
-// });
-
-beforeEach();
+beforeEach(() => {
+  jest.resetAllMocks();
+});
 
 describe('Set user props functions', () => {
   const oldUser = {
@@ -56,14 +44,59 @@ describe('Set user props functions', () => {
     email: 'oldEmail@gmail.com'
   };
 
-  test('Validate setUsername', () => {
+  test('Validate setUsername', async () => {
+    (api.patch as jest.Mock).mockImplementation(() => Promise.resolve());
+
     const newName = 'newUsername';
 
     const user = userEvent.setup();
-    const { getByLabel } = render(
+    const { getByLabelText, getByTestId } = render(
       <HeroUIProvider disableRipple>
         <SetUserProps user={JSON.stringify(oldUser)} />
       </HeroUIProvider>
     );
+
+    const usernameInput = getByLabelText('Username');
+
+    expect(usernameInput).toHaveValue('oldUsername');
+
+    await user.clear(usernameInput);
+    await user.type(usernameInput, newName);
+    await user.click(
+      within(getByTestId('confirmed-input-Username')).getByRole('button')
+    );
+
+    expect(api.patch as jest.Mock).toHaveBeenCalledTimes(1);
+    expect(api.patch as jest.Mock).toHaveBeenCalledWith(`/user/${oldUser.id}`, {
+      username: 'newUsername'
+    });
+  });
+
+    test('Validate setEmail', async () => {
+    (api.patch as jest.Mock).mockImplementation(() => Promise.resolve());
+
+    const newEmail = 'newEmail@gmail.com';
+
+    const user = userEvent.setup();
+    const { getByLabelText, getByTestId } = render(
+      <HeroUIProvider disableRipple>
+        <SetUserProps user={JSON.stringify(oldUser)} />
+      </HeroUIProvider>
+    );
+
+    const emailInput = getByLabelText('Email');
+
+    expect(emailInput).toHaveValue('oldEmail@gmail.com');
+
+    await user.clear(emailInput);
+    await user.type(emailInput, newEmail);
+    await user.click(
+      within(getByTestId('confirmed-input-Email')).getByRole('button')
+    );
+
+    expect(api.patch as jest.Mock).toHaveBeenCalledTimes(1);
+    expect(api.patch as jest.Mock).toHaveBeenCalledWith(`/user/${oldUser.id}`, {
+      email: 'newEmail@gmail.com'
+    });
   });
 });

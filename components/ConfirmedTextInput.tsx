@@ -36,7 +36,9 @@ import { Check } from 'react-bootstrap-icons';
  */
 export default function ConfirmedTextInput({
   name,
+  label,
   showLabel,
+  labelPlacement,
   showUnderline,
   disabled,
   className,
@@ -45,7 +47,9 @@ export default function ConfirmedTextInput({
   updateName
 }: {
   name: string;
+  label?: string;
   showLabel?: boolean;
+  labelPlacement?: string;
   showUnderline?: boolean;
   disabled?: boolean;
   className?: string;
@@ -61,6 +65,7 @@ export default function ConfirmedTextInput({
   return (
     <form
       className='flex grow shrink w-full'
+      data-testid={`confirmed-input-${label ?? 'name'}`}
       onSubmit={e => {
         e.preventDefault();
         updateName(newName);
@@ -73,7 +78,8 @@ export default function ConfirmedTextInput({
           input: `${showLabel || showUnderline || '-mb-2'} ${classNames?.input}`
         }}
         disabled={disabled}
-        label={showLabel && 'Name'}
+        label={showLabel && (label ?? 'Name')}
+        labelPlacement={labelPlacement}
         size='sm'
         value={newName}
         variant={variant}
