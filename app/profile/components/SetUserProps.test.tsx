@@ -24,12 +24,13 @@
 
 import { render, within } from '@testing-library/react';
 
-import SetUserProps from './SetUserProps';
-
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
 import { HeroUIProvider } from '@heroui/react';
+
 import api from '@/lib/api';
+
+import SetUserProps from './SetUserProps';
 
 jest.mock('@/lib/api');
 
@@ -72,7 +73,7 @@ describe('Set user props functions', () => {
     });
   });
 
-    test('Validate setEmail', async () => {
+  test('Validate setEmail', async () => {
     (api.patch as jest.Mock).mockImplementation(() => Promise.resolve());
 
     const newEmail = 'newEmail@gmail.com';

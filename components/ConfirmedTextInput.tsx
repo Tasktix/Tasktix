@@ -18,7 +18,7 @@
 
 'use client';
 
-import { Button, Input } from '@heroui/react';
+import { Button, Input, InputProps } from '@heroui/react';
 import { useEffect, useState } from 'react';
 import { Check } from 'react-bootstrap-icons';
 
@@ -49,12 +49,12 @@ export default function ConfirmedTextInput({
   name: string;
   label?: string;
   showLabel?: boolean;
-  labelPlacement?: string;
+  labelPlacement?: InputProps['labelPlacement'];
   showUnderline?: boolean;
   disabled?: boolean;
   className?: string;
   classNames?: { input?: string; button?: string };
-  variant?: string;
+  variant?: InputProps['variant'];
   updateName: (name: string) => unknown;
 }) {
   const [newName, setNewName] = useState(name);
