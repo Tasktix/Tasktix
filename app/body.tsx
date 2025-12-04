@@ -25,7 +25,12 @@ import {
   NavbarBrand,
   NavbarContent,
   NavbarItem,
-  ToastProvider
+  ToastProvider,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+  Avatar
 } from '@heroui/react';
 import { useRouter } from 'next/navigation';
 import { ReactNode, useState } from 'react';

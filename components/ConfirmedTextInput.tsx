@@ -62,7 +62,6 @@ export default function ConfirmedTextInput({
       className='flex grow shrink w-full'
       onSubmit={e => {
         e.preventDefault();
-        console.log("confirmedtextinput\n");
         updateName(newName);
       }}
     >

@@ -19,9 +19,10 @@
 
 import { useState } from 'react';
 import { default as api } from '@/lib/api';
-import { addSnackbar } from '@/components/Snackbar';
+//import { addSnackbar } from '@/components/Snackbar';
 import User from '@/lib/model/user';
 import ConfirmedTextInput from '@/components/ConfirmedTextInput';
+import { addToast } from '@heroui/react';
 
 /**
  * Handles client-side functions for the profile page
@@ -46,7 +47,12 @@ export default function SetUserProps({ user }: { user: string} ){
         newUserData.username = username;
         _setUser(newUserData);
       })
-      .catch(err => addSnackbar(err.message, 'error'));
+      .catch(err =>
+        addToast({
+          title: err.message,
+          color: 'danger'
+        })
+      );
   }
 
   /**
@@ -63,7 +69,12 @@ export default function SetUserProps({ user }: { user: string} ){
         newUserData.email = email;
         _setUser(newUserData);
       })
-      .catch(err => addSnackbar(err.message, 'error'));
+      .catch(err =>
+        addToast({
+          title: err.message,
+          color: 'danger'
+        })
+      );
   }
 
   return(
