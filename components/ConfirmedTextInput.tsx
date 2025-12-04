@@ -23,19 +23,21 @@ import { useEffect, useState } from 'react';
 import { Check } from 'react-bootstrap-icons';
 
 /**
- * A text input that automatically fills with text. When changed, a confirmation button appears. The confirmation button executes a function. Used for changing information in the database.
+ * A text input that automatically fills with text. It requires confirmation, via a checkbox
+ * button, to confirm the change. The function 'updateValue' is called with the new value to
+ * propagate state updates.
  *
- * @param name The text that should automatically fill the field. Will also be used as an input for the function.
+ * @param value The text that should automatically fill the field. Will also be used as an input for the function.
  * @param showLabel Shows a "Name" label within the input
  * @param showUnderline Shows an underline within the input
  * @param disabled Whether the input is disabled
  * @param className Classname for applying Tailwind CSS
  * @param classNames Classname for applying Tailwind CSS to individual HTML components
  * @param variant Dictates the style of the input field
- * @param updateName The function that executes when the user confirms. Must take in a string param.
+ * @param updateValue The function that executes when the user confirms. Must take in a string param.
  */
 export default function ConfirmedTextInput({
-  name,
+  value,
   label,
   showLabel,
   labelPlacement,
@@ -44,9 +46,9 @@ export default function ConfirmedTextInput({
   className,
   classNames,
   variant,
-  updateName
+  updateValue
 }: {
-  name: string;
+  value: string;
   label?: string;
   showLabel?: boolean;
   labelPlacement?: InputProps['labelPlacement'];
@@ -55,20 +57,20 @@ export default function ConfirmedTextInput({
   className?: string;
   classNames?: { input?: string; button?: string };
   variant?: InputProps['variant'];
-  updateName: (name: string) => unknown;
+  updateValue: (value: string) => unknown;
 }) {
-  const [newName, setNewName] = useState(name);
-  const [prevName, setPrevName] = useState(name);
+  const [newName, setNewName] = useState(value);
+  const [prevName, setPrevName] = useState(value);
 
-  useEffect(() => setPrevName(name), [name]);
+  useEffect(() => setPrevName(value), [value]);
 
   return (
     <form
       className='flex grow shrink w-full'
-      data-testid={`confirmed-input-${label ?? 'name'}`}
+      data-testid={`confirmed-input-${label ?? 'value'}`}
       onSubmit={e => {
         e.preventDefault();
-        updateName(newName);
+        updateValue(newName);
       }}
     >
       <Input
@@ -82,7 +84,7 @@ export default function ConfirmedTextInput({
         labelPlacement={labelPlacement}
         size='sm'
         value={newName}
-        variant={variant}
+        variant={variant ?? 'underlined'}
         onValueChange={setNewName}
       />
       <Button

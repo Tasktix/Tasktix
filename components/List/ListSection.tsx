@@ -204,8 +204,8 @@ export default function ListSection({
           <ConfirmedTextInput
             className='mt-0.5'
             classNames={{ input: 'text-md' }}
-            name={name}
-            updateName={() => null}
+            updateValue={() => null}
+            value={name}
             variant='underlined'
           />
         </span>

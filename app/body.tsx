@@ -155,6 +155,7 @@ function AccountButton({ isLoggedIn }: { isLoggedIn: boolean }) {
         Sign In
       </Button>
     );
+  //TODO: Set the profile color to 'user.color'. This will be changed when we implement user-set colors.
 
   return (
     <Dropdown>

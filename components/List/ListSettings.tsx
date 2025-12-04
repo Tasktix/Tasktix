@@ -207,8 +207,8 @@ export function ListSettings({
                     <ConfirmedTextInput
                       showUnderline
                       classNames={{ input: 'text-md' }}
-                      name={listName}
-                      updateName={updateName}
+                      updateValue={updateName}
+                      value={listName}
                       variant='underlined'
                     />
                     <ColorPicker
@@ -258,8 +258,8 @@ export function ListSettings({
                     <span key={tag.id} className='flex gap-2 items-center'>
                       <ConfirmedTextInput
                         showUnderline
-                        name={tag.name}
-                        updateName={updateTagName.bind(null, tag)}
+                        updateValue={updateTagName.bind(null, tag)}
+                        value={tag.name}
                         variant='underlined'
                       />
                       <ColorPicker

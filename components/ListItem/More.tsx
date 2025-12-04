@@ -107,8 +107,8 @@ export default function More({
                     <ConfirmedTextInput
                       showLabel
                       disabled={isComplete}
-                      name={item.name}
-                      updateName={set.name}
+                      updateValue={set.name}
+                      value={item.name}
                       variant='underlined'
                     />
                   </span>

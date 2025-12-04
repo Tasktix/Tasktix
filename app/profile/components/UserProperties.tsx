@@ -16,13 +16,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+//TODO: Currently, when a user changes their information, then exits and reenters their
+//profile page, the information will not be updated. However, the information is updated
+//in the database, and will be updated if the user logs out and back in.
+
 'use client';
 
 import { useState } from 'react';
 import { addToast } from '@heroui/react';
 
-import { default as api } from '@/lib/api';
-//import { addSnackbar } from '@/components/Snackbar';
+import api from '@/lib/api';
 import User from '@/lib/model/user';
 import ConfirmedTextInput from '@/components/ConfirmedTextInput';
 
@@ -31,7 +34,7 @@ import ConfirmedTextInput from '@/components/ConfirmedTextInput';
  *
  * @param user A JSON string that contains the current user data
  */
-export default function SetUserProps({ user }: { user: string }) {
+export default function UserProperties({ user }: { user: string }) {
   const userDetails: User = JSON.parse(user);
   const [_user, _setUser] = useState(userDetails);
 
@@ -86,8 +89,8 @@ export default function SetUserProps({ user }: { user: string }) {
           showLabel
           label='Username'
           labelPlacement='outside'
-          name={_user.username}
-          updateName={setUsername}
+          updateValue={setUsername}
+          value={_user.username}
           variant='flat'
         />
       </div>
@@ -97,8 +100,8 @@ export default function SetUserProps({ user }: { user: string }) {
           showLabel
           label='Email'
           labelPlacement='outside'
-          name={_user.email}
-          updateName={setEmail}
+          updateValue={setEmail}
+          value={_user.email}
           variant='flat'
         />
       </div>

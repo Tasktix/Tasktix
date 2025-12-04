@@ -424,8 +424,8 @@ export default function StaticListItem({
               <span className={`-ml-1 flex ${hasDueDates || 'mt-1'}`}>
                 <ConfirmedTextInput
                   className='shrink'
-                  name={_item.name}
-                  updateName={set.name}
+                  updateValue={set.name}
+                  value={_item.name}
                   variant='underlined'
                 />
               </span>

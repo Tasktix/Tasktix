@@ -18,22 +18,20 @@
 
 import { getUser } from '@/lib/session';
 
-import SetUserProps from './components/SetUserProps';
+import UserProperties from './components/UserProperties';
 
 /**
- * Gets current user information and sends it to SetUserProps
+ * Gets current user information and sends it to UserProperties
  *
  */
 export default async function Page() {
   const userDetails = await getUser();
 
   return (
-    <main className='flex p-6 justify-center'>
+    <main className='flex p-6 justify-center flex-grow'>
       <div className='bg-content1 w-1/3 m-4 rounded-lg px-4 h-full'>
         <h1 className='text-2xl p-4'>Profile</h1>
-        <div>
-          <SetUserProps user={JSON.stringify(userDetails)} />
-        </div>
+        <UserProperties user={JSON.stringify(userDetails)} />
       </div>
     </main>
   );

@@ -24,7 +24,7 @@ import { HeroUIProvider } from '@heroui/react';
 
 import api from '@/lib/api';
 
-import SetUserProps from './SetUserProps';
+import UserProperties from './UserProperties';
 
 jest.mock('@/lib/api');
 
@@ -32,7 +32,7 @@ beforeEach(() => {
   jest.resetAllMocks();
 });
 
-describe('Set user props functions', () => {
+describe('UserProperties functions', () => {
   const oldUser = {
     id: 1234,
     username: 'oldUsername',
@@ -47,7 +47,7 @@ describe('Set user props functions', () => {
     const user = userEvent.setup();
     const { getByLabelText, getByTestId } = render(
       <HeroUIProvider disableRipple>
-        <SetUserProps user={JSON.stringify(oldUser)} />
+        <UserProperties user={JSON.stringify(oldUser)} />
       </HeroUIProvider>
     );
 
@@ -75,7 +75,7 @@ describe('Set user props functions', () => {
     const user = userEvent.setup();
     const { getByLabelText, getByTestId } = render(
       <HeroUIProvider disableRipple>
-        <SetUserProps user={JSON.stringify(oldUser)} />
+        <UserProperties user={JSON.stringify(oldUser)} />
       </HeroUIProvider>
     );
 
