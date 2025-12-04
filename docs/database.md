@@ -1,5 +1,10 @@
 # Database
 
+## Database Schema
+
+To view an interactive schema for Tasktix' database, visit
+[dbdiagrams.io](https://dbdiagram.io/d/Tasktix-691fa53e228c5bbc1ad3060f).
+
 ## Prisma ORM
 
 When first setting up this project, you'll need to run `npm run prisma:generate` to create

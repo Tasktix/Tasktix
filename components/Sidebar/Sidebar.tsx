@@ -66,7 +66,7 @@ export default function Sidebar({ lists }: { lists: List[] }) {
   }
 
   return (
-    <aside className='w-48 bg-transparent shadow-l-lg shadow-content4 p-4 pr-0 flex flex-col gap-4 overflow-y-scroll'>
+    <aside className='w-48 bg-transparent shadow-l-lg shadow-content4 p-4 pr-0 flex flex-col gap-4 overflow-auto'>
       <NavItem link='/list' name='Today' />
       <NavSection
         endContent={<AddList addList={() => setAddingList(true)} />}

@@ -101,6 +101,31 @@ export default function Body({
       {children}
 
       <ToastProvider />
+
+      <footer className='text-center text-default-600'>
+        Tasktix is licensed under the GNU AGPL v3. To view Tasktix&apos;s source
+        code, visit{' '}
+        <Link
+          isExternal
+          showAnchorIcon
+          href='https://github.com/Tasktix/Tasktix'
+          underline='hover'
+        >
+          the GitHub repository
+        </Link>
+        .
+        <br />
+        Please also feel free to{' '}
+        <Link
+          isExternal
+          showAnchorIcon
+          href='https://github.com/Tasktix/Tasktix/issues/new'
+          underline='hover'
+        >
+          submit an issue
+        </Link>{' '}
+        to let us know about bugs or request new features!
+      </footer>
     </div>
   );
 }
