@@ -33,9 +33,10 @@ import {
   InputOption,
   InputOptionGroup
 } from '@/components/SearchBar/types';
+import ListMember from '@/lib/model/listMember';
+import ListSettings from '@/components/ListSettings';
 
 import ListSection from './ListSection';
-import { ListSettings } from './ListSettings';
 
 export default function List({
   startingList,
@@ -133,6 +134,7 @@ export default function List({
           listColor={list.color}
           listId={list.id}
           listName={list.name}
+          members={list.members}
           setHasDueDates={(value: boolean) => {
             const newList = structuredClone(list);
 
@@ -163,6 +165,12 @@ export default function List({
             newList.name = value;
             setList(newList);
             window.location.reload();
+          }}
+          setMembers={(value: ListMember[]) => {
+            const newList = structuredClone(list);
+
+            newList.members = value;
+            setList(newList);
           }}
           setTagsAvailable={setTagsAvailable}
           tagsAvailable={tagsAvailable}

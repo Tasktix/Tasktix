@@ -20,7 +20,6 @@ import {
   Avatar,
   AvatarGroup,
   Button,
-  Card,
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -104,8 +103,8 @@ export default function Users({
       }}
     >
       <PopoverTrigger>
-        <Card
-          className={`px-4 basis-1/6 grow shrink flex flex-row items-center justify-start overflow-hidden flex-nowrap h-10 shadow-none cursor-pointer ${isComplete ? 'opacity-50 cursor-default' : 'hover:bg-foreground/10 focus:z-10 focus:outline-2 focus:outline-focus focus:outline-offset-2'} ${className}`}
+        <Button
+          className={`px-4 basis-1/6 grow shrink flex flex-row items-center justify-start overflow-hidden flex-nowrap h-10 shadow-none cursor-pointer bg-transparent ${isComplete ? 'opacity-50 cursor-default' : 'hover:bg-foreground/10 focus:z-10 focus:outline-2 focus:outline-focus focus:outline-offset-2'} ${className}`}
           tabIndex={isComplete ? 1 : 0}
         >
           <PeopleFill className='shrink-0' />
@@ -122,7 +121,7 @@ export default function Users({
               />
             ))}
           </AvatarGroup>
-        </Card>
+        </Button>
       </PopoverTrigger>
       <PopoverContent className='w-52'>
         {_assignees.map(assignee => (
