@@ -29,9 +29,9 @@ export default {
     return request(resource, 'GET');
   },
 
-  // TS requires `this: void` to allow referencing `api.post` in tests without binding `this`.
-  // DeepSource is unfamiliar with this use of `void` in a type signature - skipcq: JS-0333
   post(
+    // TS requires `this: void` to allow referencing `api.post` in tests without binding `this`.
+    // DeepSource is unfamiliar with this use of `void` in a type signature - skipcq: JS-0333
     this: void,
     resource: string,
     data: string | object,
@@ -40,9 +40,9 @@ export default {
     return request(resource, 'POST', data, encodingType);
   },
 
-  // TS requires `this: void` to allow referencing `api.put` in tests without binding `this`.
-  // DeepSource is unfamiliar with this use of `void` in a type signature - skipcq: JS-0333
   put(
+    // TS requires `this: void` to allow referencing `api.put` in tests without binding `this`.
+    // DeepSource is unfamiliar with this use of `void` in a type signature - skipcq: JS-0333
     this: void,
     resource: string,
     data: object,
@@ -51,9 +51,9 @@ export default {
     return request(resource, 'PUT', data, encodingType);
   },
 
-  // TS requires `this: void` to allow referencing `api.patch` in tests without binding `this`.
-  // DeepSource is unfamiliar with this use of `void` in a type signature - skipcq: JS-0333
   patch(
+    // TS requires `this: void` to allow referencing `api.patch` in tests without binding `this`.
+    // DeepSource is unfamiliar with this use of `void` in a type signature - skipcq: JS-0333
     this: void,
     resource: string,
     data: object,
