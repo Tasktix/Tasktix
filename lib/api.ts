@@ -23,23 +23,38 @@ export interface ServerResponse {
 }
 
 export default {
-  get(resource: string) {
+  get(this: void, resource: string) {
     return request(resource, 'GET');
   },
 
-  post(resource: string, data: string | object, encodingType?: string) {
+  post(
+    this: void,
+    resource: string,
+    data: string | object,
+    encodingType?: string
+  ) {
     return request(resource, 'POST', data, encodingType);
   },
 
-  put(resource: string, data: object, encodingType = 'application/json') {
+  put(
+    this: void,
+    resource: string,
+    data: object,
+    encodingType = 'application/json'
+  ) {
     return request(resource, 'PUT', data, encodingType);
   },
 
-  patch(resource: string, data: object, encodingType = 'application/json') {
+  patch(
+    this: void,
+    resource: string,
+    data: object,
+    encodingType = 'application/json'
+  ) {
     return request(resource, 'PATCH', data, encodingType);
   },
 
-  delete(resource: string) {
+  delete(this: void, resource: string) {
     return request(resource, 'DELETE');
   }
 } as const;

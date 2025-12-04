@@ -17,13 +17,7 @@
  * @jest-environment jsdom
  */
 
-//Test Ideas:
-//1 and 2: Setting functions calling api with normal value
-//3 and 4: Setting functions calling api with no value
-//5: Rendering the test input
-
 import { render, within } from '@testing-library/react';
-
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
 import { HeroUIProvider } from '@heroui/react';
