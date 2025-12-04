@@ -40,7 +40,7 @@ export default function SetUserProps({ user }: { user: string }) {
    *
    * @param username The user's new username
    */
-  async function setUsername(username: string) {
+  function setUsername(username: string) {
     api
       .patch(`/user/${_user.id}`, { username })
       .then(() => {
@@ -62,7 +62,7 @@ export default function SetUserProps({ user }: { user: string }) {
    *
    * @param email The user's new email
    */
-  async function setEmail(email: string) {
+  function setEmail(email: string) {
     api
       .patch(`/user/${_user.id}`, { email })
       .then(() => {
