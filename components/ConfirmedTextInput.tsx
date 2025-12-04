@@ -59,10 +59,10 @@ export default function ConfirmedTextInput({
   variant?: InputProps['variant'];
   updateValue: (value: string) => unknown;
 }) {
-  const [newName, setNewName] = useState(value);
-  const [prevName, setPrevName] = useState(value);
+  const [newValue, setNewValue] = useState(value);
+  const [prevValue, setPrevValue] = useState(value);
 
-  useEffect(() => setPrevName(value), [value]);
+  useEffect(() => setPrevValue(value), [value]);
 
   return (
     <form
@@ -70,7 +70,7 @@ export default function ConfirmedTextInput({
       data-testid={`confirmed-input-${label ?? 'value'}`}
       onSubmit={e => {
         e.preventDefault();
-        updateValue(newName);
+        updateValue(newValue);
       }}
     >
       <Input
@@ -83,13 +83,13 @@ export default function ConfirmedTextInput({
         label={showLabel && (label ?? 'Name')}
         labelPlacement={labelPlacement}
         size='sm'
-        value={newName}
+        value={newValue}
         variant={variant ?? 'underlined'}
-        onValueChange={setNewName}
+        onValueChange={setNewValue}
       />
       <Button
         isIconOnly
-        className={`rounded-lg w-8 h-8 min-w-8 min-h-8 ${newName === prevName ? 'hidden' : ''} ${showLabel ? 'mt-4' : ''} ${classNames?.button}`}
+        className={`rounded-lg w-8 h-8 min-w-8 min-h-8 ${newValue === prevValue ? 'hidden' : ''} ${showLabel ? 'mt-4' : ''} ${classNames?.button}`}
         color='primary'
         type='submit'
       >
