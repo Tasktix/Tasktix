@@ -146,8 +146,8 @@ export default function More({
 
                 {members.length > 1 ? (
                   <Users
-                    assignees={item.assignees}
                     className='py-2'
+                    initialAssignees={item.assignees}
                     isComplete={isComplete}
                     itemId={item.id}
                     members={members}

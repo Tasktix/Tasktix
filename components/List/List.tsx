@@ -22,9 +22,9 @@ import { useState } from 'react';
 import { addToast } from '@heroui/react';
 
 import AddListSection from '@/components/AddListSection';
-import { default as api } from '@/lib/api';
-import { default as ListModel } from '@/lib/model/list';
-import { default as ListSectionModel } from '@/lib/model/listSection';
+import api from '@/lib/api';
+import ListModel from '@/lib/model/list';
+import ListSectionModel from '@/lib/model/listSection';
 import Tag from '@/lib/model/tag';
 import { NamedColor } from '@/lib/model/color';
 import SearchBar from '@/components/SearchBar';
@@ -61,7 +61,7 @@ export default function List({
   const [tagsAvailable, setTagsAvailable] = useState<Tag[]>(
     JSON.parse(startingTagsAvailable)
   );
-  const [filters, setFilters] = useState<Filters>({});
+  const [filters, setFilters] = useState<Filters>(new Map());
 
   const filterOptions = getFilterOptions(list, tagsAvailable);
 

@@ -72,7 +72,7 @@ export default function Tags({
           <TagsIcon className='shrink-0' />
           <span className='ml-2 flex flex-row items-center justify-start overflow-hidden flex-nowrap'>
             {tags
-              .sort((a, b) => (a.name > b.name ? 1 : -1))
+              .toSorted((a, b) => (a.name > b.name ? 1 : -1))
               .map(tag => (
                 <Chip
                   key={tag.id}
@@ -92,7 +92,7 @@ export default function Tags({
       </PopoverTrigger>
       <PopoverContent>
         {tags
-          .sort((a, b) => (a.name > b.name ? 1 : -1))
+          .toSorted((a, b) => (a.name > b.name ? 1 : -1))
           .map(tag => (
             <div
               key={tag.id}
@@ -112,7 +112,7 @@ export default function Tags({
           ))}
         {tagsAvailable
           ? tagsAvailable
-              .sort((a, b) => (a.name > b.name ? 1 : -1))
+              .toSorted((a, b) => (a.name > b.name ? 1 : -1))
               .map(tag => {
                 if (tags.some(usedTag => usedTag.id === tag.id)) return null;
                 else

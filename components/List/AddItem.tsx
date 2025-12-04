@@ -33,7 +33,7 @@ import {
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import { Check, Plus } from 'react-bootstrap-icons';
 
-import { default as api } from '@/lib/api';
+import api from '@/lib/api';
 import ListItem from '@/lib/model/listItem';
 import { getBorderColor, getPriorityColor } from '@/lib/color';
 
@@ -183,7 +183,6 @@ export default function AddItem({
                 color='primary'
                 label='Due'
                 size='sm'
-                tabIndex={isSliderOpen ? 0 : 1}
                 value={values.dateDue}
                 variant='underlined'
                 onValueChange={setDueDate}
@@ -273,7 +272,7 @@ export default function AddItem({
               <>
                 <ModalHeader className='justify-center'>Add Item</ModalHeader>
                 <form onSubmit={createItem}>
-                  <ModalBody className={`flex flex-row justify-center gap-4`}>
+                  <ModalBody className='flex flex-row justify-center gap-4'>
                     <Input
                       autoFocus
                       className='w-44 -mt-2'

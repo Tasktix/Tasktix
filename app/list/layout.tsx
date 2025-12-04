@@ -30,7 +30,7 @@ export default async function UserLayout({
   const user = await getUser();
 
   /* Just need this for TypeScript */
-  if (!user) return <></>;
+  if (!user) return null;
 
   const lists = (await getListsByUser(user.id)) || [];
 

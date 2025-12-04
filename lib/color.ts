@@ -31,6 +31,9 @@ export function getPriorityColor(priority: Selection): SemanticColor {
   return priority.has('Medium') ? 'warning' : 'success';
 }
 
+// Default case intentionally omitted to surface TS error if not all cases are
+// explicitly handled (e.g. because the Color type was expanded). All VALID code paths
+// (based on the Color type) do return - skipcq: JS-0045
 export function getTextColor(color: Color): string {
   switch (color) {
     case 'danger':
@@ -64,6 +67,9 @@ export function getTextColor(color: Color): string {
   }
 }
 
+// Default case intentionally omitted to surface TS error if not all cases are
+// explicitly handled (e.g. because the Color type was expanded). All VALID code paths
+// (based on the Color type) do return - skipcq: JS-0045
 export function getBackgroundColor(color: Color): string {
   switch (color) {
     case 'danger':
@@ -97,6 +103,9 @@ export function getBackgroundColor(color: Color): string {
   }
 }
 
+// Default case intentionally omitted to surface TS error if not all cases are
+// explicitly handled (e.g. because the Color type was expanded). All VALID code paths
+// (based on the Color type) do return - skipcq: JS-0045
 export function getBorderColor(color: Color): string {
   switch (color) {
     case 'danger':

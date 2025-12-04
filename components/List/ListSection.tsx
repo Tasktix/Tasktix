@@ -44,7 +44,7 @@ import {
   sortItemsByIndex
 } from '@/lib/sortItems';
 import ListMember from '@/lib/model/listMember';
-import { default as api } from '@/lib/api';
+import api from '@/lib/api';
 
 import { Filters } from '../SearchBar/types';
 import ConfirmedTextInput from '../ConfirmedTextInput';
@@ -83,8 +83,8 @@ export default function ListSection({
   // TODO: Update to use hashmap: don't iterate over every value when finding the right one to modify
   const [items, setItems] = useState<Item[]>(
     startingItems
-      .sort(sortItemsByIndex)
-      .sort(sortItemsByCompleted)
+      .toSorted(sortItemsByIndex)
+      .toSorted(sortItemsByCompleted)
       .map((item, i) => {
         const newItem: Item = structuredClone(item);
 
@@ -159,7 +159,7 @@ export default function ListSection({
       .patch(`/list/${listId}/section/${id}/item`, {
         itemId: item.id,
         index: newIndex,
-        oldIndex: oldIndex
+        oldIndex
       })
       .then(res => {
         addToast({ title: res.message, color: 'success' });
@@ -260,7 +260,7 @@ export default function ListSection({
             {isAutoOrdered ? (
               items
                 .filter(item => checkItemFilter(item, filters))
-                .sort(sortItems.bind(null, hasTimeTracking, hasDueDates))
+                .toSorted(sortItems.bind(null, hasTimeTracking, hasDueDates))
                 .map(item => (
                   <StaticListItem
                     key={item.id}
@@ -283,7 +283,9 @@ export default function ListSection({
               <Reorder.Group
                 axis='y'
                 values={items}
-                onReorder={items => setItems(items.sort(sortItemsByCompleted))}
+                onReorder={items =>
+                  setItems(items.toSorted(sortItemsByCompleted))
+                }
               >
                 {items
                   .filter(item => checkItemFilter(item, filters))
@@ -321,7 +323,7 @@ export default function ListSection({
 
 function checkItemFilter(item: ListItemModel, filters: Filters): boolean {
   for (const key in filters)
-    if (!compareFilter(item, key, filters[key])) return false;
+    if (!compareFilter(item, key, filters.get(key))) return false;
 
   return true;
 }
@@ -367,7 +369,7 @@ function compareFilter(
         value instanceof Date &&
         value.getTime() > item.dateCompleted.getTime()
       );
-    case 'completedOn':
+    case 'completedOn': {
       if (!(value instanceof Date)) return false;
 
       const start = structuredClone(value);
@@ -384,6 +386,7 @@ function compareFilter(
         start.getTime() <= item.dateCompleted.getTime() &&
         end.getTime() > item.dateCompleted.getTime()
       );
+    }
     case 'completedAfter':
       if (value instanceof Date) value.setHours(23, 59, 59, 999);
 

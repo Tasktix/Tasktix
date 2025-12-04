@@ -59,7 +59,7 @@ export default function TimeInput({
   const [time, setTime] = useState(formatTime(defaultValue || 0));
 
   function updateTime(value: string) {
-    value = value.replaceAll(/[^0-9]/g, '');
+    value = value.replaceAll(/\D/g, '');
     const hourStr = value.slice(0, -2);
     const minStr = value.slice(-2);
 
@@ -80,7 +80,7 @@ export default function TimeInput({
       labelPlacement={labelPlacement}
       size={size}
       tabIndex={tabIndex}
-      value={value !== undefined ? formatTime(value) : time}
+      value={value === undefined ? time : formatTime(value)}
       variant={variant}
       onValueChange={updateTime}
     />

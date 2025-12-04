@@ -35,10 +35,10 @@ export default function SearchBar({
 }: {
   inputOptions: InputOptionGroup[];
   onValueChange: (value: Filters) => unknown;
-}) {
+}): ReactElement | undefined {
   const [usedOptions, setUsedOptions] = useState<Set<string>>(new Set());
   const [value, setValue] = useState('');
-  const [filters, dispatchFilters] = useReducer(searchReducer, {});
+  const [filters, dispatchFilters] = useReducer(searchReducer, new Map());
 
   const _options = inputOptions.flatMap(optionGrp => optionGrp.options);
   const remainingOptions = inputOptions.map(o => {
@@ -50,7 +50,7 @@ export default function SearchBar({
 
   const inputFields: ReactElement[] = [];
 
-  for (const key in filters) {
+  for (const key of Object.keys(filters)) {
     const option = _options.find(option => option.label === key);
 
     if (!option) return;
@@ -96,8 +96,8 @@ export default function SearchBar({
     const optionName = input.slice(0, -1);
 
     if (
-      inputOptions.find(option =>
-        option.options.find(option => option.label === optionName)
+      inputOptions.some(option =>
+        option.options.some(option => option.label === optionName)
       )
     )
       addUsedOption(optionName);
