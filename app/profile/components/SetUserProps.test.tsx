@@ -1,0 +1,69 @@
+/**
+ * Tasktix: A powerful and flexible task-tracking tool for all.
+ * Copyright (C) 2025 Nate Baird & other Tasktix contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+//Test Ideas:
+//1 and 2: Setting functions calling api with normal value
+//3 and 4: Setting functions calling api with no value
+//5: Rendering the test input
+
+import { render } from '@testing-library/react';
+
+import SetUserProps from './SetUserProps';
+
+import '@testing-library/jest-dom';
+import userEvent from '@testing-library/user-event';
+import { HeroUIProvider } from '@heroui/react';
+
+jest.mock('./SetUserProps', () => () => jest.fn());
+
+jest.mock('@/lib/api', () => () => jest.fn());
+
+jest.mock('@heroui/react', () => ({
+  addToast: jest.fn()
+}));
+
+// jest.mock('@/components/ConfirmedTextInput', () => {
+//   return function MockInput({ updateName }: any) {
+//     return (
+//       <button onClick={() => updateName("newName")}>
+//         username-update
+//       </button>
+//     );
+//   };
+// });
+
+beforeEach();
+
+describe('Set user props functions', () => {
+  const oldUser = {
+    id: 1234,
+    username: 'oldUsername',
+    email: 'oldEmail@gmail.com'
+  };
+
+  test('Validate setUsername', () => {
+    const newName = 'newUsername';
+
+    const user = userEvent.setup();
+    const { getByLabel } = render(
+      <HeroUIProvider disableRipple>
+        <SetUserProps user={JSON.stringify(oldUser)} />
+      </HeroUIProvider>
+    );
+  });
+});

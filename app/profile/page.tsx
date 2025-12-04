@@ -17,17 +17,16 @@
  */
 
 import { getUser } from '@/lib/session';
+
 import SetUserProps from './components/SetUserProps';
 
 export default async function Page() {
   const userDetails = await getUser();
 
-  return(
+  return (
     <main className='flex p-6 justify-center'>
       <div className='bg-content1 w-1/3 m-4 rounded-lg px-4 h-full'>
-        <h1 className='text-2xl p-4'>
-          Profile
-        </h1>
+        <h1 className='text-2xl p-4'>Profile</h1>
         <div>
           <SetUserProps user={JSON.stringify(userDetails)} />
         </div>

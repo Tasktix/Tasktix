@@ -134,11 +134,15 @@ function AccountButton({ isLoggedIn }: { isLoggedIn: boolean }) {
   return (
     <Dropdown>
       <DropdownTrigger>
-        <Avatar key='profile' color='primary'/>
+        <Avatar key='profile' color='primary' />
       </DropdownTrigger>
-      <DropdownMenu aria-label="Static Actions" color='primary'>
-        <DropdownItem key="settings" href="/profile">Profile</DropdownItem>
-        <DropdownItem key="signOut" onPress={handleClick}>Log Out</DropdownItem>
+      <DropdownMenu aria-label='Static Actions' color='primary'>
+        <DropdownItem key='settings' href='/profile'>
+          Profile
+        </DropdownItem>
+        <DropdownItem key='signOut' onPress={handleClick}>
+          Log Out
+        </DropdownItem>
       </DropdownMenu>
     </Dropdown>
   );

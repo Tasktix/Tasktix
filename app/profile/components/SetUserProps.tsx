@@ -15,21 +15,23 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 'use client';
 
 import { useState } from 'react';
+import { addToast } from '@heroui/react';
+
 import { default as api } from '@/lib/api';
 //import { addSnackbar } from '@/components/Snackbar';
 import User from '@/lib/model/user';
 import ConfirmedTextInput from '@/components/ConfirmedTextInput';
-import { addToast } from '@heroui/react';
 
 /**
  * Handles client-side functions for the profile page
  *
  * @param user A JSON string that contains the current user data
  */
-export default function SetUserProps({ user }: { user: string} ){
+export default function SetUserProps({ user }: { user: string }) {
   const userDetails: User = JSON.parse(user) || [];
   const [_user, _setUser] = useState(userDetails);
 
@@ -56,10 +58,10 @@ export default function SetUserProps({ user }: { user: string} ){
   }
 
   /**
- * Sets the user's email
- *
- * @param email The user's new email
- */
+   * Sets the user's email
+   *
+   * @param email The user's new email
+   */
   async function setEmail(email: string) {
     api
       .patch(`/user/${_user.id}`, { email })
@@ -77,7 +79,7 @@ export default function SetUserProps({ user }: { user: string} ){
       );
   }
 
-  return(
+  return (
     <div>
       <div className='m-4'>
         <h2>Username: </h2>
@@ -90,13 +92,12 @@ export default function SetUserProps({ user }: { user: string} ){
 
       <div className='m-4'>
         <h2>Email: </h2>
-        <ConfirmedTextInput 
+        <ConfirmedTextInput
           name={_user.email}
           updateName={setEmail}
           variant='flat'
         />
       </div>
     </div>
-  )
-
+  );
 }
