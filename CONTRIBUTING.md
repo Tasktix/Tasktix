@@ -76,16 +76,6 @@ This should be followed by an exclamation point (`!`) if your PR introduces brea
 non-backward compatible) changes. In all cases, this prefix should then be followed by a
 colon and space (`: `) and a title explaining the purpose of the PR.
 
-These conventional commit messages will be parsed by the Continuous Deployment pipeline to
-determine the SemVer version tag to assign to the PR after it's merged:
-
-- `MAJOR` will be incremented when there's an exclamation point (`!`) at the end of the
-  prefix, otherwise
-- `MINOR` will be incremented for `feat:` prefixes,
-- `PATCH` will be incremented for `fix:`, `perf:`, `style:`, `refactor:`, and `chore:`
-  prefixes, and
-- No version tag will be assigned for `docs:`, or `test:` prefixes.
-
 ### Documentation
 
 Each new feature or fix must:
