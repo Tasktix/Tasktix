@@ -60,6 +60,21 @@ export async function createTag(listId: string, tag: Tag): Promise<boolean> {
   return true;
 }
 
+export async function createListMember(
+  listId: string,
+  member: ListMember
+): Promise<boolean> {
+  try {
+    await prisma.listMember.create({
+      data: { listId, ...member, user: undefined, userId: member.user.id }
+    });
+  } catch {
+    return false;
+  }
+
+  return true;
+}
+
 export async function getListById(id: string): Promise<List | false> {
   const result = await prisma.list.findUnique({
     where: { id },
@@ -131,26 +146,39 @@ export async function getListMembersByUser(
   return returnVal;
 }
 
+export async function getListMember(
+  userId: string,
+  listId: string
+): Promise<Omit<ListMember, 'user'> | false> {
+  const result = await prisma.listMember.findUnique({
+    where: { userId_listId: { userId, listId } }
+  });
+
+  return result ?? false;
+}
+
+export async function getListMemberByItem(
+  userId: string,
+  itemId: string
+): Promise<Omit<ListMember, 'user'> | false> {
+  const result = await prisma.listMember.findFirst({
+    where: {
+      userId,
+      list: {
+        sections: { some: { items: { some: { id: itemId } } } }
+      }
+    }
+  });
+
+  return result ?? false;
+}
+
 export async function getIsListAssignee(
   userId: string,
   listId: string
 ): Promise<boolean> {
   const result = await prisma.list.count({
     where: { id: listId, members: { some: { userId } } }
-  });
-
-  return result > 0;
-}
-
-export async function getIsListAssigneeBySection(
-  userId: string,
-  sectionId: string
-): Promise<boolean> {
-  const result = await prisma.list.count({
-    where: {
-      members: { some: { userId } },
-      sections: { some: { id: sectionId } }
-    }
   });
 
   return result > 0;
@@ -231,6 +259,23 @@ export async function updateTag(tag: Tag): Promise<boolean> {
     await prisma.tag.update({
       where: { id: tag.id },
       data: tag
+    });
+  } catch {
+    return false;
+  }
+
+  return true;
+}
+
+export async function updateListMember(
+  listId: string,
+  userId: string,
+  member: Omit<ListMember, 'user'>
+): Promise<boolean> {
+  try {
+    await prisma.listMember.update({
+      where: { userId_listId: { userId, listId } },
+      data: { ...member }
     });
   } catch {
     return false;

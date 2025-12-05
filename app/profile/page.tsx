@@ -16,37 +16,23 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import z from 'zod';
+import { getUser } from '@/lib/session';
 
-import User from './user';
+import UserProperties from './components/UserProperties';
 
-export const ZodListMember = z.strictObject({
-  userId: z.string().length(16),
-  listId: z.string().length(16),
-  canAdd: z.boolean(),
-  canRemove: z.boolean(),
-  canComplete: z.boolean(),
-  canAssign: z.boolean()
-});
+/**
+ * Gets current user information and sends it to UserProperties
+ *
+ */
+export default async function Page() {
+  const userDetails = await getUser();
 
-export default class ListMember {
-  user: User;
-  canAdd: boolean;
-  canRemove: boolean;
-  canComplete: boolean;
-  canAssign: boolean;
-
-  constructor(
-    user: User,
-    canAdd = false,
-    canRemove = false,
-    canComplete = false,
-    canAssign = false
-  ) {
-    this.user = user;
-    this.canAdd = canAdd;
-    this.canRemove = canRemove;
-    this.canComplete = canComplete;
-    this.canAssign = canAssign;
-  }
+  return (
+    <main className='flex p-6 justify-center flex-grow'>
+      <div className='bg-content1 w-1/3 m-4 rounded-lg px-4 h-full'>
+        <h1 className='text-2xl p-4'>Profile</h1>
+        <UserProperties user={JSON.stringify(userDetails)} />
+      </div>
+    </main>
+  );
 }

@@ -23,23 +23,48 @@ export interface ServerResponse {
 }
 
 export default {
-  get(resource: string) {
+  // TS requires `this: void` to allow referencing `api.get` in tests without binding `this`.
+  // DeepSource is unfamiliar with this use of `void` in a type signature - skipcq: JS-0333
+  get(this: void, resource: string) {
     return request(resource, 'GET');
   },
 
-  post(resource: string, data: string | object, encodingType?: string) {
+  post(
+    // TS requires `this: void` to allow referencing `api.post` in tests without binding `this`.
+    // DeepSource is unfamiliar with this use of `void` in a type signature - skipcq: JS-0333
+    this: void,
+    resource: string,
+    data: string | object,
+    encodingType?: string
+  ) {
     return request(resource, 'POST', data, encodingType);
   },
 
-  put(resource: string, data: object, encodingType = 'application/json') {
+  put(
+    // TS requires `this: void` to allow referencing `api.put` in tests without binding `this`.
+    // DeepSource is unfamiliar with this use of `void` in a type signature - skipcq: JS-0333
+    this: void,
+    resource: string,
+    data: object,
+    encodingType = 'application/json'
+  ) {
     return request(resource, 'PUT', data, encodingType);
   },
 
-  patch(resource: string, data: object, encodingType = 'application/json') {
+  patch(
+    // TS requires `this: void` to allow referencing `api.patch` in tests without binding `this`.
+    // DeepSource is unfamiliar with this use of `void` in a type signature - skipcq: JS-0333
+    this: void,
+    resource: string,
+    data: object,
+    encodingType = 'application/json'
+  ) {
     return request(resource, 'PATCH', data, encodingType);
   },
 
-  delete(resource: string) {
+  // TS requires `this: void` to allow referencing `api.delete` in tests without binding `this`.
+  // DeepSource is unfamiliar with this use of `void` in a type signature - skipcq: JS-0333
+  delete(this: void, resource: string) {
     return request(resource, 'DELETE');
   }
 } as const;
