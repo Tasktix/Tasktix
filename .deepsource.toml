@@ -1,6 +1,12 @@
 version = 1
 
-test_patterns = ["**/*.test.ts"]
+test_patterns = [
+  "**/*.test.ts",
+  "**/*.test.tsx",
+  "**/__tests__/*.ts",
+  "**/__tests__/*.tsx",
+  "cypress/**/*.cy.ts"
+]
 
 [[analyzers]]
 name = "javascript"
@@ -13,4 +19,14 @@ name = "javascript"
   ]
 
 [[analyzers]]
+name = "test-coverage"
+enabled = true
+
+[[analyzers]]
 name = "docker"
+
+  [analyzers.meta]
+  dockerfile_paths = [
+    "Dockerfile",
+    "Dockerfile.test"
+  ]

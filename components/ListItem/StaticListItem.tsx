@@ -32,7 +32,7 @@ import List from '@/lib/model/list';
 import { getBackgroundColor, getTextColor } from '@/lib/color';
 
 import DateInput from '../DateInput';
-import Name from '../Name';
+import ConfirmedTextInput from '../ConfirmedTextInput';
 
 import ExpectedInput from './ExpectedInput';
 import ElapsedInput from './ElapsedInput';
@@ -422,10 +422,11 @@ export default function StaticListItem({
               </span>
             ) : (
               <span className={`-ml-1 flex ${hasDueDates || 'mt-1'}`}>
-                <Name
+                <ConfirmedTextInput
                   className='shrink'
-                  name={_item.name}
-                  updateName={set.name}
+                  updateValue={set.name}
+                  value={_item.name}
+                  variant='underlined'
                 />
               </span>
             )}

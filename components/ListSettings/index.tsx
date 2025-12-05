@@ -16,37 +16,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import z from 'zod';
+'use client';
 
-import User from './user';
-
-export const ZodListMember = z.strictObject({
-  userId: z.string().length(16),
-  listId: z.string().length(16),
-  canAdd: z.boolean(),
-  canRemove: z.boolean(),
-  canComplete: z.boolean(),
-  canAssign: z.boolean()
-});
-
-export default class ListMember {
-  user: User;
-  canAdd: boolean;
-  canRemove: boolean;
-  canComplete: boolean;
-  canAssign: boolean;
-
-  constructor(
-    user: User,
-    canAdd = false,
-    canRemove = false,
-    canComplete = false,
-    canAssign = false
-  ) {
-    this.user = user;
-    this.canAdd = canAdd;
-    this.canRemove = canRemove;
-    this.canComplete = canComplete;
-    this.canAssign = canAssign;
-  }
-}
+export { default } from './ListSettings';
