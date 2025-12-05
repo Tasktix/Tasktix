@@ -6,17 +6,7 @@ services:
 
   mariadb:
     healthcheck:
-      test:
-        [
-          'CMD',
-          'mariadb-admin',
-          'ping',
-          '-h',
-          'localhost',
-          '-u',
-          'root',
-          '-p${DB_PASSWORD}'
-        ]
+      test: ['CMD', 'healthcheck.sh', '--connect', '--innodb_initialized']
       interval: 2s
       timeout: 1s
       retries: 5
