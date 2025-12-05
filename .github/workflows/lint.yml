@@ -1,0 +1,64 @@
+name: Lint
+
+on: [pull_request]
+
+permissions:
+  contents: read
+  pull-requests: write
+  statuses: write
+
+jobs:
+  lint:
+    name: ESLint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - name: Install dependencies if needed
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci
+      - name: Lint
+        run: npm run lint
+
+  danger:
+    name: Danger
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - name: Install dependencies if needed
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci
+      - name: Cache Cypress binary
+        id: cache-cypress
+        uses: actions/cache@v3
+        with:
+          path: .cache/Cypress
+          key: cypress-${{ runner.os }}-v15.1.0
+      - name: Install Cypress binary if needed
+        if: steps.cache-cypress.outputs.cache-hit != 'true'
+        run: npx cypress install
+      - name: Run Danger
+        run: npm run danger
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

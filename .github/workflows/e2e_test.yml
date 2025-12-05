@@ -1,17 +1,13 @@
-name: Test
+name: End-to_End Test
 
-on:
-  pull_request:
-  push:
-    branches:
-      - main
+on: [pull_request]
 
 permissions:
   contents: read
 
 jobs:
-  jest:
-    name: Jest
+  cypress:
+    name: Cypress
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -29,12 +25,14 @@ jobs:
       - name: Install dependencies if needed
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci
-      - name: Test
-        run: npm run test:jest -- --coverageReporters=cobertura
-      - name: Report coverage to DeepSource
-        uses: deepsourcelabs/test-coverage-action@master
+      - name: Cache Cypress binary
+        id: cache-cypress
+        uses: actions/cache@v3
         with:
-          key: javascript
-          coverage-file: ./coverage/cobertura-coverage.xml
-          dsn: ${{ secrets.DEEPSOURCE_DSN }}
-          fail-ci-on-error: true
+          path: .cache/Cypress
+          key: cypress-${{ runner.os }}-v15.1.0
+      - name: Install Cypress binary if needed
+        if: steps.cache-cypress.outputs.cache-hit != 'true'
+        run: npx cypress install
+      - name: Test
+        run: npm run test:cy
