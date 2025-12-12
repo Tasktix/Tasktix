@@ -23,19 +23,20 @@ import { getUser } from '@/lib/session';
 
 export async function POST(
   _: Request,
-  { params }: { params: { id: string; userId: string } }
+  { params }: { params: Promise<{ id: string; userId: string }> }
 ) {
+  const { id, userId } = await params;
   const user = await getUser();
 
   if (!user) return ClientError.Unauthenticated('Not logged in');
 
-  const member = await getListMemberByItem(user.id, params.id);
+  const member = await getListMemberByItem(user.id, id);
 
   if (!member) return ClientError.BadRequest('List item not found');
   if (!member.canAssign)
     return ClientError.BadRequest('Insufficient permissions to assign');
 
-  const result = await linkAssignee(params.id, params.userId, '');
+  const result = await linkAssignee(id, userId, '');
 
   if (!result) return ServerError.Internal('Could not add assignee');
 
@@ -44,19 +45,20 @@ export async function POST(
 
 export async function DELETE(
   _: Request,
-  { params }: { params: { id: string; userId: string } }
+  { params }: { params: Promise<{ id: string; userId: string }> }
 ) {
+  const { id, userId } = await params;
   const user = await getUser();
 
   if (!user) return ClientError.Unauthenticated('Not logged in');
 
-  const member = await getListMemberByItem(user.id, params.id);
+  const member = await getListMemberByItem(user.id, id);
 
   if (!member) return ClientError.BadRequest('List not found');
   if (!member.canAssign)
     return ClientError.BadRequest('Insufficient permissions to unassign');
 
-  const result = await unlinkAssignee(params.id, params.userId);
+  const result = await unlinkAssignee(id, userId);
 
   if (!result) return ServerError.Internal('Could not remove assignee');
 

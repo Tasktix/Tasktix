@@ -19,7 +19,7 @@
 'use client';
 
 import { Button, Input, InputProps } from '@heroui/react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Check } from 'react-bootstrap-icons';
 
 /**
@@ -60,9 +60,6 @@ export default function ConfirmedTextInput({
   updateValue: (value: string) => unknown;
 }) {
   const [newValue, setNewValue] = useState(value);
-  const [prevValue, setPrevValue] = useState(value);
-
-  useEffect(() => setPrevValue(value), [value]);
 
   return (
     <form
@@ -89,7 +86,7 @@ export default function ConfirmedTextInput({
       />
       <Button
         isIconOnly
-        className={`rounded-lg w-8 h-8 min-w-8 min-h-8 ${newValue === prevValue ? 'hidden' : ''} ${showLabel ? 'mt-4' : ''} ${classNames?.button}`}
+        className={`rounded-lg w-8 h-8 min-w-8 min-h-8 ${newValue === value ? 'hidden' : ''} ${showLabel ? 'mt-4' : ''} ${classNames?.button}`}
         color='primary'
         type='submit'
       >

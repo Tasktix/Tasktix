@@ -33,45 +33,14 @@ import {
   Avatar
 } from '@heroui/react';
 import { useRouter } from 'next/navigation';
-import { ReactNode, useState } from 'react';
+import { ReactNode } from 'react';
 import Image from 'next/image';
 
 import { default as api } from '@/lib/api';
 import ThemeSwitcher from '@/components/ThemeSwitcher';
+import { useAuth } from '@/components/AuthProvider';
 
-export function setLoggedIn() {
-  // The whole point is that this may be called before the fn is defined - skipcq: JS-0357
-  if (!_setLoggedIn) throw new Error('Body component not yet mounted');
-
-  // The whole point is that this may be called before the fn is defined - skipcq: JS-0357
-  return _setLoggedIn();
-}
-
-export function setLoggedOut() {
-  // The whole point is that this may be called before the fn is defined - skipcq: JS-0357
-  if (!_setLoggedOut) throw new Error('Body component not yet mounted');
-
-  // The whole point is that this may be called before the fn is defined - skipcq: JS-0357
-  return _setLoggedOut();
-}
-
-let _setLoggedIn: () => void;
-let _setLoggedOut: () => void;
-
-interface BodyProps {
-  children: ReactNode;
-  isLoggedInAtStart: boolean;
-}
-
-export default function Body({
-  children,
-  isLoggedInAtStart
-}: Readonly<BodyProps>) {
-  const [isLoggedIn, setIsLoggedIn] = useState(isLoggedInAtStart);
-
-  _setLoggedIn = () => setIsLoggedIn(true);
-  _setLoggedOut = () => setIsLoggedIn(false);
-
+export default function Body({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <div className='flex flex-col h-screen'>
       <Navbar maxWidth='full'>
@@ -94,7 +63,7 @@ export default function Body({
         </NavbarContent>
         <NavbarContent justify='end'>
           <ThemeSwitcher />
-          <AccountButton isLoggedIn={isLoggedIn} />
+          <AccountButton />
         </NavbarContent>
       </Navbar>
 
@@ -130,7 +99,9 @@ export default function Body({
   );
 }
 
-function AccountButton({ isLoggedIn }: { isLoggedIn: boolean }) {
+function AccountButton() {
+  const { isLoggedIn, setIsLoggedIn } = useAuth();
+
   const router = useRouter();
 
   function handleClick() {
@@ -138,7 +109,7 @@ function AccountButton({ isLoggedIn }: { isLoggedIn: boolean }) {
       .delete('/session')
       .catch(_ => {})
       .finally(() => {
-        setLoggedOut();
+        setIsLoggedIn(false);
         router.replace('/');
       });
   }

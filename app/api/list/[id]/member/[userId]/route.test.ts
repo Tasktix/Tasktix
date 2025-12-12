@@ -63,7 +63,12 @@ describe('PATCH', () => {
         method: 'patch',
         body: JSON.stringify({ canAdd: false })
       }),
-      { params: { id: 'some-list-id', userId: MOCK_MEMBER.user.id } }
+      {
+        params: Promise.resolve({
+          id: 'some-list-id',
+          userId: MOCK_MEMBER.user.id
+        })
+      }
     );
 
     expect(response.status).toBe(200);
@@ -94,7 +99,12 @@ describe('PATCH', () => {
         method: 'patch',
         body: JSON.stringify({ canRemove: true })
       }),
-      { params: { id: 'some-list-id', userId: MOCK_MEMBER.user.id } }
+      {
+        params: Promise.resolve({
+          id: 'some-list-id',
+          userId: MOCK_MEMBER.user.id
+        })
+      }
     );
 
     expect(response.status).toBe(200);
@@ -125,7 +135,12 @@ describe('PATCH', () => {
         method: 'patch',
         body: JSON.stringify({ canComplete: false })
       }),
-      { params: { id: 'some-list-id', userId: MOCK_MEMBER.user.id } }
+      {
+        params: Promise.resolve({
+          id: 'some-list-id',
+          userId: MOCK_MEMBER.user.id
+        })
+      }
     );
 
     expect(response.status).toBe(200);
@@ -154,7 +169,12 @@ describe('PATCH', () => {
         method: 'patch',
         body: JSON.stringify({ canAssign: true })
       }),
-      { params: { id: 'some-list-id', userId: MOCK_MEMBER.user.id } }
+      {
+        params: Promise.resolve({
+          id: 'some-list-id',
+          userId: MOCK_MEMBER.user.id
+        })
+      }
     );
 
     expect(response.status).toBe(200);
@@ -190,7 +210,12 @@ describe('PATCH', () => {
           canAssign: true
         })
       }),
-      { params: { id: 'some-list-id', userId: MOCK_MEMBER.user.id } }
+      {
+        params: Promise.resolve({
+          id: 'some-list-id',
+          userId: MOCK_MEMBER.user.id
+        })
+      }
     );
 
     expect(response.status).toBe(200);
@@ -215,7 +240,12 @@ describe('PATCH', () => {
         method: 'patch',
         body: JSON.stringify({ canAdd: false })
       }),
-      { params: { id: 'some-list-id', userId: MOCK_MEMBER.user.id } }
+      {
+        params: Promise.resolve({
+          id: 'some-list-id',
+          userId: MOCK_MEMBER.user.id
+        })
+      }
     );
 
     expect(updateListMember).not.toHaveBeenCalled();
@@ -231,7 +261,12 @@ describe('PATCH', () => {
         method: 'patch',
         body: JSON.stringify({ canAdd: false })
       }),
-      { params: { id: 'some-list-id', userId: MOCK_MEMBER.user.id } }
+      {
+        params: Promise.resolve({
+          id: 'some-list-id',
+          userId: MOCK_MEMBER.user.id
+        })
+      }
     );
 
     expect(response.status).toBe(404);
@@ -248,7 +283,12 @@ describe('PATCH', () => {
         method: 'patch',
         body: JSON.stringify({ canAdd: false })
       }),
-      { params: { id: 'some-list-id', userId: MOCK_MEMBER.user.id } }
+      {
+        params: Promise.resolve({
+          id: 'some-list-id',
+          userId: MOCK_MEMBER.user.id
+        })
+      }
     );
 
     expect(response.status).toBe(404);
@@ -265,7 +305,12 @@ describe('PATCH', () => {
         method: 'patch',
         body: JSON.stringify({ invalidField: true })
       }),
-      { params: { id: 'some-list-id', userId: MOCK_MEMBER.user.id } }
+      {
+        params: Promise.resolve({
+          id: 'some-list-id',
+          userId: MOCK_MEMBER.user.id
+        })
+      }
     );
 
     expect(response.status).toBe(400);
@@ -283,7 +328,12 @@ describe('PATCH', () => {
         method: 'patch',
         body: JSON.stringify({ canAdd: false })
       }),
-      { params: { id: 'some-list-id', userId: MOCK_MEMBER.user.id } }
+      {
+        params: Promise.resolve({
+          id: 'some-list-id',
+          userId: MOCK_MEMBER.user.id
+        })
+      }
     );
 
     expect(response.status).toBe(500);

@@ -49,7 +49,7 @@ describe('PATCH', () => {
         method: 'patch',
         body: JSON.stringify({ username: 'new_name' })
       }),
-      { params: { id: MOCK_USER.id } }
+      { params: Promise.resolve({ id: MOCK_USER.id }) }
     );
 
     expect(response.status).toBe(200);
@@ -77,7 +77,7 @@ describe('PATCH', () => {
         method: 'patch',
         body: JSON.stringify({ email: 'new_email@example.com' })
       }),
-      { params: { id: MOCK_USER.id } }
+      { params: Promise.resolve({ id: MOCK_USER.id }) }
     );
 
     expect(response.status).toBe(200);
@@ -105,7 +105,7 @@ describe('PATCH', () => {
         method: 'patch',
         body: JSON.stringify({ color: 'Red' })
       }),
-      { params: { id: MOCK_USER.id } }
+      { params: Promise.resolve({ id: MOCK_USER.id }) }
     );
 
     expect(response.status).toBe(200);
@@ -137,7 +137,7 @@ describe('PATCH', () => {
           color: 'Red'
         })
       }),
-      { params: { id: MOCK_USER.id } }
+      { params: Promise.resolve({ id: MOCK_USER.id }) }
     );
 
     expect(response.status).toBe(200);
@@ -158,7 +158,7 @@ describe('PATCH', () => {
     (getUser as jest.Mock).mockReturnValue(false);
 
     const response = await PATCH(new Request(USER_PATH, { method: 'patch' }), {
-      params: { id: MOCK_USER.id }
+      params: Promise.resolve({ id: MOCK_USER.id })
     });
 
     expect(updateUser).not.toHaveBeenCalled();
@@ -170,7 +170,7 @@ describe('PATCH', () => {
 
     const response = await PATCH(
       new Request(USER_PATH.slice(0, -2), { method: 'patch' }),
-      { params: { id: MOCK_USER.id.slice(0, -2) } }
+      { params: Promise.resolve({ id: MOCK_USER.id.slice(0, -2) }) }
     );
 
     expect(response.status).toBe(403);
@@ -185,7 +185,7 @@ describe('PATCH', () => {
         method: 'patch',
         body: JSON.stringify({ password: 'new_password' })
       }),
-      { params: { id: MOCK_USER.id } }
+      { params: Promise.resolve({ id: MOCK_USER.id }) }
     );
 
     expect(response.status).toBe(400);
@@ -200,7 +200,7 @@ describe('PATCH', () => {
         method: 'patch',
         body: JSON.stringify({ username: 'invalid username' })
       }),
-      { params: { id: MOCK_USER.id } }
+      { params: Promise.resolve({ id: MOCK_USER.id }) }
     );
 
     expect(response.status).toBe(400);
@@ -215,7 +215,7 @@ describe('PATCH', () => {
         method: 'patch',
         body: JSON.stringify({ email: 'badEmail' })
       }),
-      { params: { id: MOCK_USER.id } }
+      { params: Promise.resolve({ id: MOCK_USER.id }) }
     );
 
     expect(response.status).toBe(400);
@@ -230,7 +230,7 @@ describe('PATCH', () => {
         method: 'patch',
         body: JSON.stringify({ color: 'badColor' })
       }),
-      { params: { id: MOCK_USER.id } }
+      { params: Promise.resolve({ id: MOCK_USER.id }) }
     );
 
     expect(response.status).toBe(400);

@@ -62,7 +62,7 @@ describe('POST', () => {
         method: 'post',
         body: JSON.stringify({ username: MOCK_NEW_USER.username })
       }),
-      { params: { id: 'some-list-id' } }
+      { params: Promise.resolve({ id: 'some-list-id' }) }
     );
 
     expect(response.status).toBe(200);
@@ -87,7 +87,7 @@ describe('POST', () => {
         method: 'post',
         body: JSON.stringify({ username: MOCK_NEW_USER.username })
       }),
-      { params: { id: 'some-list-id' } }
+      { params: Promise.resolve({ id: 'some-list-id' }) }
     );
 
     expect(createListMember).not.toHaveBeenCalled();
@@ -103,7 +103,7 @@ describe('POST', () => {
         method: 'post',
         body: JSON.stringify({ username: MOCK_NEW_USER.username })
       }),
-      { params: { id: 'some-list-id' } }
+      { params: Promise.resolve({ id: 'some-list-id' }) }
     );
 
     expect(response.status).toBe(404);
@@ -120,7 +120,7 @@ describe('POST', () => {
         method: 'post',
         body: JSON.stringify({ username: MOCK_NEW_USER.username })
       }),
-      { params: { id: 'some-list-id' } }
+      { params: Promise.resolve({ id: 'some-list-id' }) }
     );
 
     expect(response.status).toBe(404);
@@ -137,7 +137,7 @@ describe('POST', () => {
         method: 'post',
         body: JSON.stringify({ username: MOCK_NEW_USER.username })
       }),
-      { params: { id: 'some-list-id' } }
+      { params: Promise.resolve({ id: 'some-list-id' }) }
     );
 
     expect(response.status).toBe(409);
@@ -154,7 +154,7 @@ describe('POST', () => {
         method: 'post',
         body: JSON.stringify({ invalidField: true })
       }),
-      { params: { id: 'some-list-id' } }
+      { params: Promise.resolve({ id: 'some-list-id' }) }
     );
 
     expect(response.status).toBe(400);
@@ -173,7 +173,7 @@ describe('POST', () => {
         method: 'post',
         body: JSON.stringify({ username: MOCK_NEW_USER.username })
       }),
-      { params: { id: 'some-list-id' } }
+      { params: Promise.resolve({ id: 'some-list-id' }) }
     );
 
     expect(response.status).toBe(500);

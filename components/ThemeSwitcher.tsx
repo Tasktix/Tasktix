@@ -27,35 +27,20 @@ import {
   PopoverTrigger
 } from '@heroui/react';
 import { useTheme } from 'next-themes';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Display, MoonFill, SunFill } from 'react-bootstrap-icons';
 
 export default function ThemeSwitcher() {
-  const timer = useRef<NodeJS.Timeout>();
+  const timer = useRef<NodeJS.Timeout>(undefined);
   const { theme, setTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
-  const [themeIcon, setThemeIcon] = useState(
-    theme !== 'system'
-      ? theme
-      : window.matchMedia &&
-          window.matchMedia('(prefers-color-scheme: dark)').matches
-        ? 'dark'
-        : 'light'
-  );
 
-  useEffect(() => {
-    setThemeIcon(
-      theme !== 'system'
-        ? theme
-        : window.matchMedia &&
-            window.matchMedia('(prefers-color-scheme: dark)').matches
-          ? 'dark'
-          : 'light'
-    );
-  }, [theme]);
-
-  useEffect(() => setIsMounted(true), []);
+  const systemTheme =
+    window.matchMedia &&
+    window.matchMedia('(prefers-color-scheme: dark)').matches
+      ? 'dark'
+      : 'light';
+  const themeIcon = theme === 'system' ? systemTheme : theme;
 
   function handleMouse(isHovering: boolean) {
     if (isHovering) {
@@ -74,9 +59,9 @@ export default function ThemeSwitcher() {
           isIconOnly
           aria-label={`Set ${themeIcon === 'dark' ? 'light' : 'dark'} theme`}
           variant='ghost'
-          onClick={() => setTheme(themeIcon === 'dark' ? 'light' : 'dark')}
+          onPress={() => setTheme(themeIcon === 'dark' ? 'light' : 'dark')}
         >
-          {isMounted && themeIcon === 'dark' ? <SunFill /> : <MoonFill />}
+          {themeIcon === 'dark' ? <SunFill /> : <MoonFill />}
         </Button>
       </PopoverTrigger>
       <PopoverContent

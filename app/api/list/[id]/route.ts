@@ -30,17 +30,18 @@ const PatchBody = ZodList.omit({ id: true }).partial();
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const user = await getUser();
 
   if (!user) return ClientError.Unauthenticated('Not logged in');
 
-  const list = await getListById(params.id);
+  const list = await getListById(id);
 
   if (!list) return ClientError.NotFound('List not found');
 
-  const isMember = await getIsListAssignee(user.id, params.id);
+  const isMember = await getIsListAssignee(user.id, id);
 
   if (!isMember) return ClientError.BadRequest('List not found');
 
@@ -69,17 +70,18 @@ export async function PATCH(
 
 export async function DELETE(
   _: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const user = await getUser();
 
   if (!user) return ClientError.Unauthenticated('Not logged in');
 
-  const isMember = await getIsListAssignee(user.id, params.id);
+  const isMember = await getIsListAssignee(user.id, id);
 
   if (!isMember) return ClientError.BadRequest('List not found');
 
-  const result = await deleteList(params.id);
+  const result = await deleteList(id);
 
   if (!result) return ServerError.Internal('Could not delete list');
 

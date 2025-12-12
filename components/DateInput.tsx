@@ -57,6 +57,8 @@ export default function DateInput({
 
   // Respect the `value` prop if there is one
   useEffect(() => {
+    // This component is about to be replaced with HeroUI anyway:
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (value !== undefined) setDate(value);
   }, [value]);
 

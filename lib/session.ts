@@ -36,13 +36,13 @@ export async function setUser(userId: string): Promise<string | false> {
 
   if (!result) return false;
 
-  cookies().set('user', session.id, { expires: session.dateExpire });
+  (await cookies()).set('user', session.id, { expires: session.dateExpire });
 
   return session.id;
 }
 
 export async function getUser(): Promise<User | false> {
-  const sessionId = cookies().get('user')?.value;
+  const sessionId = (await cookies()).get('user')?.value;
 
   if (!sessionId) return false;
 
@@ -52,7 +52,7 @@ export async function getUser(): Promise<User | false> {
 }
 
 export async function clearUser(): Promise<boolean> {
-  const sessionId = cookies().get('user')?.value;
+  const sessionId = (await cookies()).get('user')?.value;
 
   if (!sessionId) return false;
 
@@ -60,7 +60,7 @@ export async function clearUser(): Promise<boolean> {
 
   if (!result) return false;
 
-  cookies().delete('user');
+  (await cookies()).delete('user');
 
   return true;
 }

@@ -39,17 +39,18 @@ const PatchBody = ZodListMember.omit({ listId: true, userId: true }).partial();
  */
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string; userId: string } }
+  { params }: { params: Promise<{ id: string; userId: string }> }
 ) {
+  const { id, userId } = await params;
   const user = await getUser();
 
   if (!user) return ClientError.Unauthenticated('Not logged in');
 
-  const isMember = await getIsListAssignee(user.id, params.id);
+  const isMember = await getIsListAssignee(user.id, id);
 
   if (!isMember) return ClientError.NotFound('List not found');
 
-  const member = await getListMember(params.userId, params.id);
+  const member = await getListMember(userId, id);
 
   if (!member) return ClientError.NotFound('Member not found');
 
@@ -68,7 +69,7 @@ export async function PATCH(
   if (requestBody.canRemove !== undefined)
     member.canRemove = requestBody.canRemove;
 
-  const result = await updateListMember(params.id, params.userId, member);
+  const result = await updateListMember(id, userId, member);
 
   if (!result) return ServerError.Internal('Could not update member');
 

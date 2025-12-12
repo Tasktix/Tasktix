@@ -23,17 +23,18 @@ import { getUser } from '@/lib/session';
 
 export async function POST(
   _: Request,
-  { params }: { params: { id: string; tagId: string } }
+  { params }: { params: Promise<{ id: string; tagId: string }> }
 ) {
+  const { id, tagId } = await params;
   const user = await getUser();
 
   if (!user) return ClientError.Unauthenticated('Not logged in');
 
-  const isMember = await getIsListAssigneeByItem(user.id, params.id);
+  const isMember = await getIsListAssigneeByItem(user.id, id);
 
   if (!isMember) return ClientError.BadRequest('List item not found');
 
-  const result = await linkTag(params.id, params.tagId);
+  const result = await linkTag(id, tagId);
 
   if (!result) return ServerError.Internal('Could not add tag');
 
@@ -42,17 +43,18 @@ export async function POST(
 
 export async function DELETE(
   _: Request,
-  { params }: { params: { id: string; tagId: string } }
+  { params }: { params: Promise<{ id: string; tagId: string }> }
 ) {
+  const { id, tagId } = await params;
   const user = await getUser();
 
   if (!user) return ClientError.Unauthenticated('Not logged in');
 
-  const isMember = await getIsListAssigneeByItem(user.id, params.id);
+  const isMember = await getIsListAssigneeByItem(user.id, id);
 
   if (!isMember) return ClientError.BadRequest('List not found');
 
-  const result = await unlinkTag(params.id, params.tagId);
+  const result = await unlinkTag(id, tagId);
 
   if (!result) return ServerError.Internal('Could not remove tag');
 

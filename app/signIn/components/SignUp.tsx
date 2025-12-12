@@ -29,7 +29,7 @@ import {
   validatePassword
 } from '@/lib/validate';
 import { default as api } from '@/lib/api';
-import { setLoggedIn } from '@/app/body';
+import { useAuth } from '@/components/AuthProvider';
 
 import {
   getUsernameMessage,
@@ -43,6 +43,8 @@ export default function SignUp() {
     email: InputMessage;
     password: InputMessage;
   }
+
+  const { setIsLoggedIn } = useAuth();
 
   const defaultMessage: InputMessage = { message: '', color: 'default' };
 
@@ -101,7 +103,7 @@ export default function SignUp() {
             password: inputs.password
           })
           .then(() => {
-            setLoggedIn();
+            setIsLoggedIn(true);
             router.replace('/list');
           })
           .catch(err => {

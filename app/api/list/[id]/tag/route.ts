@@ -25,13 +25,14 @@ const PostBody = ZodTag.omit({ id: true });
 
 export async function POST(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const user = await getUser();
 
   if (!user) return ClientError.Unauthenticated('Not logged in');
 
-  const isMember = await getIsListAssignee(user.id, params.id);
+  const isMember = await getIsListAssignee(user.id, id);
 
   if (!isMember) return ClientError.BadRequest('List not found');
 
@@ -47,9 +48,9 @@ export async function POST(
 
   const tag = new Tag(name, color);
 
-  const result = await createTag(params.id, tag);
+  const result = await createTag(id, tag);
 
   if (!result) return ServerError.Internal('Could not create tag');
 
-  return Success.Created('Tag created', `/item/${params.id}/tag/${tag.id}`);
+  return Success.Created('Tag created', `/item/${id}/tag/${tag.id}`);
 }
