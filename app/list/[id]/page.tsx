@@ -26,9 +26,14 @@ import {
 import List from '@/components/List';
 import { getUser } from '@/lib/session';
 
-export default async function Page({ params }: { params: { id: string } }) {
-  const list = await getListById(params.id);
-  const tagsAvailable = await getTagsByListId(params.id);
+export default async function Page({
+  params
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const list = await getListById(id);
+  const tagsAvailable = await getTagsByListId(id);
 
   const user = await getUser();
 

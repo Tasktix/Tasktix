@@ -16,29 +16,38 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { Metadata } from 'next';
+'use client';
 
-import Body from '@/app/body';
-import { getUser } from '@/lib/session';
+import { createContext, useContext, useState, ReactNode } from 'react';
 
-import { Providers } from './providers';
-import './globals.css';
+interface AuthContextType {
+  isLoggedIn: boolean;
+  setIsLoggedIn: (loggedIn: boolean) => void;
+}
 
-export const metadata: Metadata = {
-  title: 'Tasktix',
-  description: 'For all your to-do needs!'
-} as const;
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export default async function RootLayout({
-  children
-}: Readonly<{ children: React.ReactNode }>) {
+export function AuthProvider({
+  children,
+  isLoggedInAtStart
+}: {
+  children: ReactNode;
+  isLoggedInAtStart: boolean;
+}) {
+  const [isLoggedIn, setIsLoggedIn] = useState(isLoggedInAtStart);
+
   return (
-    <html suppressHydrationWarning lang='en'>
-      <body>
-        <Providers isLoggedInAtStart={Boolean(await getUser())}>
-          <Body>{children}</Body>
-        </Providers>
-      </body>
-    </html>
+    <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn }}>
+      {children}
+    </AuthContext.Provider>
   );
+}
+
+// Custom hook for consuming context
+export function useAuth() {
+  const context = useContext(AuthContext);
+
+  if (!context) throw new Error('useAuth must be used within an AuthProvider');
+
+  return context;
 }

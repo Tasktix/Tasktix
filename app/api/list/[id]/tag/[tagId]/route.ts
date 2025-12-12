@@ -30,17 +30,18 @@ const PatchBody = ZodTag.omit({ id: true }).partial();
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string; tagId: string } }
+  { params }: { params: Promise<{ id: string; tagId: string }> }
 ) {
+  const { id, tagId } = await params;
   const user = await getUser();
 
   if (!user) return ClientError.Unauthenticated('Not logged in');
 
-  const isMember = await getIsListAssignee(user.id, params.id);
+  const isMember = await getIsListAssignee(user.id, id);
 
   if (!isMember) return ClientError.BadRequest('List not found');
 
-  const tag = await getTagById(params.tagId);
+  const tag = await getTagById(tagId);
 
   // TODO: need to handle security gap: editing someone else's tag
   if (!tag) return ClientError.BadRequest('Tag not found');
@@ -64,17 +65,18 @@ export async function PATCH(
 
 export async function DELETE(
   _: Request,
-  { params }: { params: { id: string; tagId: string } }
+  { params }: { params: Promise<{ id: string; tagId: string }> }
 ) {
+  const { id, tagId } = await params;
   const user = await getUser();
 
   if (!user) return ClientError.Unauthenticated('Not logged in');
 
-  const isMember = await getIsListAssignee(user.id, params.id);
+  const isMember = await getIsListAssignee(user.id, id);
 
   if (!isMember) return ClientError.BadRequest('List not found');
 
-  const result = await deleteTag(params.tagId);
+  const result = await deleteTag(tagId);
 
   if (!result) return ServerError.Internal('Could not remove tag');
 

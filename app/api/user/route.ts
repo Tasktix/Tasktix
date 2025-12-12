@@ -25,7 +25,7 @@ import {
 import User, { ZodUser } from '@/lib/model/user';
 import { hash } from '@/lib/security/hash';
 
-export const dynamic = 'force-dynamic' as const; // defaults to auto
+export const dynamic = 'force-dynamic'; // defaults to auto
 
 const PostBody = ZodUser.omit({ id: true, color: true });
 
