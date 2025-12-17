@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@emotion/is-prop-valid": "^1.4.0",
-    "@heroui/react": "2.8.5",
+    "@heroui/react": "^2.8.5",
     "@heroui/theme": "^2.4.23",
     "@prisma/client": "^6.19.0",
     "@tailwindcss/postcss": "^4.1.16",
