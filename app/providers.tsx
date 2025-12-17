@@ -22,7 +22,7 @@ import { ThemeProvider } from 'next-themes';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 
-import { AuthProvider } from '@/components/AuthProvider';
+import AuthProvider from '@/components/AuthProvider';
 
 export function Providers({
   children,

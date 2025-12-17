@@ -16,34 +16,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-'use client';
+import { useContext } from 'react';
 
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { AuthContext } from './authContext';
 
-interface AuthContextType {
-  isLoggedIn: boolean;
-  setIsLoggedIn: (loggedIn: boolean) => void;
-}
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-export function AuthProvider({
-  children,
-  isLoggedInAtStart
-}: {
-  children: ReactNode;
-  isLoggedInAtStart: boolean;
-}) {
-  const [isLoggedIn, setIsLoggedIn] = useState(isLoggedInAtStart);
-
-  return (
-    <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn }}>
-      {children}
-    </AuthContext.Provider>
-  );
-}
-
-// Custom hook for consuming context
 export function useAuth() {
   const context = useContext(AuthContext);
 
