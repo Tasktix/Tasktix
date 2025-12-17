@@ -19,7 +19,8 @@
  */
 
 const nextConfig = {
-  output: 'standalone'
+  output: 'standalone',
+  reactCompiler: true
 };
 
 export default nextConfig;
