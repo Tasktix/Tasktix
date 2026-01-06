@@ -98,7 +98,7 @@ export default function StaticListItem({
 
   today.setHours(0, 0, 0, 0);
 
-  const timer = useRef<NodeJS.Timeout>();
+  const timer = useRef<NodeJS.Timeout>(undefined);
   const updateTime = useRef(() => {});
   const lastTime = useRef(new Date());
   const [elapsedLive, setElapsedLive] = useState(

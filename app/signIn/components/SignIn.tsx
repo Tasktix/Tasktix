@@ -23,9 +23,10 @@ import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { default as api } from '@/lib/api';
-import { setLoggedIn } from '@/app/body';
+import { useAuth } from '@/components/AuthProvider';
 
 export default function SignIn() {
+  const { setIsLoggedIn } = useAuth();
   const [inputs, setInputs] = useState({ username: '', password: '' });
   const router = useRouter();
 
@@ -42,7 +43,7 @@ export default function SignIn() {
     api
       .post('/session', inputs)
       .then(() => {
-        setLoggedIn();
+        setIsLoggedIn(true);
         router.replace('/list');
       })
       .catch(err =>

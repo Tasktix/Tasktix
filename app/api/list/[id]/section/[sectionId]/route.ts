@@ -29,13 +29,14 @@ const PatchBody = ZodListSection.omit({ id: true });
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string; sectionId: string } }
+  { params }: { params: Promise<{ id: string; sectionId: string }> }
 ) {
+  const { id, sectionId } = await params;
   const user = await getUser();
 
   if (!user) return ClientError.Unauthenticated('Not logged in');
 
-  const isMember = await getIsListAssignee(user.id, params.id);
+  const isMember = await getIsListAssignee(user.id, id);
 
   if (!isMember) return ClientError.BadRequest('List not found');
 
@@ -47,9 +48,8 @@ export async function PATCH(
   const requestBody = parseResult.data;
 
   const name = requestBody.name;
-  const id = params.sectionId;
 
-  const result = await updateListSection(id, name);
+  const result = await updateListSection(sectionId, name);
 
   if (!result) return ServerError.Internal('Could not rename section');
 
@@ -58,17 +58,18 @@ export async function PATCH(
 
 export async function DELETE(
   _: Request,
-  { params }: { params: { id: string; sectionId: string } }
+  { params }: { params: Promise<{ id: string; sectionId: string }> }
 ) {
+  const { id, sectionId } = await params;
   const user = await getUser();
 
   if (!user) return ClientError.Unauthenticated('Not logged in');
 
-  const isMember = await getIsListAssignee(user.id, params.id);
+  const isMember = await getIsListAssignee(user.id, id);
 
   if (!isMember) return ClientError.BadRequest('List not found');
 
-  const result = await deleteListSection(params.sectionId);
+  const result = await deleteListSection(sectionId);
 
   if (!result) return ServerError.Internal('Could not delete section');
 

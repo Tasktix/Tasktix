@@ -22,7 +22,15 @@ import { ThemeProvider } from 'next-themes';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 
-export function Providers({ children }: { children: React.ReactNode }) {
+import AuthProvider from '@/components/AuthProvider';
+
+export function Providers({
+  children,
+  isLoggedInAtStart
+}: {
+  children: React.ReactNode;
+  isLoggedInAtStart: boolean;
+}) {
   const router = useRouter();
 
   // Defer importing HeroUIProvider to client
@@ -36,7 +44,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <HeroUIProvider navigate={router.push.bind(router)}>
       <ThemeProvider attribute='class' defaultTheme='system'>
-        {children}
+        <AuthProvider isLoggedInAtStart={isLoggedInAtStart}>
+          {children}
+        </AuthProvider>
       </ThemeProvider>
     </HeroUIProvider>
   );

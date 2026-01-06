@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { Button, Popover, PopoverContent, PopoverTrigger } from '@heroui/react';
 import { Check } from 'react-bootstrap-icons';
 
@@ -36,9 +36,7 @@ export default function ExpectedInput({
   const [value, setValue] = useState(ms ?? 0);
   const [isOpen, setIsOpen] = useState(false);
 
-  useEffect(() => setValue(ms ?? 0), [ms]);
-
-  function _updateTime(e: FormEvent<HTMLFormElement>) {
+  function handleTimeSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     updateMs(value);
     setIsOpen(false);
@@ -49,13 +47,16 @@ export default function ExpectedInput({
       isOpen={isOpen}
       placement='bottom'
       onOpenChange={open => {
-        if (!disabled) setIsOpen(open);
+        if (disabled) return;
+
+        if (open) setValue(ms ?? 0);
+        setIsOpen(open);
       }}
     >
       <PopoverTrigger className='-mr-2 -my-3 -px-2 relative top-3'>
         <Button
           isIconOnly
-          className={`w-fit !px-2 bg-transparent p-0 ${disabled ? '' : 'hover:bg-foreground/10'}`}
+          className={`w-fit px-2! bg-transparent p-0 ${disabled ? '' : 'hover:bg-foreground/10'}`}
           disabled={disabled}
           tabIndex={0}
         >
@@ -65,7 +66,7 @@ export default function ExpectedInput({
       <PopoverContent className='p-3'>
         <form
           className='flex flex-row items-center gap-2'
-          onSubmit={_updateTime}
+          onSubmit={handleTimeSubmit}
         >
           <TimeInput
             className='w-12 grow-0'
