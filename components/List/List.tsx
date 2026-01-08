@@ -70,6 +70,7 @@ export default function List({
         <SearchBar inputOptions={filterOptions} onValueChange={setFilters} />
         <ListSettings
           addNewTag={listHandlers.addNewTag}
+          dispatchList={dispatchList}
           hasDueDates={list.hasDueDates}
           hasTimeTracking={list.hasTimeTracking}
           isAutoOrdered={list.isAutoOrdered}
@@ -77,24 +78,7 @@ export default function List({
           listId={list.id}
           listName={list.name}
           members={list.members}
-          setHasDueDates={hasDueDates =>
-            dispatchList({ type: 'SetHasDueDates', hasDueDates })
-          }
-          setHasTimeTracking={hasTimeTracking =>
-            dispatchList({ type: 'SetHasTimeTracking', hasTimeTracking })
-          }
-          setIsAutoOrdered={isAutoOrdered =>
-            dispatchList({ type: 'SetIsAutoOrdered', isAutoOrdered })
-          }
-          setListColor={color => dispatchList({ type: 'SetListColor', color })}
-          setListName={name => {
-            dispatchList({ type: 'SetListName', name });
-            window.location.reload();
-          }}
-          setMembers={members => dispatchList({ type: 'SetMembers', members })}
-          setTagsAvailable={tags =>
-            dispatchList({ type: 'SetTagsAvailable', tags })
-          }
+          setListName={listHandlers.setName}
           tagsAvailable={tagsAvailable}
         />
       </span>

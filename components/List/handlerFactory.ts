@@ -29,6 +29,16 @@ export function listHandlerFactory(
   listId: string,
   dispatchList: ActionDispatch<[action: ListAction]>
 ) {
+  function setName(name: string) {
+    api
+      .patch(`/list/${listId}`, { name })
+      .then(() => {
+        dispatchList({ type: 'SetListName', name });
+        window.location.reload();
+      })
+      .catch(err => addToast({ title: err.message, color: 'danger' }));
+  }
+
   function addNewTag(name: string, color: NamedColor): Promise<string> {
     return new Promise((resolve, reject) => {
       api
@@ -71,6 +81,7 @@ export function listHandlerFactory(
   }
 
   return {
+    setName,
     addNewTag,
     deleteListSection
   };
