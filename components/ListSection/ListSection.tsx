@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { useState } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import {
   ChevronContract,
   ChevronExpand,
@@ -31,10 +31,15 @@ import {
   DropdownMenu,
   DropdownTrigger
 } from '@heroui/react';
-import { AnimatePresence, motion, Reorder } from 'framer-motion';
+import {
+  AnimatePresence,
+  motion,
+  Reorder,
+  useDragControls
+} from 'framer-motion';
 
-import { ListItem, StaticListItem } from '@/components/ListItem';
-import AddItem from '@/components/List/AddItem';
+import ListItem from '@/components/ListItem';
+import AddItem from '@/components/ListSection/AddItem';
 import ListItemModel from '@/lib/model/listItem';
 import { NamedColor } from '@/lib/model/color';
 import Tag from '@/lib/model/tag';
@@ -98,42 +103,6 @@ export default function ListSection({
     !items.reduce((prev, curr) => prev || curr.status !== 'Completed', false)
   );
 
-  function setStatus(
-    id: string,
-    status: ListItemModel['status'],
-    dateCompleted?: ListItemModel['dateCompleted']
-  ) {
-    const newItems = structuredClone(items);
-
-    for (const item of newItems)
-      if (item.id === id) {
-        item.status = status;
-        if (dateCompleted !== undefined) item.dateCompleted = dateCompleted;
-      }
-    setItems(newItems);
-  }
-
-  function updateExpectedMs(id: string, ms: number) {
-    const newItems = structuredClone(items);
-
-    for (const item of newItems) if (item.id === id) item.expectedMs = ms;
-    setItems(newItems);
-  }
-
-  function updatePriority(id: string, priority: ListItemModel['priority']) {
-    const newItems = structuredClone(items);
-
-    for (const item of newItems) if (item.id === id) item.priority = priority;
-    setItems(newItems);
-  }
-
-  function updateDueDate(id: string, date: Date) {
-    const newItems = structuredClone(items);
-
-    for (const item of newItems) if (item.id === id) item.dateDue = date;
-    setItems(newItems);
-  }
-
   function addItem(item: ListItemModel) {
     const newItems = structuredClone(items);
 
@@ -180,14 +149,6 @@ export default function ListSection({
         setItems(newItems);
       })
       .catch(err => addToast({ title: err.message, color: 'danger' }));
-  }
-
-  function deleteItem(id: string) {
-    const newItems = structuredClone(items);
-
-    for (let i = 0; i < newItems.length; i++)
-      if (newItems[i].id === id) newItems.splice(i, 1);
-    setItems(newItems);
   }
 
   return (
@@ -256,66 +217,152 @@ export default function ListSection({
               open: { height: 'auto' },
               collapsed: { height: 0 }
             }}
-          >
-            {isAutoOrdered ? (
-              items
-                .filter(item => checkItemFilter(item, filters))
-                .sort(sortItems.bind(null, hasTimeTracking, hasDueDates))
-                .map(item => (
-                  <StaticListItem
-                    key={item.id}
-                    addNewTag={addNewTag}
-                    deleteItem={deleteItem.bind(null, item.id)}
-                    hasDueDates={hasDueDates}
-                    hasTimeTracking={hasTimeTracking}
-                    item={item}
-                    members={members}
-                    setCompleted={setStatus.bind(null, item.id, 'Completed')}
-                    setPaused={() => setStatus(item.id, 'Paused')}
-                    setStatus={setStatus.bind(null, item.id)}
-                    tagsAvailable={tagsAvailable}
-                    updateDueDate={updateDueDate.bind(null, item.id)}
-                    updateExpectedMs={updateExpectedMs.bind(null, item.id)}
-                    updatePriority={updatePriority.bind(null, item.id)}
-                  />
-                ))
-            ) : (
-              <Reorder.Group
-                axis='y'
-                values={items}
-                onReorder={items => setItems(items.sort(sortItemsByCompleted))}
-              >
-                {items
-                  .filter(item => checkItemFilter(item, filters))
-                  .map(item => (
-                    <ListItem
-                      key={item.id}
-                      addNewTag={addNewTag}
-                      deleteItem={deleteItem.bind(null, item.id)}
-                      hasDueDates={hasDueDates}
-                      hasTimeTracking={hasTimeTracking}
-                      item={item}
-                      members={members}
-                      reorder={reorderItem.bind(
-                        null,
-                        item,
-                        item.visualIndex || 0
-                      )}
-                      setCompleted={setStatus.bind(null, item.id, 'Completed')}
-                      setPaused={() => setStatus(item.id, 'Paused')}
-                      setStatus={setStatus.bind(null, item.id)}
-                      tagsAvailable={tagsAvailable}
-                      updateDueDate={updateDueDate.bind(null, item.id)}
-                      updateExpectedMs={updateExpectedMs.bind(null, item.id)}
-                      updatePriority={updatePriority.bind(null, item.id)}
-                    />
-                  ))}
-              </Reorder.Group>
-            )}
-          </motion.section>
+          />
         )}
+        <SectionBody
+          addNewTag={addNewTag}
+          filters={filters}
+          hasDueDates={hasDueDates}
+          hasTimeTracking={hasTimeTracking}
+          isAutoOrdered={isAutoOrdered}
+          items={items}
+          members={members}
+          reorderItem={reorderItem}
+          setItems={setItems}
+          tagsAvailable={tagsAvailable}
+        />
       </AnimatePresence>
     </div>
+  );
+}
+
+function SectionBody({
+  items,
+  filters,
+  members,
+  tagsAvailable,
+  hasTimeTracking,
+  hasDueDates,
+  isAutoOrdered,
+  setItems,
+  reorderItem,
+  addNewTag
+}: {
+  items: Item[];
+  filters: Filters;
+  members: ListMember[];
+  tagsAvailable: Tag[];
+  hasTimeTracking: boolean;
+  hasDueDates: boolean;
+  isAutoOrdered: boolean;
+  setItems: Dispatch<SetStateAction<Item[]>>;
+  reorderItem: (item: ListItemModel, lastVisualIndex: number) => unknown;
+  addNewTag: (name: string, color: NamedColor) => Promise<string>;
+}) {
+  const controls = useDragControls();
+
+  function setStatus(
+    id: string,
+    status: ListItemModel['status'],
+    dateCompleted?: ListItemModel['dateCompleted']
+  ) {
+    const newItems = structuredClone(items);
+
+    for (const item of newItems)
+      if (item.id === id) {
+        item.status = status;
+        if (dateCompleted !== undefined) item.dateCompleted = dateCompleted;
+      }
+    setItems(newItems);
+  }
+
+  function updateExpectedMs(id: string, ms: number) {
+    const newItems = structuredClone(items);
+
+    for (const item of newItems) if (item.id === id) item.expectedMs = ms;
+    setItems(newItems);
+  }
+
+  function updatePriority(id: string, priority: ListItemModel['priority']) {
+    const newItems = structuredClone(items);
+
+    for (const item of newItems) if (item.id === id) item.priority = priority;
+    setItems(newItems);
+  }
+
+  function updateDueDate(id: string, date: Date) {
+    const newItems = structuredClone(items);
+
+    for (const item of newItems) if (item.id === id) item.dateDue = date;
+    setItems(newItems);
+  }
+
+  function deleteItem(id: string) {
+    const newItems = structuredClone(items);
+
+    for (let i = 0; i < newItems.length; i++)
+      if (newItems[i].id === id) newItems.splice(i, 1);
+    setItems(newItems);
+  }
+
+  return isAutoOrdered ? (
+    items
+      .filter(item => checkItemFilter(item, filters))
+      .sort(sortItems.bind(null, hasTimeTracking, hasDueDates))
+      .map(item => (
+        <ListItem
+          key={item.id}
+          addNewTag={addNewTag}
+          deleteItem={deleteItem.bind(null, item.id)}
+          hasDueDates={hasDueDates}
+          hasTimeTracking={hasTimeTracking}
+          item={item}
+          members={members}
+          setCompleted={setStatus.bind(null, item.id, 'Completed')}
+          setPaused={() => setStatus(item.id, 'Paused')}
+          setStatus={setStatus.bind(null, item.id)}
+          tagsAvailable={tagsAvailable}
+          updateDueDate={updateDueDate.bind(null, item.id)}
+          updateExpectedMs={updateExpectedMs.bind(null, item.id)}
+          updatePriority={updatePriority.bind(null, item.id)}
+        />
+      ))
+  ) : (
+    <Reorder.Group
+      axis='y'
+      values={items}
+      onReorder={items => setItems(items.sort(sortItemsByCompleted))}
+    >
+      {items
+        .filter(item => checkItemFilter(item, filters))
+        .map(item => (
+          <Reorder.Item
+            key={item.id}
+            className='border-b-1 border-content3 last:border-b-0'
+            dragControls={controls}
+            dragListener={false}
+            value={item}
+            onDragEnd={reorderItem.bind(null, item, item.visualIndex || 0)}
+          >
+            <ListItem
+              key={item.id}
+              addNewTag={addNewTag}
+              deleteItem={deleteItem.bind(null, item.id)}
+              hasDueDates={hasDueDates}
+              hasTimeTracking={hasTimeTracking}
+              item={item}
+              members={members}
+              setCompleted={setStatus.bind(null, item.id, 'Completed')}
+              setPaused={() => setStatus(item.id, 'Paused')}
+              setStatus={setStatus.bind(null, item.id)}
+              tagsAvailable={tagsAvailable}
+              updateDueDate={updateDueDate.bind(null, item.id)}
+              updateExpectedMs={updateExpectedMs.bind(null, item.id)}
+              updatePriority={updatePriority.bind(null, item.id)}
+            />
+          </Reorder.Item>
+        ))}
+    </Reorder.Group>
   );
 }
 
