@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useReducer, useRef, useState } from 'react';
 import { addToast, Checkbox, Chip } from '@heroui/react';
 import { DragControls } from 'framer-motion';
 import { CardChecklist, GripVertical } from 'react-bootstrap-icons';
@@ -34,6 +34,7 @@ import { getBackgroundColor, getTextColor } from '@/lib/color';
 import DateInput from '../DateInput';
 import ConfirmedTextInput from '../ConfirmedTextInput';
 
+import itemReducer from './itemReducer';
 import ExpectedInput from './ExpectedInput';
 import ElapsedInput from './ElapsedInput';
 import More from './More';
@@ -41,6 +42,8 @@ import Priority from './Priority';
 import Tags from './Tags';
 import TimeButton from './TimeButton';
 import Users from './Users';
+import { itemHandlerFactory } from './handlerFactory';
+import { SetItem } from './types';
 
 interface StaticListItemParams {
   item: ListItemModel;
@@ -51,7 +54,7 @@ interface StaticListItemParams {
   hasDueDates: boolean;
   reorderControls?: DragControls;
   setStatus: (status: ListItemModel['status']) => unknown;
-  updateDueDate: (date: Date) => unknown;
+  updateDueDate: (date: ListItemModel['dateDue']) => unknown;
   updatePriority: (priority: ListItemModel['priority']) => unknown;
   deleteItem: () => unknown;
   setPaused: () => unknown;
@@ -60,24 +63,8 @@ interface StaticListItemParams {
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
 }
 
-interface SetItem {
-  name: (name: string) => void;
-  dueDate: (date: Date) => void;
-  priority: (priority: ListItemModel['priority']) => void;
-  complete: () => void;
-  incomplete: () => void;
-  expectedMs: (ms: number) => void;
-  startedRunning: () => void;
-  pausedRunning: () => void;
-  resetTime: () => void;
-  linkedTag: (id: string) => void;
-  linkedNewTag: (id: string, name: string, color: NamedColor) => void;
-  unlinkedTag: (id: string) => void;
-  deleted: () => void;
-}
-
 export default function ListItem({
-  item: item,
+  item,
   list,
   members,
   tagsAvailable,
@@ -105,8 +92,27 @@ export default function ListItem({
     item.elapsedMs +
       (item.dateStarted ? Date.now() - item.dateStarted.getTime() : 0)
   );
-  const [_item, _setItem] = useState(item);
-  const [tags, setTags] = useState<Tag[]>(item.tags);
+
+  const [_item, dispatchItem] = useReducer(itemReducer, item);
+
+  const itemHandlers = itemHandlerFactory(
+    item.id,
+    {
+      timer,
+      lastTime,
+      elapsedLive,
+      setElapsedLive,
+      stopRunning: _stopRunning
+    },
+    tagsAvailable,
+    dispatchItem,
+    updateDueDate,
+    updatePriority,
+    setPaused,
+    setCompleted,
+    updateExpectedMs,
+    deleteItem
+  );
 
   /**
    * Functions that
@@ -115,116 +121,6 @@ export default function ListItem({
    *    - Propagate changes to the parent
    */
   const set: SetItem = {
-    name: (name: string): void => {
-      api
-        .patch(`/item/${_item.id}`, { name })
-        .then(() => {
-          // Update the internal state
-          const newItem = structuredClone(_item);
-
-          newItem.name = name;
-          _setItem(newItem);
-        })
-        .catch(err => addToast({ title: err.message, color: 'danger' }));
-    },
-
-    dueDate: (date: Date): void => {
-      api
-        .patch(`/item/${_item.id}`, { dateDue: date })
-        .then(() => {
-          // Update the internal state
-          const newItem = structuredClone(_item);
-
-          newItem.dateDue = date;
-          _setItem(newItem);
-
-          // Send parent the update for reordering items
-          updateDueDate(date);
-        })
-        .catch(err => addToast({ title: err.message, color: 'danger' }));
-    },
-
-    priority: (priority: ListItemModel['priority']): void => {
-      api
-        .patch(`/item/${_item.id}`, { priority })
-        .then(() => {
-          // Update the internal state
-          const newItem = structuredClone(_item);
-
-          newItem.priority = priority;
-          _setItem(newItem);
-
-          // Send parent the update for reordering items
-          updatePriority(priority);
-        })
-        .catch(err => addToast({ title: err.message, color: 'danger' }));
-    },
-
-    incomplete: () => {
-      api
-        .patch(`/item/${_item.id}`, { status: 'Paused', dateCompleted: null })
-        .then(() => {
-          // Update the internal state
-          const newItem = structuredClone(_item);
-
-          newItem.status = 'Paused';
-          newItem.dateCompleted = null;
-          _setItem(newItem);
-
-          // Send parent the update for reordering items
-          setPaused();
-        })
-        .catch(err => addToast({ title: err.message, color: 'danger' }));
-    },
-
-    complete: () => {
-      // Store time before starting POST request to ensure it's accurate
-      const dateCompleted = new Date();
-      const newElapsed = timer.current
-        ? elapsedLive + (Date.now() - lastTime.current.getTime())
-        : 0;
-
-      api
-        .patch(`/item/${_item.id}`, {
-          status: 'Completed',
-          dateCompleted,
-          dateStarted: null,
-          elapsedMs: newElapsed
-        })
-        .then(() => {
-          _stopRunning();
-          // Ensure time is accurate since user stopped time before POST request
-          if (newElapsed) setElapsedLive(newElapsed);
-
-          // Update the internal state
-          const newItem = structuredClone(_item);
-
-          newItem.status = 'Completed';
-          newItem.dateCompleted = dateCompleted;
-          _setItem(newItem);
-
-          // Send parent the update for reordering items
-          setCompleted(dateCompleted);
-        })
-        .catch(err => addToast({ title: err.message, color: 'danger' }));
-    },
-
-    expectedMs: (ms: number) => {
-      api
-        .patch(`/item/${item.id}`, { expectedMs: ms })
-        .then(() => {
-          // Update the internal state
-          const newItem = structuredClone(_item);
-
-          newItem.expectedMs = ms;
-          _setItem(newItem);
-
-          // Send parent the update for reordering items
-          updateExpectedMs(ms);
-        })
-        .catch(err => addToast({ title: err.message, color: 'danger' }));
-    },
-
     startedRunning: () => {
       const startedDate = new Date();
 
@@ -243,10 +139,7 @@ export default function ListItem({
           );
 
           // Update the internal state
-          const newItem = structuredClone(_item);
-
-          newItem.status = 'In_Progress';
-          _setItem(newItem);
+          dispatchItem({ type: 'StartTime' });
 
           // Send parent the update for reordering items
           setStatus('In_Progress');
@@ -271,10 +164,7 @@ export default function ListItem({
           setElapsedLive(newElapsed);
 
           // Update the internal state
-          const newItem = structuredClone(_item);
-
-          newItem.status = 'Paused';
-          _setItem(newItem);
+          dispatchItem({ type: 'PauseTime' });
 
           // Send parent the update for reordering items
           setStatus('Paused');
@@ -294,66 +184,10 @@ export default function ListItem({
           setElapsedLive(0);
 
           // Update the internal state
-          const newItem = structuredClone(_item);
-
-          newItem.status = status;
-          _setItem(newItem);
+          dispatchItem({ type: 'ResetTime', status });
 
           // Send parent the update for reordering items
           setStatus(status);
-        })
-        .catch(err => addToast({ title: err.message, color: 'danger' }));
-    },
-
-    linkedTag: (id: string) => {
-      api
-        .post(`/item/${_item.id}/tag/${id}`, {})
-        .then(() => {
-          // Update the internal state
-          const newTags = structuredClone(tags);
-
-          const tag = tagsAvailable?.find(tag => tag.id === id);
-
-          if (!tag) throw new Error(`Could not find tag with id ${id}`);
-
-          newTags.push(new Tag(tag.name, tag.color, id));
-
-          setTags(newTags);
-        })
-        .catch(err => addToast({ title: err.message, color: 'danger' }));
-    },
-
-    linkedNewTag: (id: string, name: string, color: NamedColor) => {
-      const newTags = structuredClone(tags);
-
-      newTags.push(new Tag(name, color, id));
-
-      setTags(newTags);
-    },
-
-    unlinkedTag: (id: string) => {
-      api
-        .delete(`/item/${_item.id}/tag/${id}`)
-        .then(() => {
-          // Update the internal state
-          const newTags = structuredClone(tags);
-
-          for (let i = 0; i < newTags.length; i++)
-            if (newTags[i].id === id) newTags.splice(i, 1);
-          setTags(newTags);
-        })
-        .catch(err => addToast({ title: err.message, color: 'danger' }));
-    },
-
-    deleted: () => {
-      api
-        .delete(`/item/${_item.id}`)
-        .then(res => {
-          // Send parent the update to remove this component
-          deleteItem();
-
-          // Let the user know we succeeded
-          addToast({ title: res.message, color: 'success' });
         })
         .catch(err => addToast({ title: err.message, color: 'danger' }));
     }
@@ -409,8 +243,8 @@ export default function ListItem({
           isSelected={_item.status === 'Completed'}
           tabIndex={0}
           onChange={e => {
-            if (e.target.checked) set.complete();
-            else set.incomplete();
+            if (e.target.checked) itemHandlers.setComplete();
+            else itemHandlers.setIncomplete();
           }}
         />
 
@@ -424,7 +258,7 @@ export default function ListItem({
               <span className={`-ml-1 flex ${hasDueDates || 'mt-1'}`}>
                 <ConfirmedTextInput
                   className='shrink'
-                  updateValue={set.name}
+                  updateValue={itemHandlers.setName}
                   value={_item.name}
                   variant='underlined'
                 />
@@ -451,7 +285,7 @@ export default function ListItem({
                     : 'Set due date'
                 }
                 value={_item.dateDue || new Date()}
-                onValueChange={set.dueDate}
+                onValueChange={itemHandlers.setDueDate}
               />
             ) : null}
           </div>
@@ -474,18 +308,22 @@ export default function ListItem({
         <Priority
           isComplete={_item.status === 'Completed'}
           priority={_item.priority}
-          setPriority={set.priority}
+          setPriority={itemHandlers.setPriority}
         />
 
         <Tags
           addNewTag={addNewTag}
           className='hidden lg:flex'
           isComplete={_item.status === 'Completed'}
-          linkNewTag={set.linkedNewTag}
-          linkTag={set.linkedTag}
-          tags={tagsAvailable.filter(tag => tags.find(t => tag.id === t.id))}
+          linkNewTag={(id, name, color) =>
+            dispatchItem({ type: 'LinkNewTag', id, name, color })
+          }
+          linkTag={itemHandlers.linkTag}
+          tags={tagsAvailable.filter(tag =>
+            _item.tags.find(t => tag.id === t.id)
+          )}
           tagsAvailable={tagsAvailable}
-          unlinkTag={set.unlinkedTag}
+          unlinkTag={itemHandlers.unlinkTag}
         />
 
         {members.length > 1 ? (
@@ -506,7 +344,7 @@ export default function ListItem({
                 <ExpectedInput
                   disabled={_item.status === 'Completed'}
                   ms={_item.expectedMs}
-                  updateMs={set.expectedMs}
+                  updateMs={itemHandlers.setExpectedMs}
                 />
                 <span className='border-r-1 border-content3' />
                 <ElapsedInput
@@ -529,9 +367,10 @@ export default function ListItem({
             hasDueDates={hasDueDates}
             hasTimeTracking={hasTimeTracking}
             item={_item}
+            itemHandlers={itemHandlers}
             members={members}
             set={set}
-            tags={tags}
+            tags={_item.tags}
             tagsAvailable={tagsAvailable}
           />
         </span>

@@ -35,27 +35,14 @@ import ListMember from '@/lib/model/listMember';
 import DateInput2 from '../DateInput2';
 import ConfirmedTextInput from '../ConfirmedTextInput';
 
+import { itemHandlerFactory } from './handlerFactory';
 import Priority from './Priority';
 import Tags from './Tags';
 import Users from './Users';
 import ExpectedInput from './ExpectedInput';
 import ElapsedInput from './ElapsedInput';
 import TimeButton from './TimeButton';
-
-interface SetItem {
-  name: (name: string) => void;
-  dueDate: (date: Date) => void;
-  priority: (priority: ListItem['priority']) => void;
-  complete: () => void;
-  incomplete: () => void;
-  expectedMs: (ms: number) => void;
-  startedRunning: () => void;
-  pausedRunning: () => void;
-  resetTime: () => void;
-  linkedTag: (id: string, name?: string, color?: NamedColor) => void;
-  unlinkedTag: (id: string) => void;
-  deleted: () => void;
-}
+import { SetItem } from './types';
 
 export default function More({
   item,
@@ -66,6 +53,7 @@ export default function More({
   hasTimeTracking,
   elapsedLive,
   set,
+  itemHandlers,
   addNewTag
 }: {
   item: ListItem;
@@ -76,6 +64,7 @@ export default function More({
   hasTimeTracking: boolean;
   elapsedLive: number;
   set: SetItem;
+  itemHandlers: ReturnType<typeof itemHandlerFactory>;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
 }) {
   const isComplete = item.status === 'Completed';
@@ -99,15 +88,15 @@ export default function More({
                     isSelected={isComplete}
                     tabIndex={0}
                     onChange={e => {
-                      if (e.target.checked) set.complete();
-                      else set.incomplete();
+                      if (e.target.checked) itemHandlers.setComplete();
+                      else itemHandlers.setIncomplete();
                     }}
                   />
                   <span className='flex grow'>
                     <ConfirmedTextInput
                       showLabel
                       disabled={isComplete}
-                      updateValue={set.name}
+                      updateValue={itemHandlers.setName}
                       value={item.name}
                       variant='underlined'
                     />
@@ -118,7 +107,7 @@ export default function More({
                     className='w-full'
                     isComplete={isComplete}
                     priority={item.priority}
-                    setPriority={set.priority}
+                    setPriority={itemHandlers.setPriority}
                     wrapperClassName='!my-0 w-1/2'
                   />
                   {hasDueDates ? (
@@ -129,7 +118,7 @@ export default function More({
                       label='Due date'
                       value={item.dateDue || undefined}
                       variant='underlined'
-                      onValueChange={set.dueDate}
+                      onValueChange={itemHandlers.setDueDate}
                     />
                   ) : null}
                 </div>
@@ -138,10 +127,10 @@ export default function More({
                   addNewTag={addNewTag}
                   className='py-2'
                   isComplete={item.status === 'Completed'}
-                  linkTag={set.linkedTag}
+                  linkTag={itemHandlers.linkTag}
                   tags={tags}
                   tagsAvailable={tagsAvailable}
-                  unlinkTag={set.unlinkedTag}
+                  unlinkTag={itemHandlers.unlinkTag}
                 />
 
                 {members.length > 1 ? (
@@ -163,7 +152,7 @@ export default function More({
                         <ExpectedInput
                           disabled={isComplete}
                           ms={item.expectedMs}
-                          updateMs={set.expectedMs}
+                          updateMs={itemHandlers.setExpectedMs}
                         />
                         <span className='border-r-1 border-content3' />
                         <ElapsedInput
@@ -184,7 +173,7 @@ export default function More({
                     variant='ghost'
                     onPress={() => {
                       onClose();
-                      set.deleted();
+                      itemHandlers.deleteSelf();
                     }}
                   >
                     <TrashFill />
