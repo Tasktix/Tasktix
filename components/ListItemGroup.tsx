@@ -20,7 +20,7 @@
 
 import { useState } from 'react';
 
-import { StaticListItem } from '@/components/ListItem';
+import ListItem from '@/components/ListItem';
 import { sortItems } from '@/lib/sortItems';
 import { default as api } from '@/lib/api';
 import ListItemModel from '@/lib/model/listItem';
@@ -132,7 +132,7 @@ export default function ListItemGroup({
           .sort(sortItems.bind(null, false, false))
           .filter((item, idx) => item.status !== 'Completed' && idx < 10)
           .map((item, idx) => (
-            <StaticListItem
+            <ListItem
               key={item.id}
               addNewTag={addNewTag.bind(null, item.listId)}
               deleteItem={deleteItem.bind(null, idx)}
