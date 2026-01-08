@@ -18,25 +18,20 @@
 
 'use client';
 
-import { useState } from 'react';
-import { addToast } from '@heroui/react';
+import { useReducer, useState } from 'react';
 
 import AddListSection from '@/components/AddListSection';
-import { default as api } from '@/lib/api';
-import { default as ListModel } from '@/lib/model/list';
-import { default as ListSectionModel } from '@/lib/model/listSection';
-import Tag from '@/lib/model/tag';
-import { NamedColor } from '@/lib/model/color';
 import SearchBar from '@/components/SearchBar';
-import {
-  Filters,
-  InputOption,
-  InputOptionGroup
-} from '@/components/SearchBar/types';
-import ListMember from '@/lib/model/listMember';
+import { Filters } from '@/components/SearchBar/types';
 import ListSettings from '@/components/ListSettings';
+import ListModel from '@/lib/model/list';
+import Tag from '@/lib/model/tag';
 
-import ListSection from './ListSection';
+import ListSection from '../ListSection/ListSection';
+
+import { getFilterOptions } from './filters';
+import listReducer from './listReducer';
+import { listHandlerFactory } from './handlerFactory';
 
 export default function List({
   startingList,
@@ -45,8 +40,9 @@ export default function List({
   startingList: string;
   startingTagsAvailable: string;
 }) {
-  const builtList: ListModel = JSON.parse(startingList);
+  const builtList = JSON.parse(startingList) as ListModel;
 
+  // Rebuild Date objects turned to JSON strings
   for (const section of builtList.sections) {
     for (const item of section.items) {
       item.dateCreated = new Date(item.dateCreated);
@@ -58,76 +54,22 @@ export default function List({
     }
   }
 
-  const [list, setList] = useState<ListModel>(builtList);
-  const [tagsAvailable, setTagsAvailable] = useState<Tag[]>(
-    JSON.parse(startingTagsAvailable)
-  );
-  const [filters, setFilters] = useState<Filters>({});
+  const [{ list, tagsAvailable }, dispatchList] = useReducer(listReducer, {
+    list: builtList,
+    tagsAvailable: JSON.parse(startingTagsAvailable) as Tag[]
+  });
 
+  const [filters, setFilters] = useState<Filters>({});
   const filterOptions = getFilterOptions(list, tagsAvailable);
 
-  function addNewTag(name: string, color: NamedColor): Promise<string> {
-    return new Promise((resolve, reject) => {
-      api
-        .post(`/list/${list.id}/tag`, { name, color })
-        .then(res => {
-          const id = res.content?.split('/').at(-1) || '';
-          const newTags = structuredClone(tagsAvailable || []);
-
-          newTags.push(new Tag(name, color, id));
-          setTagsAvailable(newTags);
-
-          resolve(id);
-        })
-        .catch((err: Error) => reject(err));
-    });
-  }
-
-  function addListSection(section: ListSectionModel) {
-    if (!list) return;
-
-    const newList = structuredClone(list);
-
-    newList.sections.push(section);
-    setList(newList);
-  }
-
-  function deleteListSection(id: string) {
-    if (
-      !confirm(
-        'Are you sure you want to delete this section? This action is irreversible.'
-      )
-    )
-      return;
-
-    api
-      .delete(`/list/${list.id}/section/${id}`)
-      .then(res => {
-        addToast({
-          title: res.message,
-          color: 'success'
-        });
-
-        const newList = structuredClone(list);
-
-        for (let i = 0; i < newList.sections.length; i++)
-          if (newList.sections[i].id === id) newList.sections.splice(i, 1);
-        setList(newList);
-      })
-      .catch(err =>
-        addToast({
-          title: err.message,
-          color: 'danger'
-        })
-      );
-  }
+  const listHandlers = listHandlerFactory(list.id, dispatchList);
 
   return (
     <>
       <span className='flex gap-4 items-center'>
         <SearchBar inputOptions={filterOptions} onValueChange={setFilters} />
         <ListSettings
-          addNewTag={addNewTag}
+          addNewTag={listHandlers.addNewTag}
           hasDueDates={list.hasDueDates}
           hasTimeTracking={list.hasTimeTracking}
           isAutoOrdered={list.isAutoOrdered}
@@ -135,44 +77,24 @@ export default function List({
           listId={list.id}
           listName={list.name}
           members={list.members}
-          setHasDueDates={(value: boolean) => {
-            const newList = structuredClone(list);
-
-            newList.hasDueDates = value;
-            setList(newList);
-          }}
-          setHasTimeTracking={(value: boolean) => {
-            const newList = structuredClone(list);
-
-            newList.hasTimeTracking = value;
-            setList(newList);
-          }}
-          setIsAutoOrdered={(value: boolean) => {
-            const newList = structuredClone(list);
-
-            newList.isAutoOrdered = value;
-            setList(newList);
-          }}
-          setListColor={(value: NamedColor) => {
-            const newList = structuredClone(list);
-
-            newList.color = value;
-            setList(newList);
-          }}
-          setListName={(value: string) => {
-            const newList = structuredClone(list);
-
-            newList.name = value;
-            setList(newList);
+          setHasDueDates={hasDueDates =>
+            dispatchList({ type: 'SetHasDueDates', hasDueDates })
+          }
+          setHasTimeTracking={hasTimeTracking =>
+            dispatchList({ type: 'SetHasTimeTracking', hasTimeTracking })
+          }
+          setIsAutoOrdered={isAutoOrdered =>
+            dispatchList({ type: 'SetIsAutoOrdered', isAutoOrdered })
+          }
+          setListColor={color => dispatchList({ type: 'SetListColor', color })}
+          setListName={name => {
+            dispatchList({ type: 'SetListName', name });
             window.location.reload();
           }}
-          setMembers={(value: ListMember[]) => {
-            const newList = structuredClone(list);
-
-            newList.members = value;
-            setList(newList);
-          }}
-          setTagsAvailable={setTagsAvailable}
+          setMembers={members => dispatchList({ type: 'SetMembers', members })}
+          setTagsAvailable={tags =>
+            dispatchList({ type: 'SetTagsAvailable', tags })
+          }
           tagsAvailable={tagsAvailable}
         />
       </span>
@@ -180,8 +102,8 @@ export default function List({
       {list.sections.map(section => (
         <ListSection
           key={section.id}
-          addNewTag={addNewTag}
-          deleteSection={deleteListSection.bind(null, section.id)}
+          addNewTag={listHandlers.addNewTag}
+          deleteSection={listHandlers.deleteListSection.bind(null, section.id)}
           filters={filters}
           hasDueDates={list.hasDueDates}
           hasTimeTracking={list.hasTimeTracking}
@@ -195,89 +117,12 @@ export default function List({
         />
       ))}
 
-      <AddListSection addListSection={addListSection} listId={list.id} />
+      <AddListSection
+        addListSection={section =>
+          dispatchList({ type: 'AddSection', section })
+        }
+        listId={list.id}
+      />
     </>
   );
-}
-
-function getFilterOptions(
-  list: ListModel,
-  tagsAvailable: Tag[]
-): InputOptionGroup[] {
-  const generalOptions: InputOption[] = [
-    { type: 'String', label: 'name' },
-    {
-      type: 'Select',
-      label: 'priority',
-      selectOptions: [
-        { name: 'High', color: 'danger' },
-        { name: 'Medium', color: 'warning' },
-        { name: 'Low', color: 'success' }
-      ]
-    },
-    { type: 'Select', label: 'tag', selectOptions: tagsAvailable }
-  ];
-
-  if (list.members.length > 1)
-    generalOptions.push({
-      type: 'Select',
-      label: 'user',
-      selectOptions: list.members.map(member => {
-        return { name: member.user.username, color: member.user.color };
-      })
-    });
-  if (list.hasTimeTracking)
-    generalOptions.push({
-      type: 'Select',
-      label: 'status',
-      selectOptions: [
-        { name: 'Unstarted' },
-        { name: 'In_Progress' },
-        { name: 'Paused' },
-        { name: 'Completed' }
-      ]
-    });
-
-  const filterOptions: InputOptionGroup[] = [
-    { label: 'General', options: generalOptions },
-    {
-      label: 'Completed',
-      options: [
-        { type: 'Date', label: 'completedBefore' },
-        { type: 'Date', label: 'completedOn' },
-        { type: 'Date', label: 'completedAfter' }
-      ]
-    }
-  ];
-
-  if (list.hasDueDates)
-    filterOptions.push({
-      label: 'Due',
-      options: [
-        { type: 'Date', label: 'dueBefore' },
-        { type: 'Date', label: 'dueOn' },
-        { type: 'Date', label: 'dueAfter' }
-      ]
-    });
-  if (list.hasTimeTracking)
-    filterOptions.push(
-      {
-        label: 'Expected Time',
-        options: [
-          { type: 'Time', label: 'expectedTimeAbove' },
-          { type: 'Time', label: 'expectedTimeAt' },
-          { type: 'Time', label: 'expectedTimeBelow' }
-        ]
-      },
-      {
-        label: 'Elapsed Time',
-        options: [
-          { type: 'Time', label: 'elapsedTimeAbove' },
-          { type: 'Time', label: 'elapsedTimeAt' },
-          { type: 'Time', label: 'elapsedTimeBelow' }
-        ]
-      }
-    );
-
-  return filterOptions;
 }
