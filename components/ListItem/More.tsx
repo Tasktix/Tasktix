@@ -35,14 +35,13 @@ import ListMember from '@/lib/model/listMember';
 import DateInput2 from '../DateInput2';
 import ConfirmedTextInput from '../ConfirmedTextInput';
 
-import { itemHandlerFactory } from './handlerFactory';
 import Priority from './Priority';
 import Tags from './Tags';
 import Users from './Users';
 import ExpectedInput from './ExpectedInput';
 import ElapsedInput from './ElapsedInput';
 import TimeButton from './TimeButton';
-import { SetItem } from './types';
+import { ItemHandlers, SetItem } from './types';
 
 /**
  *
@@ -82,7 +81,7 @@ export default function More({
   hasTimeTracking: boolean;
   elapsedLive: number;
   set: SetItem;
-  itemHandlers: ReturnType<typeof itemHandlerFactory>;
+  itemHandlers: ItemHandlers;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
 }) {
   const isComplete = item.status === 'Completed';

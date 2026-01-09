@@ -20,6 +20,8 @@ import { NamedColor } from '@/lib/model/color';
 import ListItem from '@/lib/model/listItem';
 import Tag from '@/lib/model/tag';
 
+import { itemHandlerFactory } from './handlerFactory';
+
 /**
  * Possible actions and the required data needed for the item reducer.
  */
@@ -39,6 +41,8 @@ export type ItemAction =
   | { type: 'LinkTag'; id: string; tagsAvailable: Tag[] }
   | { type: 'LinkNewTag'; id: string; name: string; color: NamedColor }
   | { type: 'UnlinkTag'; id: string };
+
+export type ItemHandlers = ReturnType<typeof itemHandlerFactory>;
 
 /**
  * The interface for functions for controlling the ListItem component's internal timer
