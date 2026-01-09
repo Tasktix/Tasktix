@@ -106,7 +106,8 @@ export default function More({
                     isSelected={isComplete}
                     tabIndex={0}
                     onChange={e => {
-                      if (e.target.checked) itemHandlers.setComplete();
+                      if (e.target.checked)
+                        itemHandlers.setComplete(elapsedLive);
                       else itemHandlers.setIncomplete();
                     }}
                   />

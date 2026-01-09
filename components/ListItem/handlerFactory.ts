@@ -32,6 +32,8 @@ import { ItemAction } from './types';
  * definition.
  *
  * @param itemId The ID for the item that the functions are for
+ * @param timerData All data and callbacks needed to interact with the ListItem
+ *  component's internal timer state
  * @param tagsAvailable All tags associated with the list the item belongs to
  * @param dispatchItem Callback for updating the item's useReducer state
  * @param updateDueDate Callback to propagate state changes for the item's due date
@@ -44,6 +46,12 @@ import { ItemAction } from './types';
  */
 export function itemHandlerFactory(
   itemId: string,
+  timerData: {
+    timer: RefObject<NodeJS.Timeout | undefined>;
+    lastTime: RefObject<Date>;
+    setElapsedLive: Dispatch<SetStateAction<number>>;
+    stopRunning: () => unknown;
+  },
   tagsAvailable: Tag[],
   dispatchItem: ActionDispatch<[action: ItemAction]>,
   updateDueDate: (date: ListItem['dateDue']) => unknown,
@@ -108,21 +116,13 @@ export function itemHandlerFactory(
   /**
    * Updates the list item's status
    *
-   * @param timerData All data and callbacks needed to interact with the ListItem
-   *  component's internal timer state
+   * @param elapsedLive The number of milliseconds the item's timer has been running
    */
-  function setComplete(timerData: {
-    timer: RefObject<NodeJS.Timeout | undefined>;
-    lastTime: RefObject<Date>;
-    elapsedLive: number;
-    setElapsedLive: Dispatch<SetStateAction<number>>;
-    stopRunning: () => unknown;
-  }) {
+  function setComplete(elapsedLive: number) {
     // Store time before starting POST request to ensure it's accurate
     const dateCompleted = new Date();
     const newElapsed = timerData.timer.current
-      ? timerData.elapsedLive +
-        (Date.now() - timerData.lastTime.current.getTime())
+      ? elapsedLive + (Date.now() - timerData.lastTime.current.getTime())
       : 0;
 
     api

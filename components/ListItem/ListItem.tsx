@@ -133,7 +133,6 @@ export default function ListItem({
     {
       timer,
       lastTime,
-      elapsedLive,
       setElapsedLive,
       stopRunning: _stopRunning
     },
@@ -273,7 +272,7 @@ export default function ListItem({
           isSelected={_item.status === 'Completed'}
           tabIndex={0}
           onChange={e => {
-            if (e.target.checked) itemHandlers.setComplete();
+            if (e.target.checked) itemHandlers.setComplete(elapsedLive);
             else itemHandlers.setIncomplete();
           }}
         />
