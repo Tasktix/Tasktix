@@ -20,6 +20,9 @@ import List from '@/lib/model/list';
 import ListSection from '@/lib/model/listSection';
 import Tag from '@/lib/model/tag';
 
+/**
+ * Possible actions and the required data needed for the list reducer.
+ */
 export type ListAction =
   | { type: 'SetHasDueDates'; hasDueDates: List['hasDueDates'] }
   | { type: 'SetHasTimeTracking'; hasTimeTracking: List['hasTimeTracking'] }
@@ -32,4 +35,7 @@ export type ListAction =
   | { type: 'AddSection'; section: ListSection }
   | { type: 'DeleteSection'; id: string };
 
+/**
+ * The list state, as defined and modified by the list reducer.
+ */
 export type ListState = { list: List; tagsAvailable: Tag[] };

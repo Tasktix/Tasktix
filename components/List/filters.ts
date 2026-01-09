@@ -20,6 +20,14 @@ import { InputOption, InputOptionGroup } from '@/components/SearchBar/types';
 import List from '@/lib/model/list';
 import Tag from '@/lib/model/tag';
 
+/**
+ * Builds the list of available filters based on the list's settings (e.g. whether due
+ * dates are enabled, so filtering by due dates makes sense).
+ *
+ * @param list The rich list object (including members, items, etc.), used to check
+ *  settings and details
+ * @param tagsAvailable All tags associated with the list
+ */
 export function getFilterOptions(
   list: List,
   tagsAvailable: Tag[]

@@ -18,6 +18,12 @@
 
 import { ListAction, ListState } from './types';
 
+/**
+ * The reducer for managing <List />'s state
+ *
+ * @param state The current state (passed in by React)
+ * @param action The action to take for mutating state
+ */
 export default function listReducer(
   state: ListState,
   action: ListAction

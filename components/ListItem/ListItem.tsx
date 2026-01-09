@@ -66,6 +66,35 @@ interface StaticListItemParams {
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
 }
 
+/**
+ * The UI for interacting with a single list item's data, such as the name, priority,
+ * assignees, etc.
+ *
+ * @param item The list item this component represents
+ * @param list The list the item belongs to. If provided, a chip with the list name &
+ *  color is displayed. Intended for use on pages with many lists' items to differentiate
+ *  which ones they come from
+ * @param members The members who have access to the list (used to provide options for
+ *  assigning people to tasks)
+ * @param tagsAvailable The tags associated with the list that could be added to this item
+ * @param hasTimeTracking Whether the list settings enable tracking the time it takes to
+ *  complete list items. Start/pause buttons, a timer, and expected time-to-complete are
+ *  shown if so
+ * @param hasDueDates Whether the list settings enable due dates for items
+ * @param reorderControls Controller for Framer Motion's reordering feature. Used to
+ *  trigger reordering when the user grabs the drag icon in the list item
+ * @param updateDueDate Callback to propagate state changes for the item's due date
+ * @param updatePriority Callback to propagate state changes for the item's priority
+ * @param deleteItem Callback to propagate state changes to delete the item
+ * @param setRunning Callback to propagate state changes for the item's status
+ * @param setPaused Callback to propagate state changes for the item's status
+ * @param resetTime Callback to propagate state changes for the item's status
+ * @param setCompleted Callback to propagate state changes for the item's status
+ * @param updateExpectedMs Callback to propagate state changes for the item's expected
+ *  completion time
+ * @param addNewTag Callback to propagate state changes when a new tag is created from the
+ *  "add tag" menu
+ */
 export default function ListItem({
   item,
   list,
@@ -119,10 +148,7 @@ export default function ListItem({
   );
 
   /**
-   * Functions that
-   *    - Update the database
-   *    - Update internal item state
-   *    - Propagate changes to the parent
+   * Functions for updating the list item timer
    */
   const set: SetItem = {
     startedRunning: () => {

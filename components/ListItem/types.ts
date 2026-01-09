@@ -20,6 +20,9 @@ import { NamedColor } from '@/lib/model/color';
 import ListItem from '@/lib/model/listItem';
 import Tag from '@/lib/model/tag';
 
+/**
+ * Possible actions and the required data needed for the item reducer.
+ */
 export type ItemAction =
   | { type: 'SetName'; name: ListItem['name'] }
   | { type: 'SetDueDate'; date: ListItem['dateDue'] }
@@ -37,6 +40,10 @@ export type ItemAction =
   | { type: 'LinkNewTag'; id: string; name: string; color: NamedColor }
   | { type: 'UnlinkTag'; id: string };
 
+/**
+ * The interface for functions for controlling the ListItem component's internal timer
+ * state
+ */
 export interface SetItem {
   startedRunning: () => void;
   pausedRunning: () => void;

@@ -44,6 +44,24 @@ import ElapsedInput from './ElapsedInput';
 import TimeButton from './TimeButton';
 import { SetItem } from './types';
 
+/**
+ *
+ * @param item The list item this component represents
+ * @param tags
+ * @param tagsAvailable The tags associated with the list that could be added to this item
+ * @param members The members who have access to the list (used to provide options for
+ *  assigning people to tasks)
+ * @param hasDueDates Whether the list settings enable due dates for items
+ * @param hasTimeTracking Whether the list settings enable tracking the time it takes to
+ *  complete list items. Start/pause buttons, a timer, and expected time-to-complete are
+ *  shown if so
+ * @param elapsedLive The number of milliseconds the item's timer has been running
+ * @param set Functions for updating the list item timer
+ * @param itemHandlers Functions for making API calls & state changes when the item is
+ *  interacted with
+ * @param addNewTag Callback to propagate state changes when a new tag is created from the
+ *  "add tag" menu
+ */
 export default function More({
   item,
   tags,

@@ -47,6 +47,25 @@ import { Item } from './types';
 import sectionReducer from './sectionReducer';
 import sectionHandlerFactory from './handlerFactory';
 
+/**
+ * Provides the container for a section of the list, grouping items & allowing items to be
+ * added specifically to this section
+ *
+ * @param id This section's ID
+ * @param listId The ID of the list this section belongs to
+ * @param name The section's name
+ * @param startingItems The items that belong to this section when the page first loads
+ * @param filters The filters currently active on the list that should limit which items
+ *  are rendered
+ * @param members The users who have access to the list
+ * @param tagsAvailable The tags that belong to the list
+ * @param hasTimeTracking Whether time tracking is enabled in the list's settings
+ * @param hasDueDates Whether due dates are enabled in the list's settings
+ * @param isAutoOrdered Whether auto-ordering is enabled in the list's settings
+ * @param deleteSection Callback to delete a section and remove it from React's state
+ * @param addNewTag Callback to propagate state changes when a new tag is created from the
+ *  "add tag" menu
+ */
 export default function ListSection({
   id,
   listId,
@@ -184,6 +203,12 @@ export default function ListSection({
   );
 }
 
+/**
+ * Converts a list of items to a map of items for easy access via the item's ID. Also adds
+ * the `visualIndex` property as documented on `interface Item`
+ *
+ * @param items The list of items to convert to a map
+ */
 function itemsToMap(items: ListItemModel[]): Map<string, Item> {
   return new Map(
     items.map((item, i) => [

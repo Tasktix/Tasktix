@@ -24,12 +24,29 @@ import ListItem from '@/lib/model/listItem';
 
 import { Item, SectionAction } from './types';
 
+/**
+ * Produces all functions for interacting with a specific list section and its contents.
+ * These functions make API requests to persist changes and updates React's state when the
+ * API requests succeed. These functions live here to avoid polluting <ListSection />'s
+ * definition.
+ *
+ * @param listId The ID of the list the given section belongs to
+ * @param id The given section's ID
+ * @param items The list items in the given section (live React state, not starting data)
+ * @param dispatchSection The callback for updating the given section's useReducer state
+ */
 export default function sectionHandlerFactory(
   listId: string,
   id: string,
   items: Map<string, Item>,
   dispatchSection: ActionDispatch<[action: SectionAction]>
 ) {
+  /**
+   * Finalizes the reordering of a list item. Intended to be called when the dragging
+   * interaction for reordering the item is finished.
+   *
+   * @param item The item that needs to be reordered
+   */
   function reorderItem(item: ListItem) {
     const newIndex = items.get(item.id)?.visualIndex;
     const oldIndex = item.sectionIndex;

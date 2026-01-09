@@ -25,10 +25,22 @@ import Tag from '@/lib/model/tag';
 
 import { ListAction } from './types';
 
+/**
+ * Produces all functions for interacting with a specific list and its data. These
+ * functions make API requests to persist changes and updates React's state when the API
+ * requests succeed. These functions live here to avoid polluting <List />'s
+ * definition.
+ *
+ * @param listId The ID of the list to generate functions for
+ * @param dispatchList Callback to update the list's state
+ */
 export function listHandlerFactory(
   listId: string,
   dispatchList: ActionDispatch<[action: ListAction]>
 ) {
+  /**
+   * @param name The new list name
+   */
   function setName(name: string) {
     api
       .patch(`/list/${listId}`, { name })
@@ -39,6 +51,13 @@ export function listHandlerFactory(
       .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
+  /**
+   * Creates a new tag to make available for any items in the list
+   *
+   * @param name The new tag's name
+   * @param color The new tag's color
+   * @returns The new tag's ID, or an error if one occurs
+   */
   function addNewTag(name: string, color: NamedColor): Promise<string> {
     return new Promise((resolve, reject) => {
       api
@@ -54,6 +73,9 @@ export function listHandlerFactory(
     });
   }
 
+  /**
+   * @param id The ID of the section to delete
+   */
   function deleteListSection(id: string) {
     if (
       !confirm(

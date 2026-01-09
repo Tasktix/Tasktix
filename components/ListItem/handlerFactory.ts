@@ -25,15 +25,25 @@ import Tag from '@/lib/model/tag';
 
 import { ItemAction } from './types';
 
+/**
+ * Produces all functions for interacting with a specific list item and its data. These
+ * functions make API requests to persist changes and updates React's state when the API
+ * requests succeed. These functions live here to avoid polluting <ListItem />'s
+ * definition.
+ *
+ * @param itemId The ID for the item that the functions are for
+ * @param tagsAvailable All tags associated with the list the item belongs to
+ * @param dispatchItem Callback for updating the item's useReducer state
+ * @param updateDueDate Callback to propagate state changes for the item's due date
+ * @param updatePriority Callback to propagate state changes for the item's priority
+ * @param setPaused Callback to propagate state changes for the item's status
+ * @param setCompleted Callback to propagate state changes for the item's status
+ * @param updateExpectedMs Callback to propagate state changes for the item's expected
+ *  completion time
+ * @param deleteItem Callback to propagate state changes to delete the item
+ */
 export function itemHandlerFactory(
   itemId: string,
-  timerData: {
-    timer: RefObject<NodeJS.Timeout | undefined>;
-    lastTime: RefObject<Date>;
-    elapsedLive: number;
-    setElapsedLive: Dispatch<SetStateAction<number>>;
-    stopRunning: () => unknown;
-  },
   tagsAvailable: Tag[],
   dispatchItem: ActionDispatch<[action: ItemAction]>,
   updateDueDate: (date: ListItem['dateDue']) => unknown,
@@ -43,6 +53,9 @@ export function itemHandlerFactory(
   updateExpectedMs: (ms: number) => unknown,
   deleteItem: () => unknown
 ) {
+  /**
+   * @param name The item's new name
+   */
   function setName(name: ListItem['name']) {
     api
       .patch(`/item/${itemId}`, { name })
@@ -50,6 +63,9 @@ export function itemHandlerFactory(
       .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
+  /**
+   * @param date The item's new due date
+   */
   function setDueDate(date: ListItem['dateDue']) {
     api
       .patch(`/item/${itemId}`, { dateDue: date })
@@ -61,6 +77,9 @@ export function itemHandlerFactory(
       .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
+  /**
+   * @param priority The item's new priority
+   */
   function setPriority(priority: ListItem['priority']) {
     api
       .patch(`/item/${itemId}`, { priority })
@@ -72,6 +91,9 @@ export function itemHandlerFactory(
       .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
+  /**
+   * Updates the list item's status
+   */
   function setIncomplete() {
     api
       .patch(`/item/${itemId}`, { status: 'Paused', dateCompleted: null })
@@ -83,7 +105,19 @@ export function itemHandlerFactory(
       .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
-  function setComplete() {
+  /**
+   * Updates the list item's status
+   *
+   * @param timerData All data and callbacks needed to interact with the ListItem
+   *  component's internal timer state
+   */
+  function setComplete(timerData: {
+    timer: RefObject<NodeJS.Timeout | undefined>;
+    lastTime: RefObject<Date>;
+    elapsedLive: number;
+    setElapsedLive: Dispatch<SetStateAction<number>>;
+    stopRunning: () => unknown;
+  }) {
     // Store time before starting POST request to ensure it's accurate
     const dateCompleted = new Date();
     const newElapsed = timerData.timer.current
@@ -111,6 +145,9 @@ export function itemHandlerFactory(
       .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
+  /**
+   * @param expectedMs The new expected time to complete
+   */
   function setExpectedMs(expectedMs: number) {
     api
       .patch(`/item/${itemId}`, { expectedMs })
@@ -122,6 +159,11 @@ export function itemHandlerFactory(
       .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
+  /**
+   * Adds one of the list's tags to the item
+   *
+   * @param id The tag ID to add
+   */
   function linkTag(id: string) {
     api
       .post(`/item/${itemId}/tag/${id}`, {})
@@ -131,6 +173,11 @@ export function itemHandlerFactory(
       .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
+  /**
+   * Removes one of the item's tags (but doesn't delete it from the list entirely)
+   *
+   * @param id The tag ID to remove
+   */
   function unlinkTag(id: string) {
     api
       .delete(`/item/${itemId}/tag/${id}`)
@@ -138,6 +185,9 @@ export function itemHandlerFactory(
       .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
+  /**
+   * Removes the item
+   */
   function deleteSelf() {
     api
       .delete(`/item/${itemId}`)

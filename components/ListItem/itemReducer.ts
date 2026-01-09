@@ -21,6 +21,12 @@ import Tag from '@/lib/model/tag';
 
 import { ItemAction } from './types';
 
+/**
+ * The reducer for managing <ListItem />'s state
+ *
+ * @param state The current state (passed in by React)
+ * @param action The action to take for mutating state
+ */
 export default function itemReducer(
   state: ListItem,
   action: ItemAction

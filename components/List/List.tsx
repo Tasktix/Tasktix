@@ -33,6 +33,20 @@ import { getFilterOptions } from './filters';
 import listReducer from './listReducer';
 import { listHandlerFactory } from './handlerFactory';
 
+/**
+ * This component provides the full list GUI: filters, settings, each section and its
+ * items, and an input for adding new sections. Intended to be the outermost client
+ * component on the page (i.e. the component above it in the component tree is a server
+ * component that pulls the necessary data from the database).
+ *
+ * @param startingList A JSON-stringified version of the list state when the page is first
+ *  loaded (type List). Must be manually JSON stringified to cross the server/client
+ *  component boundary because Next.js doesn't automatically convert Date objects or
+ *  classes
+ * @param startingTagsAvailable A JSON-stringified version of the list's tags when the
+ *  page is first loaded (type Tag[]). Must be manually JSON stringified to cross the
+ *  server/client component boundary because Next.js doesn't automatically convert classes
+ */
 export default function List({
   startingList,
   startingTagsAvailable

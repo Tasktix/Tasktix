@@ -18,6 +18,12 @@
 
 import { SectionAction, State } from './types';
 
+/**
+ * The reducer for managing <ListSection />'s state
+ *
+ * @param state The current state (passed in by React)
+ * @param action The action to take for mutating state
+ */
 export default function sectionReducer(
   state: State,
   action: SectionAction

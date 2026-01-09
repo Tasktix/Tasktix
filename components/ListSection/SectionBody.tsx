@@ -29,6 +29,28 @@ import { sortItems, sortItemsByCompleted } from '@/lib/sortItems';
 
 import { Item, SectionAction } from './types';
 
+/**
+ * A component that provides the body of the list section - i.e. just the items in it,
+ * not the header. This provides the wrapping component needed for dragging list
+ * items to reorder them when enabled in list settings. It also handles the logic for
+ * excluding list items that don't match the current filters.
+ *
+ * @param items The items that currently belong to this section
+ * @param filters The filters currently active on the list that should limit which items
+ *  are rendered
+ * @param members The users who have access to the list
+ * @param tagsAvailable The tags that belong to the list
+ * @param hasTimeTracking Whether time tracking is enabled in the list's settings
+ * @param hasDueDates Whether due dates are enabled in the list's settings
+ * @param isAutoOrdered Whether auto-ordering is enabled in the list's settings
+ * @param setItems Callback for overwriting the React state of items (used when dragging
+ *  items to a different order)
+ * @param dispatchSection Callback for updating the given section's useReducer state
+ * @param reorderItem Callback for finalizing the new order of items and updating React
+ *  state
+ * @param addNewTag Callback to propagate state changes when a new tag is created from the
+ *  "add tag" menu
+ */
 export default function SectionBody({
   items,
   filters,
@@ -180,6 +202,13 @@ export default function SectionBody({
   );
 }
 
+/**
+ * Checks whether a given item should be rendered, given the list's current filters
+ *
+ * @param item The item to check
+ * @param filters The filters to apply
+ * @returns Whether the item should be rendered
+ */
 function checkItemFilter(item: ListItemModel, filters: Filters): boolean {
   for (const key in filters)
     if (!compareFilter(item, key, filters[key])) return false;
@@ -187,6 +216,14 @@ function checkItemFilter(item: ListItemModel, filters: Filters): boolean {
   return true;
 }
 
+/**
+ * Checks whether a given filter includes the given item
+ *
+ * @param item The item to check
+ * @param key The name of the filter
+ * @param value The filter value to compare the item against
+ * @returns True if the filter allows the item to be rendered; false if not
+ */
 function compareFilter(
   item: ListItemModel,
   key: string,
