@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Dispatch, SetStateAction, useState } from 'react';
+import { useReducer } from 'react';
 import {
   ChevronContract,
   ChevronExpand,
@@ -24,39 +24,28 @@ import {
   TrashFill
 } from 'react-bootstrap-icons';
 import {
-  addToast,
   Button,
   Dropdown,
   DropdownItem,
   DropdownMenu,
   DropdownTrigger
 } from '@heroui/react';
-import {
-  AnimatePresence,
-  motion,
-  Reorder,
-  useDragControls
-} from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 
-import ListItem from '@/components/ListItem';
 import AddItem from '@/components/ListSection/AddItem';
 import ListItemModel from '@/lib/model/listItem';
 import { NamedColor } from '@/lib/model/color';
 import Tag from '@/lib/model/tag';
-import {
-  sortItems,
-  sortItemsByCompleted,
-  sortItemsByIndex
-} from '@/lib/sortItems';
 import ListMember from '@/lib/model/listMember';
-import { default as api } from '@/lib/api';
+import { sortItemsByCompleted, sortItemsByIndex } from '@/lib/sortItems';
 
 import { Filters } from '../SearchBar/types';
 import ConfirmedTextInput from '../ConfirmedTextInput';
 
-interface Item extends ListItemModel {
-  visualIndex?: number;
-}
+import SectionBody from './SectionBody';
+import { Item } from './types';
+import sectionReducer from './sectionReducer';
+import sectionHandlerFactory from './handlerFactory';
 
 export default function ListSection({
   id,
@@ -85,71 +74,22 @@ export default function ListSection({
   deleteSection: () => unknown;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
 }) {
-  // TODO: Update to use hashmap: don't iterate over every value when finding the right one to modify
-  const [items, setItems] = useState<Item[]>(
-    startingItems
-      .sort(sortItemsByIndex)
-      .sort(sortItemsByCompleted)
-      .map((item, i) => {
-        const newItem: Item = structuredClone(item);
+  const [{ items, isCollapsed }, dispatchSection] = useReducer(sectionReducer, {
+    items: itemsToMap(
+      startingItems.sort(sortItemsByIndex).sort(sortItemsByCompleted)
+    ),
+    isCollapsed: !startingItems.reduce(
+      (prev, curr) => prev || curr.status !== 'Completed',
+      false
+    )
+  });
 
-        newItem.visualIndex = i;
-
-        return newItem;
-      })
+  const sectionHandlers = sectionHandlerFactory(
+    listId,
+    id,
+    items,
+    dispatchSection
   );
-
-  const [isCollapsed, setIsCollapsed] = useState(
-    !items.reduce((prev, curr) => prev || curr.status !== 'Completed', false)
-  );
-
-  function addItem(item: ListItemModel) {
-    const newItems = structuredClone(items);
-
-    newItems.push(item);
-    setItems(newItems);
-    setIsCollapsed(false);
-  }
-
-  function reorderItem(item: ListItemModel, lastVisualIndex: number) {
-    const index = items.findIndex(i => i.id === item.id);
-
-    if (index === lastVisualIndex) return;
-
-    const oldIndex = item.sectionIndex;
-    const newIndex =
-      index > lastVisualIndex
-        ? items[index - 1].sectionIndex
-        : items[index + 1].sectionIndex;
-
-    if (newIndex === oldIndex) return;
-
-    api
-      .patch(`/list/${listId}/section/${id}/item`, {
-        itemId: item.id,
-        index: newIndex,
-        oldIndex: oldIndex
-      })
-      .then(res => {
-        addToast({ title: res.message, color: 'success' });
-
-        const index1 = Math.min(newIndex, oldIndex);
-        const index2 = Math.max(newIndex, oldIndex);
-        const newItems = structuredClone(items);
-
-        for (let i = 0; i < newItems.length; i++) {
-          newItems[i].visualIndex = i;
-          if (
-            newItems[i].sectionIndex >= index1 &&
-            newItems[i].sectionIndex <= index2
-          )
-            newItems[i].sectionIndex += oldIndex > newIndex ? 1 : -1;
-          if (newItems[i].id === item.id) newItems[i].sectionIndex = newIndex;
-        }
-        setItems(newItems);
-      })
-      .catch(err => addToast({ title: err.message, color: 'danger' }));
-  }
 
   return (
     <div className='rounded-md w-full overflow-hidden border-2 border-content3 box-border shrink-0 shadow-lg shadow-content2'>
@@ -158,7 +98,12 @@ export default function ListSection({
           <Button
             isIconOnly
             className='hover:bg-foreground/10 -ml-2 mr-2'
-            onPress={() => setIsCollapsed(!isCollapsed)}
+            onPress={() =>
+              dispatchSection({
+                type: 'SetIsCollapsed',
+                isCollapsed: !isCollapsed
+              })
+            }
           >
             {isCollapsed ? <ChevronExpand /> : <ChevronContract />}
           </Button>
@@ -172,17 +117,17 @@ export default function ListSection({
         </span>
         <span className='flex gap-4'>
           <AddItem
-            addItem={addItem}
+            addItem={item => dispatchSection({ type: 'AddItem', item })}
             hasDueDates={hasDueDates}
             hasTimeTracking={hasTimeTracking}
-            nextIndex={items.length}
+            nextIndex={items.size}
             sectionId={id}
           />
           <Dropdown placement='bottom'>
             <DropdownTrigger>
               <Button
                 isIconOnly
-                className='border-2 border-content4 hover:!bg-content4'
+                className='border-2 border-content4 hover:bg-content4!'
                 variant='light'
               >
                 <ThreeDots />
@@ -221,14 +166,17 @@ export default function ListSection({
         )}
         <SectionBody
           addNewTag={addNewTag}
+          dispatchSection={dispatchSection}
           filters={filters}
           hasDueDates={hasDueDates}
           hasTimeTracking={hasTimeTracking}
           isAutoOrdered={isAutoOrdered}
           items={items}
           members={members}
-          reorderItem={reorderItem}
-          setItems={setItems}
+          reorderItem={sectionHandlers.reorderItem}
+          setItems={items =>
+            dispatchSection({ type: 'SetItems', items: itemsToMap(items) })
+          }
           tagsAvailable={tagsAvailable}
         />
       </AnimatePresence>
@@ -236,252 +184,11 @@ export default function ListSection({
   );
 }
 
-function SectionBody({
-  items,
-  filters,
-  members,
-  tagsAvailable,
-  hasTimeTracking,
-  hasDueDates,
-  isAutoOrdered,
-  setItems,
-  reorderItem,
-  addNewTag
-}: {
-  items: Item[];
-  filters: Filters;
-  members: ListMember[];
-  tagsAvailable: Tag[];
-  hasTimeTracking: boolean;
-  hasDueDates: boolean;
-  isAutoOrdered: boolean;
-  setItems: Dispatch<SetStateAction<Item[]>>;
-  reorderItem: (item: ListItemModel, lastVisualIndex: number) => unknown;
-  addNewTag: (name: string, color: NamedColor) => Promise<string>;
-}) {
-  const controls = useDragControls();
-
-  function setStatus(
-    id: string,
-    status: ListItemModel['status'],
-    dateCompleted?: ListItemModel['dateCompleted']
-  ) {
-    const newItems = structuredClone(items);
-
-    for (const item of newItems)
-      if (item.id === id) {
-        item.status = status;
-        if (dateCompleted !== undefined) item.dateCompleted = dateCompleted;
-      }
-    setItems(newItems);
-  }
-
-  function updateExpectedMs(id: string, ms: number) {
-    const newItems = structuredClone(items);
-
-    for (const item of newItems) if (item.id === id) item.expectedMs = ms;
-    setItems(newItems);
-  }
-
-  function updatePriority(id: string, priority: ListItemModel['priority']) {
-    const newItems = structuredClone(items);
-
-    for (const item of newItems) if (item.id === id) item.priority = priority;
-    setItems(newItems);
-  }
-
-  function updateDueDate(id: string, date: Date) {
-    const newItems = structuredClone(items);
-
-    for (const item of newItems) if (item.id === id) item.dateDue = date;
-    setItems(newItems);
-  }
-
-  function deleteItem(id: string) {
-    const newItems = structuredClone(items);
-
-    for (let i = 0; i < newItems.length; i++)
-      if (newItems[i].id === id) newItems.splice(i, 1);
-    setItems(newItems);
-  }
-
-  return isAutoOrdered ? (
-    items
-      .filter(item => checkItemFilter(item, filters))
-      .sort(sortItems.bind(null, hasTimeTracking, hasDueDates))
-      .map(item => (
-        <ListItem
-          key={item.id}
-          addNewTag={addNewTag}
-          deleteItem={deleteItem.bind(null, item.id)}
-          hasDueDates={hasDueDates}
-          hasTimeTracking={hasTimeTracking}
-          item={item}
-          members={members}
-          setCompleted={setStatus.bind(null, item.id, 'Completed')}
-          setPaused={() => setStatus(item.id, 'Paused')}
-          setStatus={setStatus.bind(null, item.id)}
-          tagsAvailable={tagsAvailable}
-          updateDueDate={updateDueDate.bind(null, item.id)}
-          updateExpectedMs={updateExpectedMs.bind(null, item.id)}
-          updatePriority={updatePriority.bind(null, item.id)}
-        />
-      ))
-  ) : (
-    <Reorder.Group
-      axis='y'
-      values={items}
-      onReorder={items => setItems(items.sort(sortItemsByCompleted))}
-    >
-      {items
-        .filter(item => checkItemFilter(item, filters))
-        .map(item => (
-          <Reorder.Item
-            key={item.id}
-            className='border-b-1 border-content3 last:border-b-0'
-            dragControls={controls}
-            dragListener={false}
-            value={item}
-            onDragEnd={reorderItem.bind(null, item, item.visualIndex || 0)}
-          >
-            <ListItem
-              key={item.id}
-              addNewTag={addNewTag}
-              deleteItem={deleteItem.bind(null, item.id)}
-              hasDueDates={hasDueDates}
-              hasTimeTracking={hasTimeTracking}
-              item={item}
-              members={members}
-              setCompleted={setStatus.bind(null, item.id, 'Completed')}
-              setPaused={() => setStatus(item.id, 'Paused')}
-              setStatus={setStatus.bind(null, item.id)}
-              tagsAvailable={tagsAvailable}
-              updateDueDate={updateDueDate.bind(null, item.id)}
-              updateExpectedMs={updateExpectedMs.bind(null, item.id)}
-              updatePriority={updatePriority.bind(null, item.id)}
-            />
-          </Reorder.Item>
-        ))}
-    </Reorder.Group>
+function itemsToMap(items: ListItemModel[]): Map<string, Item> {
+  return new Map(
+    items.map((item, i) => [
+      item.id,
+      { ...structuredClone(item), visualIndex: i }
+    ])
   );
-}
-
-function checkItemFilter(item: ListItemModel, filters: Filters): boolean {
-  for (const key in filters)
-    if (!compareFilter(item, key, filters[key])) return false;
-
-  return true;
-}
-
-function compareFilter(
-  item: ListItemModel,
-  key: string,
-  value: unknown
-): boolean {
-  if (value === undefined) return false;
-
-  switch (key) {
-    case 'name':
-      return value === item.name;
-
-    case 'priority':
-      return value instanceof Set && value.has(item.priority);
-
-    case 'tag':
-      return (
-        value instanceof Set &&
-        item.tags
-          .map(curr => value.has(curr.name))
-          .reduce((prev: boolean, curr: boolean) => prev || curr, false)
-      );
-
-    case 'user':
-      return (
-        value instanceof Set &&
-        item.assignees
-          .map(curr => value.has(curr.user.username))
-          .reduce((prev: boolean, curr: boolean) => prev || curr, false)
-      );
-
-    case 'status':
-      return value instanceof Set && value.has(item.status);
-
-    case 'completedBefore':
-      if (value instanceof Date) value.setHours(0, 0, 0, 0);
-
-      return (
-        item.dateCompleted !== null &&
-        value instanceof Date &&
-        value.getTime() > item.dateCompleted.getTime()
-      );
-    case 'completedOn':
-      if (!(value instanceof Date)) return false;
-
-      const start = structuredClone(value);
-      const end = structuredClone(value);
-
-      if (start && end && value instanceof Date) {
-        start.setHours(0, 0, 0, 0);
-        end.setHours(0, 0, 0, 0);
-        end.setDate(value.getDate() + 1);
-      }
-
-      return (
-        item.dateCompleted !== null &&
-        start.getTime() <= item.dateCompleted.getTime() &&
-        end.getTime() > item.dateCompleted.getTime()
-      );
-    case 'completedAfter':
-      if (value instanceof Date) value.setHours(23, 59, 59, 999);
-
-      return (
-        item.dateCompleted !== null &&
-        value instanceof Date &&
-        value.getTime() < item.dateCompleted.getTime()
-      );
-
-    case 'dueBefore':
-      return (
-        item.dateDue !== null &&
-        value instanceof Date &&
-        value.getTime() > item.dateDue.getTime()
-      );
-    case 'dueOn':
-      return (
-        item.dateDue !== null &&
-        value instanceof Date &&
-        value.getTime() === item.dateDue.getTime()
-      );
-    case 'dueAfter':
-      return (
-        item.dateDue !== null &&
-        value instanceof Date &&
-        value.getTime() < item.dateDue.getTime()
-      );
-
-    case 'expectedTimeBelow':
-      return (
-        item.expectedMs !== null &&
-        typeof value === 'number' &&
-        item.expectedMs < value
-      );
-    case 'expectedTimeAt':
-      return item.expectedMs !== null && item.expectedMs === value;
-    case 'expectedTimeAbove':
-      return (
-        item.expectedMs !== null &&
-        typeof value === 'number' &&
-        item.expectedMs > value
-      );
-
-    case 'elapsedTimeBelow':
-      return typeof value === 'number' && item.elapsedMs < value;
-    case 'elapsedTimeAt':
-      return item.elapsedMs === value;
-    case 'elapsedTimeAbove':
-      return typeof value === 'number' && item.elapsedMs > value;
-
-    default:
-      throw new Error(`Invalid option ${key}`);
-  }
 }

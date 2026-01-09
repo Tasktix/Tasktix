@@ -53,11 +53,14 @@ interface StaticListItemParams {
   hasTimeTracking: boolean;
   hasDueDates: boolean;
   reorderControls?: DragControls;
-  setStatus: (status: ListItemModel['status']) => unknown;
   updateDueDate: (date: ListItemModel['dateDue']) => unknown;
   updatePriority: (priority: ListItemModel['priority']) => unknown;
   deleteItem: () => unknown;
+  setRunning: () => unknown;
   setPaused: () => unknown;
+  resetTime: (
+    status: Extract<ListItemModel['status'], 'Unstarted' | 'Completed'>
+  ) => unknown;
   setCompleted: (date: ListItemModel['dateCompleted']) => unknown;
   updateExpectedMs: (ms: number) => unknown;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
@@ -71,11 +74,12 @@ export default function ListItem({
   hasTimeTracking,
   hasDueDates,
   reorderControls,
-  setStatus,
   updateDueDate,
   updatePriority,
   deleteItem,
+  setRunning,
   setPaused,
+  resetTime,
   setCompleted,
   updateExpectedMs,
   addNewTag
@@ -142,7 +146,7 @@ export default function ListItem({
           dispatchItem({ type: 'StartTime' });
 
           // Send parent the update for reordering items
-          setStatus('In_Progress');
+          setRunning();
         })
         .catch(err => addToast({ title: err.message, color: 'danger' }));
     },
@@ -167,7 +171,7 @@ export default function ListItem({
           dispatchItem({ type: 'PauseTime' });
 
           // Send parent the update for reordering items
-          setStatus('Paused');
+          setPaused();
         })
         .catch(err => addToast({ title: err.message, color: 'danger' }));
     },
@@ -187,7 +191,7 @@ export default function ListItem({
           dispatchItem({ type: 'ResetTime', status });
 
           // Send parent the update for reordering items
-          setStatus(status);
+          resetTime(status);
         })
         .catch(err => addToast({ title: err.message, color: 'danger' }));
     }

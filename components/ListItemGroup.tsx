@@ -87,7 +87,7 @@ export default function ListItemGroup({
     setItems(newItems);
   }
 
-  function updateDueDate(index: number, date: Date) {
+  function updateDueDate(index: number, date: ListItemModel['dateDue']) {
     const newItems = structuredClone(items);
 
     newItems[index].dateDue = date;
@@ -147,9 +147,10 @@ export default function ListItemGroup({
               item={item}
               list={builtLists.find(list => list.id === item.listId)}
               members={item.listId ? parsedMembers[item.listId] : []}
+              resetTime={setStatus.bind(null, idx)}
               setCompleted={setStatus.bind(null, idx, 'Completed')}
               setPaused={() => setStatus(idx, 'Paused', null)}
-              setStatus={setStatus.bind(null, idx)}
+              setRunning={setStatus.bind(null, idx, 'In_Progress')}
               tagsAvailable={item.listId ? tags[item.listId] : []}
               updateDueDate={updateDueDate.bind(null, idx)}
               updateExpectedMs={updateExpectedMs.bind(null, idx)}

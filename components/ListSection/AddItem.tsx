@@ -40,6 +40,8 @@ import { getBorderColor, getPriorityColor } from '@/lib/color';
 import TimeInput from '../TimeInput';
 import DateInput2 from '../DateInput2';
 
+import { Item } from './types';
+
 export default function AddItem({
   sectionId,
   hasTimeTracking,
@@ -51,7 +53,7 @@ export default function AddItem({
   hasTimeTracking: boolean;
   hasDueDates: boolean;
   nextIndex: number;
-  addItem: (_: ListItem) => unknown;
+  addItem: (_: Item) => unknown;
 }) {
   const zeroMin = new Date();
 
@@ -141,7 +143,7 @@ export default function AddItem({
           id
         });
 
-        addItem(item);
+        addItem({ ...item, visualIndex: nextIndex });
 
         setIsSliderOpen(false);
       })
