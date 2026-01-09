@@ -157,6 +157,7 @@ export default function SectionBody({
             hasTimeTracking={hasTimeTracking}
             item={item}
             members={members}
+            reorderControls={controls}
             resetTime={status =>
               dispatchSection({
                 type: 'ResetItemTime',
