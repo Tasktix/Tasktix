@@ -58,7 +58,10 @@ describe('FeatureBlock', () => {
   });
 
   test('renders dark image when theme is dark', () => {
-    (useTheme as jest.Mock).mockReturnValue({ theme: 'dark' });
+    (useTheme as jest.Mock).mockReturnValue({
+      theme: 'dark',
+      resolvedTheme: 'dark'
+    });
 
     render(<FeatureBlock {...baseProps} />);
 
@@ -93,5 +96,18 @@ describe('FeatureBlock', () => {
     const section = container.querySelector('section');
 
     expect(section).not.toHaveClass('md:flex-row-reverse');
+  });
+
+  test('renders dark image when theme is system and resolvedTheme is dark', () => {
+    (useTheme as jest.Mock).mockReturnValue({
+      theme: 'system',
+      resolvedTheme: 'dark'
+    });
+
+    render(<FeatureBlock {...baseProps} />);
+
+    const img = screen.getByRole('img');
+
+    expect(img).toHaveAttribute('src', expect.stringContaining('.dark.png'));
   });
 });
