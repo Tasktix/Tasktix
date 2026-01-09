@@ -60,9 +60,9 @@ export default function FeatureBlock({
   imageBaseName,
   align = 'default'
 }: FeatureBlockProps) {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const themedSrc =
-    theme === 'dark'
+    resolvedTheme === 'dark'
       ? `/screenshots/${imageBaseName}.dark.png`
       : `/screenshots/${imageBaseName}.light.png`;
 
