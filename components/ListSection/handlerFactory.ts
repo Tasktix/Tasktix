@@ -51,7 +51,8 @@ export default function sectionHandlerFactory(
     const newIndex = items.get(item.id)?.visualIndex;
     const oldIndex = item.sectionIndex;
 
-    if (!newIndex) throw new Error(`Item with ID ${item.id} not found`);
+    if (newIndex === undefined)
+      throw new Error(`Item with ID ${item.id} not found`);
 
     // `newIndex` gets updated every time the item visually swaps with another. `oldIndex`
     // is the index from before dragging started. If they're the same, the item is still

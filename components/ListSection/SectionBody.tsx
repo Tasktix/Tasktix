@@ -125,6 +125,8 @@ export default function SectionBody({
     <Reorder.Group
       axis='y'
       values={filteredItems}
+      // Since items are stored in a hashmap now, setItems will update each item's
+      // `.visualIndex` with its current index in the list
       onReorder={items => setItems(items.sort(sortItemsByCompleted))}
     >
       {components.map(params => (

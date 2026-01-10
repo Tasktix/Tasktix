@@ -52,11 +52,11 @@ export default function sectionReducer(
       const highIndex = Math.max(action.newIndex, action.oldIndex);
 
       for (const item of newState.items.values()) {
-        if (item.visualIndex === action.oldIndex)
-          item.visualIndex = action.newIndex;
+        if (item.sectionIndex === action.oldIndex)
+          item.sectionIndex = action.newIndex;
         else {
-          if (item.visualIndex > lowIndex && item.visualIndex < highIndex) {
-            item.visualIndex += wasShiftedUp ? 1 : -1;
+          if (item.sectionIndex >= lowIndex && item.sectionIndex <= highIndex) {
+            item.sectionIndex += wasShiftedUp ? 1 : -1;
           }
         }
       }
