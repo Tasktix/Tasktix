@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Reorder, useDragControls } from 'framer-motion';
+import { Reorder } from 'framer-motion';
 import { ActionDispatch } from 'react';
 
 import ListItemModel from '@/lib/model/listItem';
@@ -26,6 +26,9 @@ import ListItem from '@/components/ListItem';
 import { Filters } from '@/components/SearchBar/types';
 import { NamedColor } from '@/lib/model/color';
 import { sortItems, sortItemsByCompleted } from '@/lib/sortItems';
+
+import DraggableListItem from '../ListItem/DraggableListItem';
+import { ListItemParams } from '../ListItem/types';
 
 import { Item, SectionAction } from './types';
 
@@ -76,128 +79,60 @@ export default function SectionBody({
   reorderItem: (item: ListItemModel) => unknown;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
 }) {
-  const controls = useDragControls();
-
   const filteredItems = [
     ...items.values().filter(item => checkItemFilter(item, filters))
   ];
 
+  const components: ListItemParams[] = (
+    isAutoOrdered
+      ? filteredItems.sort(sortItems.bind(null, hasTimeTracking, hasDueDates))
+      : filteredItems
+  ).map(item => ({
+    addNewTag,
+    deleteItem: () => dispatchSection({ type: 'DeleteItem', itemId: item.id }),
+    hasDueDates,
+    hasTimeTracking,
+    item,
+    members,
+    resetTime: status =>
+      dispatchSection({ type: 'ResetItemTime', itemId: item.id, status }),
+    setCompleted: dateCompleted =>
+      dispatchSection({
+        type: 'SetItemComplete',
+        itemId: item.id,
+        dateCompleted
+      }),
+    setPaused: () =>
+      dispatchSection({ type: 'PauseItemTime', itemId: item.id }),
+    setRunning: () =>
+      dispatchSection({ type: 'StartItemTime', itemId: item.id }),
+    tagsAvailable: tagsAvailable,
+    updateDueDate: date =>
+      dispatchSection({ type: 'SetItemDueDate', itemId: item.id, date }),
+    updateExpectedMs: expectedMs =>
+      dispatchSection({
+        type: 'SetItemExpectedMs',
+        itemId: item.id,
+        expectedMs
+      }),
+    updatePriority: priority =>
+      dispatchSection({ type: 'SetItemPriority', itemId: item.id, priority })
+  }));
+
   return isAutoOrdered ? (
-    filteredItems
-      .sort(sortItems.bind(null, hasTimeTracking, hasDueDates))
-      .map(item => (
-        <ListItem
-          key={item.id}
-          addNewTag={addNewTag}
-          deleteItem={() =>
-            dispatchSection({ type: 'DeleteItem', itemId: item.id })
-          }
-          hasDueDates={hasDueDates}
-          hasTimeTracking={hasTimeTracking}
-          item={item}
-          members={members}
-          resetTime={status =>
-            dispatchSection({ type: 'ResetItemTime', itemId: item.id, status })
-          }
-          setCompleted={dateCompleted =>
-            dispatchSection({
-              type: 'SetItemComplete',
-              itemId: item.id,
-              dateCompleted
-            })
-          }
-          setPaused={() =>
-            dispatchSection({ type: 'PauseItemTime', itemId: item.id })
-          }
-          setRunning={() =>
-            dispatchSection({ type: 'StartItemTime', itemId: item.id })
-          }
-          tagsAvailable={tagsAvailable}
-          updateDueDate={date =>
-            dispatchSection({ type: 'SetItemDueDate', itemId: item.id, date })
-          }
-          updateExpectedMs={expectedMs =>
-            dispatchSection({
-              type: 'SetItemExpectedMs',
-              itemId: item.id,
-              expectedMs
-            })
-          }
-          updatePriority={priority =>
-            dispatchSection({
-              type: 'SetItemPriority',
-              itemId: item.id,
-              priority
-            })
-          }
-        />
-      ))
+    components.map(params => <ListItem key={params.item.id} {...params} />)
   ) : (
     <Reorder.Group
       axis='y'
       values={filteredItems}
       onReorder={items => setItems(items.sort(sortItemsByCompleted))}
     >
-      {filteredItems.map(item => (
-        <Reorder.Item
-          key={item.id}
-          className='border-b-1 border-content3 last:border-b-0'
-          dragControls={controls}
-          dragListener={false}
-          value={item}
-          onDragEnd={reorderItem.bind(null, item)}
-        >
-          <ListItem
-            key={item.id}
-            addNewTag={addNewTag}
-            deleteItem={() =>
-              dispatchSection({ type: 'DeleteItem', itemId: item.id })
-            }
-            hasDueDates={hasDueDates}
-            hasTimeTracking={hasTimeTracking}
-            item={item}
-            members={members}
-            reorderControls={controls}
-            resetTime={status =>
-              dispatchSection({
-                type: 'ResetItemTime',
-                itemId: item.id,
-                status
-              })
-            }
-            setCompleted={dateCompleted =>
-              dispatchSection({
-                type: 'SetItemComplete',
-                itemId: item.id,
-                dateCompleted
-              })
-            }
-            setPaused={() =>
-              dispatchSection({ type: 'PauseItemTime', itemId: item.id })
-            }
-            setRunning={() =>
-              dispatchSection({ type: 'StartItemTime', itemId: item.id })
-            }
-            tagsAvailable={tagsAvailable}
-            updateDueDate={date =>
-              dispatchSection({ type: 'SetItemDueDate', itemId: item.id, date })
-            }
-            updateExpectedMs={expectedMs =>
-              dispatchSection({
-                type: 'SetItemExpectedMs',
-                itemId: item.id,
-                expectedMs
-              })
-            }
-            updatePriority={priority =>
-              dispatchSection({
-                type: 'SetItemPriority',
-                itemId: item.id,
-                priority
-              })
-            }
-          />
-        </Reorder.Item>
+      {components.map(params => (
+        <DraggableListItem
+          {...params}
+          key={params.item.id}
+          onDragEnd={reorderItem.bind(null, params.item)}
+        />
       ))}
     </Reorder.Group>
   );

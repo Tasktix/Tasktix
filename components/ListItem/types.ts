@@ -16,11 +16,39 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { DragControls } from 'framer-motion';
+
 import { NamedColor } from '@/lib/model/color';
 import ListItem from '@/lib/model/listItem';
 import Tag from '@/lib/model/tag';
+import List from '@/lib/model/list';
+import ListMember from '@/lib/model/listMember';
 
 import { itemHandlerFactory } from './handlerFactory';
+
+/**
+ * Parameters expected for a ListItem component
+ */
+export interface ListItemParams {
+  item: ListItem;
+  list?: List;
+  members: ListMember[];
+  tagsAvailable: Tag[];
+  hasTimeTracking: boolean;
+  hasDueDates: boolean;
+  reorderControls?: DragControls;
+  updateDueDate: (date: ListItem['dateDue']) => unknown;
+  updatePriority: (priority: ListItem['priority']) => unknown;
+  deleteItem: () => unknown;
+  setRunning: () => unknown;
+  setPaused: () => unknown;
+  resetTime: (
+    status: Extract<ListItem['status'], 'Unstarted' | 'Completed'>
+  ) => unknown;
+  setCompleted: (date: ListItem['dateCompleted']) => unknown;
+  updateExpectedMs: (ms: number) => unknown;
+  addNewTag: (name: string, color: NamedColor) => Promise<string>;
+}
 
 /**
  * Possible actions and the required data needed for the item reducer.

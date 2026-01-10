@@ -18,17 +18,11 @@
 
 import { useEffect, useReducer, useRef, useState } from 'react';
 import { addToast, Checkbox, Chip } from '@heroui/react';
-import { DragControls } from 'framer-motion';
 import { CardChecklist, GripVertical } from 'react-bootstrap-icons';
 import Link from 'next/link';
 
 import { default as api } from '@/lib/api';
 import { formatDate } from '@/lib/date';
-import { NamedColor } from '@/lib/model/color';
-import ListItemModel from '@/lib/model/listItem';
-import ListMember from '@/lib/model/listMember';
-import Tag from '@/lib/model/tag';
-import List from '@/lib/model/list';
 import { getBackgroundColor, getTextColor } from '@/lib/color';
 
 import DateInput from '../DateInput';
@@ -43,28 +37,7 @@ import Tags from './Tags';
 import TimeButton from './TimeButton';
 import Users from './Users';
 import { itemHandlerFactory } from './handlerFactory';
-import { SetItem } from './types';
-
-interface StaticListItemParams {
-  item: ListItemModel;
-  list?: List;
-  members: ListMember[];
-  tagsAvailable: Tag[];
-  hasTimeTracking: boolean;
-  hasDueDates: boolean;
-  reorderControls?: DragControls;
-  updateDueDate: (date: ListItemModel['dateDue']) => unknown;
-  updatePriority: (priority: ListItemModel['priority']) => unknown;
-  deleteItem: () => unknown;
-  setRunning: () => unknown;
-  setPaused: () => unknown;
-  resetTime: (
-    status: Extract<ListItemModel['status'], 'Unstarted' | 'Completed'>
-  ) => unknown;
-  setCompleted: (date: ListItemModel['dateCompleted']) => unknown;
-  updateExpectedMs: (ms: number) => unknown;
-  addNewTag: (name: string, color: NamedColor) => Promise<string>;
-}
+import { ListItemParams, SetItem } from './types';
 
 /**
  * The UI for interacting with a single list item's data, such as the name, priority,
@@ -112,7 +85,7 @@ export default function ListItem({
   setCompleted,
   updateExpectedMs,
   addNewTag
-}: StaticListItemParams) {
+}: ListItemParams) {
   const minute = 1000 * 60;
   const today = new Date();
 
