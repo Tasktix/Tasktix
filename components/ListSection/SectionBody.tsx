@@ -95,29 +95,29 @@ export default function SectionBody({
     hasTimeTracking,
     item,
     members,
+    tagsAvailable,
     resetTime: status =>
       dispatchSection({ type: 'ResetItemTime', itemId: item.id, status }),
+    setPaused: () =>
+      dispatchSection({ type: 'PauseItemTime', itemId: item.id }),
+    setRunning: () =>
+      dispatchSection({ type: 'StartItemTime', itemId: item.id }),
+    updateDueDate: date =>
+      dispatchSection({ type: 'SetItemDueDate', itemId: item.id, date }),
+    updatePriority: priority =>
+      dispatchSection({ type: 'SetItemPriority', itemId: item.id, priority }),
     setCompleted: dateCompleted =>
       dispatchSection({
         type: 'SetItemComplete',
         itemId: item.id,
         dateCompleted
       }),
-    setPaused: () =>
-      dispatchSection({ type: 'PauseItemTime', itemId: item.id }),
-    setRunning: () =>
-      dispatchSection({ type: 'StartItemTime', itemId: item.id }),
-    tagsAvailable: tagsAvailable,
-    updateDueDate: date =>
-      dispatchSection({ type: 'SetItemDueDate', itemId: item.id, date }),
     updateExpectedMs: expectedMs =>
       dispatchSection({
         type: 'SetItemExpectedMs',
         itemId: item.id,
         expectedMs
-      }),
-    updatePriority: priority =>
-      dispatchSection({ type: 'SetItemPriority', itemId: item.id, priority })
+      })
   }));
 
   return isAutoOrdered ? (

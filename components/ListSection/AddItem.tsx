@@ -315,7 +315,7 @@ export default function AddItem({
               <>
                 <ModalHeader className='justify-center'>Add Item</ModalHeader>
                 <form onSubmit={createItem}>
-                  <ModalBody className={`flex flex-row justify-center gap-4`}>
+                  <ModalBody className='flex flex-row justify-center gap-4'>
                     <Input
                       autoFocus
                       className='w-44 -mt-2'
