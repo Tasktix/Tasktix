@@ -21,9 +21,18 @@ import { Reorder, useDragControls } from 'framer-motion';
 import ListItem from './ListItem';
 import { ListItemParams } from './types';
 
-export default function ReorderableListItem(
-  params: ListItemParams & { onDragEnd: () => unknown }
-) {
+/**
+ * Provides a wrapper over <ListItem /> to allow reordering using Framer Motion's reorder
+ * components
+ *
+ * @param onDragEnd Callback to trigger API call & "official" reorder after a reordering
+ *  interaction finishes
+ * @param params Parameters passed through to <ListItem />
+ */
+export default function ReorderableListItem({
+  onDragEnd,
+  ...params
+}: ListItemParams & { onDragEnd: () => unknown }) {
   const controls = useDragControls();
 
   return (
@@ -33,7 +42,7 @@ export default function ReorderableListItem(
       dragControls={controls}
       dragListener={false}
       value={params.item}
-      onDragEnd={params.onDragEnd}
+      onDragEnd={onDragEnd}
     >
       <ListItem {...params} key={params.item.id} reorderControls={controls} />
     </Reorder.Item>
