@@ -27,10 +27,12 @@ import {
   useDisclosure
 } from '@heroui/react';
 import { GearWideConnected } from 'react-bootstrap-icons';
+import { ActionDispatch } from 'react';
 
 import Tag from '@/lib/model/tag';
 import { NamedColor } from '@/lib/model/color';
 import ListMember from '@/lib/model/listMember';
+import { ListAction } from '@/components/List/types';
 
 import GeneralSettings from './GeneralSettings';
 import MemberSettings from './MemberSettings';
@@ -69,14 +71,9 @@ export default function ListSettings({
   hasTimeTracking,
   isAutoOrdered,
   hasDueDates,
-  setListName,
-  setListColor,
-  setTagsAvailable,
-  setHasTimeTracking,
-  setHasDueDates,
-  setIsAutoOrdered,
-  setMembers,
-  addNewTag
+  dispatchList,
+  addNewTag,
+  setListName
 }: Readonly<{
   listId: string;
   members: ListMember[];
@@ -86,14 +83,9 @@ export default function ListSettings({
   hasTimeTracking: boolean;
   hasDueDates: boolean;
   isAutoOrdered: boolean;
-  setListName: (name: string) => unknown;
-  setListColor: (color: NamedColor) => unknown;
-  setTagsAvailable: (value: Tag[]) => unknown;
-  setHasTimeTracking: (value: boolean) => unknown;
-  setHasDueDates: (value: boolean) => unknown;
-  setIsAutoOrdered: (value: boolean) => unknown;
-  setMembers: (members: ListMember[]) => unknown;
+  dispatchList: ActionDispatch<[action: ListAction]>;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
+  setListName: (name: string) => unknown;
 }>) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
@@ -120,16 +112,13 @@ export default function ListSettings({
                 title='General'
               >
                 <GeneralSettings
+                  dispatchList={dispatchList}
                   hasDueDates={hasDueDates}
                   hasTimeTracking={hasTimeTracking}
                   isAutoOrdered={isAutoOrdered}
                   listColor={listColor}
                   listId={listId}
                   listName={listName}
-                  setHasDueDates={setHasDueDates}
-                  setHasTimeTracking={setHasTimeTracking}
-                  setIsAutoOrdered={setIsAutoOrdered}
-                  setListColor={setListColor}
                   setListName={setListName}
                 />
               </Tab>
@@ -140,7 +129,9 @@ export default function ListSettings({
                 <MemberSettings
                   listId={listId}
                   members={members}
-                  setMembers={setMembers}
+                  setMembers={members =>
+                    dispatchList({ type: 'SetMembers', members })
+                  }
                 />
               </Tab>
               <Tab
@@ -150,7 +141,9 @@ export default function ListSettings({
                 <TagSettings
                   addNewTag={addNewTag}
                   listId={listId}
-                  setTagsAvailable={setTagsAvailable}
+                  setTagsAvailable={tags =>
+                    dispatchList({ type: 'SetTagsAvailable', tags })
+                  }
                   tagsAvailable={tagsAvailable}
                 />
               </Tab>

@@ -16,8 +16,4 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-'use client';
-
-export { default as ListItem } from './ListItem';
-export { default as ReorderableListItem } from './ReorderableListItem';
-export type { ListItemParams } from './types';
+export { default } from './ListSection';
