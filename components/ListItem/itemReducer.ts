@@ -72,12 +72,13 @@ export default function itemReducer(
       newState.status = action.status;
       break;
 
-    case 'LinkTag':
+    case 'LinkTag': {
       const tag = action.tagsAvailable?.find(tag => tag.id === action.id);
 
       if (!tag) throw new Error(`Could not find tag with id ${action.id}`);
       newState.tags.push(new Tag(tag.name, tag.color, action.id));
       break;
+    }
 
     case 'LinkNewTag':
       newState.tags.push(new Tag(action.name, action.color, action.id));

@@ -46,7 +46,7 @@ export default function sectionReducer(
       newState.isCollapsed = false;
       break;
 
-    case 'ReorderItem':
+    case 'ReorderItem': {
       const wasShiftedUp = action.oldIndex > action.newIndex;
       const lowIndex = Math.min(action.newIndex, action.oldIndex);
       const highIndex = Math.max(action.newIndex, action.oldIndex);
@@ -61,6 +61,7 @@ export default function sectionReducer(
         }
       }
       break;
+    }
 
     case 'SetItemDueDate':
       if (!item) throw new Error(`No item with id ${action.itemId} found`);
