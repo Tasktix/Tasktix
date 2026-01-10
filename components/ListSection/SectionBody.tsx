@@ -27,7 +27,7 @@ import { Filters } from '@/components/SearchBar/types';
 import { NamedColor } from '@/lib/model/color';
 import { sortItems, sortItemsByCompleted } from '@/lib/sortItems';
 
-import DraggableListItem from '../ListItem/DraggableListItem';
+import ReorderableListItem from '../ListItem/DraggableListItem';
 import { ListItemParams } from '../ListItem/types';
 
 import { Item, SectionAction } from './types';
@@ -130,7 +130,7 @@ export default function SectionBody({
       onReorder={items => setItems(items.sort(sortItemsByCompleted))}
     >
       {components.map(params => (
-        <DraggableListItem
+        <ReorderableListItem
           {...params}
           key={params.item.id}
           onDragEnd={reorderItem.bind(null, params.item)}

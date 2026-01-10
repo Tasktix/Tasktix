@@ -21,7 +21,7 @@ import { Reorder, useDragControls } from 'framer-motion';
 import ListItem from './ListItem';
 import { ListItemParams } from './types';
 
-export default function DraggableListItem(
+export default function ReorderableListItem(
   params: ListItemParams & { onDragEnd: () => unknown }
 ) {
   const controls = useDragControls();
