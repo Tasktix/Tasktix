@@ -20,7 +20,7 @@
 
 import { useState } from 'react';
 
-import ListItem from '@/components/ListItem';
+import { ListItem } from '@/components/ListItem';
 import { sortItems } from '@/lib/sortItems';
 import { default as api } from '@/lib/api';
 import ListItemModel from '@/lib/model/listItem';

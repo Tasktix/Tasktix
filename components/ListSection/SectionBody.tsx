@@ -22,13 +22,14 @@ import { ActionDispatch } from 'react';
 import ListItemModel from '@/lib/model/listItem';
 import ListMember from '@/lib/model/listMember';
 import Tag from '@/lib/model/tag';
-import ListItem from '@/components/ListItem';
+import {
+  ListItem,
+  ReorderableListItem,
+  ListItemParams
+} from '@/components/ListItem';
 import { Filters } from '@/components/SearchBar/types';
 import { NamedColor } from '@/lib/model/color';
 import { sortItems, sortItemsByCompleted } from '@/lib/sortItems';
-
-import ReorderableListItem from '../ListItem/DraggableListItem';
-import { ListItemParams } from '../ListItem/types';
 
 import { Item, SectionAction } from './types';
 

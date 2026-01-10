@@ -18,4 +18,6 @@
 
 'use client';
 
-export { default as default } from './ListItem';
+export { default as ListItem } from './ListItem';
+export { default as ReorderableListItem } from './ReorderableListItem';
+export type { ListItemParams } from './types';
