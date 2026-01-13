@@ -44,9 +44,13 @@ import TimeButton from './TimeButton';
 import { ItemHandlers, SetItem } from './types';
 
 /**
+ * The UI for interacting with **all of** a single list item's data, such as the name,
+ * priority, assignees, etc. Some data is hidden in the main component, particularly on
+ * small screens. This component adds a "more" button that opens a modal that displays all
+ * of the item's data and allows it to be modified.
  *
  * @param item The list item this component represents
- * @param tags
+ * @param tags Tags linked to the list item this component represents
  * @param tagsAvailable The tags associated with the list that could be added to this item
  * @param members The members who have access to the list (used to provide options for
  *  assigning people to tasks)
