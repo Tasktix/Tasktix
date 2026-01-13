@@ -132,9 +132,12 @@ function AccountButton() {
   return (
     <Dropdown>
       <DropdownTrigger>
-        <Avatar key='profile' color='primary' />
+        <Avatar
+          key='profile'
+          className={getBackgroundColor(loggedInUser.color)}
+        />
       </DropdownTrigger>
-      <DropdownMenu aria-label='Static Actions' color='primary'>
+      <DropdownMenu aria-label='User Actions'>
         <DropdownItem key='settings' href='/profile'>
           Profile
         </DropdownItem>
