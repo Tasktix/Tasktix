@@ -39,6 +39,7 @@ import Image from 'next/image';
 import { default as api } from '@/lib/api';
 import ThemeSwitcher from '@/components/ThemeSwitcher';
 import { useAuth } from '@/components/AuthProvider';
+import { getBackgroundColor } from '@/lib/color';
 
 export default function Body({ children }: Readonly<{ children: ReactNode }>) {
   return (
@@ -100,7 +101,7 @@ export default function Body({ children }: Readonly<{ children: ReactNode }>) {
 }
 
 function AccountButton() {
-  const { isLoggedIn, setIsLoggedIn } = useAuth();
+  const { loggedInUser, setLoggedInUser } = useAuth();
 
   const router = useRouter();
 
@@ -109,12 +110,12 @@ function AccountButton() {
       .delete('/session')
       .catch(_ => {})
       .finally(() => {
-        setIsLoggedIn(false);
+        setLoggedInUser(false);
         router.replace('/');
       });
   }
 
-  if (!isLoggedIn)
+  if (!loggedInUser)
     return (
       <Button
         key='signIn'

@@ -20,6 +20,8 @@
 
 import { useState, ReactNode, useMemo } from 'react';
 
+import User from '@/lib/model/user';
+
 import { AuthContext } from './authContext';
 
 /**
@@ -31,16 +33,16 @@ import { AuthContext } from './authContext';
  */
 export default function AuthProvider({
   children,
-  isLoggedInAtStart
+  loggedInUserAtStart
 }: {
   children: ReactNode;
-  isLoggedInAtStart: boolean;
+  loggedInUserAtStart: User | false;
 }) {
-  const [isLoggedIn, setIsLoggedIn] = useState(isLoggedInAtStart);
+  const [loggedInUser, setLoggedInUser] = useState(loggedInUserAtStart);
 
   return (
     <AuthContext.Provider
-      value={useMemo(() => ({ isLoggedIn, setIsLoggedIn }), [isLoggedIn])}
+      value={useMemo(() => ({ loggedInUser, setLoggedInUser }), [loggedInUser])}
     >
       {children}
     </AuthContext.Provider>

@@ -23,13 +23,14 @@ import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 
 import AuthProvider from '@/components/AuthProvider';
+import User from '@/lib/model/user';
 
 export function Providers({
   children,
-  isLoggedInAtStart
+  loggedInUserAtStart
 }: {
   children: React.ReactNode;
-  isLoggedInAtStart: boolean;
+  loggedInUserAtStart: User | false;
 }) {
   const router = useRouter();
 
@@ -44,7 +45,7 @@ export function Providers({
   return (
     <HeroUIProvider navigate={router.push.bind(router)}>
       <ThemeProvider attribute='class' defaultTheme='system'>
-        <AuthProvider isLoggedInAtStart={isLoggedInAtStart}>
+        <AuthProvider loggedInUserAtStart={loggedInUserAtStart}>
           {children}
         </AuthProvider>
       </ThemeProvider>
