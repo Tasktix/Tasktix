@@ -51,11 +51,12 @@
     "vscode": {
       "extensions": [
         "streetsidesoftware.code-spell-checker",
-        "docker.docker",
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
         "bradlc.vscode-tailwindcss",
-        "orta.vscode-jest"
+        "orta.vscode-jest",
+        "prisma.prisma",
+        "yoavbls.pretty-ts-errors"
       ]
     }
   }
