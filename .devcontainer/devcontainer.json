@@ -44,7 +44,7 @@
   // "shutdownAction": "none",
 
   // Uncomment the next line to run commands after the container is created.
-  "postCreateCommand": "cp -a /app/node_modules/* /workspaces/Tasktix/node_modules; if [ -f /root/.ssh/git_signing ]; then git config user.signingkey /root/.ssh/git_signing.pub; fi",
+  "postCreateCommand": "sh ./scripts/setup_devcontainer.sh",
 
   // Configure tool-specific properties.
   "customizations": {
