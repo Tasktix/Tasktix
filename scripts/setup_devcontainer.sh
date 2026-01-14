@@ -12,3 +12,5 @@ fi
 # Make a local copy of the env file (NOTE: must ensure this matches the Codespaces secrets)
 cp -a ./.env.example ./.env
 
+# Prepare database
+npm run prisma:generate
