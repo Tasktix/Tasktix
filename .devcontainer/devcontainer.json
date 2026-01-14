@@ -13,13 +13,11 @@
 
   // The optional 'workspaceFolder' property is the path VS Code should open by default when
   // connected. This is typically a file mount in .devcontainer/docker-compose.yml
-  "workspaceFolder": "/app",
+  "workspaceFolder": "/workspaces/Tasktix",
 
   "mounts": [
     // Mount the project for editing within the container
-    "source=${localWorkspaceFolder},target=/app,type=bind,consistency=cached",
-    // Exclude vendor directory to ensure the container's `composer install` is used
-    "type=volume,source=npm_packages,target=/app/node_modules",
+    "source=${localWorkspaceFolder},target=/workspaces/Tasktix,type=bind,consistency=cached",
     // Mount the user's git config to pull username & email (if exists)
     "source=${localEnv:HOME}${localEnv:USERPROFILE}/.gitconfig,target=/root/.gitconfig,type=bind,readonly,if-exists=true",
     // Mount the user's git signing key
@@ -43,8 +41,11 @@
   // Uncomment the next line if you want to keep your containers running after VS Code shuts down.
   // "shutdownAction": "none",
 
+  // Gives the container permission to create bind mounts (to shadow the host's node_modules with the container's)
+  "capAdd": ["SYS_ADMIN"],
+
   // Uncomment the next line to run commands after the container is created.
-  "postCreateCommand": "if [ -f /root/.ssh/git_signing ]; then git config user.signingkey /root/.ssh/git_signing.pub; fi",
+  "postCreateCommand": "mkdir -p /workspaces/Tasktix/node_modules && mount --bind /app/node_modules /workspaces/Tasktix/node_modules; if [ -f /root/.ssh/git_signing ]; then git config user.signingkey /root/.ssh/git_signing.pub; fi",
 
   // Configure tool-specific properties.
   "customizations": {
