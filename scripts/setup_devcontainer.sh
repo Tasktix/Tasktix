@@ -2,7 +2,7 @@
 # (workspace must be /workspaces/Tasktix for GitHub Codespaces;
 # must shadow bind mount to avoid overwriting the host's node_modules
 # for local dev containers)
-cp -a /app/node_modules/* /workspaces/Tasktix/node_modules
+cp -a /app/node_modules/. /workspaces/Tasktix/node_modules
 
 # Copy the user's signing key if it exists (will only be the case locally)
 if [ -f /root/.ssh/git_signing ]; then
