@@ -18,6 +18,8 @@
   "mounts": [
     // Mount the project for editing within the container
     "source=${localWorkspaceFolder},target=/workspaces/Tasktix,type=bind,consistency=cached",
+    // Shadow node_modules to avoid overwriting the host's node_modules (important for OS-specific modules)
+    "source=tasktix_npm_packages,target=/workspaces/Tasktix/node_modules,type=volume",
     // Mount the user's git config to pull username & email (if exists)
     "source=${localEnv:HOME}${localEnv:USERPROFILE}/.gitconfig,target=/root/.gitconfig,type=bind,readonly,if-exists=true",
     // Mount the user's git signing key
@@ -41,11 +43,8 @@
   // Uncomment the next line if you want to keep your containers running after VS Code shuts down.
   // "shutdownAction": "none",
 
-  // Gives the container permission to create bind mounts (to shadow the host's node_modules with the container's)
-  "capAdd": ["SYS_ADMIN"],
-
   // Uncomment the next line to run commands after the container is created.
-  "postCreateCommand": "mkdir -p /workspaces/Tasktix/node_modules && mount --bind /app/node_modules /workspaces/Tasktix/node_modules; if [ -f /root/.ssh/git_signing ]; then git config user.signingkey /root/.ssh/git_signing.pub; fi",
+  "postCreateCommand": "cp -a /app/node_modules/* /workspaces/Tasktix/node_modules; if [ -f /root/.ssh/git_signing ]; then git config user.signingkey /root/.ssh/git_signing.pub; fi",
 
   // Configure tool-specific properties.
   "customizations": {
