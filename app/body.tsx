@@ -42,7 +42,7 @@ import { useAuth } from '@/components/AuthProvider';
 
 export default function Body({ children }: Readonly<{ children: ReactNode }>) {
   const { isLoggedIn } = useAuth();
-  const logoHref = isLoggedIn ? '/list' : '/';
+  const logoHref = isLoggedIn ? '/list' : '/about';
 
   return (
     <div className='flex flex-col h-screen'>
