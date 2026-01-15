@@ -40,6 +40,20 @@ import { getBorderColor, getPriorityColor } from '@/lib/color';
 import TimeInput from '../TimeInput';
 import DateInput2 from '../DateInput2';
 
+import { Item } from './types';
+
+/**
+ * Inputs with the necessary details to create a new list item
+ *
+ * @param sectionId What section the item should be placed in
+ * @param hasTimeTracking Whether the list's settings enable time tracking (i.e. whether
+ *  to request an estimate for time needed to complete)
+ * @param hasDueDates Whether the list's settings enable due dates (i.e. whether
+ *  to request a due date)
+ * @param nextIndex The next available index in the list section (will be assigned to the
+ *  new item)
+ * @param addItem Callback for processing the input & creating an item
+ */
 export default function AddItem({
   sectionId,
   hasTimeTracking,
@@ -51,7 +65,7 @@ export default function AddItem({
   hasTimeTracking: boolean;
   hasDueDates: boolean;
   nextIndex: number;
-  addItem: (_: ListItem) => unknown;
+  addItem: (_: Item) => unknown;
 }) {
   const zeroMin = new Date();
 
@@ -81,6 +95,11 @@ export default function AddItem({
     if (isSliderOpen) focusInput.current?.focus();
   }, [isSliderOpen]);
 
+  /**
+   * Handle changes to the name input
+   *
+   * @param name The input's new value
+   */
   function setName(name: string): void {
     setValues({
       name,
@@ -89,6 +108,12 @@ export default function AddItem({
       expectedMs: values.expectedMs
     });
   }
+
+  /**
+   * Handle changes to the due date input
+   *
+   * @param date The input's new value
+   */
   function setDueDate(date: Date): void {
     setValues({
       name: values.name,
@@ -97,6 +122,12 @@ export default function AddItem({
       expectedMs: values.expectedMs
     });
   }
+
+  /**
+   * Handle changes to the priority input
+   *
+   * @param priority The input's new value
+   */
   function setPriority(priority: Selection): void {
     setValues({
       name: values.name,
@@ -105,6 +136,12 @@ export default function AddItem({
       expectedMs: values.expectedMs
     });
   }
+
+  /**
+   * Handle changes to the expected duration input
+   *
+   * @param expectedMs The input's new value
+   */
   function setExpectedDuration(expectedMs: number): void {
     setValues({
       name: values.name,
@@ -114,6 +151,11 @@ export default function AddItem({
     });
   }
 
+  /**
+   * Handle form submission to create the item
+   *
+   * @param e The form submission event (used to cancel default submission behavior)
+   */
   function createItem(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const priorityKey =
@@ -141,7 +183,7 @@ export default function AddItem({
           id
         });
 
-        addItem(item);
+        addItem({ ...item, visualIndex: nextIndex });
 
         setIsSliderOpen(false);
       })
@@ -273,7 +315,7 @@ export default function AddItem({
               <>
                 <ModalHeader className='justify-center'>Add Item</ModalHeader>
                 <form onSubmit={createItem}>
-                  <ModalBody className={`flex flex-row justify-center gap-4`}>
+                  <ModalBody className='flex flex-row justify-center gap-4'>
                     <Input
                       autoFocus
                       className='w-44 -mt-2'

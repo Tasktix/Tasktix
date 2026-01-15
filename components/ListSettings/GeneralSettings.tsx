@@ -18,7 +18,7 @@
 
 import { addToast, Button, Switch } from '@heroui/react';
 import { TrashFill } from 'react-bootstrap-icons';
-import { useContext } from 'react';
+import { ActionDispatch, useContext } from 'react';
 import { useRouter } from 'next/navigation';
 
 import ColorPicker from '@/components/ColorPicker';
@@ -26,6 +26,7 @@ import ConfirmedTextInput from '@/components/ConfirmedTextInput';
 import { NamedColor } from '@/lib/model/color';
 import api from '@/lib/api';
 import { ListContext } from '@/components/Sidebar';
+import { ListAction } from '@/components/List/types';
 
 /**
  * Displays list settings such as its name, whether due dates are enabled, etc. Allows
@@ -52,11 +53,8 @@ export default function GeneralSettings({
   hasDueDates,
   hasTimeTracking,
   isAutoOrdered,
-  setListName,
-  setListColor,
-  setHasTimeTracking,
-  setHasDueDates,
-  setIsAutoOrdered
+  dispatchList,
+  setListName
 }: Readonly<{
   listId: string;
   listName: string;
@@ -64,11 +62,8 @@ export default function GeneralSettings({
   isAutoOrdered: boolean;
   hasDueDates: boolean;
   hasTimeTracking: boolean;
+  dispatchList: ActionDispatch<[action: ListAction]>;
   setListName: (name: string) => unknown;
-  setListColor: (color: NamedColor) => unknown;
-  setHasTimeTracking: (value: boolean) => unknown;
-  setHasDueDates: (value: boolean) => unknown;
-  setIsAutoOrdered: (value: boolean) => unknown;
 }>) {
   const router = useRouter();
   const dispatchEvent = useContext(ListContext);
@@ -78,7 +73,7 @@ export default function GeneralSettings({
 
     api
       .patch(`/list/${listId}`, { hasTimeTracking: value })
-      .then(() => setHasTimeTracking(value))
+      .then(() => dispatchList({ type: 'SetHasTimeTracking', hasTimeTracking }))
       .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
@@ -87,7 +82,7 @@ export default function GeneralSettings({
 
     api
       .patch(`/list/${listId}`, { hasDueDates: value })
-      .then(() => setHasDueDates(value))
+      .then(() => dispatchList({ type: 'SetHasDueDates', hasDueDates }))
       .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
@@ -96,14 +91,7 @@ export default function GeneralSettings({
 
     api
       .patch(`/list/${listId}`, { isAutoOrdered: value })
-      .then(() => setIsAutoOrdered(value))
-      .catch(err => addToast({ title: err.message, color: 'danger' }));
-  }
-
-  function updateName(name: string) {
-    api
-      .patch(`/list/${listId}`, { name })
-      .then(() => setListName(name))
+      .then(() => dispatchList({ type: 'SetIsAutoOrdered', isAutoOrdered }))
       .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
@@ -112,7 +100,7 @@ export default function GeneralSettings({
 
     api
       .patch(`/list/${listId}`, { color })
-      .then(() => setListColor(color))
+      .then(() => dispatchList({ type: 'SetListColor', color }))
       .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
@@ -141,7 +129,7 @@ export default function GeneralSettings({
           <ConfirmedTextInput
             showUnderline
             classNames={{ input: 'text-md' }}
-            updateValue={updateName}
+            updateValue={setListName}
             value={listName}
           />
           <ColorPicker value={listColor} onValueChange={updateColor} />
