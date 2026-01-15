@@ -127,7 +127,6 @@ function AccountButton() {
         Sign In
       </Button>
     );
-  //TODO: Set the profile color to 'user.color'. This will be changed when we implement user-set colors.
 
   return (
     <Dropdown>
@@ -135,6 +134,7 @@ function AccountButton() {
         <Avatar
           key='profile'
           className={getBackgroundColor(loggedInUser.color)}
+          name={loggedInUser.username ?? ''}
         />
       </DropdownTrigger>
       <DropdownMenu aria-label='User Actions'>
