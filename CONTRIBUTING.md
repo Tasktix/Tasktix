@@ -107,12 +107,29 @@ npm test
   ```
 - **Cypress** should be used for end-to-end tests. To view Cypress tests live for easy
   development/iteration, run:
+
+  > [!NOTE]
+  >
+  > Cypress **does not** work in dev containers.
+  >
+  > - If you are using a local dev container: simply open a terminal in the directory
+  >   where the project lives on your host machine to run these commands. (Note that this
+  >   will tear down your dev container while the tests are running. If you are iterating
+  >   on tests, it is likely best to open the project in an IDE on your host machine
+  >   rather than the dev container.)
+  > - If you are using GitHub Codespaces: clone the repo, check out your branch, and
+  >   change the [base URL in Cypress' config](./cypress.config.ts#L26) to match the
+  >   website preview URL from the codespace. Then run `npm run cy:open` on your host
+  >   machine to open Cypress and run tests against the Codespace.
+
   ```bash
   npm run start:test
   npm run cy:open
   npm run stop:test
   ```
+
   Or, for quick runs, run:
+
   ```bash
   npm run test:cy
   ```
