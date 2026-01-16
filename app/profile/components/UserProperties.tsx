@@ -28,6 +28,7 @@ import { addToast } from '@heroui/react';
 import api from '@/lib/api';
 import User from '@/lib/model/user';
 import ConfirmedTextInput from '@/components/ConfirmedTextInput';
+import ColorPicker from '@/components/ColorPicker';
 
 /**
  * Handles client-side functions for the profile page
@@ -82,6 +83,23 @@ export default function UserProperties({ user }: { user: string }) {
       );
   }
 
+  function setColor(color: NamedColor) {
+    api
+      .patch(`/user/${_user.id}`, { color })
+      .then(() => {
+        const newUserData = structuredClone(_user);
+
+        newUserData.color = color;
+        _setUser(newUserData);
+      })
+      .catch(err =>
+        addToast({
+          title: err.message,
+          color: 'danger'
+        })
+      );
+  }
+
   return (
     <div>
       <div className='m-4'>
@@ -104,6 +122,11 @@ export default function UserProperties({ user }: { user: string }) {
           value={_user.email}
           variant='flat'
         />
+      </div>
+
+      <div className='m-4'>
+        <p className='text-xs my-2'>Profile Color </p>
+        <ColorPicker value={_user.color} onValueChange={setColor}/>
       </div>
     </div>
   );
