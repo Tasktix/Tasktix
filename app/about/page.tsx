@@ -20,13 +20,12 @@
 import features from '@/public/data/features.json';
 import FeatureBlock from '@/components/FeatureBlock';
 
-/* Renders the Tasktix homepage.
+/* Renders the public-facing marketing homepage at `/about`.
  *
- * This page displays a hero section with a title and subtitle describing the
- * purpose of the application, followed by a set of feature showcase sections.
- * Feature content (title, description, and image base name) is loaded from
- * `/public/data/features.json` to keep the page content configurable without modifying
- * application code.
+ * This page displays a hero section followed by a series of feature
+ * showcase blocks. Feature content is loaded from
+ * `/public/data/features.json` to keep the page configurable without
+ * modifying application code.
  *
  * Each feature is rendered using the `FeatureBlock` component, which handles
  * themed screenshots (light/dark mode) and optional layout flipping. The layout
