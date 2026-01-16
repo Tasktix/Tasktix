@@ -14,6 +14,15 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * Root route handler.
+ *
+ * This page exists only to redirect users visiting `/` to the
+ * appropriate entry point:
+ * - authenticated users → `/list`
+ * - unauthenticated users → `/about`
+ *
+ * No UI is rendered here.
  */
 
 import { redirect } from 'next/navigation';
