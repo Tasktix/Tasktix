@@ -5,7 +5,7 @@
 cp -a /app/node_modules/. /workspaces/Tasktix/node_modules
 
 # Copy the user's signing key if it exists (will only be the case locally)
-if [ -f /root/.ssh/git_signing ]; then
+if [[ -f /root/.ssh/git_signing ]]; then
   git config user.signingkey /root/.ssh/git_signing.pub
 fi
 
