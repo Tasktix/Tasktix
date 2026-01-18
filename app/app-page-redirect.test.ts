@@ -14,28 +14,39 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *
  */
 
 import { redirect } from 'next/navigation';
 
+import Home from '@/app/page';
 import { getUser } from '@/lib/session';
 
-/* Root route handler.
- *
- * This page exists only to redirect users visiting `/` to the
- * appropriate entry point:
- * - authenticated users -> `/list`
- * - unauthenticated users -> `/about`
- *
- * No UI is rendered here.
- */
-export default async function Home() {
-  const user = await getUser();
+jest.mock('next/navigation', () => ({
+  redirect: jest.fn()
+}));
 
-  if (user) {
-    redirect('/list');
-  }
+jest.mock('@/lib/session', () => ({
+  getUser: jest.fn()
+}));
 
-  redirect('/about');
-}
+describe('root route redirect logic', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('redirects authenticated users to /list', async () => {
+    (getUser as jest.Mock).mockResolvedValue({ id: 'user123' });
+
+    await Home();
+
+    expect(redirect).toHaveBeenCalledWith('/list');
+  });
+
+  it('redirects unauthenticated users to /about', async () => {
+    (getUser as jest.Mock).mockResolvedValue(null);
+
+    await Home();
+
+    expect(redirect).toHaveBeenCalledWith('/about');
+  });
+});
