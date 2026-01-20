@@ -36,7 +36,8 @@ describe('UserProperties functions', () => {
   const oldUser = {
     id: 1234,
     username: 'oldUsername',
-    email: 'oldEmail@gmail.com'
+    email: 'oldEmail@gmail.com',
+    color: 'Pink'
   };
 
   test('Validate setUsername', async () => {
@@ -93,5 +94,23 @@ describe('UserProperties functions', () => {
     expect(api.patch as jest.Mock).toHaveBeenCalledWith(`/user/${oldUser.id}`, {
       email: 'newEmail@gmail.com'
     });
+  });
+
+  test('Validate setColor', async () => {
+    (api.patch as jest.Mock).mockImplementation(() => Promise.resolve());
+    const user = userEvent.setup();
+
+    const { getByLabelText, getByTestId, getByRole } = render(
+      <HeroUIProvider disableRipple>
+        <UserProperties user={JSON.stringify(oldUser)} />
+      </HeroUIProvider>
+    );
+
+    const colorInput = within(getByTestId('colorPicker')).getByRole('button');
+
+    expect(colorInput).toHaveClass('bg-pink-500');
+
+    // await user.click(colorInput);
+    // await user.click(getByLabelText('Red'));
   });
 });
