@@ -52,6 +52,7 @@ export default function UserProperties({ user }: { user: string }) {
 
         newUserData.username = username;
         _setUser(newUserData);
+        location.reload();
       })
       .catch(err =>
         addToast({
@@ -74,6 +75,7 @@ export default function UserProperties({ user }: { user: string }) {
 
         newUserData.email = email;
         _setUser(newUserData);
+        location.reload();
       })
       .catch(err =>
         addToast({
@@ -91,6 +93,7 @@ export default function UserProperties({ user }: { user: string }) {
 
         newUserData.color = color;
         _setUser(newUserData);
+        location.reload();
       })
       .catch(err =>
         addToast({
@@ -125,8 +128,14 @@ export default function UserProperties({ user }: { user: string }) {
       </div>
 
       <div className='m-4'>
-        <p className='text-xs my-2'>Profile Color </p>
-        <ColorPicker value={_user.color} onValueChange={setColor}/>
+        <label className='text-xs my-2 block'>Profile Color </label>
+        <span data-testid='colorPicker'>
+          <ColorPicker
+            className={'w-10 h-10'}
+            value={_user.color}
+            onValueChange={setColor}
+          />
+        </span>
       </div>
     </div>
   );
