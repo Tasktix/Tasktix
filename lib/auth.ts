@@ -15,9 +15,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
-'use server'
-
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { PrismaClient } from "@prisma/client";
@@ -34,6 +31,7 @@ export const auth = betterAuth({
    */
   user: {
     modelName: "User",
+    tableName: "User",
     additionalFields: {
       color: {
         type: ["Pink", "Red", "Orange", "Amber", "Yellow", "Lime", "Green", "Emerald", "Cyan", "Blue", "Violet"],
@@ -47,13 +45,16 @@ export const auth = betterAuth({
     }
   },
   session: {
-    modelName: "Session"
+    modelName: "Session",
+    tableName: "Session"
   },
   account: {
-    modelName: "Account"
+    modelName: "Account",
+    tableName: "Account"
   },
   verification: {
-    modelName: "Verification"
+    modelName: "Verification",
+    tableName: "Verification"
   },
   emailAndPassword: {
     enabled: true,

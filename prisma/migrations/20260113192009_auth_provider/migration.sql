@@ -48,6 +48,11 @@ DROP COLUMN `dateSignedIn`;
 ALTER TABLE `User` 
 RENAME INDEX `User_username_key` TO `User_name_key`;
 
+-- AlterTable
+ALTER TABLE `User` DROP PRIMARY KEY,
+    MODIFY `id` VARCHAR(191) NOT NULL,
+    ADD PRIMARY KEY (`id`);
+
 
 -- CreateTable
 CREATE TABLE `Session` (
