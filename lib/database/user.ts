@@ -50,9 +50,9 @@ export async function getUserById(id: string): Promise<User | false> {
 }
 
 export async function getUserByUsername(
-  username: string
+  name: string
 ): Promise<User | false> {
-  const result = await prisma.user.findUnique({ where: { username } });
+  const result = await prisma.user.findUnique({ where: { name } });
 
   return result ?? false;
 }
@@ -63,15 +63,3 @@ export async function getUserByEmail(email: string): Promise<User | false> {
   return result ?? false;
 }
 
-export async function getUserBySessionId(id: string): Promise<User | false> {
-  const result = await prisma.session.findUnique({
-    where: { id },
-    include: { user: true }
-  });
-
-  if (!result) return false;
-
-  if (result.dateExpire.getTime() < Date.now()) return false;
-
-  return result.user;
-}

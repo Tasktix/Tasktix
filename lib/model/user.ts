@@ -19,49 +19,54 @@
 import z from 'zod';
 
 import { randomNamedColor } from '../color';
-import { generateId } from '../generateId';
 
 import { NamedColor, namedColors } from './color';
 
 export const ZodUser = z.strictObject({
-  id: z.string().length(16),
-  username: z
+  id: z.string().length(191),
+  name: z
     .string()
     .min(3)
     .max(32)
     .regex(/^[a-zA-Z0-9_]*$/),
   email: z.email().max(128),
-  password: z.string().min(10).max(128),
+  legacyPassword: z.string().min(10).max(128),
   color: z.enum(namedColors)
 });
 
 export default class User {
   id: string;
-  username: string;
+  name: string;
   email: string;
-  password: string;
+  emailVerified: boolean ;
+  legacyPassword: string | null;
+  image: string | null;
   color: NamedColor;
-  dateCreated: Date;
-  dateSignedIn: Date;
+  createdAt: Date;
+  updatedAt: Date;
 
   constructor(
-    username: string,
+    id: string,
+    name: string,
     email: string,
-    password: string,
-    dateCreated: Date,
-    dateSignedIn: Date,
-    { id, color }: { id?: string; color?: NamedColor }
+    emailVerfied: boolean,
+    legacyPassword: string,
+    image: string,
+    createdAt: Date,
+    updatedAt: Date,
+    color?: NamedColor 
   ) {
-    if (!id) id = generateId();
 
     if (!color) color = randomNamedColor();
 
     this.id = id;
-    this.username = username;
+    this.name = name;
     this.email = email;
-    this.password = password;
+    this.emailVerified = emailVerfied;
+    this.legacyPassword = legacyPassword;
+    this.image = image;
     this.color = color;
-    this.dateCreated = dateCreated;
-    this.dateSignedIn = dateSignedIn;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
   }
 }
