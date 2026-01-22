@@ -33,7 +33,7 @@ import ListItem from '../ListItem';
 
 jest.mock('framer-motion', () => ({
   ...jest.requireActual<typeof FramerMotionModule>('framer-motion'),
-  LazyMotion: ({ children }: { children: React.ReactNode }) => <>{children}</>
+  LazyMotion: ({ children }: { children: React.ReactNode }) => children
 }));
 
 jest.mock('@/lib/api');
