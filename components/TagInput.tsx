@@ -85,6 +85,7 @@ export default function TagInput({
       />
       <Button
         isIconOnly
+        aria-label='Submit'
         className='rounded-lg w-8 h-8 min-w-8 min-h-8'
         color='primary'
         type='submit'
