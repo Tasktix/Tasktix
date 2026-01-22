@@ -22,11 +22,17 @@ import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
 import { HeroUIProvider } from '@heroui/react';
 
+
 import api from '@/lib/api';
 
 import UserProperties from './UserProperties';
 
 jest.mock('@/lib/api');
+
+jest.mock('framer-motion', () => ({
+  ...jest.requireActual('framer-motion'),
+  LazyMotion: ({ children }) => <>{children}</>
+}));
 
 beforeEach(() => {
   jest.resetAllMocks();
@@ -100,8 +106,8 @@ describe('UserProperties functions', () => {
     (api.patch as jest.Mock).mockImplementation(() => Promise.resolve());
     const user = userEvent.setup();
 
-    const { getByLabelText, getByTestId, getByRole } = render(
-      <HeroUIProvider disableRipple>
+    const { getByLabelText, getByTestId } = render(
+      <HeroUIProvider disableRipple reducedMotion='always'>
         <UserProperties user={JSON.stringify(oldUser)} />
       </HeroUIProvider>
     );
@@ -110,7 +116,12 @@ describe('UserProperties functions', () => {
 
     expect(colorInput).toHaveClass('bg-pink-500');
 
-    // await user.click(colorInput);
-    // await user.click(getByLabelText('Red'));
+    await user.click(colorInput);
+    await user.click(getByLabelText('Red'));
+
+    expect(api.patch as jest.Mock).toHaveBeenCalledTimes(1);
+    expect(api.patch as jest.Mock).toHaveBeenCalledWith(`/user/${oldUser.id}`, {
+      color: 'Red'
+    });
   });
 });

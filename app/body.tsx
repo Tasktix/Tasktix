@@ -41,7 +41,7 @@ import ThemeSwitcher from '@/components/ThemeSwitcher';
 import { useAuth } from '@/components/AuthProvider';
 import { getBackgroundColor } from '@/lib/color';
 
-export default function Body({ children }: Readonly<{ children: ReactNode }>) {
+export default function Body({ children }: Readonly<{ children?: ReactNode }>) {
   return (
     <div className='flex flex-col h-screen'>
       <Navbar maxWidth='full'>
@@ -129,10 +129,11 @@ function AccountButton() {
     );
 
   return (
-    <Dropdown>
+    <Dropdown aria-label='ProfileDropdown'>
       <DropdownTrigger>
         <Avatar
           key='profile'
+          aria-label='AvatarIcon'
           className={getBackgroundColor(loggedInUser.color)}
           name={loggedInUser.username ?? ''}
         />

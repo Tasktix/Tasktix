@@ -85,6 +85,11 @@ export default function UserProperties({ user }: { user: string }) {
       );
   }
 
+  /**
+   * Sets the user's color
+   *
+   * @param color the user's color
+   */
   function setColor(color: NamedColor) {
     api
       .patch(`/user/${_user.id}`, { color })

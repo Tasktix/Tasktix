@@ -43,7 +43,9 @@ export function Providers({
   );
 
   return (
-    <HeroUIProvider navigate={router.push.bind(router)}>
+    <HeroUIProvider
+      navigate={(href, routerOptions) => router.push(href, routerOptions)}
+    >
       <ThemeProvider attribute='class' defaultTheme='system'>
         <AuthProvider loggedInUserAtStart={loggedInUserAtStart}>
           {children}
