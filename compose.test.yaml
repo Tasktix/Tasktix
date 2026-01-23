@@ -1,7 +1,7 @@
 services:
   web:
     depends_on:
-      test:
+      deploy:
         condition: service_healthy
 
   mariadb:
