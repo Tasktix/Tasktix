@@ -72,6 +72,7 @@ export default function Tags({
         <Button
           aria-label='Update tags'
           className={`px-4 basis-1/6 grow shrink flex flex-row items-center justify-start overflow-hidden flex-nowrap h-10 shadow-none cursor-pointer bg-transparent ${isComplete ? 'opacity-50 cursor-default' : 'hover:bg-foreground/10 focus:z-10 focus:outline-2 focus:outline-focus focus:outline-offset-2'} ${className}`}
+          isDisabled={isComplete}
           tabIndex={isComplete ? 1 : 0}
         >
           <TagsIcon className='shrink-0' />
