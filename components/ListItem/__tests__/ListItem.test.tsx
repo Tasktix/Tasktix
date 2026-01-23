@@ -21,11 +21,10 @@
 import '@testing-library/jest-dom';
 import type * as FramerMotionModule from 'framer-motion';
 
-import { render } from '@testing-library/react';
+import { render, within } from '@testing-library/react';
 import { HeroUIProvider } from '@heroui/react';
 import userEvent from '@testing-library/user-event';
 
-import ListModel from '@/lib/model/list';
 import ListItemModel from '@/lib/model/listItem';
 import api from '@/lib/api';
 
@@ -44,7 +43,6 @@ beforeEach(() => {
 
 it('Allows new tags to be created and linked to the item', async () => {
   const item = new ListItemModel('Test item', {});
-  const list = new ListModel('Test list', 'Amber', [], [], false, false, false);
 
   (api.post as jest.Mock).mockImplementation(() => Promise.resolve());
   const addNewTag = jest.fn(() => Promise.resolve('test-id'));
@@ -59,7 +57,6 @@ it('Allows new tags to be created and linked to the item', async () => {
         hasDueDates={false}
         hasTimeTracking={false}
         item={item}
-        list={list}
         members={[]}
         resetTime={jest.fn()}
         setCompleted={jest.fn()}
@@ -87,4 +84,8 @@ it('Allows new tags to be created and linked to the item', async () => {
     `/item/${item.id}/tag/test-id`,
     expect.any(Object)
   );
+
+  expect(
+    await within(getByLabelText('Update tags')).findByText('Test tag')
+  ).toBeVisible();
 });

@@ -319,9 +319,7 @@ export default function ListItem({
           isComplete={_item.status === 'Completed'}
           linkNewTag={itemHandlers.linkNewTag}
           linkTag={itemHandlers.linkTag}
-          tags={tagsAvailable.filter(tag =>
-            _item.tags.find(t => tag.id === t.id)
-          )}
+          tags={_item.tags}
           tagsAvailable={tagsAvailable}
           unlinkTag={itemHandlers.unlinkTag}
         />

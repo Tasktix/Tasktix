@@ -50,7 +50,11 @@ export default function Tags({
   className?: string;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
   linkTag: (id: string) => unknown;
-  linkNewTag?: (id: string, name: string, color: NamedColor) => unknown;
+  linkNewTag?: (
+    id: string,
+    name: string,
+    color: NamedColor
+  ) => Promise<unknown>;
   unlinkTag: (id: string) => unknown;
 }) {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);

@@ -198,8 +198,12 @@ export function itemHandlerFactory(
    * @param name The new tag's name
    * @param color The new tag's display color
    */
-  function linkNewTag(id: string, name: string, color: NamedColor) {
-    api
+  function linkNewTag(
+    id: string,
+    name: string,
+    color: NamedColor
+  ): Promise<unknown> {
+    return api
       .post(`/item/${itemId}/tag/${id}`, {})
       .then(() => {
         dispatchItem({ type: 'LinkNewTag', id, name, color });
