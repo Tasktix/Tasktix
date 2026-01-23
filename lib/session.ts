@@ -18,9 +18,8 @@
 
 'use server';
 
-import { cookies, headers } from 'next/headers';
+import { headers } from 'next/headers';
 
-import { deleteSession } from '@/lib/database/session';
 import { getUserById } from '@/lib/database/user';
 import User from '@/lib/model/user';
 import { auth } from './auth';
@@ -35,18 +34,4 @@ export async function getUser(): Promise<User | false> {
   
   if (!user) return false;
   return user;
-}
-
-export async function clearUser(): Promise<boolean> {
-  const sessionId = (await cookies()).get('user')?.value;
-
-  if (!sessionId) return false;
-
-  const result = await deleteSession(sessionId);
-
-  if (!result) return false;
-
-  (await cookies()).delete('user');
-
-  return true;
 }

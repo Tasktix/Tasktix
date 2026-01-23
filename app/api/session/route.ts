@@ -32,15 +32,3 @@ export async function GET(_: Request) {
 export async function POST(request: Request) {
   return ServerError.Internal('Create Session currently unimplemented');
 }
-
-export async function DELETE(_: Request) {
-  const session = await getUser();
-
-  if (!session) return ClientError.NotFound('Already logged out');
-
-  const result = await clearUser();
-
-  if (!result) return ServerError.Internal('Clearing session failed');
-
-  return Success.OK('Session ended');
-}
