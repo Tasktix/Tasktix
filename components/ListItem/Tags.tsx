@@ -50,7 +50,11 @@ export default function Tags({
   className?: string;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
   linkTag: (id: string) => unknown;
-  linkNewTag?: (id: string, name: string, color: NamedColor) => unknown;
+  linkNewTag?: (
+    id: string,
+    name: string,
+    color: NamedColor
+  ) => Promise<unknown>;
   unlinkTag: (id: string) => unknown;
 }) {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
@@ -66,7 +70,9 @@ export default function Tags({
     >
       <PopoverTrigger>
         <Button
+          aria-label='Update tags'
           className={`px-4 basis-1/6 grow shrink flex flex-row items-center justify-start overflow-hidden flex-nowrap h-10 shadow-none cursor-pointer bg-transparent ${isComplete ? 'opacity-50 cursor-default' : 'hover:bg-foreground/10 focus:z-10 focus:outline-2 focus:outline-focus focus:outline-offset-2'} ${className}`}
+          isDisabled={isComplete}
           tabIndex={isComplete ? 1 : 0}
         >
           <TagsIcon className='shrink-0' />
@@ -101,6 +107,7 @@ export default function Tags({
               {tag.name}
               <Button
                 isIconOnly
+                aria-label='Remove tag from item'
                 className='rounded-lg w-8 h-8 min-w-8 min-h-8'
                 color='danger'
                 variant='flat'
@@ -124,6 +131,7 @@ export default function Tags({
                       {tag.name}
                       <Button
                         isIconOnly
+                        aria-label='Add tag to item'
                         className='rounded-lg w-8 h-8 min-w-8 min-h-8'
                         color='primary'
                         variant='flat'
