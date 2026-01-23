@@ -29,6 +29,7 @@ import api from '@/lib/api';
 import User from '@/lib/model/user';
 import ConfirmedTextInput from '@/components/ConfirmedTextInput';
 import ColorPicker from '@/components/ColorPicker';
+import { NamedColor } from '@/lib/model/color';
 
 /**
  * Handles client-side functions for the profile page
@@ -90,22 +91,29 @@ export default function UserProperties({ user }: { user: string }) {
    *
    * @param color the user's color
    */
-  function setColor(color: NamedColor) {
-    api
-      .patch(`/user/${_user.id}`, { color })
-      .then(() => {
-        const newUserData = structuredClone(_user);
+  function setColor(color: NamedColor | null) {
+    if (!color) {
+      addToast({
+        title: 'Please specify a user color',
+        color: 'danger'
+      });
+    } else {
+      api
+        .patch(`/user/${_user.id}`, { color })
+        .then(() => {
+          const newUserData = structuredClone(_user);
 
-        newUserData.color = color;
-        _setUser(newUserData);
-        location.reload();
-      })
-      .catch(err =>
-        addToast({
-          title: err.message,
-          color: 'danger'
+          newUserData.color = color;
+          _setUser(newUserData);
+          location.reload();
         })
-      );
+        .catch(err =>
+          addToast({
+            title: err.message,
+            color: 'danger'
+          })
+        );
+    }
   }
 
   return (
@@ -133,7 +141,7 @@ export default function UserProperties({ user }: { user: string }) {
       </div>
 
       <div className='m-4'>
-        <label className='text-xs my-2 block'>Profile Color </label>
+        <p className='text-xs my-2 block'>Profile Color </p>
         <span data-testid='colorPicker'>
           <ColorPicker
             className={'w-10 h-10'}
