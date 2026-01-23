@@ -41,7 +41,7 @@ test('Generates IDs of the specified length', () => {
 test('Generated IDs contain only numbers and letters', () => {
   crypto.getRandomValues = jest
     .fn()
-    .mockReturnValueOnce(new Uint8Array([...new Array(512).map((_, i) => i)]));
+    .mockReturnValueOnce(new Uint8Array(512).map((_, i) => i));
 
   const result2 = generateId(512);
 

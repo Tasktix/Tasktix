@@ -59,7 +59,7 @@ describe('sortItemsByCompleted', () => {
       })
     ];
 
-    const result = data.sort(sortItemsByCompleted);
+    const result = data.toSorted(sortItemsByCompleted);
 
     expect(result).toMatchObject(expected);
   });
@@ -90,7 +90,7 @@ describe('sortItemsByCompleted', () => {
       })
     ];
 
-    const result = data.sort(sortItemsByCompleted);
+    const result = data.toSorted(sortItemsByCompleted);
 
     expect(result).toMatchObject(expected);
   });
@@ -121,7 +121,7 @@ describe('sortItemsByCompleted', () => {
       })
     ];
 
-    const result = data.sort(sortItems.bind(null, false, false));
+    const result = data.toSorted(sortItems.bind(null, false, false));
 
     expect(result).toMatchObject(expected);
   });
@@ -152,7 +152,7 @@ describe('sortItemsByCompleted', () => {
       })
     ];
 
-    const result = data.sort(sortItems.bind(null, false, false));
+    const result = data.toSorted(sortItems.bind(null, false, false));
 
     expect(result).toMatchObject(expected);
   });
@@ -183,7 +183,7 @@ describe('sortItemsByCompleted', () => {
       })
     ];
 
-    const result = data.sort(sortItemsByCompleted);
+    const result = data.toSorted(sortItemsByCompleted);
 
     expect(result).toMatchObject(expected);
   });
@@ -210,7 +210,7 @@ describe('sortItemsByCompleted', () => {
       })
     ];
 
-    const result = data.sort(sortItemsByCompleted);
+    const result = data.toSorted(sortItemsByCompleted);
 
     expect(result).toMatchObject(expected);
   });
@@ -228,7 +228,7 @@ describe('sortItemsByIndex()', () => {
       new ListItem('Some item', { id: 'aaaaaaaaaaaaaaaa', sectionIndex: 2 })
     ];
 
-    const result = data.sort(sortItemsByIndex);
+    const result = data.toSorted(sortItemsByIndex);
 
     expect(result).toMatchObject(expected);
   });
@@ -244,7 +244,7 @@ describe('sortItemsByIndex()', () => {
       new ListItem('Some item', { id: 'aaaaaaaaaaaaaaaa', sectionIndex: 2 })
     ];
 
-    const result = data.sort(sortItemsByIndex);
+    const result = data.toSorted(sortItemsByIndex);
 
     expect(result).toMatchObject(expected);
   });
@@ -260,7 +260,7 @@ describe('sortItemsByIndex()', () => {
       new ListItem('Some item', { id: 'aaaaaaaaaaaaaaaa', sectionIndex: 1 })
     ];
 
-    const result = data.sort(sortItemsByIndex);
+    const result = data.toSorted(sortItemsByIndex);
 
     expect(result).toMatchObject(expected);
   });
@@ -277,7 +277,7 @@ describe('sortItems', () => {
       new ListItem('Some item', { id: 'aaaaaaaaaaaaaaaa', priority: 'Low' })
     ];
 
-    const result = data.sort(sortItems.bind(null, false, false));
+    const result = data.toSorted(sortItems.bind(null, false, false));
 
     expect(result).toMatchObject(expected);
   });
@@ -292,7 +292,7 @@ describe('sortItems', () => {
       new ListItem('Some item', { id: 'aaaaaaaaaaaaaaaa', priority: 'Low' })
     ];
 
-    const result = data.sort(sortItems.bind(null, false, false));
+    const result = data.toSorted(sortItems.bind(null, false, false));
 
     expect(result).toMatchObject(expected);
   });
@@ -307,7 +307,7 @@ describe('sortItems', () => {
       new ListItem('Some item', { id: 'aaaaaaaaaaaaaaaa', priority: 'Medium' })
     ];
 
-    const result = data.sort(sortItems.bind(null, false, false));
+    const result = data.toSorted(sortItems.bind(null, false, false));
 
     expect(result).toMatchObject(expected);
   });
@@ -322,7 +322,7 @@ describe('sortItems', () => {
       new ListItem('Some item', { id: 'aaaaaaaaaaaaaaaa', priority: 'Medium' })
     ];
 
-    const result = data.sort(sortItems.bind(null, false, false));
+    const result = data.toSorted(sortItems.bind(null, false, false));
 
     expect(result).toMatchObject(expected);
   });
@@ -337,7 +337,7 @@ describe('sortItems', () => {
       new ListItem('Some item', { id: 'aaaaaaaaaaaaaaaa', priority: 'Low' })
     ];
 
-    const result = data.sort(sortItems.bind(null, false, false));
+    const result = data.toSorted(sortItems.bind(null, false, false));
 
     expect(result).toMatchObject(expected);
   });
@@ -352,7 +352,7 @@ describe('sortItems', () => {
       new ListItem('Some item', { id: 'aaaaaaaaaaaaaaaa', priority: 'Low' })
     ];
 
-    const result = data.sort(sortItems.bind(null, false, false));
+    const result = data.toSorted(sortItems.bind(null, false, false));
 
     expect(result).toMatchObject(expected);
   });
@@ -379,7 +379,7 @@ describe('sortItems', () => {
       })
     ];
 
-    const result = data.sort(sortItems.bind(null, false, true));
+    const result = data.toSorted(sortItems.bind(null, false, true));
 
     expect(result).toMatchObject(expected);
   });
@@ -406,7 +406,7 @@ describe('sortItems', () => {
       })
     ];
 
-    const result = data.sort(sortItems.bind(null, false, true));
+    const result = data.toSorted(sortItems.bind(null, false, true));
 
     expect(result).toMatchObject(expected);
   });
@@ -427,7 +427,7 @@ describe('sortItems', () => {
       })
     ];
 
-    const result = data.sort(sortItems.bind(null, false, true));
+    const result = data.toSorted(sortItems.bind(null, false, true));
 
     expect(result).toMatchObject(expected);
   });
@@ -448,7 +448,7 @@ describe('sortItems', () => {
       })
     ];
 
-    const result = data.sort(sortItems.bind(null, false, true));
+    const result = data.toSorted(sortItems.bind(null, false, true));
 
     expect(result).toMatchObject(expected);
   });
@@ -463,7 +463,7 @@ describe('sortItems', () => {
       new ListItem('Second item', { id: 'aaaaaaaaaaaaaaaa', dateDue: null })
     ];
 
-    const result = data.sort(sortItems.bind(null, false, true));
+    const result = data.toSorted(sortItems.bind(null, false, true));
 
     expect(result).toMatchObject(expected);
   });
@@ -478,7 +478,7 @@ describe('sortItems', () => {
       new ListItem('Some item', { id: 'aaaaaaaaaaaaaaaa' })
     ];
 
-    const result = data.sort(sortItems.bind(null, false, true));
+    const result = data.toSorted(sortItems.bind(null, false, true));
 
     expect(result).toMatchObject(expected);
   });
