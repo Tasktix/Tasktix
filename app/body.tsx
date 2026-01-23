@@ -19,6 +19,7 @@
 'use client';
 
 import {
+  addToast,
   Button,
   Link,
   Navbar,
@@ -33,12 +34,12 @@ import {
   Avatar
 } from '@heroui/react';
 import { useRouter } from 'next/navigation';
-import { ReactNode } from 'react';
+import { ReactNode, startTransition } from 'react';
 import Image from 'next/image';
 
-import { default as api } from '@/lib/api';
 import ThemeSwitcher from '@/components/ThemeSwitcher';
 import { useAuth } from '@/components/AuthProvider';
+import { authClient } from '@/lib/auth-client';
 
 export default function Body({ children }: Readonly<{ children: ReactNode }>) {
   return (
@@ -105,14 +106,20 @@ function AccountButton() {
   const router = useRouter();
 
   function handleClick() {
-    api
-      .delete('/session')
-      .catch(_ => {})
-      .finally(() => {
-        setIsLoggedIn(false);
-        router.replace('/');
+    startTransition(async () => {
+      await authClient.signOut({
+        fetchOptions: {
+          onSuccess: () =>{
+            setIsLoggedIn(false);
+            router.push("/");
+          },
+          onError: (ctx) => {
+            addToast({ title: ctx.error.message, color: 'danger' });
+          }
+        }
       });
-  }
+    }
+  )};
 
   if (!isLoggedIn)
     return (

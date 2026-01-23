@@ -19,11 +19,11 @@
 'use client';
 
 import { addToast, Button, Input } from '@heroui/react';
-import { FormEvent, useState } from 'react';
+import { FormEvent, startTransition, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-import { default as api } from '@/lib/api';
 import { useAuth } from '@/components/AuthProvider';
+import { authClient } from '@/lib/auth-client';
 
 export default function SignIn() {
   const { setIsLoggedIn } = useAuth();
@@ -40,18 +40,21 @@ export default function SignIn() {
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    api
-      .post('/session', inputs)
-      .then(() => {
-        setIsLoggedIn(true);
-        router.replace('/list');
+    startTransition(async () => {
+      // TODO: Update to use username
+      const {data, error} = await authClient.signIn.email({
+        email: inputs.username,
+        password: inputs.password, 
+      }, {
+        onError: (ctx) => {
+          addToast({ title: ctx.error.message, color: 'danger' });
+        },
+        onSuccess: () => {
+          setIsLoggedIn(true);
+          router.push("/list");
+        }
       })
-      .catch(err =>
-        addToast({
-          title: err.message,
-          color: 'danger'
-        })
-      );
+    });
   }
 
   return (
