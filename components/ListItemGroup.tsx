@@ -20,7 +20,7 @@
 
 import { useState } from 'react';
 
-import { StaticListItem } from '@/components/ListItem';
+import { ListItem } from '@/components/ListItem';
 import { sortItems } from '@/lib/sortItems';
 import { default as api } from '@/lib/api';
 import ListItemModel from '@/lib/model/listItem';
@@ -87,7 +87,7 @@ export default function ListItemGroup({
     setItems(newItems);
   }
 
-  function updateDueDate(index: number, date: Date) {
+  function updateDueDate(index: number, date: ListItemModel['dateDue']) {
     const newItems = structuredClone(items);
 
     newItems[index].dateDue = date;
@@ -132,7 +132,7 @@ export default function ListItemGroup({
           .sort(sortItems.bind(null, false, false))
           .filter((item, idx) => item.status !== 'Completed' && idx < 10)
           .map((item, idx) => (
-            <StaticListItem
+            <ListItem
               key={item.id}
               addNewTag={addNewTag.bind(null, item.listId)}
               deleteItem={deleteItem.bind(null, idx)}
@@ -147,9 +147,10 @@ export default function ListItemGroup({
               item={item}
               list={builtLists.find(list => list.id === item.listId)}
               members={item.listId ? parsedMembers[item.listId] : []}
+              resetTime={setStatus.bind(null, idx)}
               setCompleted={setStatus.bind(null, idx, 'Completed')}
               setPaused={() => setStatus(idx, 'Paused', null)}
-              setStatus={setStatus.bind(null, idx)}
+              setRunning={setStatus.bind(null, idx, 'In_Progress')}
               tagsAvailable={item.listId ? tags[item.listId] : []}
               updateDueDate={updateDueDate.bind(null, idx)}
               updateExpectedMs={updateExpectedMs.bind(null, idx)}
