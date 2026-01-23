@@ -21,14 +21,18 @@ import z from 'zod';
 import { randomNamedColor } from '../color';
 
 import { NamedColor, namedColors } from './color';
+import { user } from '@heroui/theme';
 
-export const ZodUser = z.strictObject({
-  id: z.string().length(191),
-  name: z
+const userFormat = z
     .string()
     .min(3)
     .max(32)
-    .regex(/^[a-zA-Z0-9_]*$/),
+    .regex(/^[a-zA-Z0-9_]*$/)
+
+export const ZodUser = z.strictObject({
+  id: z.string().length(191),
+  name:userFormat,
+  username: userFormat,
   email: z.email().max(128),
   legacyPassword: z.string().min(10).max(128),
   color: z.enum(namedColors)
@@ -37,8 +41,10 @@ export const ZodUser = z.strictObject({
 export default class User {
   id: string;
   name: string;
+  username: string| null;
+  displayUsername: string | null;
   email: string;
-  emailVerified: boolean ;
+  emailVerified: boolean;
   legacyPassword: string | null;
   image: string | null;
   color: NamedColor;
@@ -54,13 +60,19 @@ export default class User {
     image: string,
     createdAt: Date,
     updatedAt: Date,
-    color?: NamedColor 
+    color?: NamedColor,
+    username?: string,
+    displayUsername?: string
   ) {
 
     if (!color) color = randomNamedColor();
+    if (!username) username = name;
+    if (!displayUsername) displayUsername = name;
 
     this.id = id;
     this.name = name;
+    this.username = username;
+    this.displayUsername = displayUsername;
     this.email = email;
     this.emailVerified = emailVerfied;
     this.legacyPassword = legacyPassword;

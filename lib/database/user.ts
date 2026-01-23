@@ -34,6 +34,13 @@ export async function createUser(user: User): Promise<boolean> {
   return true;
 }
 
+/**
+ * Directly Updates a users database object by id.
+ * !IMPORTANT: Updating a user object should be generally handled using the BetterAuth API, 
+ * ! or via a narrower scoped function than (i.e updateUserColor)   
+ * @param user 
+ * @returns 
+ */
 export async function updateUser(user: User): Promise<boolean> {
   const result = await prisma.user.update({
     where: { id: user.id },
@@ -50,9 +57,9 @@ export async function getUserById(id: string): Promise<User | false> {
 }
 
 export async function getUserByUsername(
-  name: string
+  username: string
 ): Promise<User | false> {
-  const result = await prisma.user.findUnique({ where: { name } });
+  const result = await prisma.user.findUnique({ where: { username } });
 
   return result ?? false;
 }

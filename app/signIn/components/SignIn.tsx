@@ -41,9 +41,8 @@ export default function SignIn() {
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     startTransition(async () => {
-      // TODO: Update to use username
-      const {data, error} = await authClient.signIn.email({
-        email: inputs.username,
+      const {data, error} = await authClient.signIn.username({
+        username: inputs.username,
         password: inputs.password, 
       }, {
         onError: (ctx) => {

@@ -17,8 +17,7 @@
  */
 
 import { ClientError, ServerError, Success } from '@/lib/Response';
-import { getUser, clearUser } from '@/lib/session';
-import { ZodUser } from '@/lib/model/user';
+import { getUser } from '@/lib/session';
 
 
 export async function GET(_: Request) {

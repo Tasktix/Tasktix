@@ -126,19 +126,21 @@ model Session {
 }
 
 model User {
-  id             String         @id @db.VarChar(191)
-  name           String         @unique @db.VarChar(32)
-  email          String         @unique @db.VarChar(128)
-  legacyPassword String?        @db.Char(205)
-  color          User_color
-  image          String?        @db.Text
-  emailVerified  Boolean        @default(false)
-  createdAt      DateTime       @default(now()) @db.DateTime(0)
-  updatedAt      DateTime
-  Account        Account[]
-  assignedItems  ItemAssignee[]
-  memberships    ListMember[]
-  Session        Session[]
+  id              String         @id @db.VarChar(191)
+  name            String         @unique @db.VarChar(32)
+  email           String         @unique @db.VarChar(128)
+  legacyPassword  String?        @db.Char(205)
+  color           User_color
+  image           String?        @db.Text
+  emailVerified   Boolean        @default(false)
+  createdAt       DateTime       @default(now()) @db.DateTime(0)
+  updatedAt       DateTime
+  username        String?        @unique @db.VarChar(32)
+  displayUsername String?        @unique @db.VarChar(32)
+  Account         Account[]
+  assignedItems   ItemAssignee[]
+  memberships     ListMember[]
+  Session         Session[]
 }
 
 model Verification {

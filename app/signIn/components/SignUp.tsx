@@ -99,12 +99,14 @@ export default function SignUp() {
         email: inputs.email,
         password: inputs.password,
         name: inputs.username,
+        username: inputs.username,
         color: randomNamedColor()
       }, {
         onError: (ctx) => {
           addToast({ title: ctx.error.message, color: 'danger' });
         },
         onSuccess: () => {
+          setIsLoggedIn(true);
           router.push("/list");
         }
       });
