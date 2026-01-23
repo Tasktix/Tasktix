@@ -30,7 +30,7 @@ jest.mock('@/lib/api');
 
 jest.mock('framer-motion', () => ({
   ...jest.requireActual('framer-motion'),
-  LazyMotion: ({ children }) => <>{children}</>
+  LazyMotion: ({ children }: { children: React.ReactNode }) => children
 }));
 
 beforeEach(() => {

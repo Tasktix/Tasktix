@@ -34,7 +34,7 @@ jest.mock('next/navigation');
 
 jest.mock('framer-motion', () => ({
   ...jest.requireActual('framer-motion'),
-  LazyMotion: ({ children }) => <>{children}</>
+  LazyMotion: ({ children }: { children: React.ReactNode }) => children
 }));
 
 beforeEach(() => {
