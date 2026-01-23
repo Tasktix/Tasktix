@@ -19,7 +19,7 @@
 import * as generateIdModule from '@/lib/generateId'; // Needed for mocking - skipcq: JS-C1003
 import * as colorModule from '@/lib/color'; // Needed for mocking - skipcq: JS-C1003
 
-import User from './user';
+import User from '../user';
 
 const fixedDateCreated = new Date('2020-01-01T00:00:00Z');
 const fixedDateSignedIn = new Date('2020-01-02T00:00:00Z');

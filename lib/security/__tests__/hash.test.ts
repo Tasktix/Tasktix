@@ -18,7 +18,7 @@
 
 import * as crypto from 'crypto'; // Needed for mocking - skipcq: JS-C1003
 
-import { hash, compare } from './hash';
+import { hash, compare } from '../hash';
 
 // Allow mocking methods for testing response on failure
 jest.mock('crypto', () => {

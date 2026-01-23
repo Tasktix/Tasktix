@@ -24,7 +24,7 @@ import {
   inputToDate,
   dateToInput,
   parseTime
-} from './date';
+} from '../date';
 
 beforeAll(() => {
   jest.useFakeTimers();

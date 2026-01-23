@@ -21,9 +21,9 @@ import { redirect } from 'next/navigation';
 import { getUser } from '@/lib/session';
 import User from '@/lib/model/user';
 
-import { authorize } from './authorize';
+import { authorize } from '../authorize';
 
-jest.mock('../session', () => ({
+jest.mock('@/lib/session', () => ({
   getUser: jest.fn()
 }));
 

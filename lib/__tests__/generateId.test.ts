@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { generateId } from './generateId';
+import { generateId } from '../generateId';
 
 test('Generates a 16-character ID by default', () => {
   const result = generateId();

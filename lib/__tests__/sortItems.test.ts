@@ -18,7 +18,11 @@
 
 import ListItem from '@/lib/model/listItem';
 
-import { sortItems, sortItemsByCompleted, sortItemsByIndex } from './sortItems';
+import {
+  sortItems,
+  sortItemsByCompleted,
+  sortItemsByIndex
+} from '../sortItems';
 
 beforeAll(() => {
   jest.useFakeTimers();
