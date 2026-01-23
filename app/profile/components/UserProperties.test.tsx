@@ -144,5 +144,102 @@ describe('UserProperties functions', () => {
     await user.click(getByLabelText('clear'));
 
     expect(addToast as jest.Mock).toHaveBeenCalledTimes(1);
+    expect(addToast as jest.Mock).toHaveBeenCalledWith({
+      title: 'Please specify a user color',
+      color: 'danger'
+    });
+  });
+});
+
+describe('UserProperties errors', () => {
+  const oldUser = {
+    id: 1234,
+    username: 'oldUsername',
+    email: 'oldEmail@gmail.com',
+    color: 'Pink'
+  };
+
+  test('setUsername error message', async () => {
+    (api.patch as jest.Mock).mockRejectedValue(
+      new Error('Server message about failure')
+    );
+
+    const newName = 'newUsername';
+
+    const user = userEvent.setup();
+    const { getByLabelText, getByTestId } = render(
+      <HeroUIProvider disableRipple>
+        <UserProperties user={JSON.stringify(oldUser)} />
+      </HeroUIProvider>
+    );
+
+    const usernameInput = getByLabelText('Username');
+
+    await user.clear(usernameInput);
+    await user.type(usernameInput, newName);
+    await user.click(
+      within(getByTestId('confirmed-input-Username')).getByRole('button')
+    );
+
+    expect(addToast as jest.Mock).toHaveBeenCalledTimes(1);
+    expect(addToast as jest.Mock).toHaveBeenCalledWith({
+      title: 'Server message about failure',
+      color: 'danger'
+    });
+  });
+
+  test('setEmail error message', async () => {
+    (api.patch as jest.Mock).mockRejectedValue(
+      new Error('Server message about failure')
+    );
+
+    const newEmail = 'newEmail@gmail.com';
+
+    const user = userEvent.setup();
+    const { getByLabelText, getByTestId } = render(
+      <HeroUIProvider disableRipple>
+        <UserProperties user={JSON.stringify(oldUser)} />
+      </HeroUIProvider>
+    );
+
+    const emailInput = getByLabelText('Email');
+
+    await user.clear(emailInput);
+    await user.type(emailInput, newEmail);
+    await user.click(
+      within(getByTestId('confirmed-input-Email')).getByRole('button')
+    );
+
+    expect(addToast as jest.Mock).toHaveBeenCalledTimes(1);
+    expect(addToast as jest.Mock).toHaveBeenCalledWith({
+      title: 'Server message about failure',
+      color: 'danger'
+    });
+  });
+
+  test('setColor error message', async () => {
+    (api.patch as jest.Mock).mockRejectedValue(
+      new Error('Server message about failure')
+    );
+    const user = userEvent.setup();
+
+    const { getByLabelText, getByTestId } = render(
+      <HeroUIProvider disableRipple reducedMotion='always'>
+        <UserProperties user={JSON.stringify(oldUser)} />
+      </HeroUIProvider>
+    );
+
+    const colorInput = within(getByTestId('colorPicker')).getByRole('button');
+
+    expect(colorInput).toHaveClass('bg-pink-500');
+
+    await user.click(colorInput);
+    await user.click(getByLabelText('Red'));
+
+    expect(addToast as jest.Mock).toHaveBeenCalledTimes(1);
+    expect(addToast as jest.Mock).toHaveBeenCalledWith({
+      title: 'Server message about failure',
+      color: 'danger'
+    });
   });
 });
