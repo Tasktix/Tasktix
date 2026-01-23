@@ -317,13 +317,9 @@ export default function ListItem({
           addNewTag={addNewTag}
           className='hidden lg:flex'
           isComplete={_item.status === 'Completed'}
-          linkNewTag={(id, name, color) =>
-            dispatchItem({ type: 'LinkNewTag', id, name, color })
-          }
+          linkNewTag={itemHandlers.linkNewTag}
           linkTag={itemHandlers.linkTag}
-          tags={tagsAvailable.filter(tag =>
-            _item.tags.find(t => tag.id === t.id)
-          )}
+          tags={_item.tags}
           tagsAvailable={tagsAvailable}
           unlinkTag={itemHandlers.unlinkTag}
         />
