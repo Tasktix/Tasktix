@@ -67,10 +67,14 @@ the leading verb in your title:
 - `fix`: A bug is resolved
 - `perf`: Only performance improvements; no external/user impact (besides quicker responses)
 - `docs`: Only documentation changes; no external/user impact
-- `style`: Only stylistic changes; no external/user impact
+- `style`: Only UI stylistic changes; no external/user impact
 - `refactor`: Only code structure changes; no external/user impact
 - `test`: Only test coverage improvements; no external/user impact
 - `chore`: Misc. changes that don't fit other categories; no external/user impact
+
+This should be followed by an exclamation point (`!`) if your PR introduces breaking (i.e.
+non-backward compatible) changes. In all cases, this prefix should then be followed by a
+colon and space (`: `) and a title explaining the purpose of the PR.
 
 ### Documentation
 
