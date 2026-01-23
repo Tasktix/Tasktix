@@ -35,13 +35,14 @@ const PostBody = ZodUser.pick({ username: true });
  */
 export async function POST(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const user = await getUser();
 
   if (!user) return ClientError.Unauthenticated('Not logged in');
 
-  const isMember = await getIsListAssignee(user.id, params.id);
+  const isMember = await getIsListAssignee(user.id, id);
 
   if (!isMember) return ClientError.NotFound('List not found');
 
@@ -58,12 +59,12 @@ export async function POST(
 
   if (!newUser) return ClientError.NotFound('User not found');
 
-  if (await getIsListAssignee(newUser.id, params.id))
+  if (await getIsListAssignee(newUser.id, id))
     return ClientError.Conflict('User is already a member');
 
   const listMember = new ListMember(newUser);
 
-  const result = await createListMember(params.id, listMember);
+  const result = await createListMember(id, listMember);
 
   if (!result) return ServerError.Internal('Could not add member');
 

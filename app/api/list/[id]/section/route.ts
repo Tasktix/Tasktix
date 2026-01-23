@@ -27,13 +27,14 @@ const PostBody = ZodListSection.omit({ id: true });
 
 export async function POST(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const user = await getUser();
 
   if (!user) return ClientError.Unauthenticated('Not logged in');
 
-  const isMember = await getIsListAssignee(user.id, params.id);
+  const isMember = await getIsListAssignee(user.id, id);
 
   if (!isMember) return ClientError.BadRequest('List not found');
 
@@ -52,12 +53,12 @@ export async function POST(
 
   const listSection = new ListSection(name, []);
 
-  const result = await createListSection(params.id, listSection);
+  const result = await createListSection(id, listSection);
 
   if (!result) return ServerError.Internal('Could not create section');
 
   return Success.Created(
     'Section created',
-    `/list/${params.id}/section/${listSection.id}`
+    `/list/${id}/section/${listSection.id}`
   );
 }

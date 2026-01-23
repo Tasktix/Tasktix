@@ -25,7 +25,7 @@ import {
 import { ZodUser } from '@/lib/model/user';
 import { getUser } from '@/lib/session';
 
-export const dynamic = 'force-dynamic' as const; // defaults to auto
+export const dynamic = 'force-dynamic'; // defaults to auto
 
 const PatchBody = ZodUser.omit({ id: true, password: true }).partial();
 
@@ -39,13 +39,15 @@ const PatchBody = ZodUser.omit({ id: true, password: true }).partial();
  */
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
+
   try {
     const user = await getUser();
 
     if (!user) return ClientError.Unauthenticated('Not logged in');
-    if (user.id !== params.id)
+    if (user.id !== id)
       return ClientError.Forbidden('Insufficient permissions');
     const parseResult = PatchBody.safeParse(await request.json());
 

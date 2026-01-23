@@ -76,11 +76,13 @@ export default function DateInput2({
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [date, setDate] = useState(value || defaultValue || null);
-  const input = useRef<HTMLInputElement | null>();
+  const input = useRef<HTMLInputElement | null>(undefined);
   const lastTrigger = useRef(new Date());
 
   // Respect the `value` prop if there is one
   useEffect(() => {
+    // This component is about to be replaced with HeroUI anyway:
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (value !== undefined) setDate(value);
   }, [value]);
 

@@ -34,17 +34,18 @@ const PatchBody = ZodListItem.omit({
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const user = await getUser();
 
   if (!user) return ClientError.Unauthenticated('Not logged in');
 
-  const item = await getListItemById(params.id);
+  const item = await getListItemById(id);
 
   if (!item) return ClientError.NotFound('List item not found');
 
-  const member = await getListMemberByItem(user.id, params.id);
+  const member = await getListMemberByItem(user.id, id);
 
   if (!member) return ClientError.BadRequest('List item not found');
 
@@ -86,19 +87,20 @@ export async function PATCH(
 
 export async function DELETE(
   _: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const user = await getUser();
 
   if (!user) return ClientError.Unauthenticated('Not logged in');
 
-  const member = await getListMemberByItem(user.id, params.id);
+  const member = await getListMemberByItem(user.id, id);
 
   if (!member) return ClientError.BadRequest('List not found');
   if (!member.canRemove)
     return ClientError.BadRequest('Insufficient permissions to remove item');
 
-  const result = await deleteListItem(params.id);
+  const result = await deleteListItem(id);
 
   if (!result) return ServerError.Internal('Could not delete item');
 

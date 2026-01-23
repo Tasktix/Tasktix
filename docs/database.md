@@ -30,7 +30,6 @@ and apply it to your environment:
 1. Run `npm run prisma:migrate`. This will create a new SQL migration file in the
    [migrations directory](../prisma/migrations/) to apply the changes
 1. Validate the generated SQL matches expected behavior
-
    - Renames may be implemented as `DROP` and `CREATE` statements by default. These should
      be edited by hand to avoid data loss when the migration is applied to the production
      database

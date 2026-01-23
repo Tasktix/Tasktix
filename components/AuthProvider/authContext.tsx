@@ -16,29 +16,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { Metadata } from 'next';
+import { createContext } from 'react';
 
-import Body from '@/app/body';
-import { getUser } from '@/lib/session';
-
-import { Providers } from './providers';
-import './globals.css';
-
-export const metadata: Metadata = {
-  title: 'Tasktix',
-  description: 'For all your to-do needs!'
-} as const;
-
-export default async function RootLayout({
-  children
-}: Readonly<{ children: React.ReactNode }>) {
-  return (
-    <html suppressHydrationWarning lang='en'>
-      <body>
-        <Providers isLoggedInAtStart={Boolean(await getUser())}>
-          <Body>{children}</Body>
-        </Providers>
-      </body>
-    </html>
-  );
+interface AuthContextType {
+  isLoggedIn: boolean;
+  setIsLoggedIn: (_: boolean) => void;
 }
+
+export const AuthContext = createContext<AuthContextType | undefined>(
+  undefined
+);

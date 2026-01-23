@@ -47,6 +47,8 @@ export default function CalendarInput({
   // Respect the `value` prop if there is one
   useEffect(() => {
     if (value !== undefined) {
+      // This component is about to be replaced with HeroUI anyway;
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setDate(value);
       setCurrentRange(value);
     }

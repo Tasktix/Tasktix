@@ -32,13 +32,14 @@ const PatchBody = z.strictObject({
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string; sectionId: string } }
+  { params }: { params: Promise<{ id: string; sectionId: string }> }
 ) {
+  const { id, sectionId } = await params;
   const user = await getUser();
 
   if (!user) return ClientError.Unauthenticated('Not logged in');
 
-  const isMember = await getIsListAssignee(user.id, params.id);
+  const isMember = await getIsListAssignee(user.id, id);
 
   if (!isMember) return ClientError.BadRequest('List not found');
 
@@ -53,12 +54,7 @@ export async function PATCH(
   const index = requestBody.index;
   const oldIndex = requestBody.oldIndex;
 
-  const result = await updateSectionIndices(
-    params.sectionId,
-    itemId,
-    index,
-    oldIndex
-  );
+  const result = await updateSectionIndices(sectionId, itemId, index, oldIndex);
 
   if (!result) return ServerError.Internal('Could not reorder items');
 

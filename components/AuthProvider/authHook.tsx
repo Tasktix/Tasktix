@@ -16,29 +16,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { Metadata } from 'next';
+import { useContext } from 'react';
 
-import Body from '@/app/body';
-import { getUser } from '@/lib/session';
+import { AuthContext } from './authContext';
 
-import { Providers } from './providers';
-import './globals.css';
+export function useAuth() {
+  const context = useContext(AuthContext);
 
-export const metadata: Metadata = {
-  title: 'Tasktix',
-  description: 'For all your to-do needs!'
-} as const;
+  if (!context) throw new Error('useAuth must be used within an AuthProvider');
 
-export default async function RootLayout({
-  children
-}: Readonly<{ children: React.ReactNode }>) {
-  return (
-    <html suppressHydrationWarning lang='en'>
-      <body>
-        <Providers isLoggedInAtStart={Boolean(await getUser())}>
-          <Body>{children}</Body>
-        </Providers>
-      </body>
-    </html>
-  );
+  return context;
 }

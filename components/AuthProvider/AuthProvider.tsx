@@ -16,29 +16,33 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { Metadata } from 'next';
+'use client';
 
-import Body from '@/app/body';
-import { getUser } from '@/lib/session';
+import { useState, ReactNode, useMemo } from 'react';
 
-import { Providers } from './providers';
-import './globals.css';
+import { AuthContext } from './authContext';
 
-export const metadata: Metadata = {
-  title: 'Tasktix',
-  description: 'For all your to-do needs!'
-} as const;
+/**
+ * Provides React Context about whether a user is currently logged in; intended for use
+ * in the top-level Next.js layout file.
+ *
+ * @param children The React tree that should be able to use the auth context
+ * @param isLoggedInAtStart Whether the user is logged in on first render
+ */
+export default function AuthProvider({
+  children,
+  isLoggedInAtStart
+}: {
+  children: ReactNode;
+  isLoggedInAtStart: boolean;
+}) {
+  const [isLoggedIn, setIsLoggedIn] = useState(isLoggedInAtStart);
 
-export default async function RootLayout({
-  children
-}: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html suppressHydrationWarning lang='en'>
-      <body>
-        <Providers isLoggedInAtStart={Boolean(await getUser())}>
-          <Body>{children}</Body>
-        </Providers>
-      </body>
-    </html>
+    <AuthContext.Provider
+      value={useMemo(() => ({ isLoggedIn, setIsLoggedIn }), [isLoggedIn])}
+    >
+      {children}
+    </AuthContext.Provider>
   );
 }
