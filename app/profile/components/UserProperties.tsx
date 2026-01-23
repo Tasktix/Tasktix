@@ -87,7 +87,7 @@ export default function UserProperties({ user }: { user: string }) {
   }
 
   /**
-   * Sets the user's color
+   * Sets the user's color. If null, return error.
    *
    * @param color the user's color
    */

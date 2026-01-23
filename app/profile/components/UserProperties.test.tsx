@@ -20,7 +20,7 @@
 import { render, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
-import { HeroUIProvider } from '@heroui/react';
+import { HeroUIProvider, addToast } from '@heroui/react';
 
 import api from '@/lib/api';
 
@@ -31,6 +31,11 @@ jest.mock('@/lib/api');
 jest.mock('framer-motion', () => ({
   ...jest.requireActual('framer-motion'),
   LazyMotion: ({ children }: { children: React.ReactNode }) => children
+}));
+
+jest.mock('@heroui/react', () => ({
+  ...jest.requireActual('@heroui/react'),
+  addToast: jest.fn()
 }));
 
 beforeEach(() => {
@@ -122,5 +127,22 @@ describe('UserProperties functions', () => {
     expect(api.patch as jest.Mock).toHaveBeenCalledWith(`/user/${oldUser.id}`, {
       color: 'Red'
     });
+  });
+
+  test('setColor is null', async () => {
+    const user = userEvent.setup();
+
+    const { getByLabelText, getByTestId } = render(
+      <HeroUIProvider disableRipple reducedMotion='always'>
+        <UserProperties user={JSON.stringify(oldUser)} />
+      </HeroUIProvider>
+    );
+
+    const colorInput = within(getByTestId('colorPicker')).getByRole('button');
+
+    await user.click(colorInput);
+    await user.click(getByLabelText('clear'));
+
+    expect(addToast as jest.Mock).toHaveBeenCalledTimes(1);
   });
 });
