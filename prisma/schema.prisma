@@ -68,7 +68,7 @@ model Tag {
 }
 
 model ListMember {
-  userId      String  @db.Char(16)
+  userId      String  @db.Char(191)
   listId      String  @db.Char(16)
   canAdd      Boolean @default(false)
   canRemove   Boolean @default(false)
@@ -82,7 +82,7 @@ model ListMember {
 }
 
 model ItemAssignee {
-  userId String @db.Char(16)
+  userId String @db.Char(191)
   itemId String @db.Char(16)
   role   String @db.VarChar(64)
   item   Item   @relation(fields: [itemId], references: [id], onDelete: Cascade)
