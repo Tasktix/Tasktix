@@ -33,6 +33,9 @@ RUN npm run local:build && npm prune --omit=dev
 
 # Production image, copy all the files and run next
 FROM base AS runner
+LABEL org.opencontainers.image.source=https://github.com/Tasktix/Tasktix
+LABEL org.opencontainers.image.description="A powerful and flexible task-tracking tool for all."
+LABEL org.opencontainers.image.licenses=AGPL-3.0-or-later
 WORKDIR /app
 
 ENV NODE_ENV=production

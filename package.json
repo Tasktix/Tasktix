@@ -23,8 +23,8 @@
     "test:cy": "CYPRESS_EXIT=0; npm run start:test -- --detach && npm run testdb:reset; cypress run || CYPRESS_EXIT=$?; npm run stop:test && exit $CYPRESS_EXIT",
     "start:test": "cross-env DB_PASSWORD=password DB_DATABASE=tasktix_test docker compose -f compose.yaml -f compose.test.yaml up --build",
     "stop:test": "docker compose -f compose.yaml -f compose.test.yaml down --volumes",
-    "testdb:reset": "docker compose exec test npm run prisma:reset -- --force",
-    "testdb:seed": "docker compose exec test npm run prisma:seed",
+    "testdb:reset": "docker compose exec deploy npm run prisma:reset -- --force",
+    "testdb:seed": "docker compose exec deploy npm run prisma:seed",
     "cy:open": "cypress open"
   },
   "dependencies": {
