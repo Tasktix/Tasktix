@@ -1,7 +1,7 @@
 services:
   web:
     depends_on:
-      test:
+      deploy:
         condition: service_healthy
 
   mariadb:
@@ -22,10 +22,10 @@ services:
       retries: 5
       start_period: 2s
 
-  test:
+  deploy:
     build:
       context: .
-      dockerfile: Dockerfile.test
+      dockerfile: Dockerfile.deploy
     depends_on:
       mariadb:
         condition: service_healthy

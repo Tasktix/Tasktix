@@ -26,10 +26,12 @@ import { namedColors, NamedColor } from '@/lib/model/color';
 import { getBackgroundColor } from '@/lib/color';
 
 export default function ColorPicker({
+  label,
   value,
   onValueChange,
   className
 }: {
+  label?: string;
   value: NamedColor | null;
   onValueChange: (color: NamedColor | null) => unknown;
   className?: string;
@@ -46,6 +48,7 @@ export default function ColorPicker({
       <PopoverTrigger>
         <Button
           isIconOnly
+          aria-label={label ?? 'Pick color'}
           className={`${value ? getBackgroundColor(value) : ''} ${className}`}
           size='sm'
         >

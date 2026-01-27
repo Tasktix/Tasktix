@@ -22,6 +22,7 @@ import { ActionDispatch, Dispatch, RefObject, SetStateAction } from 'react';
 import api from '@/lib/api';
 import ListItem from '@/lib/model/listItem';
 import Tag from '@/lib/model/tag';
+import { NamedColor } from '@/lib/model/color';
 
 import { ItemAction } from './types';
 
@@ -186,6 +187,31 @@ export function itemHandlerFactory(
   }
 
   /**
+   * Adds a just-created tag to the item. Handled separately from `linkTag` because the
+   * React state doesn't necessarily include the new tag yet, so it has to be created from
+   * its name and color instead of just being looked up in the list's tags.
+   *
+   * Note: does **not** make an API request to create the new tag, just to link it to this
+   * item. That API request should succeed before this function is called.
+   *
+   * @param id The new tag's ID
+   * @param name The new tag's name
+   * @param color The new tag's display color
+   */
+  function linkNewTag(
+    id: string,
+    name: string,
+    color: NamedColor
+  ): Promise<unknown> {
+    return api
+      .post(`/item/${itemId}/tag/${id}`, {})
+      .then(() => {
+        dispatchItem({ type: 'LinkNewTag', id, name, color });
+      })
+      .catch(err => addToast({ title: err.message, color: 'danger' }));
+  }
+
+  /**
    * Removes the item
    */
   function deleteSelf() {
@@ -209,6 +235,7 @@ export function itemHandlerFactory(
     setExpectedMs,
     linkTag,
     unlinkTag,
+    linkNewTag,
     deleteSelf
   };
 }
