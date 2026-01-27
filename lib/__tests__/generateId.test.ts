@@ -16,36 +16,34 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-jest.mock('../generateId', () => ({
-  generateId: jest.fn(() => 'mock-generated-id')
-}));
-
 import { generateId } from '../generateId';
 
-import Tag from './tag';
+test('Generates a 16-character ID by default', () => {
+  const result = generateId();
 
-beforeEach(() => {
-  (generateId as jest.Mock).mockClear();
+  expect(result.length).toBe(16);
 });
 
-test('Generates an id if none provided', () => {
-  const tag = new Tag('testTag', 'Amber');
+test('Generates IDs of the specified length', () => {
+  const result = generateId(64);
 
-  expect(tag.id).toBe('mock-generated-id');
-  expect(generateId).toHaveBeenCalled();
+  expect(result.length).toBe(64);
+
+  const result2 = generateId(512);
+
+  expect(result2.length).toBe(512);
+
+  const result3 = generateId(1);
+
+  expect(result3.length).toBe(1);
 });
 
-test('Uses the provided id', () => {
-  const tag = new Tag('testTag', 'Amber', 'provided-id');
+test('Generated IDs contain only numbers and letters', () => {
+  crypto.getRandomValues = jest
+    .fn()
+    .mockReturnValueOnce(new Uint8Array(512).map((_, i) => i));
 
-  expect(tag.id).toBe('provided-id');
-  expect(generateId).not.toHaveBeenCalled();
-});
+  const result2 = generateId(512);
 
-test('Assigns all properties correctly', () => {
-  const tag = new Tag('testTag', 'Amber', 'provided-id');
-
-  expect(tag.name).toBe('testTag');
-  expect(tag.color).toBe('Amber');
-  expect(tag.id).toBe('provided-id');
+  expect(result2).toMatch(/[0-9A-Za-z]{512}/);
 });

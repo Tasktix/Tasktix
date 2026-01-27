@@ -18,8 +18,12 @@
 
 import * as generateIdModule from '@/lib/generateId'; // Needed for mocking - skipcq: JS-C1003
 
-import ListItem from './listItem';
-import ListSection from './listSection';
+import Session from '../session';
+
+beforeAll(() => {
+  jest.useFakeTimers();
+  jest.setSystemTime(new Date('2023-01-01 00:00:00'));
+});
 
 beforeEach(() => {
   jest
@@ -31,33 +35,28 @@ afterEach(() => {
   jest.restoreAllMocks();
 });
 
-test('Generates an id if none provided', () => {
-  const listSection = new ListSection('testListSection', []);
+afterAll(() => {
+  jest.useRealTimers();
+});
 
-  expect(listSection.id).toBe('mock-generated-id');
+test('Generates an id if none provided', () => {
+  const session = new Session('user-id', new Date());
+
+  expect(session.id).toBe('mock-generated-id');
   expect(generateIdModule.generateId).toHaveBeenCalled();
 });
 
 test('Uses the provided id', () => {
-  const listSection = new ListSection('testListSection', [], 'provided-id');
+  const session = new Session('user-id', new Date(), 'provided-id');
 
-  expect(listSection.id).toBe('provided-id');
+  expect(session.id).toBe('provided-id');
   expect(generateIdModule.generateId).not.toHaveBeenCalled();
 });
 
 test('Assigns all properties correctly', () => {
-  const listItems = [
-    new ListItem('listItem1', {}),
-    new ListItem('listItem2', {})
-  ];
+  const session = new Session('user-id', new Date(), 'provided-id');
 
-  const listSection = new ListSection(
-    'testListSection',
-    listItems,
-    'provided-id'
-  );
-
-  expect(listSection.name).toBe('testListSection');
-  expect(listSection.items).toBe(listItems);
-  expect(listSection.id).toBe('provided-id');
+  expect(session.id).toBe('provided-id');
+  expect(session.userId).toBe('user-id');
+  expect(session.dateExpire).toEqual(new Date());
 });
