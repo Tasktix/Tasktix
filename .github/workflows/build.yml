@@ -33,7 +33,7 @@ jobs:
             org.opencontainers.image.description=A powerful and flexible task-tracking tool for all.
             org.opencontainers.image.licenses=AGPL-3.0-or-later
           tags: |
-            ghcr.io/tasktix/tasktix-web:latest
+            latest
         env:
           DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
       - name: Build and push web image
@@ -69,7 +69,7 @@ jobs:
             org.opencontainers.image.description=A powerful and flexible task-tracking tool for all.
             org.opencontainers.image.licenses=AGPL-3.0-or-later
           tags: |
-            ghcr.io/tasktix/tasktix-deploy:latest
+            latest
         env:
           DOCKER_METADATA_ANNOTATIONS_LEVELS: index
       - name: Build and push deploy image
