@@ -21,7 +21,6 @@ import z from 'zod';
 import { randomNamedColor } from '../color';
 
 import { NamedColor, namedColors } from './color';
-import { user } from '@heroui/theme';
 
 const userFormat = z
     .string()
@@ -56,12 +55,12 @@ export default class User {
     name: string,
     email: string,
     emailVerfied: boolean,
-    legacyPassword: string,
-    image: string,
     createdAt: Date,
     updatedAt: Date,
     color?: NamedColor,
     username?: string,
+    image?: string,
+    legacyPassword?: string,
     displayUsername?: string
   ) {
 
@@ -75,8 +74,8 @@ export default class User {
     this.displayUsername = displayUsername;
     this.email = email;
     this.emailVerified = emailVerfied;
-    this.legacyPassword = legacyPassword;
-    this.image = image;
+    this.legacyPassword = legacyPassword ?? null;
+    this.image = image ?? null;
     this.color = color;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;

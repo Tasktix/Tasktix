@@ -33,6 +33,11 @@ export const auth = betterAuth({
   user: {
     modelName: "User",
     tableName: "User",
+    changeEmail: {
+      enabled: true,
+      // TODO: Maybe add Verification Email Service
+      updateEmailWithoutVerification: true
+    },
     additionalFields: {
       color: {
         type: ["Pink", "Red", "Orange", "Amber", "Yellow", "Lime", "Green", "Emerald", "Cyan", "Blue", "Violet"],
@@ -59,6 +64,7 @@ export const auth = betterAuth({
   },
   emailAndPassword: {
     enabled: true,
+    minPasswordLength: 10,
   },
 
   socialProviders: {

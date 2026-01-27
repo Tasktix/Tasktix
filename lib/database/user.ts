@@ -34,17 +34,10 @@ export async function createUser(user: User): Promise<boolean> {
   return true;
 }
 
-/**
- * Directly Updates a users database object by id.
- * !IMPORTANT: Updating a user object should be generally handled using the BetterAuth API, 
- * ! or via a narrower scoped function than (i.e updateUserColor)   
- * @param user 
- * @returns 
- */
-export async function updateUser(user: User): Promise<boolean> {
+export async function updateUserColor(user: User): Promise<boolean> {
   const result = await prisma.user.update({
     where: { id: user.id },
-    data: user
+    data: {color: user.color}
   });
 
   return Boolean(result);
