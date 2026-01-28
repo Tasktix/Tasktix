@@ -106,7 +106,7 @@ describe('UserProperties functions', () => {
     });
   });
 
-  test('Validate setColor', async () => {
+  test('Validate setColor updates user color', async () => {
     (api.patch as jest.Mock).mockImplementation(() => Promise.resolve());
     const user = userEvent.setup();
 
@@ -129,7 +129,7 @@ describe('UserProperties functions', () => {
     });
   });
 
-  test('setColor is null', async () => {
+  test('Give error when color is null', async () => {
     const user = userEvent.setup();
 
     const { getByLabelText, getByTestId } = render(

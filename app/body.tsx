@@ -134,7 +134,7 @@ function AccountButton() {
         <Avatar
           key='profile'
           isIconOnly
-          aria-label='AvatarIcon'
+          aria-label='ProfileActionsDropdown'
           as={Button}
           className={getBackgroundColor(loggedInUser.color)}
           name={loggedInUser.username ?? ''}

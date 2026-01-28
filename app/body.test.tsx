@@ -65,7 +65,7 @@ test('Profile Icon Populates Correctly', () => {
     </HeroUIProvider>
   );
 
-  const avatar = getByLabelText('AvatarIcon');
+  const avatar = getByLabelText('ProfileActionsDropdown');
 
   expect(avatar).toHaveClass('bg-pink-500');
 });

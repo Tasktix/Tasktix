@@ -38,7 +38,7 @@ import { NamedColor } from '@/lib/model/color';
  */
 export default function UserProperties({ user }: { user: string }) {
   const userDetails: User = JSON.parse(user);
-  const [_user, _setUser] = useState(userDetails);
+  const [_user] = useState(userDetails);
 
   /**
    * Sets the user's username
@@ -52,7 +52,6 @@ export default function UserProperties({ user }: { user: string }) {
         const newUserData = structuredClone(_user);
 
         newUserData.username = username;
-        _setUser(newUserData);
         location.reload();
       })
       .catch(err =>
@@ -75,7 +74,6 @@ export default function UserProperties({ user }: { user: string }) {
         const newUserData = structuredClone(_user);
 
         newUserData.email = email;
-        _setUser(newUserData);
         location.reload();
       })
       .catch(err =>
@@ -104,7 +102,6 @@ export default function UserProperties({ user }: { user: string }) {
           const newUserData = structuredClone(_user);
 
           newUserData.color = color;
-          _setUser(newUserData);
           location.reload();
         })
         .catch(err =>
@@ -141,9 +138,12 @@ export default function UserProperties({ user }: { user: string }) {
       </div>
 
       <div className='m-4'>
-        <p className='text-xs my-2 block'>Profile Color </p>
+        <label className='text-xs my-2 block' id='profileColor'>
+          Profile Color
+        </label>
         <span data-testid='colorPicker'>
           <ColorPicker
+            aria-labelledby='profileColor'
             className={'w-10 h-10'}
             value={_user.color}
             onValueChange={setColor}
