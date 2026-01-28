@@ -133,7 +133,9 @@ function AccountButton() {
       <DropdownTrigger>
         <Avatar
           key='profile'
+          isIconOnly
           aria-label='AvatarIcon'
+          as={Button}
           className={getBackgroundColor(loggedInUser.color)}
           name={loggedInUser.username ?? ''}
         />
