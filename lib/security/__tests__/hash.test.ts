@@ -16,13 +16,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import * as crypto from 'crypto'; // Needed for mocking - skipcq: JS-C1003
+import * as crypto from 'node:crypto'; // Needed for mocking - skipcq: JS-C1003
 
-import { hash, compare } from './hash';
+import { hash, compare } from '../hash';
 
 // Allow mocking methods for testing response on failure
 jest.mock('crypto', () => {
-  const actualCrypto = jest.requireActual('crypto');
+  const actualCrypto = jest.requireActual('crypto') as unknown as typeof crypto;
 
   return {
     ...actualCrypto,
@@ -32,7 +32,7 @@ jest.mock('crypto', () => {
 });
 
 beforeEach(() => {
-  const actualCrypto = jest.requireActual('crypto');
+  const actualCrypto = jest.requireActual('crypto') as unknown as typeof crypto;
 
   (crypto.randomFill as jest.Mock).mockImplementation(actualCrypto.randomFill);
   (crypto.scrypt as jest.Mock).mockImplementation(actualCrypto.scrypt);

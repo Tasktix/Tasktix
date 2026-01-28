@@ -16,16 +16,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-jest.mock('../generateId', () => ({
+jest.mock('@/lib/generateId', () => ({
   generateId: jest.fn(() => 'mock-generated-id')
 }));
 
-import { generateId } from '../generateId';
+import { generateId } from '@/lib/generateId';
 
-import List from './list';
-import ListMember from './listMember';
-import ListSection from './listSection';
-import User from './user';
+import List from '../list';
+import ListMember from '../listMember';
+import ListSection from '../listSection';
+import User from '../user';
 
 beforeEach(() => {
   (generateId as jest.Mock).mockClear();

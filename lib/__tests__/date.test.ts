@@ -24,7 +24,7 @@ import {
   inputToDate,
   dateToInput,
   parseTime
-} from './date';
+} from '../date';
 
 beforeAll(() => {
   jest.useFakeTimers();
@@ -37,14 +37,18 @@ afterAll(() => {
 
 describe('getDateDiff', () => {
   test('Returns positive difference when a is later than b', () => {
+    // Short variable name matches test name - skipcq: JS-C1002
     const a = new Date('2023-01-02');
+    // Short variable name matches test name - skipcq: JS-C1002
     const b = new Date('2023-01-01');
 
     expect(getDateDiff(a, b)).toBe(24 * 60 * 60 * 1000);
   });
 
   test('Returns negative difference when a is earlier than b', () => {
+    // Short variable name matches test name - skipcq: JS-C1002
     const a = new Date('2023-01-01');
+    // Short variable name matches test name - skipcq: JS-C1002
     const b = new Date('2023-01-02');
 
     expect(getDateDiff(a, b)).toBe(-(24 * 60 * 60 * 1000));

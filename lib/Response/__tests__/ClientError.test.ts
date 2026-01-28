@@ -24,7 +24,7 @@ import {
   NotFound,
   PayloadTooLarge,
   Unauthenticated
-} from './ClientError';
+} from '../ClientError';
 
 describe('BadRequest', () => {
   test('Returns a response with status 400 and provided headers and JSON-encoded body representing the message and content fields', async () => {

@@ -24,7 +24,7 @@ import {
   getPriorityColor,
   getTextColor,
   randomNamedColor
-} from './color';
+} from '../color';
 
 describe('getPriorityColor', () => {
   test('Returns the correct semantic color for each priority level', () => {

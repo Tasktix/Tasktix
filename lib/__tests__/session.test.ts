@@ -23,7 +23,7 @@ import { getUserBySessionId } from '@/lib/database/user';
 import User from '@/lib/model/user';
 import Session from '@/lib/model/session';
 
-import { setUser, getUser, clearUser } from './session';
+import { setUser, getUser, clearUser } from '../session';
 
 jest.mock('@/lib/database/session');
 jest.mock('@/lib/database/user');
