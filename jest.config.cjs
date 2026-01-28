@@ -126,6 +126,7 @@ const config = {
 
   // Run tests from one or more projects
   // projects: undefined,
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
 
   // Use this configuration option to add custom reporters to Jest
   // reporters: undefined,
