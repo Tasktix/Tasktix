@@ -28,6 +28,8 @@ import { addToast } from '@heroui/react';
 import api from '@/lib/api';
 import User from '@/lib/model/user';
 import ConfirmedTextInput from '@/components/ConfirmedTextInput';
+import ColorPicker from '@/components/ColorPicker';
+import { NamedColor } from '@/lib/model/color';
 
 /**
  * Handles client-side functions for the profile page
@@ -36,7 +38,7 @@ import ConfirmedTextInput from '@/components/ConfirmedTextInput';
  */
 export default function UserProperties({ user }: { user: string }) {
   const userDetails: User = JSON.parse(user);
-  const [_user, _setUser] = useState(userDetails);
+  const [_user] = useState(userDetails);
 
   /**
    * Sets the user's username
@@ -50,7 +52,7 @@ export default function UserProperties({ user }: { user: string }) {
         const newUserData = structuredClone(_user);
 
         newUserData.username = username;
-        _setUser(newUserData);
+        location.reload();
       })
       .catch(err =>
         addToast({
@@ -72,7 +74,7 @@ export default function UserProperties({ user }: { user: string }) {
         const newUserData = structuredClone(_user);
 
         newUserData.email = email;
-        _setUser(newUserData);
+        location.reload();
       })
       .catch(err =>
         addToast({
@@ -80,6 +82,35 @@ export default function UserProperties({ user }: { user: string }) {
           color: 'danger'
         })
       );
+  }
+
+  /**
+   * Sets the user's color. If null, return error.
+   *
+   * @param color the user's color
+   */
+  function setColor(color: NamedColor | null) {
+    if (!color) {
+      addToast({
+        title: 'Please specify a user color',
+        color: 'danger'
+      });
+    } else {
+      api
+        .patch(`/user/${_user.id}`, { color })
+        .then(() => {
+          const newUserData = structuredClone(_user);
+
+          newUserData.color = color;
+          location.reload();
+        })
+        .catch(err =>
+          addToast({
+            title: err.message,
+            color: 'danger'
+          })
+        );
+    }
   }
 
   return (
@@ -104,6 +135,19 @@ export default function UserProperties({ user }: { user: string }) {
           value={_user.email}
           variant='flat'
         />
+      </div>
+
+      <div className='m-4'>
+        <label className='text-xs my-2 block'>
+          Profile Color
+          <span data-testid='colorPicker'>
+            <ColorPicker
+              className={'w-10 h-10 mx-3'}
+              value={_user.color}
+              onValueChange={setColor}
+            />
+          </span>
+        </label>
       </div>
     </div>
   );

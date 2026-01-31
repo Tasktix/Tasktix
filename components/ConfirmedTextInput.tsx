@@ -63,7 +63,7 @@ export default function ConfirmedTextInput({
 
   return (
     <form
-      className='flex grow shrink w-full'
+      className='flex grow shrink w-full items-end'
       data-testid={`confirmed-input-${label ?? 'value'}`}
       onSubmit={e => {
         e.preventDefault();

@@ -29,7 +29,7 @@ export default async function Page() {
 
   return (
     <main className='flex p-6 justify-center flex-grow'>
-      <div className='bg-content1 w-1/3 m-4 rounded-lg px-4 h-full'>
+      <div className='border-2 border-content3 bg-content1 shadow-lg shadow-content2 w-130 m-4 rounded-lg px-4 h-full'>
         <h1 className='text-2xl p-4'>Profile</h1>
         <UserProperties user={JSON.stringify(userDetails)} />
       </div>

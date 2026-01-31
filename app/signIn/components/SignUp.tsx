@@ -30,6 +30,7 @@ import {
 } from '@/lib/validate';
 import { default as api } from '@/lib/api';
 import { useAuth } from '@/components/AuthProvider';
+import User from '@/lib/model/user';
 
 import {
   getUsernameMessage,
@@ -44,7 +45,7 @@ export default function SignUp() {
     password: InputMessage;
   }
 
-  const { setIsLoggedIn } = useAuth();
+  const { setLoggedInUser } = useAuth();
 
   const defaultMessage: InputMessage = { message: '', color: 'default' };
 
@@ -102,8 +103,14 @@ export default function SignUp() {
             username: inputs.username,
             password: inputs.password
           })
-          .then(() => {
-            setIsLoggedIn(true);
+          .then(res => {
+            const content =
+              res.content &&
+              (JSON.parse(res.content) as { location: string; user: User });
+
+            if (!content) throw new Error('User not provided in response');
+
+            setLoggedInUser(content.user);
             router.replace('/list');
           })
           .catch(err => {

@@ -24,9 +24,10 @@ import { useRouter } from 'next/navigation';
 
 import { default as api } from '@/lib/api';
 import { useAuth } from '@/components/AuthProvider';
+import User from '@/lib/model/user';
 
 export default function SignIn() {
-  const { setIsLoggedIn } = useAuth();
+  const { setLoggedInUser } = useAuth();
   const [inputs, setInputs] = useState({ username: '', password: '' });
   const router = useRouter();
 
@@ -42,8 +43,14 @@ export default function SignIn() {
     e.preventDefault();
     api
       .post('/session', inputs)
-      .then(() => {
-        setIsLoggedIn(true);
+      .then(res => {
+        const content =
+          res.content &&
+          (JSON.parse(res.content) as { location: string; user: User });
+
+        if (!content) throw new Error('User not provided in response');
+
+        setLoggedInUser(content.user);
         router.replace('/list');
       })
       .catch(err =>

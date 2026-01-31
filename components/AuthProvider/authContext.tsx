@@ -18,9 +18,11 @@
 
 import { createContext } from 'react';
 
+import User from '@/lib/model/user';
+
 interface AuthContextType {
-  isLoggedIn: boolean;
-  setIsLoggedIn: (_: boolean) => void;
+  loggedInUser: User | false;
+  setLoggedInUser: (_: User | false) => void;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(
