@@ -138,17 +138,16 @@ export default function UserProperties({ user }: { user: string }) {
       </div>
 
       <div className='m-4'>
-        <label className='text-xs my-2 block' id='profileColor'>
+        <label className='text-xs my-2 block'>
           Profile Color
+          <span data-testid='colorPicker'>
+            <ColorPicker
+              className={'w-10 h-10 mx-3'}
+              value={_user.color}
+              onValueChange={setColor}
+            />
+          </span>
         </label>
-        <span data-testid='colorPicker'>
-          <ColorPicker
-            aria-labelledby='profileColor'
-            className={'w-10 h-10'}
-            value={_user.color}
-            onValueChange={setColor}
-          />
-        </span>
       </div>
     </div>
   );
