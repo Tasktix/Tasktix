@@ -16,18 +16,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { OK, Created } from './Success';
+import { BadGateway, Internal } from '../ServerError';
 
-describe('OK', () => {
-  test('Returns a response with status 200 and provided headers and JSON-encoded body representing the message and content fields', async () => {
-    const message = 'Success message';
+describe('Internal', () => {
+  test('Returns a response with status 500 and provided headers and JSON-encoded body representing the message and content fields', async () => {
+    const message = 'Error message';
     const content = 'Extra details';
     const headers = { 'X-Custom': 'some header value' };
 
-    const response = OK(message, content, headers);
+    const response = Internal(message, content, headers);
 
-    expect(response.status).toBe(200);
-    expect(response.statusText).toBe('OK');
+    expect(response.status).toBe(500);
+    expect(response.statusText).toBe('Internal Server Error');
 
     expect(Array.from(response.headers.keys())).toHaveLength(2);
     expect(response.headers.get('X-Custom')).toBe(headers['X-Custom']);
@@ -36,13 +36,13 @@ describe('OK', () => {
     expect(await response.json()).toEqual({ message, content });
   });
 
-  test('Returns a response with status 200 and JSON-encoded body representing just the message when content and headers are not provided', async () => {
-    const message = 'Success message';
+  test('Returns a response with status 500 and JSON-encoded body representing just the message when content and headers are not provided', async () => {
+    const message = 'Error message';
 
-    const response = OK(message);
+    const response = Internal(message);
 
-    expect(response.status).toBe(200);
-    expect(response.statusText).toBe('OK');
+    expect(response.status).toBe(500);
+    expect(response.statusText).toBe('Internal Server Error');
 
     expect(Array.from(response.headers.keys())).toHaveLength(1);
     expect(response.headers.get('Content-Type')).toBe('application/json');
@@ -51,7 +51,7 @@ describe('OK', () => {
   });
 
   test('Throws an error when Response.json() fails', () => {
-    const message = 'Success message';
+    const message = 'Error message';
 
     // eslint-disable-next-line @typescript-eslint/unbound-method
     const originalJson = Response.json;
@@ -60,52 +60,47 @@ describe('OK', () => {
       throw new Error('Stringification failed');
     });
 
-    expect(() => OK(message)).toThrow('Stringification failed');
+    expect(() => Internal(message)).toThrow('Stringification failed');
 
     Response.json = originalJson;
   });
 });
 
-describe('Created', () => {
-  test('Returns a response with status 201 and provided headers merged with Location header and JSON-encoded body representing the message and location as content', async () => {
-    const message = 'Success message';
-    const location = '/new/resource';
+describe('BadGateway', () => {
+  test('Returns a response with status 502 and provided headers and JSON-encoded body representing the message and content fields', async () => {
+    const message = 'Error message';
+    const content = 'Extra details';
     const headers = { 'X-Custom': 'some header value' };
 
-    const response = Created(message, location, headers);
+    const response = BadGateway(message, content, headers);
 
-    expect(response.status).toBe(201);
-    expect(response.statusText).toBe('Created');
+    expect(response.status).toBe(502);
+    expect(response.statusText).toBe('Bad Gateway');
 
-    // Headers should include custom header, Location, and Content-Type
-    expect(Array.from(response.headers.keys())).toHaveLength(3);
+    // Expect headers to include the provided header plus the default Content-Type
+    expect(Array.from(response.headers.keys())).toHaveLength(2);
     expect(response.headers.get('X-Custom')).toBe(headers['X-Custom']);
-    expect(response.headers.get('Location')).toBe(location);
     expect(response.headers.get('Content-Type')).toBe('application/json');
 
-    expect(await response.json()).toEqual({ message, content: location });
+    expect(await response.json()).toEqual({ message, content });
   });
 
-  test('Returns a response with status 201 and JSON-encoded body representing the message and location when headers are not provided', async () => {
-    const message = 'Success message';
-    const location = '/new/resource';
+  test('Returns a response with status 502 and JSON-encoded body representing just the message when content and headers are not provided', async () => {
+    const message = 'Error message';
 
-    const response = Created(message, location);
+    const response = BadGateway(message);
 
-    expect(response.status).toBe(201);
-    expect(response.statusText).toBe('Created');
+    expect(response.status).toBe(502);
+    expect(response.statusText).toBe('Bad Gateway');
 
-    // With no extra headers, only Location and Content-Type should be present
-    expect(Array.from(response.headers.keys())).toHaveLength(2);
-    expect(response.headers.get('Location')).toBe(location);
+    expect(Array.from(response.headers.keys())).toHaveLength(1);
     expect(response.headers.get('Content-Type')).toBe('application/json');
 
-    expect(await response.json()).toEqual({ message, content: location });
+    expect(await response.json()).toEqual({ message });
   });
 
   test('Throws an error when Response.json() fails', () => {
-    const message = 'Success message';
-    const location = '/new/resource';
+    const message = 'Error message';
 
     // eslint-disable-next-line @typescript-eslint/unbound-method
     const originalJson = Response.json;
@@ -114,7 +109,7 @@ describe('Created', () => {
       throw new Error('Stringification failed');
     });
 
-    expect(() => Created(message, location)).toThrow('Stringification failed');
+    expect(() => BadGateway(message)).toThrow('Stringification failed');
 
     Response.json = originalJson;
   });

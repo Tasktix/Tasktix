@@ -16,8 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import ListMember from './listMember';
-import User from './user';
+import ListMember from '../listMember';
+import User from '../user';
 
 test('Defaults all permissions to not granted', () => {
   const listMember = new ListMember(

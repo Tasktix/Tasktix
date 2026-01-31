@@ -24,7 +24,7 @@ import {
   validateListSectionName,
   validatePassword,
   validateUsername
-} from './validate';
+} from '../validate';
 
 describe('validateUsername', () => {
   test('Usernames with letters are valid', () => {

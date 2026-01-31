@@ -16,47 +16,36 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import * as generateIdModule from '@/lib/generateId'; // Needed for mocking - skipcq: JS-C1003
+jest.mock('@/lib/generateId', () => ({
+  generateId: jest.fn(() => 'mock-generated-id')
+}));
 
-import Session from './session';
+import { generateId } from '@/lib/generateId';
 
-beforeAll(() => {
-  jest.useFakeTimers();
-  jest.setSystemTime(new Date('2023-01-01 00:00:00'));
-});
+import Tag from '../tag';
 
 beforeEach(() => {
-  jest
-    .spyOn(generateIdModule, 'generateId')
-    .mockReturnValue('mock-generated-id');
-});
-
-afterEach(() => {
-  jest.restoreAllMocks();
-});
-
-afterAll(() => {
-  jest.useRealTimers();
+  (generateId as jest.Mock).mockClear();
 });
 
 test('Generates an id if none provided', () => {
-  const session = new Session('user-id', new Date());
+  const tag = new Tag('testTag', 'Amber');
 
-  expect(session.id).toBe('mock-generated-id');
-  expect(generateIdModule.generateId).toHaveBeenCalled();
+  expect(tag.id).toBe('mock-generated-id');
+  expect(generateId).toHaveBeenCalled();
 });
 
 test('Uses the provided id', () => {
-  const session = new Session('user-id', new Date(), 'provided-id');
+  const tag = new Tag('testTag', 'Amber', 'provided-id');
 
-  expect(session.id).toBe('provided-id');
-  expect(generateIdModule.generateId).not.toHaveBeenCalled();
+  expect(tag.id).toBe('provided-id');
+  expect(generateId).not.toHaveBeenCalled();
 });
 
 test('Assigns all properties correctly', () => {
-  const session = new Session('user-id', new Date(), 'provided-id');
+  const tag = new Tag('testTag', 'Amber', 'provided-id');
 
-  expect(session.id).toBe('provided-id');
-  expect(session.userId).toBe('user-id');
-  expect(session.dateExpire).toEqual(new Date());
+  expect(tag.name).toBe('testTag');
+  expect(tag.color).toBe('Amber');
+  expect(tag.id).toBe('provided-id');
 });

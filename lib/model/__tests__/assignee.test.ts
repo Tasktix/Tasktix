@@ -16,34 +16,21 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { generateId } from './generateId';
+import Assignee from '../assignee';
+import User from '../user';
 
-test('Generates a 16-character ID by default', () => {
-  const result = generateId();
+test('Assigns all properties correctly', () => {
+  const user = new User(
+    'testListMember',
+    'test@example.com',
+    'secret',
+    new Date(),
+    new Date(),
+    {}
+  );
 
-  expect(result.length).toBe(16);
-});
+  const listMember = new Assignee(user, 'role-name');
 
-test('Generates IDs of the specified length', () => {
-  const result = generateId(64);
-
-  expect(result.length).toBe(64);
-
-  const result2 = generateId(512);
-
-  expect(result2.length).toBe(512);
-
-  const result3 = generateId(1);
-
-  expect(result3.length).toBe(1);
-});
-
-test('Generated IDs contain only numbers and letters', () => {
-  crypto.getRandomValues = jest
-    .fn()
-    .mockReturnValueOnce(new Uint8Array([...new Array(512).map((_, i) => i)]));
-
-  const result2 = generateId(512);
-
-  expect(result2).toMatch(/[0-9A-Za-z]{512}/);
+  expect(listMember.user).toBe(user);
+  expect(listMember.role).toBe('role-name');
 });
