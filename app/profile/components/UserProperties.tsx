@@ -86,7 +86,6 @@ export default function UserProperties({ user }: { user: string }) {
     <div>
       <div className='m-4'>
         <ConfirmedTextInput
-          showLabel
           label='Username'
           labelPlacement='outside'
           updateValue={setUsername}
@@ -97,7 +96,6 @@ export default function UserProperties({ user }: { user: string }) {
 
       <div className='m-4'>
         <ConfirmedTextInput
-          showLabel
           label='Email'
           labelPlacement='outside'
           updateValue={setEmail}

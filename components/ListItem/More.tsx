@@ -116,8 +116,8 @@ export default function More({
                   />
                   <span className='flex grow'>
                     <ConfirmedTextInput
-                      showLabel
                       disabled={isComplete}
+                      label='Name'
                       updateValue={itemHandlers.setName}
                       value={item.name}
                       variant='underlined'
