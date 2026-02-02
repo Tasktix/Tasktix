@@ -25,6 +25,17 @@ import { PaletteFill, X } from 'react-bootstrap-icons';
 import { namedColors, NamedColor } from '@/lib/model/color';
 import { getBackgroundColor } from '@/lib/color';
 
+/**
+ * A color picker input that allows the user to pick a NamedColor (i.e. one of the
+ * Tailwind colors that doesn't have a semantic meaning like `error`)
+ *
+ * @param label A label for the input for use by accessibility tools
+ * @param value The currently-selected color (for use as a controlled input)
+ * @param onValueChange Callback for when the user selects a different color (for use as a
+ *  controlled input)
+ * @param className Custom classes to pass to the button that opens the color options
+ *  panel
+ */
 export default function ColorPicker({
   label = 'Pick color',
   value,
