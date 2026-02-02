@@ -250,7 +250,7 @@ describe('PATCH', () => {
         method: 'patch',
         body: JSON.stringify({ username: 'taken_name' })
       }),
-      { params: { id: MOCK_USER.id } }
+      { params: Promise.resolve({ id: MOCK_USER.id }) }
     );
 
     expect(response.status).toBe(400);
@@ -266,7 +266,7 @@ describe('PATCH', () => {
         method: 'patch',
         body: JSON.stringify({ email: 'taken_email@example.com' })
       }),
-      { params: { id: MOCK_USER.id } }
+      { params: Promise.resolve({ id: MOCK_USER.id }) }
     );
 
     expect(response.status).toBe(400);
@@ -282,7 +282,7 @@ describe('PATCH', () => {
         method: 'patch',
         body: JSON.stringify({ username: 'new_name' })
       }),
-      { params: { id: MOCK_USER.id } }
+      { params: Promise.resolve({ id: MOCK_USER.id }) }
     );
 
     expect(response.status).toBe(500);
@@ -299,9 +299,30 @@ describe('PATCH', () => {
         method: 'patch',
         body: JSON.stringify({ username: 'new_name' })
       }),
-      { params: { id: MOCK_USER.id } }
+      { params: Promise.resolve({ id: MOCK_USER.id }) }
     );
 
     expect(response.status).toBe(500);
+    expect(await response.json()).toEqual({ message: 'Error' });
+  });
+
+  test('Warns the user if an unexpected error occurs, correctly handling non-stringable errors', async () => {
+    (getUser as jest.Mock).mockReturnValue(MOCK_USER);
+    (updateUser as jest.Mock).mockImplementation(() => {
+      // Intentionally throwing something that doesn't have a `toString` method
+      // eslint-disable-next-line @typescript-eslint/only-throw-error
+      throw null;
+    });
+
+    const response = await PATCH(
+      new Request(USER_PATH, {
+        method: 'patch',
+        body: JSON.stringify({ username: 'new_name' })
+      }),
+      { params: Promise.resolve({ id: MOCK_USER.id }) }
+    );
+
+    expect(response.status).toBe(500);
+    expect(await response.json()).toEqual({ message: 'Internal Server Error' });
   });
 });
