@@ -24,6 +24,7 @@ export default defineConfig({
   plugins: [tsconfigPaths(), react()],
   test: {
     coverage: {
+      enabled: true,
       provider: 'v8',
       reportsDirectory: 'coverage',
       include: [
