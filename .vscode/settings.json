@@ -7,8 +7,6 @@
   "[prisma]": {
     "editor.defaultFormatter": "Prisma.prisma"
   },
-  "jest.jestCommandLine": "npm run test:jest --",
-  "jest.useDashedArgs": true,
   "files.eol": "\n",
   "editor.defaultFormatter": "esbenp.prettier-vscode"
 }
