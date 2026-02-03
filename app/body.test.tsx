@@ -24,6 +24,9 @@ import { render, screen } from '@testing-library/react';
 import Body from '@/app/body';
 import { useAuth } from '@/components/AuthProvider';
 
+import '@testing-library/jest-dom';
+import 'whatwg-fetch';
+
 jest.mock('@/components/AuthProvider', () => ({
   useAuth: jest.fn()
 }));
