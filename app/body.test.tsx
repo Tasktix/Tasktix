@@ -38,10 +38,9 @@ jest.mock('next/navigation', () => ({
 
 jest.mock('next/image', () => ({
   __esModule: true,
-  default: (props: React.ImgHTMLAttributes<HTMLImageElement>) => {
-    // eslint-disable-next-line @next/next/no-img-element
-    return <img alt={props.alt || ''} {...props} />;
-  }
+  default: ({ alt, ...rest }: { alt?: string; src?: string }) => (
+    <span aria-label={alt} data-src={String(rest.src ?? '')} role='img' />
+  )
 }));
 
 jest.mock('@/components/ThemeSwitcher', () => ({
@@ -126,7 +125,7 @@ describe('Body', () => {
       </Body>
     );
 
-    const logoImg = screen.getByAltText('Tasktix');
+    const logoImg = screen.getByRole('img', { name: 'Tasktix' });
     const link = logoImg.closest('a');
 
     expect(link).toBeTruthy();
@@ -145,7 +144,7 @@ describe('Body', () => {
       </Body>
     );
 
-    const logoImg = screen.getByAltText('Tasktix');
+    const logoImg = screen.getByRole('img', { name: 'Tasktix' });
     const link = logoImg.closest('a');
 
     expect(link).toBeTruthy();
