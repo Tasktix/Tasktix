@@ -35,7 +35,7 @@ import ConfirmedTextInput from '@/components/ConfirmedTextInput';
  * @param user A JSON string that contains the current user data
  */
 export default function UserProperties({ user }: { user: string }) {
-  const userDetails: User = JSON.parse(user);
+  const userDetails = JSON.parse(user) as User;
   const [_user, _setUser] = useState(userDetails);
 
   /**
@@ -86,7 +86,6 @@ export default function UserProperties({ user }: { user: string }) {
     <div>
       <div className='m-4'>
         <ConfirmedTextInput
-          showLabel
           label='Username'
           labelPlacement='outside'
           updateValue={setUsername}
@@ -97,7 +96,6 @@ export default function UserProperties({ user }: { user: string }) {
 
       <div className='m-4'>
         <ConfirmedTextInput
-          showLabel
           label='Email'
           labelPlacement='outside'
           updateValue={setEmail}

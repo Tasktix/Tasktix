@@ -39,18 +39,16 @@ import { Check } from 'react-bootstrap-icons';
 export default function ConfirmedTextInput({
   value,
   label,
-  showLabel,
   labelPlacement,
   showUnderline,
   disabled,
   className,
   classNames,
-  variant,
+  variant = 'underlined',
   updateValue
 }: {
   value: string;
   label?: string;
-  showLabel?: boolean;
   labelPlacement?: InputProps['labelPlacement'];
   showUnderline?: boolean;
   disabled?: boolean;
@@ -73,20 +71,20 @@ export default function ConfirmedTextInput({
       <Input
         className={`${disabled && 'opacity-50'} ${className}`}
         classNames={{
-          inputWrapper: `${showLabel || showUnderline || 'border-transparent'}`,
-          input: `${showLabel || showUnderline || '-mb-2'} ${classNames?.input}`
+          inputWrapper: `${label !== undefined || showUnderline || 'border-transparent'}`,
+          input: `${label !== undefined || showUnderline || '-mb-2'} ${classNames?.input}`
         }}
         disabled={disabled}
-        label={showLabel && (label ?? 'Name')}
+        label={label}
         labelPlacement={labelPlacement}
         size='sm'
         value={newValue}
-        variant={variant ?? 'underlined'}
+        variant={variant}
         onValueChange={setNewValue}
       />
       <Button
         isIconOnly
-        className={`rounded-lg w-8 h-8 min-w-8 min-h-8 ${newValue === value ? 'hidden' : ''} ${showLabel ? 'mt-4' : ''} ${classNames?.button}`}
+        className={`rounded-lg w-8 h-8 min-w-8 min-h-8 ${newValue === value ? 'hidden' : ''} ${label !== undefined ? 'mt-4' : ''} ${classNames?.button}`}
         color='primary'
         type='submit'
       >
