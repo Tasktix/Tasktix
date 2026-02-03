@@ -29,12 +29,13 @@ import { PATCH } from './route';
 
 const MOCK_MEMBER = new ListMember(
   new User(
-    'username',
-    'email@example.com',
-    'password',
+    "abcdefg",
+    "username",
+    "email@example.com",
+    false,
     new Date(),
     new Date(),
-    { color: 'Amber' }
+    "Amber",
   ),
   true,
   false,

@@ -44,14 +44,24 @@ beforeEach(() => {
 });
 
 const users = [
-  new User('user1', 'user1@example.com', 'football', new Date(), new Date(), {
-    id: 'user1-id',
-    color: 'Violet'
-  }),
-  new User('user2', 'user2@example.com', 'password', new Date(), new Date(), {
-    id: 'user2-id',
-    color: 'Violet'
-  })
+  new User(
+    "user1-id",
+    "user1",
+    "user1@example.com",
+    false,
+    new Date(),
+    new Date(),
+    "Violet",
+  ),
+  new User(
+    "user2-id",
+    "user2",
+    "user2@example.com",
+    false,
+    new Date(),
+    new Date(),
+    "Violet",
+  )
 ];
 
 describe('Adding members', () => {

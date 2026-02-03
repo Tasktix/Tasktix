@@ -24,21 +24,24 @@ import { getUserByUsername } from '@/lib/database/user';
 import { POST } from './route';
 
 const MOCK_USER = new User(
-  'username',
-  'email@example.com',
-  'password',
+  "abcdefg",
+  "username",
+  "email@example.com",
+  false,
   new Date(),
   new Date(),
-  { color: 'Amber' }
+  "Amber",
 );
 const MOCK_NEW_USER = new User(
-  'username',
-  'email@example.com',
-  'password',
+  "abcdefg",
+  "username",
+  "email@example.com",
+  false,
   new Date(),
   new Date(),
-  { color: 'Amber' }
+  "Amber",
 );
+
 const MEMBER_PATH = 'http://localhost/api/list/some-list-id/member' as const;
 
 jest.mock('@/lib/session');
