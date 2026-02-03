@@ -32,7 +32,7 @@ vi.mock('next/navigation', () => ({
 }));
 
 beforeEach(() => {
-  vi.clearAllMocks();
+  vi.resetAllMocks();
 });
 
 describe('authorize', () => {

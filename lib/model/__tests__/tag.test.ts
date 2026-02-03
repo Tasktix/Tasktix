@@ -25,7 +25,7 @@ import { generateId } from '@/lib/generateId';
 import Tag from '../tag';
 
 beforeEach(() => {
-  vi.mocked(generateId).mockClear();
+  vi.resetAllMocks();
 });
 
 test('Generates an id if none provided', () => {

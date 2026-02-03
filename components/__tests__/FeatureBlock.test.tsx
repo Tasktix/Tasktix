@@ -24,17 +24,17 @@ import { useTheme } from 'next-themes';
 
 import FeatureBlock from '../FeatureBlock';
 
-vi.mock('next-themes', () => ({
-  useTheme: vi.fn()
-}));
+vi.mock(import('next-themes'), async importOriginal => {
+  const originalUseTheme = await importOriginal();
+
+  return {
+    ...originalUseTheme,
+    useTheme: vi.fn(() => ({ ...originalUseTheme.useTheme(), theme: 'light' }))
+  };
+});
 
 beforeEach(() => {
   vi.resetAllMocks();
-  vi.mocked(useTheme).mockReturnValue({
-    theme: 'light',
-    themes: ['light', 'dark', 'system'],
-    setTheme: vi.fn()
-  });
 });
 
 const baseProps = {

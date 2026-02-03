@@ -19,7 +19,6 @@
  */
 
 import '@testing-library/jest-dom';
-import type * as FramerMotionModule from 'framer-motion';
 
 import { render, within } from '@testing-library/react';
 import { HeroUIProvider } from '@heroui/react';
@@ -30,10 +29,14 @@ import api from '@/lib/api';
 
 import ListItem from '../ListItem';
 
-vi.mock('framer-motion', async () => ({
-  ...(await vi.importActual<typeof FramerMotionModule>('framer-motion')),
-  LazyMotion: ({ children }: { children: React.ReactNode }) => children
-}));
+vi.mock(import('framer-motion'), async importOriginal => {
+  const originalFramerMotion = await importOriginal();
+
+  return {
+    ...originalFramerMotion,
+    LazyMotion: ({ children }) => <div>{children}</div>
+  };
+});
 
 vi.mock('@/lib/api');
 

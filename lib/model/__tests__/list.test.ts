@@ -28,7 +28,7 @@ import ListSection from '../listSection';
 import User from '../user';
 
 beforeEach(() => {
-  vi.mocked(generateId).mockClear();
+  vi.resetAllMocks();
 });
 
 describe('List constructor', () => {

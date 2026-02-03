@@ -28,7 +28,7 @@ import User from '../user';
 import Tag from '../tag';
 
 beforeEach(() => {
-  vi.mocked(generateId).mockClear();
+  vi.resetAllMocks();
 });
 
 describe('ListItem constructor', () => {
