@@ -64,7 +64,7 @@ describe('BadRequest', () => {
     // eslint-disable-next-line @typescript-eslint/unbound-method
     const originalJson = Response.json;
 
-    Response.json = jest.fn(() => {
+    Response.json = vi.fn(() => {
       throw new Error('Stringification failed');
     });
 
@@ -112,7 +112,7 @@ describe('Unauthenticated', () => {
     // eslint-disable-next-line @typescript-eslint/unbound-method
     const originalJson = Response.json;
 
-    Response.json = jest.fn(() => {
+    Response.json = vi.fn(() => {
       throw new Error('Stringification failed');
     });
 
@@ -160,7 +160,7 @@ describe('Forbidden', () => {
     // eslint-disable-next-line @typescript-eslint/unbound-method
     const originalJson = Response.json;
 
-    Response.json = jest.fn(() => {
+    Response.json = vi.fn(() => {
       throw new Error('Stringification failed');
     });
 
@@ -208,7 +208,7 @@ describe('NotFound', () => {
     // eslint-disable-next-line @typescript-eslint/unbound-method
     const originalJson = Response.json;
 
-    Response.json = jest.fn(() => {
+    Response.json = vi.fn(() => {
       throw new Error('Stringification failed');
     });
 
@@ -256,7 +256,7 @@ describe('Conflict', () => {
     // eslint-disable-next-line @typescript-eslint/unbound-method
     const originalJson = Response.json;
 
-    Response.json = jest.fn(() => {
+    Response.json = vi.fn(() => {
       throw new Error('Stringification failed');
     });
 
@@ -304,7 +304,7 @@ describe('Gone', () => {
     // eslint-disable-next-line @typescript-eslint/unbound-method
     const originalJson = Response.json;
 
-    Response.json = jest.fn(() => {
+    Response.json = vi.fn(() => {
       throw new Error('Stringification failed');
     });
 
@@ -352,7 +352,7 @@ describe('PayloadTooLarge', () => {
     // eslint-disable-next-line @typescript-eslint/unbound-method
     const originalJson = Response.json;
 
-    Response.json = jest.fn(() => {
+    Response.json = vi.fn(() => {
       throw new Error('Stringification failed');
     });
 

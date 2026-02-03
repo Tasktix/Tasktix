@@ -21,10 +21,10 @@ import nextCoreWebVitals from 'eslint-config-next/core-web-vitals';
 import nextTypescript from 'eslint-config-next/typescript';
 import headers from 'eslint-plugin-headers';
 import _import from 'eslint-plugin-import';
-import jest from 'eslint-plugin-jest';
 import prettier from 'eslint-plugin-prettier/recommended';
 import unusedImports from 'eslint-plugin-unused-imports';
 import tseslint from 'typescript-eslint';
+import vitest from '@vitest/eslint-plugin';
 
 export default defineConfig([
   ...nextCoreWebVitals,
@@ -144,7 +144,7 @@ export default defineConfig([
   },
   {
     files: ['**/*.test.ts'],
-    ...jest.configs['flat/recommended']
+    ...vitest.configs.recommended
   },
   {
     ...prettier,

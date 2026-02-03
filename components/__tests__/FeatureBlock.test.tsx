@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
- * @jest-environment jsdom
+ * @vitest-environment jsdom
  */
 
 import '@testing-library/jest-dom';
@@ -24,13 +24,17 @@ import { useTheme } from 'next-themes';
 
 import FeatureBlock from '../FeatureBlock';
 
-jest.mock('next-themes', () => ({
-  useTheme: jest.fn()
+vi.mock('next-themes', () => ({
+  useTheme: vi.fn()
 }));
 
 beforeEach(() => {
-  jest.resetAllMocks();
-  (useTheme as jest.Mock).mockReturnValue({ theme: 'light' });
+  vi.resetAllMocks();
+  vi.mocked(useTheme).mockReturnValue({
+    theme: 'light',
+    themes: ['light', 'dark', 'system'],
+    setTheme: vi.fn()
+  });
 });
 
 const baseProps = {
@@ -48,7 +52,11 @@ describe('FeatureBlock', () => {
   });
 
   test('renders light image when theme is light', () => {
-    (useTheme as jest.Mock).mockReturnValue({ theme: 'light' });
+    vi.mocked(useTheme).mockReturnValue({
+      theme: 'light',
+      themes: ['light', 'dark', 'system'],
+      setTheme: vi.fn()
+    });
 
     render(<FeatureBlock {...baseProps} />);
 
@@ -58,9 +66,11 @@ describe('FeatureBlock', () => {
   });
 
   test('renders dark image when theme is dark', () => {
-    (useTheme as jest.Mock).mockReturnValue({
+    vi.mocked(useTheme).mockReturnValue({
       theme: 'dark',
-      resolvedTheme: 'dark'
+      themes: ['light', 'dark', 'system'],
+      resolvedTheme: 'dark',
+      setTheme: vi.fn()
     });
 
     render(<FeatureBlock {...baseProps} />);
@@ -99,9 +109,11 @@ describe('FeatureBlock', () => {
   });
 
   test('renders dark image when theme is system and resolvedTheme is dark', () => {
-    (useTheme as jest.Mock).mockReturnValue({
+    vi.mocked(useTheme).mockReturnValue({
       theme: 'system',
-      resolvedTheme: 'dark'
+      themes: ['light', 'dark', 'system'],
+      resolvedTheme: 'dark',
+      setTheme: vi.fn()
     });
 
     render(<FeatureBlock {...baseProps} />);

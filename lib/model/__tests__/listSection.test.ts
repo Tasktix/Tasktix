@@ -22,13 +22,11 @@ import ListItem from '../listItem';
 import ListSection from '../listSection';
 
 beforeEach(() => {
-  jest
-    .spyOn(generateIdModule, 'generateId')
-    .mockReturnValue('mock-generated-id');
+  vi.spyOn(generateIdModule, 'generateId').mockReturnValue('mock-generated-id');
 });
 
 afterEach(() => {
-  jest.restoreAllMocks();
+  vi.restoreAllMocks();
 });
 
 test('Generates an id if none provided', () => {

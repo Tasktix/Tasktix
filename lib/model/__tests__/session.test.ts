@@ -21,22 +21,20 @@ import * as generateIdModule from '@/lib/generateId'; // Needed for mocking - sk
 import Session from '../session';
 
 beforeAll(() => {
-  jest.useFakeTimers();
-  jest.setSystemTime(new Date('2023-01-01 00:00:00'));
+  vi.useFakeTimers();
+  vi.setSystemTime(new Date('2023-01-01 00:00:00'));
 });
 
 beforeEach(() => {
-  jest
-    .spyOn(generateIdModule, 'generateId')
-    .mockReturnValue('mock-generated-id');
+  vi.spyOn(generateIdModule, 'generateId').mockReturnValue('mock-generated-id');
 });
 
 afterEach(() => {
-  jest.restoreAllMocks();
+  vi.restoreAllMocks();
 });
 
 afterAll(() => {
-  jest.useRealTimers();
+  vi.useRealTimers();
 });
 
 test('Generates an id if none provided', () => {

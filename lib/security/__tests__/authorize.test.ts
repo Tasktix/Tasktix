@@ -23,21 +23,21 @@ import User from '@/lib/model/user';
 
 import { authorize } from '../authorize';
 
-jest.mock('@/lib/session', () => ({
-  getUser: jest.fn()
+vi.mock('@/lib/session', () => ({
+  getUser: vi.fn()
 }));
 
-jest.mock('next/navigation', () => ({
-  redirect: jest.fn()
+vi.mock('next/navigation', () => ({
+  redirect: vi.fn()
 }));
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
 });
 
 describe('authorize', () => {
   test('Does nothing if user is authenticated', async () => {
-    (getUser as jest.Mock).mockResolvedValue(
+    vi.mocked(getUser).mockResolvedValue(
       new User('username', 'email', 'password', new Date(), new Date(), {})
     );
     await authorize();
@@ -46,7 +46,7 @@ describe('authorize', () => {
   });
 
   test('Redirects to /signIn if user is not authenticated', async () => {
-    (getUser as jest.Mock).mockResolvedValue(null);
+    vi.mocked(getUser).mockResolvedValue(false);
     await authorize();
 
     expect(redirect).toHaveBeenCalledWith('/signIn');

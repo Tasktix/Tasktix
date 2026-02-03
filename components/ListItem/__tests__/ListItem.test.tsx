@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
- * @jest-environment jsdom
+ * @vitest-environment jsdom
  */
 
 import '@testing-library/jest-dom';
@@ -30,22 +30,26 @@ import api from '@/lib/api';
 
 import ListItem from '../ListItem';
 
-jest.mock('framer-motion', () => ({
-  ...jest.requireActual<typeof FramerMotionModule>('framer-motion'),
+vi.mock('framer-motion', async () => ({
+  ...(await vi.importActual<typeof FramerMotionModule>('framer-motion')),
   LazyMotion: ({ children }: { children: React.ReactNode }) => children
 }));
 
-jest.mock('@/lib/api');
+vi.mock('@/lib/api');
 
 beforeEach(() => {
-  jest.resetAllMocks();
+  vi.resetAllMocks();
 });
 
 it('Allows new tags to be created and linked to the item', async () => {
   const item = new ListItemModel('Test item', {});
 
-  (api.post as jest.Mock).mockImplementation(() => Promise.resolve());
-  const addNewTag = jest.fn(() => Promise.resolve('test-id'));
+  vi.mocked(api.post).mockResolvedValue({
+    code: 200,
+    message: 'Success',
+    content: undefined
+  });
+  const addNewTag = vi.fn(() => Promise.resolve('test-id'));
 
   const user = userEvent.setup();
 
@@ -53,19 +57,19 @@ it('Allows new tags to be created and linked to the item', async () => {
     <HeroUIProvider disableRipple>
       <ListItem
         addNewTag={addNewTag}
-        deleteItem={jest.fn()}
+        deleteItem={vi.fn()}
         hasDueDates={false}
         hasTimeTracking={false}
         item={item}
         members={[]}
-        resetTime={jest.fn()}
-        setCompleted={jest.fn()}
-        setPaused={jest.fn()}
-        setRunning={jest.fn()}
+        resetTime={vi.fn()}
+        setCompleted={vi.fn()}
+        setPaused={vi.fn()}
+        setRunning={vi.fn()}
         tagsAvailable={[]}
-        updateDueDate={jest.fn()}
-        updateExpectedMs={jest.fn()}
-        updatePriority={jest.fn()}
+        updateDueDate={vi.fn()}
+        updateExpectedMs={vi.fn()}
+        updatePriority={vi.fn()}
       />
     </HeroUIProvider>
   );
