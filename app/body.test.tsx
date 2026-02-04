@@ -20,12 +20,19 @@
 
 import React from 'react';
 import { render, screen } from '@testing-library/react';
+import { HeroUIProvider } from '@heroui/react';
 
 import Body from '@/app/body';
 import { useAuth } from '@/components/AuthProvider';
 
-import '@testing-library/jest-dom';
-import 'whatwg-fetch';
+jest.mock('@heroui/react', () => {
+  const actual = jest.requireActual('@heroui/react');
+
+  return {
+    ...actual,
+    ToastProvider: () => <div data-testid='toast-provider' />
+  };
+});
 
 jest.mock('@/components/AuthProvider', () => ({
   useAuth: jest.fn()
@@ -41,8 +48,8 @@ jest.mock('next/navigation', () => ({
 
 jest.mock('next/image', () => ({
   __esModule: true,
-  default: ({ alt, ...rest }: { alt?: string; src?: string }) => (
-    <span aria-label={alt} data-src={String(rest.src ?? '')} role='img' />
+  default: ({ alt, src }: { alt?: string; src?: string }) => (
+    <span aria-label={alt} data-src={String(src ?? '')} role='img' />
   )
 }));
 
@@ -51,69 +58,13 @@ jest.mock('@/components/ThemeSwitcher', () => ({
   default: () => <div data-testid='theme-switcher' />
 }));
 
-// Lightweight mocks for HeroUI so we can assert href without depending on their internals
-type Props = React.PropsWithChildren<Record<string, unknown>>;
-
-jest.mock('@heroui/react', () => ({
-  __esModule: true,
-
-  Button: ({ children, ...props }: Props) => (
-    <button {...(props as React.ButtonHTMLAttributes<HTMLButtonElement>)}>
-      {children}
-    </button>
-  ),
-
-  Link: ({ href, children, ...props }: Props & { href?: string }) => (
-    <a
-      href={href}
-      {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
-    >
-      {children}
-    </a>
-  ),
-
-  Navbar: ({ children }: React.PropsWithChildren) => <nav>{children}</nav>,
-
-  NavbarBrand: ({
-    as: AsComp,
-    href,
-    children,
-    ...props
-  }: Props & { as?: React.ElementType; href?: string }) => {
-    const Comp = AsComp || 'div';
-
-    return (
-      <Comp href={href} {...props}>
-        {children}
-      </Comp>
-    );
-  },
-
-  NavbarContent: ({ children }: React.PropsWithChildren) => (
-    <div>{children}</div>
-  ),
-  NavbarItem: ({ children }: React.PropsWithChildren) => <div>{children}</div>,
-
-  ToastProvider: () => <div />,
-
-  Dropdown: ({ children }: React.PropsWithChildren) => <div>{children}</div>,
-  DropdownTrigger: ({ children }: React.PropsWithChildren) => (
-    <div>{children}</div>
-  ),
-  DropdownMenu: ({ children }: React.PropsWithChildren) => (
-    <div>{children}</div>
-  ),
-
-  DropdownItem: ({ children, ...props }: Props) => (
-    <div {...props}>{children}</div>
-  ),
-
-  Avatar: () => <div />
-}));
+function renderWithProvider(ui: React.ReactElement) {
+  return render(<HeroUIProvider disableRipple>{ui}</HeroUIProvider>);
+}
 
 describe('Body', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    jest.resetAllMocks();
   });
 
   it('links logo to /list when logged in', () => {
@@ -122,7 +73,7 @@ describe('Body', () => {
       setIsLoggedIn: jest.fn()
     });
 
-    render(
+    renderWithProvider(
       <Body>
         <div>child</div>
       </Body>
@@ -131,7 +82,8 @@ describe('Body', () => {
     const logoImg = screen.getByRole('img', { name: 'Tasktix' });
     const link = logoImg.closest('a');
 
-    expect(link).toBeTruthy();
+    expect(link).not.toBeNull();
+    expect(link as HTMLElement).toBeVisible();
     expect(link).toHaveAttribute('href', '/list');
   });
 
@@ -141,7 +93,7 @@ describe('Body', () => {
       setIsLoggedIn: jest.fn()
     });
 
-    render(
+    renderWithProvider(
       <Body>
         <div>child</div>
       </Body>
@@ -150,7 +102,8 @@ describe('Body', () => {
     const logoImg = screen.getByRole('img', { name: 'Tasktix' });
     const link = logoImg.closest('a');
 
-    expect(link).toBeTruthy();
+    expect(link).not.toBeNull();
+    expect(link as HTMLElement).toBeVisible();
     expect(link).toHaveAttribute('href', '/about');
   });
 });

@@ -18,3 +18,4 @@
 
 globalThis.structuredClone = (value: unknown) =>
   JSON.parse(JSON.stringify(value)) as unknown;
+import '@testing-library/jest-dom';
