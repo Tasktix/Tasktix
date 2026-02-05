@@ -80,66 +80,75 @@ export default function SectionBody({
   reorderItem: (item: ListItemModel) => unknown;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
 }) {
-  console.log(items);
-  const filteredItems = [
-    ...items.values().filter(item => checkItemFilter(item, filters))
-  ];
+  try {
+    const filteredItems = [
+      ...items.values().filter(item => checkItemFilter(item, filters))
+    ];
 
-  const components: ListItemParams[] = (
-    isAutoOrdered
-      ? filteredItems.sort(sortItems.bind(null, hasTimeTracking, hasDueDates))
-      : filteredItems
-  ).map(item => ({
-    addNewTag,
-    deleteItem: () => dispatchSection({ type: 'DeleteItem', itemId: item.id }),
-    hasDueDates,
-    hasTimeTracking,
-    item,
-    members,
-    tagsAvailable,
-    resetTime: status =>
-      dispatchSection({ type: 'ResetItemTime', itemId: item.id, status }),
-    setPaused: () =>
-      dispatchSection({ type: 'PauseItemTime', itemId: item.id }),
-    setRunning: () =>
-      dispatchSection({ type: 'StartItemTime', itemId: item.id }),
-    updateDueDate: date =>
-      dispatchSection({ type: 'SetItemDueDate', itemId: item.id, date }),
-    updatePriority: priority =>
-      dispatchSection({ type: 'SetItemPriority', itemId: item.id, priority }),
-    setCompleted: dateCompleted =>
-      dispatchSection({
-        type: 'SetItemComplete',
-        itemId: item.id,
-        dateCompleted
-      }),
-    updateExpectedMs: expectedMs =>
-      dispatchSection({
-        type: 'SetItemExpectedMs',
-        itemId: item.id,
-        expectedMs
-      })
-  }));
+    const components: ListItemParams[] = (
+      isAutoOrdered
+        ? filteredItems.sort(sortItems.bind(null, hasTimeTracking, hasDueDates))
+        : filteredItems
+    ).map(item => ({
+      addNewTag,
+      deleteItem: () =>
+        dispatchSection({ type: 'DeleteItem', itemId: item.id }),
+      hasDueDates,
+      hasTimeTracking,
+      item,
+      members,
+      tagsAvailable,
+      resetTime: status =>
+        dispatchSection({ type: 'ResetItemTime', itemId: item.id, status }),
+      setPaused: () =>
+        dispatchSection({ type: 'PauseItemTime', itemId: item.id }),
+      setRunning: () =>
+        dispatchSection({ type: 'StartItemTime', itemId: item.id }),
+      updateDueDate: date =>
+        dispatchSection({ type: 'SetItemDueDate', itemId: item.id, date }),
+      updatePriority: priority =>
+        dispatchSection({ type: 'SetItemPriority', itemId: item.id, priority }),
+      setCompleted: dateCompleted =>
+        dispatchSection({
+          type: 'SetItemComplete',
+          itemId: item.id,
+          dateCompleted
+        }),
+      updateExpectedMs: expectedMs =>
+        dispatchSection({
+          type: 'SetItemExpectedMs',
+          itemId: item.id,
+          expectedMs
+        })
+    }));
 
-  return isAutoOrdered ? (
-    components.map(params => <ListItem key={params.item.id} {...params} />)
-  ) : (
-    <Reorder.Group
-      axis='y'
-      values={filteredItems}
-      // Since items are stored in a hashmap now, setItems will update each item's
-      // `.visualIndex` with its current index in the list
-      onReorder={items => setItems(items.sort(sortItemsByCompleted))}
-    >
-      {components.map(params => (
-        <ReorderableListItem
-          {...params}
-          key={params.item.id}
-          onDragEnd={reorderItem.bind(null, params.item)}
-        />
-      ))}
-    </Reorder.Group>
-  );
+    return isAutoOrdered ? (
+      components.map(params => <ListItem key={params.item.id} {...params} />)
+    ) : (
+      <Reorder.Group
+        axis='y'
+        values={filteredItems}
+        // Since items are stored in a hashmap now, setItems will update each item's
+        // `.visualIndex` with its current index in the list
+        onReorder={items => setItems(items.sort(sortItemsByCompleted))}
+      >
+        {components.map(params => (
+          <ReorderableListItem
+            {...params}
+            key={params.item.id}
+            onDragEnd={reorderItem.bind(null, params.item)}
+          />
+        ))}
+      </Reorder.Group>
+    );
+  } catch {
+    console.log('items', items);
+    console.log('items.values()', items.values());
+    console.log(
+      'items.values().filter()',
+      items.values().filter(item => checkItemFilter(item, filters))
+    );
+  }
 }
 
 /**
