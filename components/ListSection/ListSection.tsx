@@ -180,23 +180,24 @@ export default function ListSection({
               open: { height: 'auto' },
               collapsed: { height: 0 }
             }}
-          />
+          >
+            <SectionBody
+              addNewTag={onTagCreate}
+              dispatchSection={dispatchSection}
+              filters={filters}
+              hasDueDates={hasDueDates}
+              hasTimeTracking={hasTimeTracking}
+              isAutoOrdered={isAutoOrdered}
+              items={items}
+              members={members}
+              reorderItem={sectionHandlers.reorderItem}
+              setItems={items =>
+                dispatchSection({ type: 'SetItems', items: itemsToMap(items) })
+              }
+              tagsAvailable={tagsAvailable}
+            />
+          </motion.section>
         )}
-        <SectionBody
-          addNewTag={onTagCreate}
-          dispatchSection={dispatchSection}
-          filters={filters}
-          hasDueDates={hasDueDates}
-          hasTimeTracking={hasTimeTracking}
-          isAutoOrdered={isAutoOrdered}
-          items={items}
-          members={members}
-          reorderItem={sectionHandlers.reorderItem}
-          setItems={items =>
-            dispatchSection({ type: 'SetItems', items: itemsToMap(items) })
-          }
-          tagsAvailable={tagsAvailable}
-        />
       </AnimatePresence>
     </div>
   );

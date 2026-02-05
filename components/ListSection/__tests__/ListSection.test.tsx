@@ -125,7 +125,7 @@ describe('Section expansion/collapse', () => {
   });
 
   test('Sections with all items completed are collapsed by default', () => {
-    const { getByLabelText } = render(
+    const { getByLabelText, queryByText } = render(
       <ListSection
         hasDueDates
         hasTimeTracking
@@ -149,11 +149,11 @@ describe('Section expansion/collapse', () => {
     );
 
     expect(getByLabelText('Expand section')).toBeVisible();
-    // Note: Jest-DOM is unable to determine that the list item is not visible
+    expect(queryByText('Item 1')).not.toBeInTheDocument();
   });
 
   test('Sections with no items are collapsed by default', () => {
-    const { getByLabelText } = render(
+    const { getByLabelText, queryByText } = render(
       <ListSection
         hasDueDates
         hasTimeTracking
@@ -171,7 +171,7 @@ describe('Section expansion/collapse', () => {
     );
 
     expect(getByLabelText('Expand section')).toBeVisible();
-    // Note: Jest-DOM is unable to determine that the list item is not visible
+    expect(queryByText('Item 1')).not.toBeInTheDocument();
   });
 
   test('Collapsed sections expand when the toggle button is pressed', async () => {
@@ -209,7 +209,7 @@ describe('Section expansion/collapse', () => {
   test('Expanded sections collapse when the toggle button is pressed', async () => {
     const user = userEvent.setup();
 
-    const { findByLabelText, getByLabelText } = render(
+    const { findByLabelText, getByLabelText, queryByText } = render(
       <ListSection
         hasDueDates
         hasTimeTracking
@@ -234,6 +234,6 @@ describe('Section expansion/collapse', () => {
     await user.click(getByLabelText('Collapse section'));
 
     expect(await findByLabelText('Expand section')).toBeVisible();
-    // Note: Jest-DOM is unable to determine that the list item is not visible
+    expect(queryByText('Item 1')).not.toBeInTheDocument();
   });
 });
