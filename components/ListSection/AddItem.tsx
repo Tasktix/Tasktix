@@ -169,7 +169,7 @@ export default function AddItem({
     if (!hasTimeTracking) delete newItem.expectedMs;
     if (!hasDueDates) delete newItem.dateDue;
 
-    api
+    return api
       .post('/item', newItem)
       .then(res => {
         setValues(startingInputValues);
@@ -274,6 +274,7 @@ export default function AddItem({
             ) : null}
             <Button
               isIconOnly
+              aria-label='Submit'
               color='primary'
               tabIndex={isSliderOpen ? 0 : 1}
               type='submit'
@@ -285,6 +286,7 @@ export default function AddItem({
         </span>
         <Button
           isIconOnly
+          aria-label='Create item'
           color={isSliderOpen ? 'danger' : 'primary'}
           tabIndex={0}
           variant='ghost'
