@@ -38,24 +38,25 @@ test('Newly created items are added to the section', async () => {
     content: undefined
   });
 
-  const { findByLabelText, findByRole, findByDisplayValue } = render(
-    <ListSection
-      isAutoOrdered
-      filters={{}}
-      hasDueDates={false}
-      hasTimeTracking={false}
-      id='test-section'
-      listId='test-list'
-      members={[]}
-      name='Section Name'
-      startingItems={[]}
-      tagsAvailable={[]}
-      onDelete={vi.fn()}
-      onTagCreate={() => Promise.resolve('')}
-    />
-  );
+  const { findByLabelText, findByRole, findByDisplayValue, getByLabelText } =
+    render(
+      <ListSection
+        isAutoOrdered
+        filters={{}}
+        hasDueDates={false}
+        hasTimeTracking={false}
+        id='test-section'
+        listId='test-list'
+        members={[]}
+        name='Section Name'
+        startingItems={[]}
+        tagsAvailable={[]}
+        onDelete={vi.fn()}
+        onTagCreate={() => Promise.resolve('')}
+      />
+    );
 
-  await user.click(await findByLabelText('Create item'));
+  await user.click(getByLabelText('Create item'));
   await user.type(await findByLabelText('Name'), 'Item 1');
   await user.click(await findByRole('button', { name: /priority/i }));
   await user.click(
@@ -63,9 +64,7 @@ test('Newly created items are added to the section', async () => {
   );
   await user.click(await findByLabelText('Submit'));
 
-  await waitFor(async () =>
-    expect(await findByLabelText('Name')).toHaveValue('')
-  );
+  await waitFor(() => expect(getByLabelText('Name')).toHaveValue(''));
   expect(await findByDisplayValue('Item 1')).toBeVisible();
 });
 
