@@ -51,7 +51,7 @@ test('Newly created items are added to the section', async () => {
         name='Section Name'
         startingItems={[]}
         tagsAvailable={[]}
-        onDelete={() => {}}
+        onDelete={vi.fn()}
         onTagCreate={() => Promise.resolve('')}
       />
     );
@@ -115,7 +115,7 @@ describe('Section expansion/collapse', () => {
           })
         ]}
         tagsAvailable={[]}
-        onDelete={() => {}}
+        onDelete={vi.fn()}
         onTagCreate={() => Promise.resolve('')}
       />
     );
@@ -143,7 +143,7 @@ describe('Section expansion/collapse', () => {
           })
         ]}
         tagsAvailable={[]}
-        onDelete={() => {}}
+        onDelete={vi.fn()}
         onTagCreate={() => Promise.resolve('')}
       />
     );
@@ -165,7 +165,7 @@ describe('Section expansion/collapse', () => {
         name='Section Name'
         startingItems={[]}
         tagsAvailable={[]}
-        onDelete={() => {}}
+        onDelete={vi.fn()}
         onTagCreate={() => Promise.resolve('')}
       />
     );
@@ -195,7 +195,7 @@ describe('Section expansion/collapse', () => {
           })
         ]}
         tagsAvailable={[]}
-        onDelete={() => {}}
+        onDelete={vi.fn()}
         onTagCreate={() => Promise.resolve('')}
       />
     );
@@ -226,7 +226,7 @@ describe('Section expansion/collapse', () => {
           })
         ]}
         tagsAvailable={[]}
-        onDelete={() => {}}
+        onDelete={vi.fn()}
         onTagCreate={() => Promise.resolve('')}
       />
     );
