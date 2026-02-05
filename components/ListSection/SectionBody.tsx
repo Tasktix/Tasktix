@@ -80,6 +80,7 @@ export default function SectionBody({
   reorderItem: (item: ListItemModel) => unknown;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
 }) {
+  console.log(items);
   const filteredItems = [
     ...items.values().filter(item => checkItemFilter(item, filters))
   ];
