@@ -16,8 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-jest.mock('@/lib/generateId', () => ({
-  generateId: jest.fn(() => 'mock-generated-id')
+vi.mock('@/lib/generateId', () => ({
+  generateId: vi.fn(() => 'mock-generated-id')
 }));
 
 import { generateId } from '@/lib/generateId';
@@ -28,7 +28,7 @@ import User from '../user';
 import Tag from '../tag';
 
 beforeEach(() => {
-  (generateId as jest.Mock).mockClear();
+  vi.resetAllMocks();
 });
 
 describe('ListItem constructor', () => {

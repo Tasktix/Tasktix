@@ -36,17 +36,17 @@ const MOCK_USER = new User(
 );
 const USER_PATH = `http://localhost/api/user/${MOCK_USER.id}` as const;
 
-jest.mock('@/lib/session');
-jest.mock('@/lib/database/user');
+vi.mock('@/lib/session');
+vi.mock('@/lib/database/user');
 
 beforeEach(() => {
-  jest.resetAllMocks();
+  vi.resetAllMocks();
 });
 
 describe('PATCH', () => {
   test('Allows username updates without altering other fields', async () => {
-    (getUser as jest.Mock).mockReturnValue(MOCK_USER);
-    (updateUser as jest.Mock).mockReturnValue(true);
+    vi.mocked(getUser).mockResolvedValue(MOCK_USER);
+    vi.mocked(updateUser).mockResolvedValue(true);
 
     const response = await PATCH(
       new Request(USER_PATH, {
@@ -73,8 +73,8 @@ describe('PATCH', () => {
   });
 
   test('Allows email updates without altering other fields', async () => {
-    (getUser as jest.Mock).mockReturnValue(MOCK_USER);
-    (updateUser as jest.Mock).mockReturnValue(true);
+    vi.mocked(getUser).mockResolvedValue(MOCK_USER);
+    vi.mocked(updateUser).mockResolvedValue(true);
 
     const response = await PATCH(
       new Request(USER_PATH, {
@@ -101,8 +101,8 @@ describe('PATCH', () => {
   });
 
   test('Allows color updates without altering other fields', async () => {
-    (getUser as jest.Mock).mockReturnValue(MOCK_USER);
-    (updateUser as jest.Mock).mockReturnValue(true);
+    vi.mocked(getUser).mockResolvedValue(MOCK_USER);
+    vi.mocked(updateUser).mockResolvedValue(true);
 
     const response = await PATCH(
       new Request(USER_PATH, {
@@ -129,8 +129,8 @@ describe('PATCH', () => {
   });
 
   test('Allows multiple field updates at the same time', async () => {
-    (getUser as jest.Mock).mockReturnValue(MOCK_USER);
-    (updateUser as jest.Mock).mockReturnValue(true);
+    vi.mocked(getUser).mockResolvedValue(MOCK_USER);
+    vi.mocked(updateUser).mockResolvedValue(true);
 
     const response = await PATCH(
       new Request(USER_PATH, {
@@ -159,7 +159,7 @@ describe('PATCH', () => {
   });
 
   test('Rejects unauthenticated users', async () => {
-    (getUser as jest.Mock).mockReturnValue(false);
+    vi.mocked(getUser).mockResolvedValue(false);
 
     const response = await PATCH(new Request(USER_PATH, { method: 'patch' }), {
       params: Promise.resolve({ id: MOCK_USER.id })
@@ -170,7 +170,7 @@ describe('PATCH', () => {
   });
 
   test('Rejects requests to modify other users', async () => {
-    (getUser as jest.Mock).mockReturnValue(MOCK_USER);
+    vi.mocked(getUser).mockResolvedValue(MOCK_USER);
 
     const response = await PATCH(
       new Request(USER_PATH.slice(0, -2), { method: 'patch' }),
@@ -182,7 +182,7 @@ describe('PATCH', () => {
   });
 
   test('Rejects password updates', async () => {
-    (getUser as jest.Mock).mockReturnValue(MOCK_USER);
+    vi.mocked(getUser).mockResolvedValue(MOCK_USER);
 
     const response = await PATCH(
       new Request(USER_PATH, {
@@ -197,7 +197,7 @@ describe('PATCH', () => {
   });
 
   test('Rejects invalid username updates', async () => {
-    (getUser as jest.Mock).mockReturnValue(MOCK_USER);
+    vi.mocked(getUser).mockResolvedValue(MOCK_USER);
 
     const response = await PATCH(
       new Request(USER_PATH, {
@@ -212,7 +212,7 @@ describe('PATCH', () => {
   });
 
   test('Rejects invalid email updates', async () => {
-    (getUser as jest.Mock).mockReturnValue(MOCK_USER);
+    vi.mocked(getUser).mockResolvedValue(MOCK_USER);
 
     const response = await PATCH(
       new Request(USER_PATH, {
@@ -227,7 +227,7 @@ describe('PATCH', () => {
   });
 
   test('Rejects invalid color updates', async () => {
-    (getUser as jest.Mock).mockReturnValue(MOCK_USER);
+    vi.mocked(getUser).mockResolvedValue(MOCK_USER);
 
     const response = await PATCH(
       new Request(USER_PATH, {

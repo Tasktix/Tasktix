@@ -10,8 +10,8 @@ permissions:
   contents: read
 
 jobs:
-  jest:
-    name: Jest
+  vitest:
+    name: Vitest
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -30,7 +30,7 @@ jobs:
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci
       - name: Test
-        run: npm run test:jest -- --coverageReporters=cobertura
+        run: npm run test:vi run -- --coverage.reporter cobertura --silent passed-only
       - name: Report coverage to DeepSource
         uses: deepsourcelabs/test-coverage-action@master
         with:

@@ -25,16 +25,14 @@ const fixedDateCreated = new Date('2020-01-01T00:00:00Z');
 const fixedDateSignedIn = new Date('2020-01-02T00:00:00Z');
 
 beforeEach(() => {
-  jest
-    .spyOn(generateIdModule, 'generateId')
-    .mockReturnValue('mock-generated-id');
-  jest
-    .spyOn(colorModule, 'randomNamedColor')
-    .mockReturnValue('mock-color' as never);
+  vi.spyOn(generateIdModule, 'generateId').mockReturnValue('mock-generated-id');
+  vi.spyOn(colorModule, 'randomNamedColor').mockReturnValue(
+    'mock-color' as never
+  );
 });
 
 afterEach(() => {
-  jest.restoreAllMocks();
+  vi.restoreAllMocks();
 });
 
 test('Generates an id if none provided', () => {

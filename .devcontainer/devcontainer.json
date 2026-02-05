@@ -54,7 +54,7 @@
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
         "bradlc.vscode-tailwindcss",
-        "orta.vscode-jest",
+        "vitest.explorer",
         "prisma.prisma",
         "yoavbls.pretty-ts-errors"
       ]
