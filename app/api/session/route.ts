@@ -61,7 +61,13 @@ export async function POST(request: Request) {
 
   if (!result) return ServerError.Internal('Storing session failed');
 
-  return Success.Created('Session started', `/api/session/${result}`);
+  return Success.OK(
+    'Session started',
+    JSON.stringify({
+      location: `/api/session/${result}`,
+      user
+    })
+  );
 }
 
 export async function DELETE(_: Request) {
