@@ -64,7 +64,9 @@ test('Newly created items are added to the section', async () => {
   );
   await user.click(await findByLabelText('Submit'));
 
-  await waitFor(() => expect(getByLabelText('Name')).toHaveValue(''));
+  await waitFor(async () =>
+    expect(await findByLabelText('Name')).toHaveValue('')
+  );
   expect(await findByDisplayValue('Item 1')).toBeVisible();
 });
 
