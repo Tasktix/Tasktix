@@ -2,7 +2,6 @@
 
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=Tasktix_Tasktix&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=Tasktix_Tasktix)
 [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=Tasktix_Tasktix&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=Tasktix_Tasktix)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/f5589385fcd14310bc4f766cba51593c)](https://app.codacy.com/gh/Tasktix/Tasktix/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 [![DeepSource](https://app.deepsource.com/gh/Tasktix/Tasktix.svg/?label=active+issues&show_trend=true&token=htsvS3wjjtryq3kgw4BYXNYa)](https://app.deepsource.com/gh/Tasktix/Tasktix/)
 
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=Tasktix_Tasktix&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=Tasktix_Tasktix)

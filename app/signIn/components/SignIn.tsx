@@ -26,7 +26,7 @@ import { useAuth } from '@/components/AuthProvider';
 import { authClient } from '@/lib/auth-client';
 
 export default function SignIn() {
-  const { setIsLoggedIn } = useAuth();
+  const { setLoggedInUser } = useAuth();
   const [inputs, setInputs] = useState({ username: '', password: '' });
   const router = useRouter();
 

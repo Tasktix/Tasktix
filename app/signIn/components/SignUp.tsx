@@ -31,6 +31,7 @@ import {
 import { authClient } from '@/lib/auth-client';
 import { randomNamedColor } from '@/lib/color';
 import { useAuth } from '@/components/AuthProvider';
+import User from '@/lib/model/user';
 
 import {
   getUsernameMessage,
@@ -45,7 +46,7 @@ export default function SignUp() {
     password: InputMessage;
   }
 
-  const { setIsLoggedIn } = useAuth();
+  const { setLoggedInUser } = useAuth();
 
   const defaultMessage: InputMessage = { message: '', color: 'default' };
 

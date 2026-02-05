@@ -41,22 +41,30 @@ import Users from './Users';
 import ExpectedInput from './ExpectedInput';
 import ElapsedInput from './ElapsedInput';
 import TimeButton from './TimeButton';
+import { ItemHandlers, SetItem } from './types';
 
-interface SetItem {
-  name: (name: string) => void;
-  dueDate: (date: Date) => void;
-  priority: (priority: ListItem['priority']) => void;
-  complete: () => void;
-  incomplete: () => void;
-  expectedMs: (ms: number) => void;
-  startedRunning: () => void;
-  pausedRunning: () => void;
-  resetTime: () => void;
-  linkedTag: (id: string, name?: string, color?: NamedColor) => void;
-  unlinkedTag: (id: string) => void;
-  deleted: () => void;
-}
-
+/**
+ * The UI for interacting with **all of** a single list item's data, such as the name,
+ * priority, assignees, etc. Some data is hidden in the main component, particularly on
+ * small screens. This component adds a "more" button that opens a modal that displays all
+ * of the item's data and allows it to be modified.
+ *
+ * @param item The list item this component represents
+ * @param tags Tags linked to the list item this component represents
+ * @param tagsAvailable The tags associated with the list that could be added to this item
+ * @param members The members who have access to the list (used to provide options for
+ *  assigning people to tasks)
+ * @param hasDueDates Whether the list settings enable due dates for items
+ * @param hasTimeTracking Whether the list settings enable tracking the time it takes to
+ *  complete list items. Start/pause buttons, a timer, and expected time-to-complete are
+ *  shown if so
+ * @param elapsedLive The number of milliseconds the item's timer has been running
+ * @param set Functions for updating the list item timer
+ * @param itemHandlers Functions for making API calls & state changes when the item is
+ *  interacted with
+ * @param addNewTag Callback to propagate state changes when a new tag is created from the
+ *  "add tag" menu
+ */
 export default function More({
   item,
   tags,
@@ -66,6 +74,7 @@ export default function More({
   hasTimeTracking,
   elapsedLive,
   set,
+  itemHandlers,
   addNewTag
 }: {
   item: ListItem;
@@ -76,6 +85,7 @@ export default function More({
   hasTimeTracking: boolean;
   elapsedLive: number;
   set: SetItem;
+  itemHandlers: ItemHandlers;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
 }) {
   const isComplete = item.status === 'Completed';
@@ -99,15 +109,16 @@ export default function More({
                     isSelected={isComplete}
                     tabIndex={0}
                     onChange={e => {
-                      if (e.target.checked) set.complete();
-                      else set.incomplete();
+                      if (e.target.checked)
+                        itemHandlers.setComplete(elapsedLive);
+                      else itemHandlers.setIncomplete();
                     }}
                   />
                   <span className='flex grow'>
                     <ConfirmedTextInput
-                      showLabel
                       disabled={isComplete}
-                      updateValue={set.name}
+                      label='Name'
+                      updateValue={itemHandlers.setName}
                       value={item.name}
                       variant='underlined'
                     />
@@ -118,7 +129,7 @@ export default function More({
                     className='w-full'
                     isComplete={isComplete}
                     priority={item.priority}
-                    setPriority={set.priority}
+                    setPriority={itemHandlers.setPriority}
                     wrapperClassName='!my-0 w-1/2'
                   />
                   {hasDueDates ? (
@@ -129,7 +140,7 @@ export default function More({
                       label='Due date'
                       value={item.dateDue || undefined}
                       variant='underlined'
-                      onValueChange={set.dueDate}
+                      onValueChange={itemHandlers.setDueDate}
                     />
                   ) : null}
                 </div>
@@ -138,10 +149,10 @@ export default function More({
                   addNewTag={addNewTag}
                   className='py-2'
                   isComplete={item.status === 'Completed'}
-                  linkTag={set.linkedTag}
+                  linkTag={itemHandlers.linkTag}
                   tags={tags}
                   tagsAvailable={tagsAvailable}
-                  unlinkTag={set.unlinkedTag}
+                  unlinkTag={itemHandlers.unlinkTag}
                 />
 
                 {members.length > 1 ? (
@@ -163,7 +174,7 @@ export default function More({
                         <ExpectedInput
                           disabled={isComplete}
                           ms={item.expectedMs}
-                          updateMs={set.expectedMs}
+                          updateMs={itemHandlers.setExpectedMs}
                         />
                         <span className='border-r-1 border-content3' />
                         <ElapsedInput
@@ -184,7 +195,7 @@ export default function More({
                     variant='ghost'
                     onPress={() => {
                       onClose();
-                      set.deleted();
+                      itemHandlers.deleteSelf();
                     }}
                   >
                     <TrashFill />
