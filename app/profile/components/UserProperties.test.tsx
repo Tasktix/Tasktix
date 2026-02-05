@@ -28,14 +28,18 @@ import UserProperties from './UserProperties';
 
 vi.mock('@/lib/api');
 
-jest.mock('framer-motion', () => ({
-  ...jest.requireActual('framer-motion'),
-  LazyMotion: ({ children }: { children: React.ReactNode }) => children
-}));
+vi.mock(import('framer-motion'), async importOriginal => {
+  const originalFramerMotion = await importOriginal();
 
-jest.mock('@heroui/react', () => ({
-  ...jest.requireActual('@heroui/react'),
-  addToast: jest.fn()
+  return {
+    ...originalFramerMotion,
+    LazyMotion: ({ children }) => <div>{children}</div>
+  };
+});
+
+vi.mock(import('@heroui/react'), async importOriginal => ({
+  ...(await importOriginal()),
+  addToast: vi.fn()
 }));
 
 beforeEach(() => {
@@ -115,7 +119,11 @@ describe('UserProperties functions', () => {
   });
 
   test('Validate setColor updates user color', async () => {
-    (api.patch as jest.Mock).mockImplementation(() => Promise.resolve());
+    vi.mocked(api.patch).mockResolvedValue({
+      code: 200,
+      message: 'Success',
+      content: undefined
+    });
     const user = userEvent.setup();
 
     const { getByLabelText, getByTestId } = render(
@@ -131,8 +139,8 @@ describe('UserProperties functions', () => {
     await user.click(colorInput);
     await user.click(getByLabelText('Red'));
 
-    expect(api.patch as jest.Mock).toHaveBeenCalledTimes(1);
-    expect(api.patch as jest.Mock).toHaveBeenCalledWith(`/user/${oldUser.id}`, {
+    expect(api.patch).toHaveBeenCalledTimes(1);
+    expect(api.patch).toHaveBeenCalledWith(`/user/${oldUser.id}`, {
       color: 'Red'
     });
   });
@@ -151,8 +159,8 @@ describe('UserProperties functions', () => {
     await user.click(colorInput);
     await user.click(getByLabelText('clear'));
 
-    expect(addToast as jest.Mock).toHaveBeenCalledTimes(1);
-    expect(addToast as jest.Mock).toHaveBeenCalledWith({
+    expect(addToast).toHaveBeenCalledTimes(1);
+    expect(addToast).toHaveBeenCalledWith({
       title: 'Please specify a user color',
       color: 'danger'
     });
@@ -168,7 +176,7 @@ describe('UserProperties errors', () => {
   };
 
   test('setUsername error message', async () => {
-    (api.patch as jest.Mock).mockRejectedValue(
+    vi.mocked(api.patch).mockRejectedValue(
       new Error('Server message about failure')
     );
 
@@ -189,15 +197,15 @@ describe('UserProperties errors', () => {
       within(getByTestId('confirmed-input-Username')).getByRole('button')
     );
 
-    expect(addToast as jest.Mock).toHaveBeenCalledTimes(1);
-    expect(addToast as jest.Mock).toHaveBeenCalledWith({
+    expect(addToast).toHaveBeenCalledTimes(1);
+    expect(addToast).toHaveBeenCalledWith({
       title: 'Server message about failure',
       color: 'danger'
     });
   });
 
   test('setEmail error message', async () => {
-    (api.patch as jest.Mock).mockRejectedValue(
+    vi.mocked(api.patch).mockRejectedValue(
       new Error('Server message about failure')
     );
 
@@ -218,15 +226,15 @@ describe('UserProperties errors', () => {
       within(getByTestId('confirmed-input-Email')).getByRole('button')
     );
 
-    expect(addToast as jest.Mock).toHaveBeenCalledTimes(1);
-    expect(addToast as jest.Mock).toHaveBeenCalledWith({
+    expect(addToast).toHaveBeenCalledTimes(1);
+    expect(addToast).toHaveBeenCalledWith({
       title: 'Server message about failure',
       color: 'danger'
     });
   });
 
   test('setColor error message', async () => {
-    (api.patch as jest.Mock).mockRejectedValue(
+    vi.mocked(api.patch).mockRejectedValue(
       new Error('Server message about failure')
     );
     const user = userEvent.setup();
@@ -244,8 +252,8 @@ describe('UserProperties errors', () => {
     await user.click(colorInput);
     await user.click(getByLabelText('Red'));
 
-    expect(addToast as jest.Mock).toHaveBeenCalledTimes(1);
-    expect(addToast as jest.Mock).toHaveBeenCalledWith({
+    expect(addToast).toHaveBeenCalledTimes(1);
+    expect(addToast).toHaveBeenCalledWith({
       title: 'Server message about failure',
       color: 'danger'
     });

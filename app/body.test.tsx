@@ -14,7 +14,8 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- * @jest-environment jsdom
+ *
+ * @vitest-environment jsdom
  */
 
 import { render } from '@testing-library/react';
@@ -26,19 +27,23 @@ import { useAuth } from '@/components/AuthProvider/authHook';
 import { NamedColor } from '@/lib/model/color';
 import AuthProvider from '@/components/AuthProvider/AuthProvider';
 
-jest.mock('@/components/AuthProvider/authHook', () => ({
-  useAuth: jest.fn()
+vi.mock('@/components/AuthProvider/authHook', () => ({
+  useAuth: vi.fn()
 }));
 
-jest.mock('next/navigation');
+vi.mock('next/navigation');
 
-jest.mock('framer-motion', () => ({
-  ...jest.requireActual('framer-motion'),
-  LazyMotion: ({ children }: { children: React.ReactNode }) => children
-}));
+vi.mock(import('framer-motion'), async importOriginal => {
+  const originalFramerMotion = await importOriginal();
+
+  return {
+    ...originalFramerMotion,
+    LazyMotion: ({ children }) => <div>{children}</div>
+  };
+});
 
 beforeEach(() => {
-  jest.resetAllMocks();
+  vi.resetAllMocks();
 });
 
 test('Profile Icon Populates Correctly', () => {
@@ -52,9 +57,9 @@ test('Profile Icon Populates Correctly', () => {
     dateSignedIn: '1/1/2000' as unknown as Date
   };
 
-  (useAuth as jest.Mock).mockReturnValue({
+  vi.mocked(useAuth).mockReturnValue({
     loggedInUser: oldUser,
-    setLoggedInUser: jest.fn()
+    setLoggedInUser: vi.fn()
   });
 
   const { getByLabelText } = render(
