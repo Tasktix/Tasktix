@@ -144,6 +144,8 @@ export default function SectionBody({
   } catch {
     console.log('items', items);
     console.log('items.values()', items.values());
+    console.log(typeof 'items.values().filter', typeof items.values().filter);
+    console.log('items.values().prototype', items.values().prototype);
     console.log(
       'items.values().filter()',
       items.values().filter(item => checkItemFilter(item, filters))
