@@ -88,6 +88,7 @@ describe('get', () => {
     await expect(api.get('/resource')).rejects.toThrow('Exception message');
   });
 
+  // Test broken by JSDom upgrade for latest Vitest version: https://github.com/jsdom/jsdom/issues/3492
   test.skip('Redirects to /signIn when response code is 403 and reject with server response', async () => {
     const fakeResponse = createFetchResponse(403, 'Server error message', null);
 
@@ -99,8 +100,7 @@ describe('get', () => {
       content: null
     });
 
-    // Test broken by JSDom upgrade for latest vi version: https://github.com/jsdom/jsdom/issues/3492
-    // expect(window.location.href).toBe('/signIn');
+    expect(window.location.href).toBe('/signIn');
   });
 
   test('Rejects for error responses with HTTP status codes >= 400 (other than 403)', async () => {
@@ -213,8 +213,7 @@ describe('post', () => {
       content: null
     });
 
-    // Test broken by JSDom upgrade for latest vi version: https://github.com/jsdom/jsdom/issues/3492
-    // expect(window.location.href).toBe('/signIn');
+    expect(window.location.href).toBe('/signIn');
   });
 
   test('Rejects for error responses with HTTP status codes >= 400 (other than 403)', async () => {
@@ -317,8 +316,7 @@ describe('put', () => {
       content: null
     });
 
-    // Test broken by JSDom upgrade for latest vi version: https://github.com/jsdom/jsdom/issues/3492
-    // expect(window.location.href).toBe('/signIn');
+    expect(window.location.href).toBe('/signIn');
   });
 
   test('Rejects for error responses with HTTP status codes >= 400 (other than 403)', async () => {
@@ -423,8 +421,7 @@ describe('patch', () => {
       content: null
     });
 
-    // Test broken by JSDom upgrade for latest vi version: https://github.com/jsdom/jsdom/issues/3492
-    // expect(window.location.href).toBe('/signIn');
+    expect(window.location.href).toBe('/signIn');
   });
 
   test('Rejects for error responses with HTTP status codes >= 400 (other than 403)', async () => {
@@ -497,8 +494,7 @@ describe('delete', () => {
       content: null
     });
 
-    // Test broken by JSDom upgrade for latest vi version: https://github.com/jsdom/jsdom/issues/3492
-    // expect(window.location.href).toBe('/signIn');
+    expect(window.location.href).toBe('/signIn');
   });
 
   test('Rejects for error responses with HTTP status codes >= 400 (other than 403)', async () => {
