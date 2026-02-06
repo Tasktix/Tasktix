@@ -54,7 +54,7 @@ export default function Page() {
         <h1 className='text-3xl md:text-4xl font-extrabold'>{count}</h1>
         <Button
           onPress={() => {
-            // void operator used to ignore Promise - skip-cq: JS-0098
+            // void operator used to ignore Promise - skipcq: JS-0098
             void api.post('/count', { count: count + 1 });
           }}
         >
