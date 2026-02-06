@@ -48,8 +48,8 @@ export default function SignIn() {
         onError: (ctx) => {
           addToast({ title: ctx.error.message, color: 'danger' });
         },
-        onSuccess: () => {
-          setIsLoggedIn(true);
+        onSuccess: (ctx) => {
+          setLoggedInUser(ctx.data.User);
           router.push("/list");
         }
       })

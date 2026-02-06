@@ -38,6 +38,7 @@ import {
   getEmailMessage,
   getPasswordMessage
 } from '../messages';
+import { getUser } from '@/lib/session';
 
 export default function SignUp() {
   interface InputMessages {
@@ -106,8 +107,8 @@ export default function SignUp() {
         onError: (ctx) => {
           addToast({ title: ctx.error.message, color: 'danger' });
         },
-        onSuccess: () => {
-          setIsLoggedIn(true);
+        onSuccess: (ctx) => {
+          setLoggedInUser(ctx.data.user);
           router.push("/list");
         }
       });

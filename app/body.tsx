@@ -111,7 +111,7 @@ function AccountButton() {
       await authClient.signOut({
         fetchOptions: {
           onSuccess: () =>{
-            setIsLoggedIn(false);
+            setLoggedInUser(false);
             router.push("/");
           },
           onError: (ctx) => {
