@@ -18,6 +18,9 @@
 
 import { addClient, removeClient } from '@/lib/sse';
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 export function GET(req: Request) {
   const stream = new ReadableStream({
     start(controller) {
