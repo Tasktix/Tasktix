@@ -28,7 +28,7 @@ import z from 'zod';
 
 export const dynamic = 'force-dynamic'; // defaults to auto
 
-const PatchBody = ZodUser.omit({ id: true, legacyPassword: true }).extend({ oldPassword: z.string().min(10).max(128), newPassword: z.string().min(10).max(128)}).partial();
+const PatchBody = ZodUser.omit({ id: true, legacyPassword: true }).extend({ oldPassword: z.string().min(10).max(128), newPassword: z.string().min(10).max(128)}).partial().refine((user) => (user.newPassword !== undefined && user.oldPassword !== undefined ) || (user.newPassword === undefined && user.oldPassword === undefined ) );
 
 /**
  * Update a user's `username`, `email`, `password` and/or `color`
@@ -96,7 +96,7 @@ export async function PATCH(
           return ServerError.Internal("Failed to update email");
         }
     }
-    if (requestBody.newPassword) {
+    if (requestBody.newPassword && requestBody.oldPassword) {
       const allowed = await auth.api.verifyPassword({
         body: { password: requestBody.oldPassword },
         headers: request.headers
@@ -112,11 +112,12 @@ export async function PATCH(
           },
         headers: request.headers
       })
-      if(!result){
+      if(!result.token){
         return ServerError.Internal("Failed to update password");
       }
 
     }
+
     if (requestBody.color) {
       user.color = requestBody.color;
       const result = await updateUserColor(user);
@@ -127,6 +128,8 @@ export async function PATCH(
 
     return Success.OK('User updated');
   } catch (error: unknown) {
-    return ServerError.Internal(error?.toString() ?? 'Internal Server Error');
+    console.log(error?.toString());
+
+    return ServerError.Internal('Internal Server Error');
   }
 }

@@ -119,8 +119,16 @@ export default defineConfig([
       ],
       '@typescript-eslint/switch-exhaustiveness-check': 'error'
     }
+  }, 
+  { 
+    files: ['app/api/**/*.ts', 'lib/database/**/*.ts'],
+    rules: {
+      'no-console': 'off'
+    }
+
   },
   {
+    
     files: ['**/*.tsx'],
 
     rules: {
