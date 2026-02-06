@@ -14,8 +14,6 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *
- * @jest-environment jsdom
  */
 
 import React from 'react';
@@ -25,35 +23,36 @@ import { HeroUIProvider } from '@heroui/react';
 import Body from '@/app/body';
 import { useAuth } from '@/components/AuthProvider';
 
-jest.mock('@heroui/react', () => {
-  const actual = jest.requireActual('@heroui/react');
+vi.mock('@/components/AuthProvider', () => ({
+  useAuth: vi.fn()
+}));
+
+const router = {
+  replace: vi.fn(),
+  push: vi.fn(),
+  prefetch: vi.fn(),
+  refresh: vi.fn(),
+  back: vi.fn(),
+  forward: vi.fn()
+};
+
+vi.mock('next/navigation', () => ({
+  useRouter: () => router
+}));
+
+vi.mock('@heroui/react', async () => {
+  const actual =
+    await vi.importActual<typeof import('@heroui/react')>('@heroui/react');
 
   return {
     ...actual,
-    ToastProvider: () => <div data-testid='toast-provider' />
+    ToastProvider: ({ children }: { children?: React.ReactNode }) => (
+      <div data-testid='toast-provider'>{children}</div>
+    )
   };
 });
 
-jest.mock('@/components/AuthProvider', () => ({
-  useAuth: jest.fn()
-}));
-
-jest.mock('next/navigation', () => ({
-  useRouter: () => ({
-    replace: jest.fn(),
-    push: jest.fn(),
-    prefetch: jest.fn()
-  })
-}));
-
-jest.mock('next/image', () => ({
-  __esModule: true,
-  default: ({ alt, src }: { alt?: string; src?: string }) => (
-    <span aria-label={alt} data-src={String(src ?? '')} role='img' />
-  )
-}));
-
-jest.mock('@/components/ThemeSwitcher', () => ({
+vi.mock('@/components/ThemeSwitcher', () => ({
   __esModule: true,
   default: () => <div data-testid='theme-switcher' />
 }));
@@ -64,13 +63,13 @@ function renderWithProvider(ui: React.ReactElement) {
 
 describe('Body', () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.clearAllMocks();
   });
 
   it('links logo to /list when logged in', () => {
-    (useAuth as jest.Mock).mockReturnValue({
+    vi.mocked(useAuth).mockReturnValue({
       isLoggedIn: true,
-      setIsLoggedIn: jest.fn()
+      setIsLoggedIn: vi.fn()
     });
 
     renderWithProvider(
@@ -88,9 +87,9 @@ describe('Body', () => {
   });
 
   it('links logo to /about when logged out', () => {
-    (useAuth as jest.Mock).mockReturnValue({
+    vi.mocked(useAuth).mockReturnValue({
       isLoggedIn: false,
-      setIsLoggedIn: jest.fn()
+      setIsLoggedIn: vi.fn()
     });
 
     renderWithProvider(

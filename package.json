@@ -7,7 +7,10 @@
     "start": "docker compose up --build --watch",
     "stop": "docker compose stop",
     "teardown": "docker compose down",
-    "test": "npm run test:jest && npm run test:cy",
+    "test": "vitest --config vitest.config.ts",
+    "test:watch": "vitest --watch",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run",
     "lint": "eslint .",
     "danger": "danger ci",
     "local:build": "next build",
@@ -51,6 +54,7 @@
     "@types/node": "^25.0.1",
     "@types/react": "19.2.7",
     "@types/react-dom": "19.2.3",
+    "@vitest/ui": "^4.0.18",
     "babel-plugin-react-compiler": "^1.0.0",
     "cross-env": "^10.0.0",
     "cypress": "^15.0.0",
@@ -66,6 +70,7 @@
     "framer-motion": "^12.23.26",
     "jest": "^30.2.0",
     "jest-environment-jsdom": "^30.2.0",
+    "jsdom": "^26.1.0",
     "postcss": "^8.5.6",
     "prettier": "^3.7.4",
     "prisma": "^6.19.0",
@@ -74,6 +79,6 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.49.0",
-    "whatwg-fetch": "^3.6.20"
+    "vite-tsconfig-paths": "^6.0.5"
   }
 }

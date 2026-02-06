@@ -16,5 +16,40 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-globalThis.structuredClone = (value: unknown) =>
-  JSON.parse(JSON.stringify(value)) as unknown;
+import '@testing-library/jest-dom/vitest';
+import React from 'react';
+import { vi } from 'vitest';
+
+vi.mock('next/image', () => ({
+  __esModule: true,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  default: (props: any) => {
+    const {
+      priority,
+      fill,
+      blurDataURL,
+      placeholder,
+      loader,
+      quality,
+      sizes,
+      onLoadingComplete,
+      ...rest
+    } = props;
+
+    // Explicitly mark as intentionally unused
+    void priority;
+    void fill;
+    void blurDataURL;
+    void placeholder;
+    void loader;
+    void quality;
+    void sizes;
+    void onLoadingComplete;
+
+    // eslint-disable-next-line @next/next/no-img-element
+    return React.createElement('img', {
+      ...rest,
+      alt: rest.alt ?? ''
+    });
+  }
+}));

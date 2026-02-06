@@ -16,5 +16,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-globalThis.structuredClone = (value: unknown) =>
-  JSON.parse(JSON.stringify(value)) as unknown;
+import { defineConfig } from 'vitest/config';
+import tsconfigPaths from 'vite-tsconfig-paths';
+
+export default defineConfig({
+  plugins: [tsconfigPaths()],
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: ['./vitest.setup.ts'],
+    clearMocks: true,
+    restoreMocks: true
+  }
+});
