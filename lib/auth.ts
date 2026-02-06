@@ -15,13 +15,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-import { betterAuth } from "better-auth";
+import { betterAuth, DBFieldType } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { PrismaClient } from "@prisma/client";
 import { username } from "better-auth/plugins"
+import { namedColors } from "./model/color";
+import { randomNamedColor } from "./color";
 
 const prisma = new PrismaClient();
 export const auth = betterAuth({
+  baseURL: "http://localhost:3000",
   database: prismaAdapter(prisma, {
     provider: "mysql",
   }),
@@ -35,12 +38,12 @@ export const auth = betterAuth({
     tableName: "User",
     changeEmail: {
       enabled: true,
-      // TODO: Maybe add Verification Email Service
+      // TODO: If we setup a mailserver, renenable email verification
       updateEmailWithoutVerification: true
     },
     additionalFields: {
       color: {
-        type: ["Pink", "Red", "Orange", "Amber", "Yellow", "Lime", "Green", "Emerald", "Cyan", "Blue", "Violet"],
+        type: namedColors as unknown as DBFieldType,
         required: true,
       },
       legacyPassword: {
