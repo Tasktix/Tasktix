@@ -23,6 +23,12 @@ interface Client {
 const clients: Map<number, Client> = new Map();
 let nextId = 0;
 
+/**
+ * Subscribes a client for broadcast messages via the given stream
+ *
+ * @param controller The stream controller for pushing messages to the client
+ * @returns The client ID for gracefully handling their disconnection
+ */
 export function addClient(controller: Client['controller']): number {
   const id = nextId++;
 
@@ -31,10 +37,20 @@ export function addClient(controller: Client['controller']): number {
   return id;
 }
 
+/**
+ * Unsubscribes a client from broadcast messages (e.g. because they disconnected).
+ *
+ * @param id The client to unsubscribe
+ */
 export function removeClient(id: number) {
   clients.delete(id);
 }
 
+/**
+ * Broadcasts the given data to all currently-connected clients
+ *
+ * @param data The data to broadcast
+ */
 export function broadcast(data: string) {
   clients.forEach(client => {
     client.controller.enqueue(`data: ${data}\n\n`);

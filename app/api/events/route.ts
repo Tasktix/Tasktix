@@ -18,9 +18,34 @@
 
 import { addClient, removeClient } from '@/lib/sse';
 
+// Don't need to test 'cause this is just a demo - skipcq: TCV-001
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
+/**
+ * API endpoint for subscribing to state update events from clients on the `/count` page.
+ * Should be accessed like this:
+ * ```ts
+ * useEffect(() => {
+ *   const es = new EventSource('/api/events');
+ *
+ *   es.onmessage = event => {
+ *     const data = JSON.parse(event.data as string) as { count: number };
+ *     setCount(data.count);
+ *   };
+ *
+ *   es.onerror = () => {
+ *     addToast({ title: 'Error connecting for live updates', color: 'danger' });
+ *     es.close();
+ *   };
+ *
+ *    return () => es.close();
+ * }, []);
+ * ```
+ *
+ * @param req The client's request
+ * @returns A response stream that will include every event until the client disconnects
+ */
 export function GET(req: Request) {
   const stream = new ReadableStream({
     start(controller) {
