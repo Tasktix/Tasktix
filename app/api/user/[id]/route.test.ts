@@ -17,23 +17,20 @@
  */
 
 import User from '@/lib/model/user';
-import {
-  getUserByEmail,
-  updateUserColor
-} from '@/lib/database/user';
+import { getUserByEmail, updateUserColor } from '@/lib/database/user';
 import { getUser } from '@/lib/session';
 import { auth } from '@/lib/auth';
+
 import { PATCH } from './route';
-import { changeEmail, changePassword, verifyPassword } from 'better-auth/api';
 
 const MOCK_USER = new User(
-  "abcdefg",
-  "username",
-  "email@example.com",
+  'abcdefg',
+  'username',
+  'email@example.com',
   false,
   new Date(),
   new Date(),
-  "Amber",
+  'Amber'
 );
 const USER_PATH = `http://localhost/api/user/${MOCK_USER.id}` as const;
 
@@ -48,9 +45,9 @@ vi.mock('@/lib/auth', () => ({
       changeEmail: vi.fn(),
       verifyPassword: vi.fn(),
       changePassword: vi.fn()
-    },
-  },
-}))
+    }
+  }
+}));
 
 beforeEach(() => {
   vi.resetAllMocks();
@@ -59,8 +56,10 @@ beforeEach(() => {
 describe('PATCH', () => {
   test('Allows username updates without altering other fields', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
-    vi.mocked(auth.api.updateUser).mockResolvedValue({status: true});
-    vi.mocked(auth.api.isUsernameAvailable).mockResolvedValue({available: true});
+    vi.mocked(auth.api.updateUser).mockResolvedValue({ status: true });
+    vi.mocked(auth.api.isUsernameAvailable).mockResolvedValue({
+      available: true
+    });
     const response = await PATCH(
       new Request(USER_PATH, {
         method: 'patch',
@@ -72,13 +71,13 @@ describe('PATCH', () => {
     expect(response.status).toBe(200);
     expect(auth.api.updateUser).toHaveBeenCalledTimes(1);
     expect(auth.api.updateUser).toHaveBeenCalledWith(
-      expect.objectContaining({ body: {username: 'new_name'} })
+      expect.objectContaining({ body: { username: 'new_name' } })
     );
   });
 
   test('Allows email updates without altering other fields', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
-    vi.mocked(auth.api.changeEmail).mockResolvedValue({status: true});
+    vi.mocked(auth.api.changeEmail).mockResolvedValue({ status: true });
 
     const response = await PATCH(
       new Request(USER_PATH, {
@@ -117,9 +116,11 @@ describe('PATCH', () => {
   test('Allows multiple field updates at the same time', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
     vi.mocked(updateUserColor).mockResolvedValue(true);
-    vi.mocked(auth.api.changeEmail).mockResolvedValue({status: true});
-    vi.mocked(auth.api.updateUser).mockResolvedValue({status: true});
-    vi.mocked(auth.api.isUsernameAvailable).mockResolvedValue({available: true});
+    vi.mocked(auth.api.changeEmail).mockResolvedValue({ status: true });
+    vi.mocked(auth.api.updateUser).mockResolvedValue({ status: true });
+    vi.mocked(auth.api.isUsernameAvailable).mockResolvedValue({
+      available: true
+    });
 
     const response = await PATCH(
       new Request(USER_PATH, {
@@ -136,7 +137,7 @@ describe('PATCH', () => {
     expect(response.status).toBe(200);
     expect(auth.api.updateUser).toHaveBeenCalledTimes(1);
     expect(auth.api.updateUser).toHaveBeenCalledWith(
-      expect.objectContaining({ body: {username: 'new_name'} })
+      expect.objectContaining({ body: { username: 'new_name' } })
     );
     expect(auth.api.changeEmail).toHaveBeenCalledTimes(1);
     expect(auth.api.changeEmail).toHaveBeenCalledWith(
@@ -151,8 +152,8 @@ describe('PATCH', () => {
   test('Rejects unauthenticated users', async () => {
     vi.mocked(getUser).mockResolvedValue(false);
     vi.mocked(updateUserColor).mockResolvedValue(true);
-    vi.mocked(auth.api.changeEmail).mockResolvedValue({status: true});
-    vi.mocked(auth.api.updateUser).mockResolvedValue({status: true});
+    vi.mocked(auth.api.changeEmail).mockResolvedValue({ status: true });
+    vi.mocked(auth.api.updateUser).mockResolvedValue({ status: true });
 
     const response = await PATCH(new Request(USER_PATH, { method: 'patch' }), {
       params: Promise.resolve({ id: MOCK_USER.id })
@@ -167,8 +168,8 @@ describe('PATCH', () => {
   test('Rejects requests to modify other users', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
     vi.mocked(updateUserColor).mockResolvedValue(true);
-    vi.mocked(auth.api.changeEmail).mockResolvedValue({status: true});
-    vi.mocked(auth.api.updateUser).mockResolvedValue({status: true});
+    vi.mocked(auth.api.changeEmail).mockResolvedValue({ status: true });
+    vi.mocked(auth.api.updateUser).mockResolvedValue({ status: true });
 
     const response = await PATCH(
       new Request(USER_PATH.slice(0, -2), { method: 'patch' }),
@@ -195,38 +196,47 @@ describe('PATCH', () => {
     expect(response.status).toBe(400);
   });
 
-  test("Accepts valid password updates", async () => {
+  test('Accepts valid password updates', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
-    vi.mocked(auth.api.verifyPassword).mockResolvedValue({status: true});
-    vi.mocked(auth.api.changePassword).mockResolvedValue({user: MOCK_USER, token: "tokenString"});
-    
+    vi.mocked(auth.api.verifyPassword).mockResolvedValue({ status: true });
+    vi.mocked(auth.api.changePassword).mockResolvedValue({
+      user: MOCK_USER,
+      token: 'tokenString'
+    });
+
     const response = await PATCH(
       new Request(USER_PATH, {
         method: 'patch',
-        body: JSON.stringify({ newPassword: 'new_password', oldPassword: 'old_password' })
+        body: JSON.stringify({
+          newPassword: 'new_password',
+          oldPassword: 'old_password'
+        })
       }),
       { params: Promise.resolve({ id: MOCK_USER.id }) }
     );
 
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual({ message: 'User updated' });
-  })
+  });
 
-  test("Rejects password updates that provide a weak new password", async () => {
+  test('Rejects password updates that provide a weak new password', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
-    vi.mocked(auth.api.verifyPassword).mockResolvedValue({status: true});
-    
+    vi.mocked(auth.api.verifyPassword).mockResolvedValue({ status: true });
+
     const response = await PATCH(
       new Request(USER_PATH, {
         method: 'patch',
-        body: JSON.stringify({ newPassword: 'short', oldPassword: 'old_password' })
+        body: JSON.stringify({
+          newPassword: 'short',
+          oldPassword: 'old_password'
+        })
       }),
       { params: Promise.resolve({ id: MOCK_USER.id }) }
     );
 
     expect(response.status).toBe(400);
     expect(await response.json()).toEqual({ message: 'Invalid request body' });
-  })
+  });
   test('Rejects invalid username updates', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
     expect(auth.api.updateUser).not.toHaveBeenCalled();
@@ -254,7 +264,7 @@ describe('PATCH', () => {
       }),
       { params: Promise.resolve({ id: MOCK_USER.id }) }
     );
-    
+
     expect(response.status).toBe(400);
     expect(auth.api.changeEmail).not.toHaveBeenCalled();
   });
@@ -275,9 +285,11 @@ describe('PATCH', () => {
   });
 
   test('Rejects the request if the username is unavailable', async () => {
-    vi.mocked(getUser).mockResolvedValue(MOCK_USER)
-    vi.mocked(auth.api.isUsernameAvailable).mockResolvedValue({available: false})
-    vi.mocked(auth.api.updateUser).mockResolvedValue({status: true})
+    vi.mocked(getUser).mockResolvedValue(MOCK_USER);
+    vi.mocked(auth.api.isUsernameAvailable).mockResolvedValue({
+      available: false
+    });
+    vi.mocked(auth.api.updateUser).mockResolvedValue({ status: true });
 
     const response = await PATCH(
       new Request(USER_PATH, {
@@ -292,9 +304,9 @@ describe('PATCH', () => {
   });
 
   test('Rejects the request if the email is unavailable', async () => {
-    vi.mocked(getUser).mockResolvedValue(MOCK_USER)
-    vi.mocked(getUserByEmail).mockResolvedValue(MOCK_USER)
-    vi.mocked(auth.api.changeEmail).mockResolvedValue({status: true})
+    vi.mocked(getUser).mockResolvedValue(MOCK_USER);
+    vi.mocked(getUserByEmail).mockResolvedValue(MOCK_USER);
+    vi.mocked(auth.api.changeEmail).mockResolvedValue({ status: true });
 
     const response = await PATCH(
       new Request(USER_PATH, {
@@ -309,8 +321,8 @@ describe('PATCH', () => {
   });
 
   test('Warns the user if updating the member failed', async () => {
-    vi.mocked(getUser).mockResolvedValue(MOCK_USER)
-    vi.mocked(auth.api.updateUser).mockResolvedValue({status:false})
+    vi.mocked(getUser).mockResolvedValue(MOCK_USER);
+    vi.mocked(auth.api.updateUser).mockResolvedValue({ status: false });
 
     const response = await PATCH(
       new Request(USER_PATH, {
@@ -360,5 +372,4 @@ describe('PATCH', () => {
     expect(response.status).toBe(500);
     expect(await response.json()).toEqual({ message: 'Internal Server Error' });
   });
-
 });

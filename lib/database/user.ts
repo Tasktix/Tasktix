@@ -37,7 +37,7 @@ export async function createUser(user: User): Promise<boolean> {
 export async function updateUserColor(user: User): Promise<boolean> {
   const result = await prisma.user.update({
     where: { id: user.id },
-    data: {color: user.color}
+    data: { color: user.color }
   });
 
   return Boolean(result);
@@ -62,4 +62,3 @@ export async function getUserByEmail(email: string): Promise<User | false> {
 
   return result ?? false;
 }
-

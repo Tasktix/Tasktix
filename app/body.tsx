@@ -110,17 +110,17 @@ function AccountButton() {
     startTransition(async () => {
       await authClient.signOut({
         fetchOptions: {
-          onSuccess: () =>{
+          onSuccess: () => {
             setLoggedInUser(false);
-            router.push("/");
+            router.push('/');
           },
-          onError: (ctx) => {
+          onError: ctx => {
             addToast({ title: ctx.error.message, color: 'danger' });
           }
         }
       });
-    }
-  )};
+    });
+  }
 
   if (!loggedInUser)
     return (

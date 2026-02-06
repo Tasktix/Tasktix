@@ -15,27 +15,29 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-import { betterAuth, DBFieldType } from "better-auth";
-import { prismaAdapter } from "better-auth/adapters/prisma";
-import { PrismaClient } from "@prisma/client";
-import { username } from "better-auth/plugins"
-import { namedColors } from "./model/color";
-import { randomNamedColor } from "./color";
+
+import { betterAuth, DBFieldType } from 'better-auth';
+import { prismaAdapter } from 'better-auth/adapters/prisma';
+import { PrismaClient } from '@prisma/client';
+import { username } from 'better-auth/plugins';
+
+import { namedColors } from './model/color';
 
 const prisma = new PrismaClient();
+
 export const auth = betterAuth({
-  baseURL: "http://localhost:3000",
+  baseURL: 'http://localhost:3000',
   database: prismaAdapter(prisma, {
-    provider: "mysql",
+    provider: 'mysql'
   }),
   /**
-   * The user and session table schemas support adding additional/renaming 
+   * The user and session table schemas support adding additional/renaming
    * fields, but they must be documented here. For details on how to apply this
    * read this: https://www.better-auth.com/docs/concepts/database#custom-tables
    */
   user: {
-    modelName: "User",
-    tableName: "User",
+    modelName: 'User',
+    tableName: 'User',
     changeEmail: {
       enabled: true,
       // TODO: If we setup a mailserver, renenable email verification
@@ -44,37 +46,34 @@ export const auth = betterAuth({
     additionalFields: {
       color: {
         type: namedColors as unknown as DBFieldType,
-        required: true,
+        required: true
       },
       legacyPassword: {
-        type: "string",
+        type: 'string',
         required: false,
-        input: false,
+        input: false
       }
     }
   },
   session: {
-    modelName: "Session",
-    tableName: "Session"
+    modelName: 'Session',
+    tableName: 'Session'
   },
   account: {
-    modelName: "Account",
-    tableName: "Account"
+    modelName: 'Account',
+    tableName: 'Account'
   },
   verification: {
-    modelName: "Verification",
-    tableName: "Verification"
+    modelName: 'Verification',
+    tableName: 'Verification'
   },
   emailAndPassword: {
     enabled: true,
-    minPasswordLength: 10,
+    minPasswordLength: 10
   },
 
   socialProviders: {
     // TODO: Add Github/Google/etc.
   },
-  plugins: [
-    username()
-  ]
+  plugins: [username()]
 });
-

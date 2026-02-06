@@ -41,18 +41,21 @@ export default function SignIn() {
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     startTransition(async () => {
-      const {data, error} = await authClient.signIn.username({
-        username: inputs.username,
-        password: inputs.password, 
-      }, {
-        onError: (ctx) => {
-          addToast({ title: ctx.error.message, color: 'danger' });
+      await authClient.signIn.username(
+        {
+          username: inputs.username,
+          password: inputs.password
         },
-        onSuccess: (ctx) => {
-          setLoggedInUser(ctx.data.User);
-          router.push("/list");
+        {
+          onError: ctx => {
+            addToast({ title: ctx.error.message, color: 'danger' });
+          },
+          onSuccess: ctx => {
+            setLoggedInUser(ctx.data.User);
+            router.push('/list');
+          }
         }
-      })
+      );
     });
   }
 

@@ -42,7 +42,7 @@ test('Picks a color if none provided', () => {
     'secret',
     false,
     fixedCreatedAt,
-    fixedUpdatedAt,
+    fixedUpdatedAt
   );
 
   expect(user.color).toBe('mock-color');
@@ -57,7 +57,7 @@ test('Uses the provided color', () => {
     false,
     fixedCreatedAt,
     fixedUpdatedAt,
-    "Amber"
+    'Amber'
   );
 
   expect(user.color).toBe('Amber');
@@ -66,20 +66,20 @@ test('Uses the provided color', () => {
 
 test('Assigns all properties correctly', () => {
   const user = new User(
-    "provided-id",
-    "testUser",
-    "test@example.com",
+    'provided-id',
+    'testUser',
+    'test@example.com',
     false,
     fixedCreatedAt,
     fixedUpdatedAt,
-    "Amber",
+    'Amber'
   );
 
   expect(user.username).toBe('testUser');
   expect(user.email).toBe('test@example.com');
   expect(user.createdAt).toBe(fixedCreatedAt);
   expect(user.updatedAt).toBe(fixedUpdatedAt);
-  expect(user.emailVerified).toBe(false)
+  expect(user.emailVerified).toBe(false);
   expect(user.id).toBe('provided-id');
   expect(user.color).toBe('Amber');
   expect(user.image).toBeNull();

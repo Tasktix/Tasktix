@@ -16,9 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ClientError, ServerError, Success } from '@/lib/Response';
+import { ClientError, Success } from '@/lib/Response';
 import { getUser } from '@/lib/session';
-
 
 export async function GET(_: Request) {
   const session = await getUser();
@@ -26,8 +25,4 @@ export async function GET(_: Request) {
   if (!session) return ClientError.NotFound('Not logged in');
 
   return Success.OK('Logged in');
-}
-// TODO: Is this functionality needed? possible?
-export async function POST(request: Request) {
-  return ServerError.Internal('Create Session currently unimplemented');
 }

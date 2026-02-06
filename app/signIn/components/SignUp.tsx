@@ -31,14 +31,12 @@ import {
 import { authClient } from '@/lib/auth-client';
 import { randomNamedColor } from '@/lib/color';
 import { useAuth } from '@/components/AuthProvider';
-import User from '@/lib/model/user';
 
 import {
   getUsernameMessage,
   getEmailMessage,
   getPasswordMessage
 } from '../messages';
-import { getUser } from '@/lib/session';
 
 export default function SignUp() {
   interface InputMessages {
@@ -97,21 +95,24 @@ export default function SignUp() {
       return;
     }
     startTransition(async () => {
-      const { data, error } = await authClient.signUp.email({
-        email: inputs.email,
-        password: inputs.password,
-        name: inputs.username,
-        username: inputs.username,
-        color: randomNamedColor()
-      }, {
-        onError: (ctx) => {
-          addToast({ title: ctx.error.message, color: 'danger' });
+      await authClient.signUp.email(
+        {
+          email: inputs.email,
+          password: inputs.password,
+          name: inputs.username,
+          username: inputs.username,
+          color: randomNamedColor()
         },
-        onSuccess: (ctx) => {
-          setLoggedInUser(ctx.data.user);
-          router.push("/list");
+        {
+          onError: ctx => {
+            addToast({ title: ctx.error.message, color: 'danger' });
+          },
+          onSuccess: ctx => {
+            setLoggedInUser(ctx.data.user);
+            router.push('/list');
+          }
         }
-      });
+      );
     });
   }
 

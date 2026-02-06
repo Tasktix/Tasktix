@@ -16,19 +16,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import z from 'zod';
+
 import { Success, ClientError, ServerError } from '@/lib/Response';
-import {
-  getUserByEmail,
-  updateUserColor
-} from '@/lib/database/user';
+import { getUserByEmail, updateUserColor } from '@/lib/database/user';
 import { ZodUser } from '@/lib/model/user';
 import { getUser } from '@/lib/session';
 import { auth } from '@/lib/auth';
-import z from 'zod';
 
 export const dynamic = 'force-dynamic'; // defaults to auto
 
-const PatchBody = ZodUser.omit({ id: true, legacyPassword: true }).extend({ oldPassword: z.string().min(10).max(128), newPassword: z.string().min(10).max(128)}).partial().refine((user) => (user.newPassword !== undefined && user.oldPassword !== undefined ) || (user.newPassword === undefined && user.oldPassword === undefined ) );
+const PatchBody = ZodUser.omit({ id: true, legacyPassword: true })
+  .extend({
+    oldPassword: z.string().min(10).max(128),
+    newPassword: z.string().min(10).max(128)
+  })
+  .partial()
+  .refine(
+    user =>
+      (user.newPassword !== undefined && user.oldPassword !== undefined) ||
+      (user.newPassword === undefined && user.oldPassword === undefined)
+  );
 
 /**
  * Update a user's `username`, `email`, `password` and/or `color`
@@ -63,64 +71,69 @@ export async function PATCH(
       const res = await auth.api.isUsernameAvailable({
         body: {
           username: requestBody.username
-          },
-          headers: request.headers
-        });
-        if (!res.available) {
-          return ClientError.BadRequest('Username unavailable');
-        }
+        },
+        headers: request.headers
+      });
 
-        const result = await auth.api.updateUser({
-          body: {
-            username: requestBody.username,
-          },
-          headers: request.headers
-        });
-        if (!result.status){
-          return ServerError.Internal("Failed to update username");
-        }
+      if (!res.available) {
+        return ClientError.BadRequest('Username unavailable');
+      }
+
+      const result = await auth.api.updateUser({
+        body: {
+          username: requestBody.username
+        },
+        headers: request.headers
+      });
+
+      if (!result.status) {
+        return ServerError.Internal('Failed to update username');
+      }
     }
 
     if (requestBody.email) {
-        if(await getUserByEmail(requestBody.email))
-          return ClientError.BadRequest(
-            'Another account already uses this email'
+      if (await getUserByEmail(requestBody.email))
+        return ClientError.BadRequest(
+          'Another account already uses this email'
         );
-        const result = await auth.api.changeEmail({
-          body: {
-            newEmail: requestBody.email
-          },
-          headers: request.headers
-        })
-        if(!result.status){
-          return ServerError.Internal("Failed to update email");
-        }
+      const result = await auth.api.changeEmail({
+        body: {
+          newEmail: requestBody.email
+        },
+        headers: request.headers
+      });
+
+      if (!result.status) {
+        return ServerError.Internal('Failed to update email');
+      }
     }
     if (requestBody.newPassword && requestBody.oldPassword) {
       const allowed = await auth.api.verifyPassword({
         body: { password: requestBody.oldPassword },
         headers: request.headers
-      })
-      if(!allowed.status){
-        return ClientError.BadRequest("Incorrect Password");
+      });
+
+      if (!allowed.status) {
+        return ClientError.BadRequest('Incorrect Password');
       }
       const result = await auth.api.changePassword({
-        body: { 
-            newPassword: requestBody.newPassword,
-            currentPassword: requestBody.oldPassword,
-            revokeOtherSessions: true,
-          },
+        body: {
+          newPassword: requestBody.newPassword,
+          currentPassword: requestBody.oldPassword,
+          revokeOtherSessions: true
+        },
         headers: request.headers
-      })
-      if(!result.token){
-        return ServerError.Internal("Failed to update password");
-      }
+      });
 
+      if (!result.token) {
+        return ServerError.Internal('Failed to update password');
+      }
     }
 
     if (requestBody.color) {
       user.color = requestBody.color;
       const result = await updateUserColor(user);
+
       if (!result) {
         return ServerError.Internal('Could not update user Color');
       }

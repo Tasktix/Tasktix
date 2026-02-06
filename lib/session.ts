@@ -22,16 +22,17 @@ import { headers } from 'next/headers';
 
 import { getUserById } from '@/lib/database/user';
 import User from '@/lib/model/user';
+
 import { auth } from './auth';
 
 export async function getUser(): Promise<User | false> {
+  const session = await auth.api.getSession({ headers: await headers() });
 
-  const session = await auth.api.getSession({headers: await headers()});
-  
   if (!session) return false;
 
   const user = await getUserById(session.user.id);
-  
+
   if (!user) return false;
+
   return user;
 }

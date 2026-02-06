@@ -16,14 +16,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { createAuthClient } from "better-auth/react"
-import { inferAdditionalFields, usernameClient } from "better-auth/client/plugins"
-import type { auth } from "./auth";
+import type { auth } from './auth';
+
+import { createAuthClient } from 'better-auth/react';
+import {
+  inferAdditionalFields,
+  usernameClient
+} from 'better-auth/client/plugins';
 
 export const authClient = createAuthClient({
-    baseURL: "http://localhost:3000",
-    plugins: [
-        usernameClient(),
-        inferAdditionalFields<typeof auth>()
-    ]
-})
+  baseURL: 'http://localhost:3000',
+  plugins: [usernameClient(), inferAdditionalFields<typeof auth>()]
+});

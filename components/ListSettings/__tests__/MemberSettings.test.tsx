@@ -41,22 +41,22 @@ beforeEach(() => {
 
 const users = [
   new User(
-    "user1-id",
-    "user1",
-    "user1@example.com",
+    'user1-id',
+    'user1',
+    'user1@example.com',
     false,
     new Date(),
     new Date(),
-    "Violet",
+    'Violet'
   ),
   new User(
-    "user2-id",
-    "user2",
-    "user2@example.com",
+    'user2-id',
+    'user2',
+    'user2@example.com',
     false,
     new Date(),
     new Date(),
-    "Violet",
+    'Violet'
   )
 ];
 

@@ -23,14 +23,14 @@ import { randomNamedColor } from '../color';
 import { NamedColor, namedColors } from './color';
 
 const userFormat = z
-    .string()
-    .min(3)
-    .max(32)
-    .regex(/^[a-zA-Z0-9_]*$/)
+  .string()
+  .min(3)
+  .max(32)
+  .regex(/^[a-zA-Z0-9_]*$/);
 
 export const ZodUser = z.strictObject({
   id: z.string().length(191),
-  name:userFormat,
+  name: userFormat,
   username: userFormat,
   email: z.email().max(128),
   legacyPassword: z.string().min(10).max(128),
@@ -40,7 +40,7 @@ export const ZodUser = z.strictObject({
 export default class User {
   id: string;
   name: string;
-  username: string| null;
+  username: string | null;
   displayUsername: string | null;
   email: string;
   emailVerified: boolean;
@@ -63,7 +63,6 @@ export default class User {
     legacyPassword?: string,
     displayUsername?: string
   ) {
-
     if (!color) color = randomNamedColor();
     if (!username) username = name;
     if (!displayUsername) displayUsername = name;
