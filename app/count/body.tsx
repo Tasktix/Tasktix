@@ -19,7 +19,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Button } from '@heroui/react';
+import { addToast, Button } from '@heroui/react';
 
 import api from '@/lib/api';
 
@@ -34,6 +34,13 @@ export default function Body() {
 
       setCount(data.count);
     };
+
+    es.onerror = () => {
+      addToast({ title: 'Error connecting for live updates', color: 'danger' });
+      es.close();
+    };
+
+    return () => es.close();
   }, []);
 
   return (
