@@ -22,10 +22,6 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
   plugins: [tsconfigPaths(), react()],
-  ssr: {
-    // Bundle these ESM-only deps so they can be required from CJS entrypoints in tests
-    noExternal: ['html-encoding-sniffer', '@exodus/bytes']
-  },
   test: {
     coverage: {
       enabled: true,
@@ -38,8 +34,6 @@ export default defineConfig({
       ],
       exclude: ['node_modules/', 'lib/database/*.ts']
     },
-    globals: true,
-    // Inline deps that ship ESM so Vitest transpiles them when running in CJS mode
-    deps: { inline: ['html-encoding-sniffer', '@exodus/bytes'] }
+    globals: true
   }
 });
