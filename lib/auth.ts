@@ -39,7 +39,7 @@ export const auth = betterAuth({
     tableName: 'User',
     changeEmail: {
       enabled: true,
-      // TODO: If we setup a mailserver, renenable email verification
+      // Necessary unless we have an email server
       updateEmailWithoutVerification: true
     },
     additionalFields: {
@@ -72,7 +72,6 @@ export const auth = betterAuth({
   },
 
   socialProviders: {
-    // TODO: Add Github/Google/etc.
   },
   plugins: [username()]
 });

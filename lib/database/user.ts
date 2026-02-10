@@ -22,6 +22,12 @@ import User from '@/lib/model/user';
 
 import { prisma } from './db_connect';
 
+/**
+ * Updates a user Color in the database
+ * Custom implementation necessary because BetterAuth doesn't provide API for modifying custom Fields
+ * @param user 
+ * @returns Boolean
+ */
 export async function updateUserColor(user: User): Promise<boolean> {
   const result = await prisma.user.update({
     where: { id: user.id },
