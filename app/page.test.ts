@@ -20,22 +20,32 @@ import { redirect } from 'next/navigation';
 
 import Home from '@/app/page';
 import { getUser } from '@/lib/session';
+import User from '@/lib/model/user';
 
-jest.mock('next/navigation', () => ({
-  redirect: jest.fn()
+vi.mock('next/navigation', () => ({
+  redirect: vi.fn()
 }));
 
-jest.mock('@/lib/session', () => ({
-  getUser: jest.fn()
+vi.mock('@/lib/session', () => ({
+  getUser: vi.fn()
 }));
 
 describe('root route redirect logic', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.resetAllMocks();
   });
 
   it('redirects authenticated users to /list', async () => {
-    (getUser as jest.Mock).mockResolvedValue({ id: 'user123' });
+    vi.mocked(getUser).mockResolvedValue(
+      new User(
+        'testUser',
+        'test@example.com',
+        'password123',
+        new Date(),
+        new Date(),
+        {}
+      )
+    );
 
     await Home();
 
@@ -43,7 +53,7 @@ describe('root route redirect logic', () => {
   });
 
   it('redirects unauthenticated users to /about', async () => {
-    (getUser as jest.Mock).mockResolvedValue(null);
+    vi.mocked(getUser).mockResolvedValue(false);
 
     await Home();
 
