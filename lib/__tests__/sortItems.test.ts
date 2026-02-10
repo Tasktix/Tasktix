@@ -25,11 +25,11 @@ import {
 } from '../sortItems';
 
 beforeAll(() => {
-  jest.useFakeTimers();
+  vi.useFakeTimers();
 });
 
 afterAll(() => {
-  jest.useRealTimers();
+  vi.useRealTimers();
 });
 
 describe('sortItemsByCompleted', () => {

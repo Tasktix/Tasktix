@@ -14,16 +14,21 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * @vitest-environment jsdom
  */
-
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import {render, screen} from '@testing-library/react';
+import '@testing-library/jest-dom';
+import User from '@/lib/model/user';
 import { HeroUIProvider } from '@heroui/react';
 
 import Body from '@/app/body';
-import { useAuth } from '@/components/AuthProvider';
+import { useAuth } from '@/components/AuthProvider/authHook';
+import { NamedColor } from '@/lib/model/color';
+import AuthProvider from '@/components/AuthProvider/AuthProvider';
 
-vi.mock('@/components/AuthProvider', () => ({
+vi.mock('@/components/AuthProvider/authHook', () => ({
   useAuth: vi.fn()
 }));
 
@@ -68,8 +73,15 @@ describe('Body', () => {
 
   it('links logo to /list when logged in', () => {
     vi.mocked(useAuth).mockReturnValue({
-      isLoggedIn: true,
-      setIsLoggedIn: vi.fn()
+      loggedInUser: new User(
+       'username',
+       'email@example.com',
+       'password',
+       new Date(),
+       new Date(),
+      {}
+      ),
+      setLoggedInUser: vi.fn()
     });
 
     renderWithProvider(
@@ -88,8 +100,8 @@ describe('Body', () => {
 
   it('links logo to /about when logged out', () => {
     vi.mocked(useAuth).mockReturnValue({
-      isLoggedIn: false,
-      setIsLoggedIn: vi.fn()
+      loggedInUser: false,
+      setLoggedInUser: vi.fn()
     });
 
     renderWithProvider(
@@ -105,4 +117,47 @@ describe('Body', () => {
     expect(link as HTMLElement).toBeVisible();
     expect(link).toHaveAttribute('href', '/about');
   });
+ 
+
+
+vi.mock(import('framer-motion'), async importOriginal => {
+  const originalFramerMotion = await importOriginal();
+
+  return {
+    ...originalFramerMotion,
+    LazyMotion: ({ children }) => <div>{children}</div>
+  };
 });
+
+beforeEach(() => {
+  vi.resetAllMocks();
+});
+
+test('Profile Icon Populates Correctly', () => {
+  const oldUser = {
+    id: '1234',
+    username: 'oldUsername',
+    email: 'test@gmail.com',
+    password: 'password',
+    color: 'Pink' as NamedColor,
+    dateCreated: '1/1/2000' as unknown as Date,
+    dateSignedIn: '1/1/2000' as unknown as Date
+  };
+
+  vi.mocked(useAuth).mockReturnValue({
+    loggedInUser: oldUser,
+    setLoggedInUser: vi.fn()
+  });
+
+  const { getByLabelText } = render(
+    <HeroUIProvider disableRipple>
+      <AuthProvider loggedInUserAtStart={oldUser}>
+        <Body children={undefined} />
+      </AuthProvider>
+    </HeroUIProvider>
+  );
+
+  const avatar = getByLabelText('Profile Actions Dropdown');
+
+  expect(avatar).toHaveClass('bg-pink-500');
+});});

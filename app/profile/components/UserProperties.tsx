@@ -22,12 +22,13 @@
 
 'use client';
 
-import { useState } from 'react';
 import { addToast } from '@heroui/react';
 
 import api from '@/lib/api';
 import User from '@/lib/model/user';
 import ConfirmedTextInput from '@/components/ConfirmedTextInput';
+import ColorPicker from '@/components/ColorPicker';
+import { NamedColor } from '@/lib/model/color';
 
 /**
  * Handles client-side functions for the profile page
@@ -36,7 +37,6 @@ import ConfirmedTextInput from '@/components/ConfirmedTextInput';
  */
 export default function UserProperties({ user }: { user: string }) {
   const userDetails: User = JSON.parse(user);
-  const [_user, _setUser] = useState(userDetails);
 
   /**
    * Sets the user's username
@@ -45,12 +45,12 @@ export default function UserProperties({ user }: { user: string }) {
    */
   function setUsername(username: string) {
     api
-      .patch(`/user/${_user.id}`, { username })
+      .patch(`/user/${userDetails.id}`, { username })
       .then(() => {
-        const newUserData = structuredClone(_user);
+        const newUserData = structuredClone(userDetails);
 
         newUserData.username = username;
-        _setUser(newUserData);
+        location.reload();
       })
       .catch(err =>
         addToast({
@@ -67,12 +67,12 @@ export default function UserProperties({ user }: { user: string }) {
    */
   function setEmail(email: string) {
     api
-      .patch(`/user/${_user.id}`, { email })
+      .patch(`/user/${userDetails.id}`, { email })
       .then(() => {
-        const newUserData = structuredClone(_user);
+        const newUserData = structuredClone(userDetails);
 
         newUserData.email = email;
-        _setUser(newUserData);
+        location.reload();
       })
       .catch(err =>
         addToast({
@@ -82,26 +82,62 @@ export default function UserProperties({ user }: { user: string }) {
       );
   }
 
+  /**
+   * Sets the user's color. If null, return error.
+   *
+   * @param color the user's color
+   */
+  function setColor(color: NamedColor | null) {
+    if (!color) {
+      addToast({
+        title: 'Please specify a user color',
+        color: 'danger'
+      });
+    } else {
+      api
+        .patch(`/user/${userDetails.id}`, { color })
+        .then(() => {
+          const newUserData = structuredClone(userDetails);
+
+          newUserData.color = color;
+          location.reload();
+        })
+        .catch(err =>
+          addToast({
+            title: err.message,
+            color: 'danger'
+          })
+        );
+    }
+  }
+
   return (
     <div>
-      <div className='m-4'>
+      <div className='m-4 flex items-end'>
         <ConfirmedTextInput
-          showLabel
           label='Username'
           labelPlacement='outside'
           updateValue={setUsername}
-          value={_user.username}
+          value={userDetails.username}
           variant='flat'
         />
+
+        <span data-testid='colorPicker'>
+          <ColorPicker
+            className={'w-10 h-10 mx-3'}
+            label='Profile Color'
+            value={userDetails.color}
+            onValueChange={setColor}
+          />
+        </span>
       </div>
 
       <div className='m-4'>
         <ConfirmedTextInput
-          showLabel
           label='Email'
           labelPlacement='outside'
           updateValue={setEmail}
-          value={_user.email}
+          value={userDetails.email}
           variant='flat'
         />
       </div>

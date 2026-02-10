@@ -39,10 +39,11 @@ import Image from 'next/image';
 import { default as api } from '@/lib/api';
 import ThemeSwitcher from '@/components/ThemeSwitcher';
 import { useAuth } from '@/components/AuthProvider';
+import { getBackgroundColor } from '@/lib/color';
 
 export default function Body({ children }: Readonly<{ children: ReactNode }>) {
-  const { isLoggedIn } = useAuth();
-  const logoHref = isLoggedIn ? '/list' : '/about';
+  const { loggedInUser } = useAuth();
+  const logoHref = loggedInUser ? '/list' : '/about';
 
   return (
     <div className='flex flex-col h-screen'>
@@ -103,21 +104,23 @@ export default function Body({ children }: Readonly<{ children: ReactNode }>) {
 }
 
 function AccountButton() {
-  const { isLoggedIn, setIsLoggedIn } = useAuth();
+  const { loggedInUser, setLoggedInUser } = useAuth();
 
   const router = useRouter();
 
   function handleClick() {
     api
       .delete('/session')
-      .catch(_ => {})
+      .catch(_ => {
+        /* Suppress errors on logout */
+      })
       .finally(() => {
-        setIsLoggedIn(false);
+        setLoggedInUser(false);
         router.replace('/');
       });
   }
 
-  if (!isLoggedIn)
+  if (!loggedInUser)
     return (
       <Button
         key='signIn'
@@ -129,14 +132,20 @@ function AccountButton() {
         Sign In
       </Button>
     );
-  //TODO: Set the profile color to 'user.color'. This will be changed when we implement user-set colors.
 
   return (
-    <Dropdown>
+    <Dropdown aria-label='Profile Dropdown'>
       <DropdownTrigger>
-        <Avatar key='profile' color='primary' />
+        <Avatar
+          key='profile'
+          isIconOnly
+          aria-label='Profile Actions Dropdown'
+          as={Button}
+          className={getBackgroundColor(loggedInUser.color)}
+          name={loggedInUser.username ?? ''}
+        />
       </DropdownTrigger>
-      <DropdownMenu aria-label='Static Actions' color='primary'>
+      <DropdownMenu aria-label='User Actions'>
         <DropdownItem key='settings' href='/profile'>
           Profile
         </DropdownItem>

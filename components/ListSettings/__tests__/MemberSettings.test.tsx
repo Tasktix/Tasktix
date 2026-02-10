@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
- * @jest-environment jsdom
+ * @vitest-environment jsdom
  */
 
 import '@testing-library/jest-dom';
@@ -29,18 +29,14 @@ import api from '@/lib/api';
 
 import MemberSettings from '../MemberSettings';
 
-jest.mock(
-  '@heroui/react',
-  () =>
-    ({
-      ...jest.requireActual('@heroui/react'),
-      addToast: jest.fn()
-    }) as typeof import('@heroui/react')
-);
-jest.mock('@/lib/api');
+vi.mock(import('@heroui/react'), async importOriginal => ({
+  ...(await importOriginal()),
+  addToast: vi.fn()
+}));
+vi.mock('@/lib/api');
 
 beforeEach(() => {
-  jest.resetAllMocks();
+  vi.resetAllMocks();
 });
 
 const users = [
@@ -59,10 +55,12 @@ describe('Adding members', () => {
     const oldMember = new ListMember(users[0], true, true, true, true);
     const newMember = new ListMember(users[1], false, false, false, false);
 
-    (api.post as jest.Mock).mockResolvedValue({
+    vi.mocked(api.post).mockResolvedValue({
+      code: 200,
+      message: 'Success',
       content: JSON.stringify(newMember)
     });
-    const setMembers = jest.fn();
+    const setMembers = vi.fn();
     const user = userEvent.setup();
 
     const { getByLabelText, getByRole, getByText } = render(
@@ -92,10 +90,10 @@ describe('Adding members', () => {
   it('Displays an error message after adding a member if saving the new member fails', async () => {
     const oldMember = new ListMember(users[0], true, true, true, true);
 
-    (api.post as jest.Mock).mockRejectedValue(
+    vi.mocked(api.post).mockRejectedValue(
       new Error('Server message about failure')
     );
-    const setMembers = jest.fn();
+    const setMembers = vi.fn();
     const user = userEvent.setup();
 
     const { getByLabelText, getByRole, getByText } = render(
@@ -116,8 +114,8 @@ describe('Adding members', () => {
     await user.click(getByText('Send Invite'));
 
     expect(getByLabelText('Username...')).toHaveValue('');
-    expect(addToast as jest.Mock).toHaveBeenCalledTimes(1);
-    expect(addToast as jest.Mock).toHaveBeenCalledWith({
+    expect(addToast).toHaveBeenCalledTimes(1);
+    expect(addToast).toHaveBeenCalledWith({
       color: 'danger',
       title: 'Server message about failure'
     });
@@ -127,10 +125,12 @@ describe('Adding members', () => {
   it("Displays an error message after adding a member if the server doesn't return the new member", async () => {
     const oldMember = new ListMember(users[0], true, true, true, true);
 
-    (api.post as jest.Mock).mockResolvedValue({
+    vi.mocked(api.post).mockResolvedValue({
+      code: 200,
+      message: 'Success',
       content: undefined
     });
-    const setMembers = jest.fn();
+    const setMembers = vi.fn();
     const user = userEvent.setup();
 
     const { getByLabelText, getByRole, getByText } = render(
@@ -151,8 +151,8 @@ describe('Adding members', () => {
     await user.click(getByText('Send Invite'));
 
     expect(getByLabelText('Username...')).toHaveValue('');
-    expect(addToast as jest.Mock).toHaveBeenCalledTimes(1);
-    expect(addToast as jest.Mock).toHaveBeenCalledWith({
+    expect(addToast).toHaveBeenCalledTimes(1);
+    expect(addToast).toHaveBeenCalledWith({
       color: 'danger',
       title: 'User added, but unable to display'
     });
@@ -169,7 +169,7 @@ describe('Updating permissions', () => {
           new ListMember(users[0], true, true, true, true),
           new ListMember(users[1], false, false, false, false)
         ]}
-        setMembers={jest.fn()}
+        setMembers={vi.fn()}
       />
     );
 
@@ -185,7 +185,7 @@ describe('Updating permissions', () => {
           new ListMember(users[0], true, true, true, true),
           new ListMember(users[1], false, false, false, false)
         ]}
-        setMembers={jest.fn()}
+        setMembers={vi.fn()}
       />
     );
 
@@ -209,8 +209,12 @@ describe('Updating permissions', () => {
   });
 
   it('Allows member add permission to be changed', async () => {
-    (api.patch as jest.Mock).mockResolvedValue({});
-    const setMembers = jest.fn();
+    vi.mocked(api.patch).mockResolvedValue({
+      code: 200,
+      message: 'Success',
+      content: undefined
+    });
+    const setMembers = vi.fn();
     const user = userEvent.setup();
 
     const { getByText } = render(
@@ -239,8 +243,12 @@ describe('Updating permissions', () => {
   });
 
   it('Allows member remove permission to be changed', async () => {
-    (api.patch as jest.Mock).mockResolvedValue({});
-    const setMembers = jest.fn();
+    vi.mocked(api.patch).mockResolvedValue({
+      code: 200,
+      message: 'Success',
+      content: undefined
+    });
+    const setMembers = vi.fn();
     const user = userEvent.setup();
 
     const { getByText } = render(
@@ -269,8 +277,12 @@ describe('Updating permissions', () => {
   });
 
   it('Allows member complete permission to be changed', async () => {
-    (api.patch as jest.Mock).mockResolvedValue({});
-    const setMembers = jest.fn();
+    vi.mocked(api.patch).mockResolvedValue({
+      code: 200,
+      message: 'Success',
+      content: undefined
+    });
+    const setMembers = vi.fn();
     const user = userEvent.setup();
 
     const { getByText } = render(
@@ -299,8 +311,12 @@ describe('Updating permissions', () => {
   });
 
   it('Allows member assign permission to be changed', async () => {
-    (api.patch as jest.Mock).mockResolvedValue({});
-    const setMembers = jest.fn();
+    vi.mocked(api.patch).mockResolvedValue({
+      code: 200,
+      message: 'Success',
+      content: undefined
+    });
+    const setMembers = vi.fn();
     const user = userEvent.setup();
 
     const { getByText } = render(

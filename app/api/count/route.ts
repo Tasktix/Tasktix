@@ -16,5 +16,22 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-globalThis.structuredClone = (value: unknown) =>
-  JSON.parse(JSON.stringify(value)) as unknown;
+import { OK } from '@/lib/Response/Success';
+import { broadcast } from '@/lib/sse';
+
+/**
+ * API endpoint for updating the `count` state across all clients. Calling this endpoint
+ * triggers a broadcast of the new `count` to all clients connected to the `/count` page.
+ *
+ * @param req The client's request
+ * @returns An HTTP response indicating the API request was processed
+ */
+export async function POST(req: Request) {
+  // Don't need to test 'cause this is just a demo - skipcq: TCV-001
+
+  const body = (await req.json()) as { count: number };
+
+  broadcast(`{ "count": ${body.count} }`);
+
+  return OK('Broadcast');
+}
