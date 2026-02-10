@@ -108,7 +108,9 @@ function AccountButton() {
   function handleClick() {
     api
       .delete('/session')
-      .catch(_ => {})
+      .catch(_ => {
+        /* Suppress errors on logout */
+      })
       .finally(() => {
         setLoggedInUser(false);
         router.replace('/');
