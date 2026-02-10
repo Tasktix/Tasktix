@@ -16,6 +16,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-export { default as default } from './AuthProvider';
+export { default } from './AuthProvider';
 
 export { useAuth } from './authHook';
