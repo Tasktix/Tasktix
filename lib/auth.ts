@@ -26,7 +26,6 @@ import { namedColors } from './model/color';
 const prisma = new PrismaClient();
 
 export const auth = betterAuth({
-  baseURL: 'http://localhost:3000',
   database: prismaAdapter(prisma, {
     provider: 'mysql'
   }),
