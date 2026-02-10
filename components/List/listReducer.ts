@@ -23,6 +23,10 @@ import { ListAction, ListState } from './types';
  *
  * @param state The current state (passed in by React)
  * @param action The action to take for mutating state
+ *
+ * Default case intentionally omitted to surface TS error if not all cases are explicitly
+ * handled (e.g. because the Color type was expanded). All VALID code paths (based on the
+ * Color type) do return - skipcq: JS-0045
  */
 export default function listReducer(
   state: ListState,
