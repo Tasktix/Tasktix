@@ -24,53 +24,32 @@ import { HeroUIProvider } from '@heroui/react';
 
 import User from '@/lib/model/user';
 import Body from '@/app/body';
-import { useAuth } from '@/components/AuthProvider/authHook';
+import AuthProvider, { useAuth } from '@/components/AuthProvider';
 import { NamedColor } from '@/lib/model/color';
-import AuthProvider from '@/components/AuthProvider/AuthProvider';
 
-vi.mock('@/components/AuthProvider/authHook', () => ({
+vi.mock('next/navigation', () => ({
+  useRouter: vi.fn()
+}));
+
+vi.mock(import('framer-motion'), async importOriginal => ({
+  ...(await importOriginal()),
+  LazyMotion: ({ children }) => <div>{children}</div>
+}));
+
+vi.mock('@/components/AuthProvider', async importOriginal => ({
+  ...(await importOriginal()),
   useAuth: vi.fn()
 }));
 
-const router = {
-  replace: vi.fn(),
-  push: vi.fn(),
-  prefetch: vi.fn(),
-  refresh: vi.fn(),
-  back: vi.fn(),
-  forward: vi.fn()
-};
-
-vi.mock('next/navigation', () => ({
-  useRouter: () => router
-}));
-
-vi.mock('@heroui/react', async () => {
-  const actual =
-    await vi.importActual<typeof import('@heroui/react')>('@heroui/react');
-
-  return {
-    ...actual,
-    ToastProvider: ({ children }: { children?: React.ReactNode }) => (
-      <div data-testid='toast-provider'>{children}</div>
-    )
-  };
+beforeEach(() => {
+  vi.resetAllMocks();
 });
-
-vi.mock('@/components/ThemeSwitcher', () => ({
-  __esModule: true,
-  default: () => <div data-testid='theme-switcher' />
-}));
 
 function renderWithProvider(ui: React.ReactElement) {
   return render(<HeroUIProvider disableRipple>{ui}</HeroUIProvider>);
 }
 
 describe('Body', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   it('links logo to /list when logged in', () => {
     vi.mocked(useAuth).mockReturnValue({
       loggedInUser: new User(
@@ -116,19 +95,6 @@ describe('Body', () => {
     expect(link).not.toBeNull();
     expect(link as HTMLElement).toBeVisible();
     expect(link).toHaveAttribute('href', '/about');
-  });
-
-  vi.mock(import('framer-motion'), async importOriginal => {
-    const originalFramerMotion = await importOriginal();
-
-    return {
-      ...originalFramerMotion,
-      LazyMotion: ({ children }) => <div>{children}</div>
-    };
-  });
-
-  beforeEach(() => {
-    vi.resetAllMocks();
   });
 
   test('Profile Icon Populates Correctly', () => {
