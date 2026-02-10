@@ -34,7 +34,7 @@ export default function sectionReducer(
 
   switch (action.type) {
     case 'SetIsCollapsed':
-      newState.isCollapsed = !action.isCollapsed;
+      newState.isCollapsed = action.isCollapsed;
       break;
 
     case 'SetItems':
