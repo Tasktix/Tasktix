@@ -100,8 +100,6 @@ export default function List({
       {list.sections.map(section => (
         <ListSection
           key={section.id}
-          addNewTag={listHandlers.addNewTag}
-          deleteSection={listHandlers.deleteListSection.bind(null, section.id)}
           filters={filters}
           hasDueDates={list.hasDueDates}
           hasTimeTracking={list.hasTimeTracking}
@@ -112,6 +110,8 @@ export default function List({
           name={section.name}
           startingItems={section.items}
           tagsAvailable={tagsAvailable}
+          onDelete={listHandlers.deleteListSection.bind(null, section.id)}
+          onTagCreate={listHandlers.addNewTag}
         />
       ))}
 

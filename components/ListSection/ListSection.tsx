@@ -62,9 +62,9 @@ import sectionHandlerFactory from './handlerFactory';
  * @param hasTimeTracking Whether time tracking is enabled in the list's settings
  * @param hasDueDates Whether due dates are enabled in the list's settings
  * @param isAutoOrdered Whether auto-ordering is enabled in the list's settings
- * @param deleteSection Callback to delete a section and remove it from React's state
- * @param addNewTag Callback to propagate state changes when a new tag is created from the
- *  "add tag" menu
+ * @param onDelete Callback to delete a section and remove it from React's state
+ * @param onTagCreate Callback to propagate state changes when a new tag is created from
+ *  the "add tag" menu
  */
 export default function ListSection({
   id,
@@ -77,8 +77,8 @@ export default function ListSection({
   hasTimeTracking,
   hasDueDates,
   isAutoOrdered,
-  deleteSection,
-  addNewTag
+  onDelete,
+  onTagCreate
 }: {
   id: string;
   listId: string;
@@ -90,8 +90,8 @@ export default function ListSection({
   hasTimeTracking: boolean;
   hasDueDates: boolean;
   isAutoOrdered: boolean;
-  deleteSection: () => unknown;
-  addNewTag: (name: string, color: NamedColor) => Promise<string>;
+  onDelete: () => unknown;
+  onTagCreate: (name: string, color: NamedColor) => Promise<string>;
 }) {
   const [{ items, isCollapsed }, dispatchSection] = useReducer(sectionReducer, {
     items: itemsToMap(
@@ -116,6 +116,7 @@ export default function ListSection({
         <span className='min-w-fit shrink-0 flex'>
           <Button
             isIconOnly
+            aria-label={isCollapsed ? 'Expand section' : 'Collapse section'}
             className='hover:bg-foreground/10 -ml-2 mr-2'
             onPress={() =>
               dispatchSection({
@@ -146,19 +147,17 @@ export default function ListSection({
             <DropdownTrigger>
               <Button
                 isIconOnly
+                aria-label='Show section actions'
                 className='border-2 border-content4 hover:bg-content4!'
                 variant='light'
               >
                 <ThreeDots />
               </Button>
             </DropdownTrigger>
-            <DropdownMenu
-              onAction={key => {
-                if (key === 'delete') deleteSection();
-              }}
-            >
+            <DropdownMenu onAction={onDelete}>
               <DropdownItem
                 key='delete'
+                aria-label='Delete section'
                 className='text-danger'
                 color='danger'
                 startContent={<TrashFill />}
@@ -181,23 +180,24 @@ export default function ListSection({
               open: { height: 'auto' },
               collapsed: { height: 0 }
             }}
-          />
+          >
+            <SectionBody
+              addNewTag={onTagCreate}
+              dispatchSection={dispatchSection}
+              filters={filters}
+              hasDueDates={hasDueDates}
+              hasTimeTracking={hasTimeTracking}
+              isAutoOrdered={isAutoOrdered}
+              items={items}
+              members={members}
+              reorderItem={sectionHandlers.reorderItem}
+              setItems={items =>
+                dispatchSection({ type: 'SetItems', items: itemsToMap(items) })
+              }
+              tagsAvailable={tagsAvailable}
+            />
+          </motion.section>
         )}
-        <SectionBody
-          addNewTag={addNewTag}
-          dispatchSection={dispatchSection}
-          filters={filters}
-          hasDueDates={hasDueDates}
-          hasTimeTracking={hasTimeTracking}
-          isAutoOrdered={isAutoOrdered}
-          items={items}
-          members={members}
-          reorderItem={sectionHandlers.reorderItem}
-          setItems={items =>
-            dispatchSection({ type: 'SetItems', items: itemsToMap(items) })
-          }
-          tagsAvailable={tagsAvailable}
-        />
       </AnimatePresence>
     </div>
   );
