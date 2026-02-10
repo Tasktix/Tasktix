@@ -22,18 +22,6 @@ import User from '@/lib/model/user';
 
 import { prisma } from './db_connect';
 
-export async function createUser(user: User): Promise<boolean> {
-  try {
-    await prisma.user.create({
-      data: user
-    });
-  } catch {
-    return false;
-  }
-
-  return true;
-}
-
 export async function updateUserColor(user: User): Promise<boolean> {
   const result = await prisma.user.update({
     where: { id: user.id },
@@ -57,6 +45,12 @@ export async function getUserByUsername(
   return result ?? false;
 }
 
+/**
+ * Returns a User object associated with email
+ * Custom Implementation as querying an email is not supported by betterauth 
+ * @param email 
+ * @returns 
+ */
 export async function getUserByEmail(email: string): Promise<User | false> {
   const result = await prisma.user.findUnique({ where: { email } });
 
