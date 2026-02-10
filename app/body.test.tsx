@@ -160,4 +160,5 @@ test('Profile Icon Populates Correctly', () => {
   const avatar = getByLabelText('Profile Actions Dropdown');
 
   expect(avatar).toHaveClass('bg-pink-500');
-});});
+});
+});
