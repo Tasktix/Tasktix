@@ -18,7 +18,7 @@
  * @vitest-environment jsdom
  */
 
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { HeroUIProvider } from '@heroui/react';
 
@@ -45,10 +45,6 @@ beforeEach(() => {
   vi.resetAllMocks();
 });
 
-function renderWithProvider(ui: React.ReactElement) {
-  return render(<HeroUIProvider disableRipple>{ui}</HeroUIProvider>);
-}
-
 describe('Body', () => {
   it('links logo to /list when logged in', () => {
     vi.mocked(useAuth).mockReturnValue({
@@ -63,13 +59,15 @@ describe('Body', () => {
       setLoggedInUser: vi.fn()
     });
 
-    renderWithProvider(
-      <Body>
-        <div>child</div>
-      </Body>
+    const { getByRole } = render(
+      <HeroUIProvider disableRipple>
+        <Body>
+          <div>child</div>
+        </Body>
+      </HeroUIProvider>
     );
 
-    const logoImg = screen.getByRole('img', { name: 'Tasktix' });
+    const logoImg = getByRole('img', { name: 'Tasktix' });
     const link = logoImg.closest('a');
 
     expect(link).not.toBeNull();
@@ -83,13 +81,15 @@ describe('Body', () => {
       setLoggedInUser: vi.fn()
     });
 
-    renderWithProvider(
-      <Body>
-        <div>child</div>
-      </Body>
+    const { getByRole } = render(
+      <HeroUIProvider disableRipple>
+        <Body>
+          <div>child</div>
+        </Body>
+      </HeroUIProvider>
     );
 
-    const logoImg = screen.getByRole('img', { name: 'Tasktix' });
+    const logoImg = getByRole('img', { name: 'Tasktix' });
     const link = logoImg.closest('a');
 
     expect(link).not.toBeNull();
