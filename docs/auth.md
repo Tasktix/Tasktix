@@ -52,6 +52,15 @@ While it is possible to manually update Usernames, emails, etc. through handcraf
 
 
 ## Database Updates
+The required schema for BetterAuth can be found [here](https://www.better-auth.com/docs/concepts/database#core-schema). To add login by username, it is required to extend that schema as described [here](https://www.better-auth.com/docs/plugins/username#schema). .
 
+This results in the `User` table having the fields `name`, `username`, and `displayUsername`. For our circumstances, whenever creating/updating a username, you should be sure to update both `name` and `username` to prevent them getting out of sync. In general, consider the `username` field the source of truth. Note that the auth.api.isUsernameAvailable` only checks the `username` column. 
+
+`displayUsername` need never be considered/provided. Unless it is manually reconfigured, it will always be in sync with `username`.
+
+
+
+
+### Manual Fixes
 1) BEFORE PULLING UP: save a backup of your database
 <!-- TODO: NATE document database update steps if worthwhile -->

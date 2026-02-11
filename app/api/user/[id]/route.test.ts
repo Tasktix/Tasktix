@@ -216,6 +216,7 @@ describe('PATCH', () => {
     );
 
     expect(response.status).toBe(200);
+    expect(auth.api.changePassword).toHaveBeenCalled();
     expect(await response.json()).toEqual({ message: 'User updated' });
   });
 
@@ -239,7 +240,6 @@ describe('PATCH', () => {
   });
   test('Rejects invalid username updates', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
-    expect(auth.api.updateUser).not.toHaveBeenCalled();
 
     const response = await PATCH(
       new Request(USER_PATH, {
