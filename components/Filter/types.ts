@@ -52,63 +52,62 @@ export type FilterType =
 
 export type FilterInputState =
   | undefined
-  | {
-      type: 'text';
-      label: string;
-      operator: TextFilterOperator;
-      value: string;
-    }
-  | {
-      type: 'number';
-      label: string;
-      operator: ComparableFilterOperator;
-      value: number;
-    }
-  | ({
-      type: 'option';
-      label: string;
-    } & (
+  | ({ id: number; label: string } & (
       | {
-          operator: OptionFilterOperator.Equal | OptionFilterOperator.NotEqual;
+          type: 'text';
+          operator: TextFilterOperator;
           value: string;
         }
       | {
-          operator: OptionFilterOperator.In | OptionFilterOperator.NotIn;
+          type: 'number';
+          operator: ComparableFilterOperator;
+          value: number;
+        }
+      | ({
+          type: 'option';
+        } & (
+          | {
+              operator:
+                | OptionFilterOperator.Equal
+                | OptionFilterOperator.NotEqual;
+              value: string;
+            }
+          | {
+              operator: OptionFilterOperator.In | OptionFilterOperator.NotIn;
+              value: string[];
+            }
+        ))
+      | {
+          type: 'multi-option';
+          operator: MultiOptionFilterOperator;
           value: string[];
         }
-    ))
-  | {
-      type: 'multi-option';
-      label: string;
-      operator: MultiOptionFilterOperator;
-      value: string[];
-    }
-  | ({
-      type: 'color';
-      label: string;
-      operator: OptionFilterOperator;
-    } & (
+      | ({
+          type: 'color';
+          operator: OptionFilterOperator;
+        } & (
+          | {
+              operator:
+                | OptionFilterOperator.Equal
+                | OptionFilterOperator.NotEqual;
+              value: Color;
+            }
+          | {
+              operator: OptionFilterOperator.In | OptionFilterOperator.NotIn;
+              value: Color[];
+            }
+        ))
       | {
-          operator: OptionFilterOperator.Equal | OptionFilterOperator.NotEqual;
-          value: Color;
+          type: 'date';
+          operator: DateFilterOperator;
+          value: Date;
         }
       | {
-          operator: OptionFilterOperator.In | OptionFilterOperator.NotIn;
-          value: Color[];
+          type: 'time';
+          operator: ComparableFilterOperator;
+          value: number;
         }
-    ))
-  | {
-      type: 'date';
-      label: string;
-      operator: DateFilterOperator;
-      value: Date;
-    }
-  | {
-      type: 'time';
-      label: string;
-      operator: ComparableFilterOperator;
-      value: number;
-    };
+    ));
 
 export type FilterState =
   | { operator: 'And'; filters: (FilterState | FilterInputState)[] }

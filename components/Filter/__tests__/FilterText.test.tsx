@@ -46,6 +46,7 @@ describe('FilterText', () => {
           operator: 'And',
           filters: [
             {
+              id: 1,
               type: 'text',
               label: 'theLabel',
               operator: TextFilterOperator.Equal,
@@ -66,12 +67,14 @@ describe('FilterText', () => {
           operator: 'And',
           filters: [
             {
+              id: 1,
               type: 'text',
               label: 'theLabel',
               operator: TextFilterOperator.Equal,
               value: 'theValue'
             },
             {
+              id: 2,
               type: 'color',
               label: 'theColor',
               operator: OptionFilterOperator.NotEqual,
@@ -94,18 +97,21 @@ describe('FilterText', () => {
           operator: 'Or',
           filters: [
             {
+              id: 1,
               type: 'text',
               label: 'theLabel',
               operator: TextFilterOperator.Equal,
               value: 'theValue'
             },
             {
+              id: 2,
               type: 'color',
               label: 'theColor',
               operator: OptionFilterOperator.NotEqual,
               value: 'Cyan'
             },
             {
+              id: 3,
               type: 'number',
               label: 'theNumber',
               operator: ComparableFilterOperator.LessThan,
@@ -128,6 +134,7 @@ describe('FilterText', () => {
           operator: 'Or',
           filters: [
             {
+              id: 1,
               type: 'text',
               label: 'theLabel',
               operator: TextFilterOperator.Equal,
@@ -137,12 +144,14 @@ describe('FilterText', () => {
               operator: 'And',
               filters: [
                 {
+                  id: 1,
                   type: 'color',
                   label: 'theColor',
                   operator: OptionFilterOperator.NotEqual,
                   value: 'Cyan'
                 },
                 {
+                  id: 2,
                   type: 'number',
                   label: 'theNumber',
                   operator: ComparableFilterOperator.LessThan,
@@ -167,12 +176,14 @@ describe('FilterText', () => {
           operator: 'And',
           filters: [
             {
+              id: 1,
               type: 'text',
               label: 'theLabel',
               operator: TextFilterOperator.Equal,
               value: 'theValue'
             },
             {
+              id: 2,
               type: 'color',
               label: 'theColor',
               operator: OptionFilterOperator.NotEqual,
@@ -193,12 +204,14 @@ describe('FilterText', () => {
           operator: 'And',
           filters: [
             {
+              id: 1,
               type: 'text',
               label: 'theLabel',
               operator: TextFilterOperator.Equal,
               value: 'theValue'
             },
             {
+              id: 2,
               type: 'color',
               label: 'theColor',
               operator: OptionFilterOperator.NotEqual,
@@ -225,6 +238,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'text',
             label: 'theLabel',
             operator: TextFilterOperator.Equal,
@@ -239,6 +253,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'text',
             label: 'theLabel',
             operator: TextFilterOperator.Equal,
@@ -253,6 +268,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'text',
             label: 'theLabel',
             operator: TextFilterOperator.NotEqual,
@@ -267,6 +283,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'text',
             label: 'theLabel',
             operator: TextFilterOperator.Includes,
@@ -281,6 +298,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'text',
             label: 'theLabel',
             operator: TextFilterOperator.StartsWith,
@@ -295,6 +313,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'text',
             label: 'theLabel',
             operator: TextFilterOperator.EndsWith,
@@ -309,6 +328,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'text',
             label: 'theLabel',
             operator: TextFilterOperator.RegexMatches,
@@ -326,6 +346,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'number',
             label: 'theLabel',
             operator: ComparableFilterOperator.Equal,
@@ -340,6 +361,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'number',
             label: 'theLabel',
             operator: ComparableFilterOperator.Equal,
@@ -354,6 +376,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'number',
             label: 'theLabel',
             operator: ComparableFilterOperator.NotEqual,
@@ -368,6 +391,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'number',
             label: 'theLabel',
             operator: ComparableFilterOperator.LessThan,
@@ -382,6 +406,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'number',
             label: 'theLabel',
             operator: ComparableFilterOperator.LessThanEqual,
@@ -396,6 +421,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'number',
             label: 'theLabel',
             operator: ComparableFilterOperator.GreaterThan,
@@ -410,6 +436,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'number',
             label: 'theLabel',
             operator: ComparableFilterOperator.GreaterThanEqual,
@@ -427,6 +454,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'option',
             label: 'theLabel',
             operator: OptionFilterOperator.Equal,
@@ -441,6 +469,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'option',
             label: 'theLabel',
             operator: OptionFilterOperator.In,
@@ -457,6 +486,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'option',
             label: 'theLabel',
             operator: OptionFilterOperator.Equal,
@@ -471,6 +501,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'option',
             label: 'theLabel',
             operator: OptionFilterOperator.NotEqual,
@@ -485,6 +516,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'option',
             label: 'theLabel',
             operator: OptionFilterOperator.In,
@@ -501,6 +533,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'option',
             label: 'theLabel',
             operator: OptionFilterOperator.NotIn,
@@ -520,6 +553,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'multi-option',
             label: 'theLabel',
             operator: MultiOptionFilterOperator.Equal,
@@ -536,6 +570,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'multi-option',
             label: 'theLabel',
             operator: MultiOptionFilterOperator.Equal,
@@ -552,6 +587,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'multi-option',
             label: 'theLabel',
             operator: MultiOptionFilterOperator.NotEqual,
@@ -568,6 +604,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'multi-option',
             label: 'theLabel',
             operator: MultiOptionFilterOperator.Includes,
@@ -584,6 +621,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'multi-option',
             label: 'theLabel',
             operator: MultiOptionFilterOperator.NotIncludes,
@@ -603,6 +641,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'color',
             label: 'theLabel',
             operator: OptionFilterOperator.Equal,
@@ -617,6 +656,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'color',
             label: 'theLabel',
             operator: OptionFilterOperator.In,
@@ -631,6 +671,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'color',
             label: 'theLabel',
             operator: OptionFilterOperator.Equal,
@@ -645,6 +686,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'color',
             label: 'theLabel',
             operator: OptionFilterOperator.NotEqual,
@@ -659,6 +701,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'color',
             label: 'theLabel',
             operator: OptionFilterOperator.In,
@@ -673,6 +716,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'color',
             label: 'theLabel',
             operator: OptionFilterOperator.NotIn,
@@ -690,6 +734,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'date',
             label: 'theLabel',
             operator: DateFilterOperator.Equal,
@@ -704,6 +749,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'date',
             label: 'theLabel',
             operator: DateFilterOperator.Equal,
@@ -718,6 +764,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'date',
             label: 'theLabel',
             operator: DateFilterOperator.NotEqual,
@@ -732,6 +779,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'date',
             label: 'theLabel',
             operator: DateFilterOperator.LessThan,
@@ -746,6 +794,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'date',
             label: 'theLabel',
             operator: DateFilterOperator.LessThanEqual,
@@ -760,6 +809,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'date',
             label: 'theLabel',
             operator: DateFilterOperator.GreaterThan,
@@ -774,6 +824,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'date',
             label: 'theLabel',
             operator: DateFilterOperator.GreaterThanEqual,
@@ -788,6 +839,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'date',
             label: 'theLabel',
             operator: DateFilterOperator.DayOfWeek,
@@ -802,6 +854,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'date',
             label: 'theLabel',
             operator: DateFilterOperator.NotDayOfWeek,
@@ -819,6 +872,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'time',
             label: 'theLabel',
             operator: ComparableFilterOperator.Equal,
@@ -833,6 +887,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'time',
             label: 'theLabel',
             operator: ComparableFilterOperator.Equal,
@@ -847,6 +902,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'time',
             label: 'theLabel',
             operator: ComparableFilterOperator.NotEqual,
@@ -861,6 +917,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'time',
             label: 'theLabel',
             operator: ComparableFilterOperator.LessThan,
@@ -875,6 +932,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'time',
             label: 'theLabel',
             operator: ComparableFilterOperator.LessThanEqual,
@@ -889,6 +947,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'time',
             label: 'theLabel',
             operator: ComparableFilterOperator.GreaterThan,
@@ -903,6 +962,7 @@ describe('FilterInputText', () => {
       const { container } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'time',
             label: 'theLabel',
             operator: ComparableFilterOperator.GreaterThanEqual,
@@ -920,6 +980,7 @@ describe('FilterInputText', () => {
       const { getByText } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'text',
             label: 'theLabel',
             operator: TextFilterOperator.Equal,
@@ -934,6 +995,7 @@ describe('FilterInputText', () => {
       const { getByText } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'text',
             label: 'theLabel',
             operator: TextFilterOperator.Equal,
@@ -948,6 +1010,7 @@ describe('FilterInputText', () => {
       const { getByText } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'number',
             label: 'theLabel',
             operator: ComparableFilterOperator.Equal,
@@ -963,6 +1026,7 @@ describe('FilterInputText', () => {
       const { getByText } = render(
         <FilterInputText
           filter={{
+            id: 1,
             type: 'text',
             label: 'theLabel',
             operator: TextFilterOperator.Equal,

@@ -80,8 +80,8 @@ export function FilterInputText({ filter }: { filter: FilterInputState }) {
     case 'option':
     case 'color':
       if (
-        filter.operator == OptionFilterOperator.Equal ||
-        filter.operator == OptionFilterOperator.NotEqual
+        filter.operator === OptionFilterOperator.Equal ||
+        filter.operator === OptionFilterOperator.NotEqual
       )
         value = (
           <span className={STRING_COLOR}>
@@ -89,8 +89,8 @@ export function FilterInputText({ filter }: { filter: FilterInputState }) {
           </span>
         );
       if (
-        filter.operator == OptionFilterOperator.In ||
-        filter.operator == OptionFilterOperator.NotIn
+        filter.operator === OptionFilterOperator.In ||
+        filter.operator === OptionFilterOperator.NotIn
       )
         value = (
           <span className={STRING_COLOR}>
@@ -113,8 +113,8 @@ export function FilterInputText({ filter }: { filter: FilterInputState }) {
 
     case 'date':
       if (
-        filter.operator == DateFilterOperator.DayOfWeek ||
-        filter.operator == DateFilterOperator.NotDayOfWeek
+        filter.operator === DateFilterOperator.DayOfWeek ||
+        filter.operator === DateFilterOperator.NotDayOfWeek
       )
         value = (
           <span className={PRIMITIVE_COLOR}>
