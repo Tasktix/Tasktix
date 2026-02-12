@@ -30,6 +30,11 @@ const OPERATOR_COLOR = 'text-primary' as const;
 const PRIMITIVE_COLOR = 'text-green-800 dark:text-green-200' as const;
 const STRING_COLOR = 'text-warning-700 dark:text-warning-200' as const;
 
+/**
+ * Pretty-prints the filter state as syntax-highlighted query language
+ *
+ * @param filters The filters to pretty-print
+ */
 export default function FilterText({ filters }: { filters: FilterState }) {
   return (
     <span className='font-mono'>
@@ -58,6 +63,11 @@ export default function FilterText({ filters }: { filters: FilterState }) {
   );
 }
 
+/**
+ * Pretty-prints the filter as syntax-highlighted query language
+ *
+ * @param filter The filter to pretty-print
+ */
 export function FilterInputText({ filter }: { filter: FilterInputState }) {
   if (!filter) return <span />;
 
