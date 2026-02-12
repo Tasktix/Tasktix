@@ -21,7 +21,13 @@
 import { render } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
-import FilterText, { FilterInputText } from '../FilterText';
+import FilterText, {
+  FilterInputText,
+  LABEL_COLOR,
+  OPERATOR_COLOR,
+  PRIMITIVE_COLOR,
+  STRING_COLOR
+} from '../FilterText';
 import {
   ComparableFilterOperator,
   DateFilterOperator,
@@ -210,7 +216,7 @@ describe('FilterText', () => {
       />
     );
 
-    expect(getByText('AND')).toHaveClass('text-primary');
+    expect(getByText('AND')).toHaveClass(OPERATOR_COLOR);
   });
 
   test('Displays everything in monospace text', () => {
@@ -1008,7 +1014,7 @@ describe('FilterInputText', () => {
         />
       );
 
-      expect(getByText('theLabel')).toHaveClass('text-primary-600');
+      expect(getByText('theLabel')).toHaveClass(LABEL_COLOR);
     });
     test('Displays operator as dark green', () => {
       const { getByText } = render(
@@ -1023,7 +1029,7 @@ describe('FilterInputText', () => {
         />
       );
 
-      expect(getByText('=')).toHaveClass('text-primary');
+      expect(getByText('=')).toHaveClass(OPERATOR_COLOR);
     });
     test('Displays primitive values as pale green', () => {
       const { getByText } = render(
@@ -1038,8 +1044,7 @@ describe('FilterInputText', () => {
         />
       );
 
-      expect(getByText('1')).toHaveClass('text-green-800');
-      expect(getByText('1')).toHaveClass('dark:text-green-200');
+      expect(getByText('1')).toHaveClass(PRIMITIVE_COLOR);
     });
     test('Displays string values as yellow', () => {
       const { getByText } = render(
@@ -1054,8 +1059,7 @@ describe('FilterInputText', () => {
         />
       );
 
-      expect(getByText('"theValue"')).toHaveClass('text-warning-700');
-      expect(getByText('"theValue"')).toHaveClass('dark:text-warning-200');
+      expect(getByText('"theValue"')).toHaveClass(STRING_COLOR);
     });
   });
 });

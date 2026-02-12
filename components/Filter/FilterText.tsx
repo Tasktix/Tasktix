@@ -25,10 +25,10 @@ import {
   OptionFilterOperator
 } from './types';
 
-const LABEL_COLOR = 'text-primary-600' as const;
-const OPERATOR_COLOR = 'text-primary' as const;
-const PRIMITIVE_COLOR = 'text-green-800 dark:text-green-200' as const;
-const STRING_COLOR = 'text-warning-700 dark:text-warning-200' as const;
+export const LABEL_COLOR = 'text-primary-600' as const;
+export const OPERATOR_COLOR = 'text-primary' as const;
+export const PRIMITIVE_COLOR = 'text-green-800 dark:text-green-200' as const;
+export const STRING_COLOR = 'text-warning-700 dark:text-warning-200' as const;
 
 /**
  * Pretty-prints the filter state as syntax-highlighted query language
