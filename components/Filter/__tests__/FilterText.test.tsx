@@ -30,6 +30,16 @@ import {
   TextFilterOperator
 } from '../types';
 
+beforeAll(() => {
+  vi.stubEnv('TZ', 'UTC');
+  vi.useFakeTimers();
+});
+
+afterAll(() => {
+  vi.useRealTimers();
+  vi.unstubAllEnvs();
+});
+
 describe('FilterText', () => {
   test('Displays nothing when given a filter state with no filters', () => {
     const { container } = render(
@@ -743,7 +753,7 @@ describe('FilterInputText', () => {
         />
       );
 
-      expect(container.firstChild).toHaveTextContent(/12\/31\/2025$/);
+      expect(container.firstChild).toHaveTextContent(/1\/1\/2026$/);
     });
     test('=', () => {
       const { container } = render(
@@ -758,7 +768,7 @@ describe('FilterInputText', () => {
         />
       );
 
-      expect(container.firstChild).toHaveTextContent('theLabel = 12/31/2025');
+      expect(container.firstChild).toHaveTextContent('theLabel = 1/1/2026');
     });
     test('!=', () => {
       const { container } = render(
@@ -773,7 +783,7 @@ describe('FilterInputText', () => {
         />
       );
 
-      expect(container.firstChild).toHaveTextContent('theLabel != 12/31/2025');
+      expect(container.firstChild).toHaveTextContent('theLabel != 1/1/2026');
     });
     test('<', () => {
       const { container } = render(
@@ -788,7 +798,7 @@ describe('FilterInputText', () => {
         />
       );
 
-      expect(container.firstChild).toHaveTextContent('theLabel < 12/31/2025');
+      expect(container.firstChild).toHaveTextContent('theLabel < 1/1/2026');
     });
     test('<=', () => {
       const { container } = render(
@@ -803,7 +813,7 @@ describe('FilterInputText', () => {
         />
       );
 
-      expect(container.firstChild).toHaveTextContent('theLabel <= 12/31/2025');
+      expect(container.firstChild).toHaveTextContent('theLabel <= 1/1/2026');
     });
     test('>', () => {
       const { container } = render(
@@ -818,7 +828,7 @@ describe('FilterInputText', () => {
         />
       );
 
-      expect(container.firstChild).toHaveTextContent('theLabel > 12/31/2025');
+      expect(container.firstChild).toHaveTextContent('theLabel > 1/1/2026');
     });
     test('>=', () => {
       const { container } = render(
@@ -833,7 +843,7 @@ describe('FilterInputText', () => {
         />
       );
 
-      expect(container.firstChild).toHaveTextContent('theLabel >= 12/31/2025');
+      expect(container.firstChild).toHaveTextContent('theLabel >= 1/1/2026');
     });
     test('DayOfWeek', () => {
       const { container } = render(
@@ -848,7 +858,7 @@ describe('FilterInputText', () => {
         />
       );
 
-      expect(container.firstChild).toHaveTextContent('theLabel = Wednesday');
+      expect(container.firstChild).toHaveTextContent('theLabel = Thursday');
     });
     test('NotDayOfWeek', () => {
       const { container } = render(
@@ -863,7 +873,7 @@ describe('FilterInputText', () => {
         />
       );
 
-      expect(container.firstChild).toHaveTextContent('theLabel != Wednesday');
+      expect(container.firstChild).toHaveTextContent('theLabel != Thursday');
     });
   });
 
