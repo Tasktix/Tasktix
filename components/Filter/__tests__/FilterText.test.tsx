@@ -43,7 +43,7 @@ afterAll(() => {
 describe('FilterText', () => {
   test('Displays nothing when given a filter state with no filters', () => {
     const { container } = render(
-      <FilterText filters={{ operator: 'And', filters: [] }} />
+      <FilterText filters={{ id: 1, operator: 'And', filters: [] }} />
     );
 
     expect(container.firstChild).toBeEmptyDOMElement();
@@ -53,6 +53,7 @@ describe('FilterText', () => {
     const { container } = render(
       <FilterText
         filters={{
+          id: 1,
           operator: 'And',
           filters: [
             {
@@ -74,6 +75,7 @@ describe('FilterText', () => {
     const { container } = render(
       <FilterText
         filters={{
+          id: 1,
           operator: 'And',
           filters: [
             {
@@ -104,6 +106,7 @@ describe('FilterText', () => {
     const { container } = render(
       <FilterText
         filters={{
+          id: 1,
           operator: 'Or',
           filters: [
             {
@@ -141,6 +144,7 @@ describe('FilterText', () => {
     const { container } = render(
       <FilterText
         filters={{
+          id: 1,
           operator: 'Or',
           filters: [
             {
@@ -151,6 +155,7 @@ describe('FilterText', () => {
               value: 'theValue'
             },
             {
+              id: 2,
               operator: 'And',
               filters: [
                 {
@@ -183,6 +188,7 @@ describe('FilterText', () => {
     const { getByText } = render(
       <FilterText
         filters={{
+          id: 1,
           operator: 'And',
           filters: [
             {
@@ -211,6 +217,7 @@ describe('FilterText', () => {
     const { container } = render(
       <FilterText
         filters={{
+          id: 1,
           operator: 'And',
           filters: [
             {
@@ -238,7 +245,9 @@ describe('FilterText', () => {
 
 describe('FilterInputText', () => {
   test('Displays nothing for empty text filter inputs', () => {
-    const { container } = render(<FilterInputText filter={undefined} />);
+    const { container } = render(
+      <FilterInputText filter={{ id: 1, type: 'undefined' }} />
+    );
 
     expect(container.firstChild).toBeEmptyDOMElement();
   });

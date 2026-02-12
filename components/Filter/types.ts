@@ -51,7 +51,7 @@ export type FilterType =
     };
 
 export type FilterInputState =
-  | undefined
+  | { id: number; type: 'undefined' }
   | ({ id: number; label: string } & (
       | {
           type: 'text';
@@ -109,9 +109,10 @@ export type FilterInputState =
         }
     ));
 
-export type FilterState =
-  | { operator: 'And'; filters: (FilterState | FilterInputState)[] }
-  | { operator: 'Or'; filters: (FilterState | FilterInputState)[] };
+export type FilterState = {
+  id: number;
+  filters: (FilterState | FilterInputState)[];
+} & ({ operator: 'And' } | { operator: 'Or' });
 
 export enum TextFilterOperator {
   Equal = '=',

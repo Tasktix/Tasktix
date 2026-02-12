@@ -43,11 +43,11 @@ export default function FilterText({ filters }: { filters: FilterState }) {
           {f && 'filters' in f ? (
             <>
               {'( '}
-              <FilterText key={i} filters={f} />
+              <FilterText key={f.id} filters={f} />
               {' )'}
             </>
           ) : (
-            <FilterInputText key={i} filter={f} />
+            <FilterInputText key={f.id} filter={f} />
           )}
           {i < filters.filters.length - 1 && (
             <>
@@ -69,7 +69,7 @@ export default function FilterText({ filters }: { filters: FilterState }) {
  * @param filter The filter to pretty-print
  */
 export function FilterInputText({ filter }: { filter: FilterInputState }) {
-  if (!filter) return <span />;
+  if (filter.type === 'undefined') return <span />;
 
   const operator = filter.operator.replace('@dow', '=');
   let value = <span />;
