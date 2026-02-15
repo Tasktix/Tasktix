@@ -116,7 +116,7 @@ function AccountButton() {
             setLoggedInUser(false);
             router.push('/');
           },
-          onError: ctx => {
+          onError: () => {
             /* suppress errors on logout */
           }
         }

@@ -25,7 +25,6 @@ import { HeroUIProvider } from '@heroui/react';
 import User from '@/lib/model/user';
 import Body from '@/app/body';
 import AuthProvider, { useAuth } from '@/components/AuthProvider';
-import { NamedColor } from '@/lib/model/color';
 
 vi.mock('next/navigation', () => ({
   useRouter: vi.fn()
@@ -49,12 +48,13 @@ describe('Body', () => {
   it('links logo to /list when logged in', () => {
     vi.mocked(useAuth).mockReturnValue({
       loggedInUser: new User(
+        'userid',
         'username',
         'email@example.com',
-        'password',
+        false,
         new Date(),
         new Date(),
-        {}
+        'Amber'
       ),
       setLoggedInUser: vi.fn()
     });
@@ -98,15 +98,15 @@ describe('Body', () => {
   });
 
   test('Profile Icon Populates Correctly', () => {
-    const oldUser = {
-      id: '1234',
-      username: 'oldUsername',
-      email: 'test@gmail.com',
-      password: 'password',
-      color: 'Pink' as NamedColor,
-      dateCreated: '1/1/2000' as unknown as Date,
-      dateSignedIn: '1/1/2000' as unknown as Date
-    };
+    const oldUser = new User(
+      '1234',
+      'oldUsername',
+      'test@gmail.com',
+      false,
+      '1/1/2000' as unknown as Date,
+      '1/1/2000' as unknown as Date,
+      'Pink'
+    );
 
     vi.mocked(useAuth).mockReturnValue({
       loggedInUser: oldUser,

@@ -71,7 +71,6 @@ export const auth = betterAuth({
     minPasswordLength: 10
   },
 
-  socialProviders: {
-  },
+  socialProviders: {},
   plugins: [username()]
 });
