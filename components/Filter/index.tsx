@@ -14,28 +14,17 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *
  */
 
-import { redirect } from 'next/navigation';
+export { default } from './FilterText';
 
-import { getUser } from '@/lib/session';
-
-/* Root route handler.
- *
- * This page exists only to redirect users visiting `/` to the
- * appropriate entry point:
- * - authenticated users -> `/list`
- * - unauthenticated users -> `/about`
- *
- * No UI is rendered here.
- */
-export default async function Home() {
-  const user = await getUser();
-
-  if (user) {
-    redirect('/list');
-  }
-
-  redirect('/about');
-}
+export {
+  type FilterType,
+  type FilterState,
+  type FilterInputState,
+  ComparableFilterOperator,
+  DateFilterOperator,
+  MultiOptionFilterOperator,
+  OptionFilterOperator,
+  TextFilterOperator
+} from './types';

@@ -14,28 +14,24 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *
  */
 
-import { redirect } from 'next/navigation';
+import { OK } from '@/lib/Response/Success';
+import { broadcast } from '@/lib/sse';
 
-import { getUser } from '@/lib/session';
-
-/* Root route handler.
+/**
+ * API endpoint for updating the `count` state across all clients. Calling this endpoint
+ * triggers a broadcast of the new `count` to all clients connected to the `/count` page.
  *
- * This page exists only to redirect users visiting `/` to the
- * appropriate entry point:
- * - authenticated users -> `/list`
- * - unauthenticated users -> `/about`
- *
- * No UI is rendered here.
+ * @param req The client's request
+ * @returns An HTTP response indicating the API request was processed
  */
-export default async function Home() {
-  const user = await getUser();
+export async function POST(req: Request) {
+  // Don't need to test 'cause this is just a demo - skipcq: TCV-001
 
-  if (user) {
-    redirect('/list');
-  }
+  const body = (await req.json()) as { count: number };
 
-  redirect('/about');
+  broadcast(`{ "count": ${body.count} }`);
+
+  return OK('Broadcast');
 }
