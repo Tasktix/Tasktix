@@ -14,28 +14,49 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *
  */
 
 import { redirect } from 'next/navigation';
 
+import Home from '@/app/page';
 import { getUser } from '@/lib/session';
+import User from '@/lib/model/user';
 
-/* Root route handler.
- *
- * This page exists only to redirect users visiting `/` to the
- * appropriate entry point:
- * - authenticated users -> `/list`
- * - unauthenticated users -> `/about`
- *
- * No UI is rendered here.
- */
-export default async function Home() {
-  const user = await getUser();
+vi.mock('next/navigation', () => ({
+  redirect: vi.fn()
+}));
 
-  if (user) {
-    redirect('/list');
-  }
+vi.mock('@/lib/session', () => ({
+  getUser: vi.fn()
+}));
 
-  redirect('/about');
-}
+describe('root route redirect logic', () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+  });
+
+  it('redirects authenticated users to /list', async () => {
+    vi.mocked(getUser).mockResolvedValue(
+      new User(
+        'testUser',
+        'test@example.com',
+        'password123',
+        new Date(),
+        new Date(),
+        {}
+      )
+    );
+
+    await Home();
+
+    expect(redirect).toHaveBeenCalledWith('/list');
+  });
+
+  it('redirects unauthenticated users to /about', async () => {
+    vi.mocked(getUser).mockResolvedValue(false);
+
+    await Home();
+
+    expect(redirect).toHaveBeenCalledWith('/about');
+  });
+});

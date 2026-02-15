@@ -41,14 +41,17 @@ import ThemeSwitcher from '@/components/ThemeSwitcher';
 import { useAuth } from '@/components/AuthProvider';
 import { getBackgroundColor } from '@/lib/color';
 
-export default function Body({ children }: Readonly<{ children?: ReactNode }>) {
+export default function Body({ children }: Readonly<{ children: ReactNode }>) {
+  const { loggedInUser } = useAuth();
+  const logoHref = loggedInUser ? '/list' : '/about';
+
   return (
     <div className='flex flex-col h-screen'>
       <Navbar maxWidth='full'>
         <NavbarBrand
           as={Link}
           className='flex flex-row justify-left items-center gap-2'
-          href='/'
+          href={logoHref}
         >
           <Image
             priority

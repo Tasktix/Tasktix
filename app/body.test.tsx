@@ -22,55 +22,107 @@ import { render } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { HeroUIProvider } from '@heroui/react';
 
+import User from '@/lib/model/user';
 import Body from '@/app/body';
-import { useAuth } from '@/components/AuthProvider/authHook';
+import AuthProvider, { useAuth } from '@/components/AuthProvider';
 import { NamedColor } from '@/lib/model/color';
-import AuthProvider from '@/components/AuthProvider/AuthProvider';
 
-vi.mock('@/components/AuthProvider/authHook', () => ({
-  useAuth: vi.fn()
+vi.mock('next/navigation', () => ({
+  useRouter: vi.fn()
 }));
 
-vi.mock('next/navigation');
+vi.mock(import('framer-motion'), async importOriginal => ({
+  ...(await importOriginal()),
+  LazyMotion: ({ children }) => <div>{children}</div>
+}));
 
-vi.mock(import('framer-motion'), async importOriginal => {
-  const originalFramerMotion = await importOriginal();
-
-  return {
-    ...originalFramerMotion,
-    LazyMotion: ({ children }) => <div>{children}</div>
-  };
-});
+vi.mock('@/components/AuthProvider', async importOriginal => ({
+  ...(await importOriginal()),
+  useAuth: vi.fn()
+}));
 
 beforeEach(() => {
   vi.resetAllMocks();
 });
 
-test('Profile Icon Populates Correctly', () => {
-  const oldUser = {
-    id: '1234',
-    username: 'oldUsername',
-    email: 'test@gmail.com',
-    password: 'password',
-    color: 'Pink' as NamedColor,
-    dateCreated: '1/1/2000' as unknown as Date,
-    dateSignedIn: '1/1/2000' as unknown as Date
-  };
+describe('Body', () => {
+  it('links logo to /list when logged in', () => {
+    vi.mocked(useAuth).mockReturnValue({
+      loggedInUser: new User(
+        'username',
+        'email@example.com',
+        'password',
+        new Date(),
+        new Date(),
+        {}
+      ),
+      setLoggedInUser: vi.fn()
+    });
 
-  vi.mocked(useAuth).mockReturnValue({
-    loggedInUser: oldUser,
-    setLoggedInUser: vi.fn()
+    const { getByRole } = render(
+      <HeroUIProvider disableRipple>
+        <Body>
+          <div>child</div>
+        </Body>
+      </HeroUIProvider>
+    );
+
+    const logoImg = getByRole('img', { name: 'Tasktix' });
+    const link = logoImg.closest('a');
+
+    expect(link).not.toBeNull();
+    expect(link as HTMLElement).toBeVisible();
+    expect(link).toHaveAttribute('href', '/list');
   });
 
-  const { getByLabelText } = render(
-    <HeroUIProvider disableRipple>
-      <AuthProvider loggedInUserAtStart={oldUser}>
-        <Body />
-      </AuthProvider>
-    </HeroUIProvider>
-  );
+  it('links logo to /about when logged out', () => {
+    vi.mocked(useAuth).mockReturnValue({
+      loggedInUser: false,
+      setLoggedInUser: vi.fn()
+    });
 
-  const avatar = getByLabelText('Profile Actions Dropdown');
+    const { getByRole } = render(
+      <HeroUIProvider disableRipple>
+        <Body>
+          <div>child</div>
+        </Body>
+      </HeroUIProvider>
+    );
 
-  expect(avatar).toHaveClass('bg-pink-500');
+    const logoImg = getByRole('img', { name: 'Tasktix' });
+    const link = logoImg.closest('a');
+
+    expect(link).not.toBeNull();
+    expect(link as HTMLElement).toBeVisible();
+    expect(link).toHaveAttribute('href', '/about');
+  });
+
+  test('Profile Icon Populates Correctly', () => {
+    const oldUser = {
+      id: '1234',
+      username: 'oldUsername',
+      email: 'test@gmail.com',
+      password: 'password',
+      color: 'Pink' as NamedColor,
+      dateCreated: '1/1/2000' as unknown as Date,
+      dateSignedIn: '1/1/2000' as unknown as Date
+    };
+
+    vi.mocked(useAuth).mockReturnValue({
+      loggedInUser: oldUser,
+      setLoggedInUser: vi.fn()
+    });
+
+    const { getByLabelText } = render(
+      <HeroUIProvider disableRipple>
+        <AuthProvider loggedInUserAtStart={oldUser}>
+          <Body>contents...</Body>
+        </AuthProvider>
+      </HeroUIProvider>
+    );
+
+    const avatar = getByLabelText('Profile Actions Dropdown');
+
+    expect(avatar).toHaveClass('bg-pink-500');
+  });
 });
