@@ -115,6 +115,28 @@ describe('PATCH', () => {
     );
   });
 
+  test('Provides warning if color update fails', async () => {
+    vi.mocked(getUser).mockResolvedValue(MOCK_USER);
+    vi.mocked(updateUserColor).mockResolvedValue(false);
+
+    const response = await PATCH(
+      new Request(USER_PATH, {
+        method: 'patch',
+        body: JSON.stringify({ color: 'Red' })
+      }),
+      { params: Promise.resolve({ id: MOCK_USER.id }) }
+    );
+
+    expect(response.status).toBe(500);
+    expect(updateUserColor).toHaveBeenCalledTimes(1);
+    expect(updateUserColor).toHaveBeenCalledWith(
+      expect.objectContaining({ color: 'Red' })
+    );
+    expect(await response.json()).toEqual({
+      message: 'Could not update user Color'
+    });
+  });
+
   test('Allows multiple field updates at the same time', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
     vi.mocked(updateUserColor).mockResolvedValue(true);
@@ -198,6 +220,26 @@ describe('PATCH', () => {
     );
 
     expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({ message: 'Invalid request body' });
+  });
+
+  test('Rejects Password Updates that provide incorrect current password', async () => {
+    vi.mocked(getUser).mockResolvedValue(MOCK_USER);
+    vi.mocked(auth.api.verifyPassword).mockResolvedValue({ status: false });
+
+    const response = await PATCH(
+      new Request(USER_PATH, {
+        method: 'patch',
+        body: JSON.stringify({
+          oldPassword: 'wrongpassword',
+          newPassword: 'new_password'
+        })
+      }),
+      { params: Promise.resolve({ id: MOCK_USER.id }) }
+    );
+
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({ message: 'Incorrect Password' });
   });
 
   test('Accepts valid password updates', async () => {
@@ -242,6 +284,7 @@ describe('PATCH', () => {
     expect(response.status).toBe(400);
     expect(await response.json()).toEqual({ message: 'Invalid request body' });
   });
+
   test('Rejects invalid username updates', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
 
@@ -324,8 +367,11 @@ describe('PATCH', () => {
     expect(auth.api.changeEmail).not.toHaveBeenCalled();
   });
 
-  test('Warns the user if updating the member failed', async () => {
+  test('Warns the user if updating the username failed', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
+    vi.mocked(auth.api.isUsernameAvailable).mockResolvedValue({
+      available: true
+    });
     vi.mocked(auth.api.updateUser).mockResolvedValue({ status: false });
 
     const response = await PATCH(
@@ -337,6 +383,52 @@ describe('PATCH', () => {
     );
 
     expect(response.status).toBe(500);
+    expect(await response.json()).toEqual({
+      message: 'Failed to update username'
+    });
+  });
+
+  test('Warns the user if updating the email failed', async () => {
+    vi.mocked(getUser).mockResolvedValue(MOCK_USER);
+    vi.mocked(auth.api.changeEmail).mockResolvedValue({ status: false });
+
+    const response = await PATCH(
+      new Request(USER_PATH, {
+        method: 'patch',
+        body: JSON.stringify({ email: 'newemail@email.com' })
+      }),
+      { params: Promise.resolve({ id: MOCK_USER.id }) }
+    );
+
+    expect(response.status).toBe(500);
+    expect(await response.json()).toEqual({
+      message: 'Failed to update email'
+    });
+  });
+
+  test('Warns the user if updating the password failed', async () => {
+    vi.mocked(getUser).mockResolvedValue(MOCK_USER);
+    vi.mocked(auth.api.verifyPassword).mockResolvedValue({ status: true });
+    vi.mocked(auth.api.changePassword).mockResolvedValue({
+      token: null,
+      user: MOCK_USER
+    });
+
+    const response = await PATCH(
+      new Request(USER_PATH, {
+        method: 'patch',
+        body: JSON.stringify({
+          oldPassword: 'oldpassword',
+          newPassword: 'newpassword'
+        })
+      }),
+      { params: Promise.resolve({ id: MOCK_USER.id }) }
+    );
+
+    expect(response.status).toBe(500);
+    expect(await response.json()).toEqual({
+      message: 'Failed to update password'
+    });
   });
 
   test('Warns the user if an unexpected error occurs', async () => {
