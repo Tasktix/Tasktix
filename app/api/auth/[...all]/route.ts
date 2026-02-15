@@ -16,18 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { generateId } from '@/lib/generateId';
+import { toNextJsHandler } from 'better-auth/next-js';
 
-export default class Session {
-  id: string;
-  userId: string;
-  dateExpire: Date;
+import { auth } from '@/lib/auth';
 
-  constructor(userId: string, dateExpire: Date, id?: string) {
-    if (!id) id = generateId(128);
-
-    this.id = id;
-    this.userId = userId;
-    this.dateExpire = dateExpire;
-  }
-}
+export const { POST, GET } = toNextJsHandler(auth);

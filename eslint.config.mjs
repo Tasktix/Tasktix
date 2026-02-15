@@ -121,6 +121,12 @@ export default defineConfig([
     }
   },
   {
+    files: ['app/api/**/*.ts', 'lib/database/**/*.ts'],
+    rules: {
+      'no-console': 'off' // Allow  console.log statements when running on server only
+    }
+  },
+  {
     files: ['**/*.tsx'],
 
     rules: {

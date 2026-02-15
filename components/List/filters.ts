@@ -51,7 +51,10 @@ export function getFilterOptions(
       type: 'Select',
       label: 'user',
       selectOptions: list.members.map(member => {
-        return { name: member.user.username, color: member.user.color };
+        return {
+          name: member.user.username ?? member.user.name,
+          color: member.user.color
+        };
       })
     });
   if (list.hasTimeTracking)

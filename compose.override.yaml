@@ -27,6 +27,8 @@ services:
     environment:
       - NODE_ENV=development
       - DATABASE_URL=mysql://root:${DB_PASSWORD}@mariadb/${DB_DATABASE}
+      - BETTER_AUTH_URL=${BETTER_AUTH_URL}
+      - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
 
   mariadb:
     volumes:

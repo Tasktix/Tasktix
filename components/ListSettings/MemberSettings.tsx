@@ -54,8 +54,8 @@ export default function MemberSettings({
 
         const listMember = JSON.parse(res.content) as ListMember;
 
-        listMember.user.dateCreated = new Date(listMember.user.dateCreated);
-        listMember.user.dateSignedIn = new Date(listMember.user.dateSignedIn);
+        listMember.user.createdAt = new Date(listMember.user.createdAt);
+        listMember.user.updatedAt = new Date(listMember.user.updatedAt);
 
         setMembers([...members, listMember]);
       })

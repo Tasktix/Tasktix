@@ -33,13 +33,13 @@ import {
   Avatar
 } from '@heroui/react';
 import { useRouter } from 'next/navigation';
-import { ReactNode } from 'react';
+import { ReactNode, startTransition } from 'react';
 import Image from 'next/image';
 
-import { default as api } from '@/lib/api';
 import ThemeSwitcher from '@/components/ThemeSwitcher';
 import { useAuth } from '@/components/AuthProvider';
 import { getBackgroundColor } from '@/lib/color';
+import { authClient } from '@/lib/auth-client';
 
 export default function Body({ children }: Readonly<{ children: ReactNode }>) {
   const { loggedInUser } = useAuth();
@@ -109,15 +109,19 @@ function AccountButton() {
   const router = useRouter();
 
   function handleClick() {
-    api
-      .delete('/session')
-      .catch(_ => {
-        /* Suppress errors on logout */
-      })
-      .finally(() => {
-        setLoggedInUser(false);
-        router.replace('/');
+    startTransition(async () => {
+      await authClient.signOut({
+        fetchOptions: {
+          onSuccess: () => {
+            setLoggedInUser(false);
+            router.push('/');
+          },
+          onError: () => {
+            /* suppress errors on logout */
+          }
+        }
       });
+    });
   }
 
   if (!loggedInUser)
