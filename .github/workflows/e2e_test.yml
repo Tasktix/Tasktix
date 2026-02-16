@@ -36,3 +36,8 @@ jobs:
         run: npx cypress install
       - name: Test
         run: npm run test:cy
+      - name: Save artifacts from failed tests
+        uses: actions/upload-artifact@v3
+        with:
+          name: e2e-videos
+          path: cypress/videos/
