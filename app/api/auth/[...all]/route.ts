@@ -20,4 +20,5 @@ import { toNextJsHandler } from 'better-auth/next-js';
 
 import { auth } from '@/lib/auth';
 
+// The individual handlers are tested when used skipcq: TCV-001
 export const { POST, GET } = toNextJsHandler(auth);

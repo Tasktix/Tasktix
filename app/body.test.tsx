@@ -18,26 +18,37 @@
  * @vitest-environment jsdom
  */
 
-import { render } from '@testing-library/react';
+import { fireEvent, screen, render } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { HeroUIProvider } from '@heroui/react';
+import { useRouter } from 'next/navigation';
+import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
+import { SuccessContext } from 'better-auth/react';
 
 import User from '@/lib/model/user';
 import Body from '@/app/body';
+import { authClient } from '@/lib/auth-client';
 import AuthProvider, { useAuth } from '@/components/AuthProvider';
-
-vi.mock('next/navigation', () => ({
-  useRouter: vi.fn()
-}));
 
 vi.mock(import('framer-motion'), async importOriginal => ({
   ...(await importOriginal()),
   LazyMotion: ({ children }) => <div>{children}</div>
 }));
 
+vi.mock(import('next/navigation'), async importOriginal => ({
+  ...(await importOriginal()),
+  useRouter: vi.fn()
+}));
+
 vi.mock('@/components/AuthProvider', async importOriginal => ({
   ...(await importOriginal()),
   useAuth: vi.fn()
+}));
+
+vi.mock('@/lib/auth-client', () => ({
+  authClient: {
+    signOut: vi.fn()
+  }
 }));
 
 beforeEach(() => {
@@ -124,5 +135,63 @@ describe('Body', () => {
     const avatar = getByLabelText('Profile Actions Dropdown');
 
     expect(avatar).toHaveClass('bg-pink-500');
+  });
+});
+
+describe('Sign Out Process', () => {
+  test('Removes User Session on Logout', async () => {
+    const mock_user = new User(
+      'userid',
+      'username',
+      'email@example.com',
+      false,
+      new Date(),
+      new Date(),
+      'Amber'
+    );
+    const setLoggedInUserMock = vi.fn();
+
+    vi.mocked(useAuth).mockReturnValue({
+      loggedInUser: mock_user,
+      setLoggedInUser: setLoggedInUserMock
+    });
+
+    const routerMock = {
+      push: vi.fn()
+    } as unknown as AppRouterInstance;
+
+    vi.mocked(useRouter).mockReturnValue(routerMock);
+
+    /* eslint-disable */
+    vi.mocked(authClient.signOut).mockImplementation(async options => {
+      options!.fetchOptions!.onSuccess!({} as SuccessContext);
+
+      return { user: null, session: null };
+    });
+
+    /* eslint-enable */
+    const { getByLabelText } = render(
+      <HeroUIProvider disableRipple>
+        <AuthProvider loggedInUserAtStart={mock_user}>
+          <Body>contents...</Body>
+        </AuthProvider>
+      </HeroUIProvider>
+    );
+
+    const avatar = getByLabelText('Profile Actions Dropdown');
+
+    fireEvent.click(avatar);
+
+    const signOut = screen.getByText('Log Out');
+
+    fireEvent.click(signOut);
+
+    await vi.waitFor(() => {
+      expect(authClient.signOut).toHaveBeenCalled();
+    });
+
+    expect(setLoggedInUserMock).toHaveBeenCalledWith(false);
+    // eslint-disable-next-line
+    expect(routerMock.push).toHaveBeenCalledWith('/');
   });
 });
