@@ -189,6 +189,16 @@ export default function listReducer(
   return newState;
 }
 
+/**
+ * Helper function to find a list item that's expected to exist, throwing an error if not
+ * found
+ *
+ * @param state The state to look for the item in
+ * @param sectionId The ID of the section the item to look for belongs to
+ * @param itemId The ID of the item to look for
+ *
+ * @returns The item that was looked for
+ */
 function getItem(state: ListState, sectionId: string, itemId: string) {
   const item = state.list.sections.get(sectionId)?.items.get(itemId);
 
