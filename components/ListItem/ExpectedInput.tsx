@@ -69,6 +69,7 @@ export default function ExpectedInput({
           onSubmit={handleTimeSubmit}
         >
           <TimeInput
+            aria-label='Expected Time'
             className='w-12 grow-0'
             color='primary'
             size='sm'

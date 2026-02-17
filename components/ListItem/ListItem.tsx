@@ -234,6 +234,7 @@ export default function ListItem({
             ) : (
               <span className={`-ml-1 flex ${hasDueDates || 'mt-1'}`}>
                 <ConfirmedTextInput
+                  aria-label='Item name'
                   className='shrink'
                   updateValue={itemHandlers.setName}
                   value={item.name}

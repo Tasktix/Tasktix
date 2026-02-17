@@ -24,6 +24,7 @@ import { useState } from 'react';
 import { formatTime } from '@/lib/date';
 
 export default function TimeInput({
+  'aria-label': ariaLabel,
   label,
   labelPlacement,
   variant,
@@ -37,6 +38,7 @@ export default function TimeInput({
   classNames,
   onValueChange
 }: {
+  'aria-label': string;
   label?: string;
   labelPlacement?: 'outside' | 'outside-left' | 'inside';
   variant?: 'flat' | 'faded' | 'bordered' | 'underlined';
@@ -72,6 +74,7 @@ export default function TimeInput({
 
   return (
     <Input
+      aria-label={ariaLabel}
       autoFocus={autoFocus ?? true}
       className={className}
       classNames={classNames}

@@ -112,57 +112,20 @@ export default function listReducer(
       break;
     }
 
-    case 'SetItemName': {
-      const item = newState.list.sections
-        .get(action.sectionId)
-        ?.items.get(action.id);
-
-      if (!item)
-        throw new Error(
-          `Unable to find item with ID ${action.id} in section ${action.sectionId}`
-        );
-
-      item.name = action.name;
+    case 'SetItemName':
+      getItem(newState, action.sectionId, action.id).name = action.name;
       break;
-    }
 
-    case 'SetItemDueDate': {
-      const item = newState.list.sections
-        .get(action.sectionId)
-        ?.items.get(action.id);
-
-      if (!item)
-        throw new Error(
-          `Unable to find item with ID ${action.id} in section ${action.sectionId}`
-        );
-
-      item.dateDue = action.date;
+    case 'SetItemDueDate':
+      getItem(newState, action.sectionId, action.id).dateDue = action.date;
       break;
-    }
 
-    case 'SetItemPriority': {
-      const item = newState.list.sections
-        .get(action.sectionId)
-        ?.items.get(action.id);
-
-      if (!item)
-        throw new Error(
-          `Unable to find item with ID ${action.id} in section ${action.sectionId}`
-        );
-
-      item.priority = action.priority;
+    case 'SetItemPriority':
+      getItem(newState, action.sectionId, action.id).priority = action.priority;
       break;
-    }
 
     case 'SetItemIncomplete': {
-      const item = newState.list.sections
-        .get(action.sectionId)
-        ?.items.get(action.id);
-
-      if (!item)
-        throw new Error(
-          `Unable to find item with ID ${action.id} in section ${action.sectionId}`
-        );
+      const item = getItem(newState, action.sectionId, action.id);
 
       item.status = 'Paused';
       item.dateCompleted = null;
@@ -170,75 +133,29 @@ export default function listReducer(
     }
 
     case 'SetItemComplete': {
-      const item = newState.list.sections
-        .get(action.sectionId)
-        ?.items.get(action.id);
-
-      if (!item)
-        throw new Error(
-          `Unable to find item with ID ${action.id} in section ${action.sectionId}`
-        );
+      const item = getItem(newState, action.sectionId, action.id);
 
       item.status = 'Completed';
       item.dateCompleted = action.dateCompleted;
       break;
     }
 
-    case 'SetItemExpectedMs': {
-      const item = newState.list.sections
-        .get(action.sectionId)
-        ?.items.get(action.id);
-
-      if (!item)
-        throw new Error(
-          `Unable to find item with ID ${action.id} in section ${action.sectionId}`
-        );
-
-      item.expectedMs = action.expectedMs;
+    case 'SetItemExpectedMs':
+      getItem(newState, action.sectionId, action.id).expectedMs =
+        action.expectedMs;
       break;
-    }
 
-    case 'StartItemTime': {
-      const item = newState.list.sections
-        .get(action.sectionId)
-        ?.items.get(action.id);
-
-      if (!item)
-        throw new Error(
-          `Unable to find item with ID ${action.id} in section ${action.sectionId}`
-        );
-
-      item.status = 'In_Progress';
+    case 'StartItemTime':
+      getItem(newState, action.sectionId, action.id).status = 'In_Progress';
       break;
-    }
 
-    case 'PauseItemTime': {
-      const item = newState.list.sections
-        .get(action.sectionId)
-        ?.items.get(action.id);
-
-      if (!item)
-        throw new Error(
-          `Unable to find item with ID ${action.id} in section ${action.sectionId}`
-        );
-
-      item.status = 'Paused';
+    case 'PauseItemTime':
+      getItem(newState, action.sectionId, action.id).status = 'Paused';
       break;
-    }
 
-    case 'ResetItemTime': {
-      const item = newState.list.sections
-        .get(action.sectionId)
-        ?.items.get(action.id);
-
-      if (!item)
-        throw new Error(
-          `Unable to find item with ID ${action.id} in section ${action.sectionId}`
-        );
-
-      item.status = action.status;
+    case 'ResetItemTime':
+      getItem(newState, action.sectionId, action.id).status = action.status;
       break;
-    }
 
     case 'LinkTagToItem': {
       const tag = action.tagsAvailable?.find(tag => tag.id === action.tagId);
@@ -253,21 +170,11 @@ export default function listReducer(
     }
 
     case 'LinkNewTagToItem':
-      newState.list.sections
-        .get(action.sectionId)
-        ?.items.get(action.itemId)
-        ?.tags.push(action.tag);
+      getItem(newState, action.sectionId, action.itemId).tags.push(action.tag);
       break;
 
     case 'UnlinkTagFromItem': {
-      const item = newState.list.sections
-        .get(action.sectionId)
-        ?.items.get(action.itemId);
-
-      if (!item)
-        throw new Error(
-          `Unable to find item with ID ${action.itemId} in section ${action.sectionId}`
-        );
+      const item = getItem(newState, action.sectionId, action.itemId);
 
       for (let i = 0; i < item.tags.length; i++)
         if (item.tags[i].id === action.tagId) item.tags.splice(i, 1);
@@ -280,4 +187,15 @@ export default function listReducer(
   }
 
   return newState;
+}
+
+function getItem(state: ListState, sectionId: string, itemId: string) {
+  const item = state.list.sections.get(sectionId)?.items.get(itemId);
+
+  if (!item)
+    throw new Error(
+      `Unable to find item with ID ${itemId} in section ${sectionId}`
+    );
+
+  return item;
 }
