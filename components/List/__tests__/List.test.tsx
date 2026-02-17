@@ -366,18 +366,19 @@ describe('ListItem state propagation', () => {
     await user.click(getByLabelText('Pick color'));
     await user.click(getByLabelText('Cyan'));
     await user.click(
+      // We know the DOM, so we know this element does have a parent form - skipcq: JS-0339
       within(getByLabelText('Add tag...').closest('form')!).getByLabelText(
         'Submit'
       )
     );
 
     expect(api.post).toHaveBeenCalledTimes(2);
-    expect(api.post).toHaveBeenCalledWith(`/list/list-id/tag`, {
+    expect(api.post).toHaveBeenCalledWith('/list/list-id/tag', {
       name: 'Test tag',
       color: 'Cyan'
     });
     expect(api.post).toHaveBeenCalledWith(
-      `/item/item-id/tag/tag-id`,
+      '/item/item-id/tag/tag-id',
       expect.any(Object)
     );
 
@@ -430,7 +431,7 @@ describe('ListItem state propagation', () => {
     await user.click(getByLabelText('Add Tag name to item'));
 
     expect(api.post).toHaveBeenCalledExactlyOnceWith(
-      `/item/item-id/tag/tag-id`,
+      '/item/item-id/tag/tag-id',
       expect.any(Object)
     );
 
@@ -484,7 +485,7 @@ describe('ListItem state propagation', () => {
     await user.click(getByLabelText('Remove Tag name from item'));
 
     expect(api.delete).toHaveBeenCalledExactlyOnceWith(
-      `/item/item-id/tag/tag-id`
+      '/item/item-id/tag/tag-id'
     );
     expect(getByLabelText('Update tags')).not.toHaveTextContent('Tag name');
   });
@@ -529,7 +530,7 @@ describe('ListItem state propagation', () => {
     await user.click(getByLabelText('More item info'));
     await user.click(getByRole('button', { name: 'Delete' }));
 
-    expect(api.delete).toHaveBeenCalledExactlyOnceWith(`/item/item-id`);
+    expect(api.delete).toHaveBeenCalledExactlyOnceWith('/item/item-id');
 
     expect(queryByDisplayValue('List item name')).not.toBeInTheDocument();
   });
