@@ -22,6 +22,7 @@ import { addToast, Button } from '@heroui/react';
 import { useEffect, useState } from 'react';
 
 import api from '@/lib/api';
+import { useOffline } from '@/components/OfflineStatus/offlineHook';
 
 /**
  * Simple demo page for subscribing to and updating state based on Server-Sent Events.
@@ -31,17 +32,20 @@ export default function Page() {
 
   const [count, setCount] = useState(0);
 
+  const {clientOnline, setClientOnline} = useOffline();
+
   useEffect(() => {
     const es = new EventSource('/api/events');
 
     es.onmessage = event => {
       const data = JSON.parse(event.data as string) as { count: number };
-
+      
       setCount(data.count);
     };
 
     es.onerror = () => {
       addToast({ title: 'Error connecting for live updates', color: 'danger' });
+      setClientOnline(false)
       es.close();
     };
 
