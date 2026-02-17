@@ -60,12 +60,20 @@ export function itemHandlerFactory(
   setPaused: () => unknown,
   setCompleted: (date: ListItem['dateCompleted']) => unknown,
   updateExpectedMs: (ms: number) => unknown,
-  deleteItem: () => unknown
+  deleteItem: () => unknown,
+  isClientOnline: () => boolean
 ) {
   /**
    * @param name The item's new name
    */
   function setName(name: ListItem['name']) {
+    if(!isClientOnline()){
+      dispatchItem({type: 'SetName', name});
+      
+      addToast({ title: "You are offline, changes will be synced", color: 'warning'});
+      
+      return;
+    }
     api
       .patch(`/item/${itemId}`, { name })
       .then(() => dispatchItem({ type: 'SetName', name }))

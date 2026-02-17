@@ -38,6 +38,7 @@ import TimeButton from './TimeButton';
 import Users from './Users';
 import { itemHandlerFactory } from './handlerFactory';
 import { ListItemParams, SetItem } from './types';
+import { useOffline } from '../OfflineStatus';
 
 /**
  * The UI for interacting with a single list item's data, such as the name, priority,
@@ -101,6 +102,7 @@ export default function ListItem({
 
   const [_item, dispatchItem] = useReducer(itemReducer, item);
 
+  const {clientOnline, setClientOnline} = useOffline();
   const itemHandlers = itemHandlerFactory(
     item.id,
     {
@@ -116,7 +118,8 @@ export default function ListItem({
     setPaused,
     setCompleted,
     updateExpectedMs,
-    deleteItem
+    deleteItem,
+    () => clientOnline
   );
 
   /**
