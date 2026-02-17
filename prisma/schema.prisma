@@ -68,7 +68,7 @@ model Tag {
 }
 
 model ListMember {
-  userId      String  @db.Char(191)
+  userId      String  @db.VarChar(191)
   listId      String  @db.Char(16)
   canAdd      Boolean @default(false)
   canRemove   Boolean @default(false)
@@ -82,7 +82,7 @@ model ListMember {
 }
 
 model ItemAssignee {
-  userId String @db.Char(191)
+  userId String @db.VarChar(191)
   itemId String @db.Char(16)
   role   String @db.VarChar(64)
   item   Item   @relation(fields: [itemId], references: [id], onDelete: Cascade)
@@ -130,7 +130,7 @@ model User {
   name            String         @unique @db.VarChar(32)
   email           String         @unique @db.VarChar(128)
   legacyPassword  String?        @db.Char(205)
-  color           User_color
+  color           Color
   image           String?        @db.Text
   emailVerified   Boolean        @default(false)
   createdAt       DateTime       @default(now()) @db.DateTime(0)
@@ -179,18 +179,4 @@ enum Status {
   In_Progress
   Paused
   Completed
-}
-
-enum User_color {
-  Pink
-  Red
-  Orange
-  Amber
-  Yellow
-  Lime
-  Green
-  Emerald
-  Cyan
-  Blue
-  Violet
 }
