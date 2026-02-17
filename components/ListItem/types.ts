@@ -17,12 +17,14 @@
  */
 
 import { DragControls } from 'framer-motion';
+import { ActionDispatch } from 'react';
 
 import { NamedColor } from '@/lib/model/color';
 import ListItem from '@/lib/model/listItem';
 import Tag from '@/lib/model/tag';
 import List from '@/lib/model/list';
 import ListMember from '@/lib/model/listMember';
+import { ItemAction } from '@/components/List';
 
 import { itemHandlerFactory } from './handlerFactory';
 
@@ -30,6 +32,7 @@ import { itemHandlerFactory } from './handlerFactory';
  * Parameters expected for a ListItem component
  */
 export interface ListItemParams {
+  sectionId: string;
   item: ListItem;
   list?: List;
   members: ListMember[];
@@ -37,38 +40,9 @@ export interface ListItemParams {
   hasTimeTracking: boolean;
   hasDueDates: boolean;
   reorderControls?: DragControls;
-  updateDueDate: (date: ListItem['dateDue']) => unknown;
-  updatePriority: (priority: ListItem['priority']) => unknown;
-  deleteItem: () => unknown;
-  setRunning: () => unknown;
-  setPaused: () => unknown;
-  resetTime: (
-    status: Extract<ListItem['status'], 'Unstarted' | 'Completed'>
-  ) => unknown;
-  setCompleted: (date: ListItem['dateCompleted']) => unknown;
-  updateExpectedMs: (ms: number) => unknown;
+  dispatchItemChange: ActionDispatch<[action: ItemAction]>;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
 }
-
-/**
- * Possible actions and the required data needed for the item reducer.
- */
-export type ItemAction =
-  | { type: 'SetName'; name: ListItem['name'] }
-  | { type: 'SetDueDate'; date: ListItem['dateDue'] }
-  | { type: 'SetPriority'; priority: ListItem['priority'] }
-  | { type: 'SetIncomplete' }
-  | { type: 'SetComplete'; dateCompleted: ListItem['dateCompleted'] }
-  | { type: 'SetExpectedMs'; expectedMs: ListItem['expectedMs'] }
-  | { type: 'StartTime' }
-  | { type: 'PauseTime' }
-  | {
-      type: 'ResetTime';
-      status: Extract<ListItem['status'], 'Unstarted' | 'Completed'>;
-    }
-  | { type: 'LinkTag'; id: string; tagsAvailable: Tag[] }
-  | { type: 'LinkNewTag'; id: string; name: string; color: NamedColor }
-  | { type: 'UnlinkTag'; id: string };
 
 export type ItemHandlers = ReturnType<typeof itemHandlerFactory>;
 

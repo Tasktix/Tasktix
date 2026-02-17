@@ -53,6 +53,7 @@ it('Allows new tags to be created and linked to the item', async () => {
     content: undefined
   });
   const addNewTag = vi.fn(() => Promise.resolve('test-id'));
+  const dispatchItemChange = vi.fn();
 
   const user = userEvent.setup();
 
@@ -60,19 +61,13 @@ it('Allows new tags to be created and linked to the item', async () => {
     <HeroUIProvider disableRipple>
       <ListItem
         addNewTag={addNewTag}
-        deleteItem={vi.fn()}
+        dispatchItemChange={dispatchItemChange}
         hasDueDates={false}
         hasTimeTracking={false}
         item={item}
         members={[]}
-        resetTime={vi.fn()}
-        setCompleted={vi.fn()}
-        setPaused={vi.fn()}
-        setRunning={vi.fn()}
+        sectionId='section-id'
         tagsAvailable={[]}
-        updateDueDate={vi.fn()}
-        updateExpectedMs={vi.fn()}
-        updatePriority={vi.fn()}
       />
     </HeroUIProvider>
   );
@@ -92,7 +87,14 @@ it('Allows new tags to be created and linked to the item', async () => {
     expect.any(Object)
   );
 
-  expect(
-    await within(getByLabelText('Update tags')).findByText('Test tag')
-  ).toBeVisible();
+  expect(dispatchItemChange).toHaveBeenCalledTimes(1);
+  expect(dispatchItemChange).toHaveBeenCalledWith(
+    expect.objectContaining({
+      type: 'LinkNewTagToItem',
+      sectionId: 'section-id',
+      itemId: item.id,
+      tag: expect.objectContaining({ name: 'Test tag', color: 'Cyan' }) as Tag
+    })
+  );
 });
+

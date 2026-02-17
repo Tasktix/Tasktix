@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { useEffect, useReducer, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { addToast, Checkbox, Chip } from '@heroui/react';
 import { CardChecklist, GripVertical } from 'react-bootstrap-icons';
 import Link from 'next/link';
@@ -28,7 +28,6 @@ import { getBackgroundColor, getTextColor } from '@/lib/color';
 import DateInput from '../DateInput';
 import ConfirmedTextInput from '../ConfirmedTextInput';
 
-import itemReducer from './itemReducer';
 import ExpectedInput from './ExpectedInput';
 import ElapsedInput from './ElapsedInput';
 import More from './More';
@@ -39,10 +38,16 @@ import Users from './Users';
 import { itemHandlerFactory } from './handlerFactory';
 import { ListItemParams, SetItem } from './types';
 
+const minute = 1000 * 60;
+const today = new Date();
+
+today.setHours(0, 0, 0, 0);
+
 /**
  * The UI for interacting with a single list item's data, such as the name, priority,
  * assignees, etc.
  *
+ * @param sectionId The list section this component is part of
  * @param item The list item this component represents
  * @param list The list the item belongs to. If provided, a chip with the list name &
  *  color is displayed. Intended for use on pages with many lists' items to differentiate
@@ -56,19 +61,12 @@ import { ListItemParams, SetItem } from './types';
  * @param hasDueDates Whether the list settings enable due dates for items
  * @param reorderControls Controller for Framer Motion's reordering feature. Used to
  *  trigger reordering when the user grabs the drag icon in the list item
- * @param updateDueDate Callback to propagate state changes for the item's due date
- * @param updatePriority Callback to propagate state changes for the item's priority
- * @param deleteItem Callback to propagate state changes to delete the item
- * @param setRunning Callback to propagate state changes for the item's status
- * @param setPaused Callback to propagate state changes for the item's status
- * @param resetTime Callback to propagate state changes for the item's status
- * @param setCompleted Callback to propagate state changes for the item's status
- * @param updateExpectedMs Callback to propagate state changes for the item's expected
- *  completion time
+ * @param dispatchItemChange Callback to propagate state changes for the item
  * @param addNewTag Callback to propagate state changes when a new tag is created from the
  *  "add tag" menu
  */
 export default function ListItem({
+  sectionId,
   item,
   list,
   members,
@@ -76,21 +74,9 @@ export default function ListItem({
   hasTimeTracking,
   hasDueDates,
   reorderControls,
-  updateDueDate,
-  updatePriority,
-  deleteItem,
-  setRunning,
-  setPaused,
-  resetTime,
-  setCompleted,
-  updateExpectedMs,
+  dispatchItemChange,
   addNewTag
 }: ListItemParams) {
-  const minute = 1000 * 60;
-  const today = new Date();
-
-  today.setHours(0, 0, 0, 0);
-
   const timer = useRef<NodeJS.Timeout>(undefined);
   const updateTime = useRef(() => {});
   const lastTime = useRef(new Date());
@@ -99,10 +85,9 @@ export default function ListItem({
       (item.dateStarted ? Date.now() - item.dateStarted.getTime() : 0)
   );
 
-  const [_item, dispatchItem] = useReducer(itemReducer, item);
-
   const itemHandlers = itemHandlerFactory(
     item.id,
+    sectionId,
     {
       timer,
       lastTime,
@@ -110,13 +95,7 @@ export default function ListItem({
       stopRunning: _stopRunning
     },
     tagsAvailable,
-    dispatchItem,
-    updateDueDate,
-    updatePriority,
-    setPaused,
-    setCompleted,
-    updateExpectedMs,
-    deleteItem
+    dispatchItemChange
   );
 
   /**
@@ -127,7 +106,7 @@ export default function ListItem({
       const startedDate = new Date();
 
       api
-        .patch(`/item/${_item.id}`, {
+        .patch(`/item/${item.id}`, {
           dateStarted: startedDate,
           status: 'In_Progress'
         })
@@ -141,10 +120,7 @@ export default function ListItem({
           );
 
           // Update the internal state
-          dispatchItem({ type: 'StartTime' });
-
-          // Send parent the update for reordering items
-          setRunning();
+          dispatchItemChange({ type: 'StartItemTime', sectionId, id: item.id });
         })
         .catch(err => addToast({ title: err.message, color: 'danger' }));
     },
@@ -154,7 +130,7 @@ export default function ListItem({
         elapsedLive + (Date.now() - lastTime.current.getTime());
 
       api
-        .patch(`/item/${_item.id}`, {
+        .patch(`/item/${item.id}`, {
           dateStarted: null,
           elapsedMs: newElapsed,
           status: 'Paused'
@@ -166,19 +142,16 @@ export default function ListItem({
           setElapsedLive(newElapsed);
 
           // Update the internal state
-          dispatchItem({ type: 'PauseTime' });
-
-          // Send parent the update for reordering items
-          setPaused();
+          dispatchItemChange({ type: 'PauseItemTime', sectionId, id: item.id });
         })
         .catch(err => addToast({ title: err.message, color: 'danger' }));
     },
 
     resetTime: () => {
-      const status = _item.status === 'Completed' ? 'Completed' : 'Unstarted';
+      const status = item.status === 'Completed' ? 'Completed' : 'Unstarted';
 
       api
-        .patch(`/item/${_item.id}`, { dateStarted: null, status, elapsedMs: 0 })
+        .patch(`/item/${item.id}`, { dateStarted: null, status, elapsedMs: 0 })
         .then(() => {
           _stopRunning();
 
@@ -186,10 +159,12 @@ export default function ListItem({
           setElapsedLive(0);
 
           // Update the internal state
-          dispatchItem({ type: 'ResetTime', status });
-
-          // Send parent the update for reordering items
-          resetTime(status);
+          dispatchItemChange({
+            type: 'ResetItemTime',
+            sectionId,
+            id: item.id,
+            status
+          });
         })
         .catch(err => addToast({ title: err.message, color: 'danger' }));
     }
@@ -206,7 +181,7 @@ export default function ListItem({
 
   // Start the timer if it should be running when the component is first rendered
   useEffect(() => {
-    if (_item.status === 'In_Progress' && !timer.current)
+    if (item.status === 'In_Progress' && !timer.current)
       timer.current = setTimeout(
         updateTime.current,
         minute - (elapsedLive % minute) + 5
@@ -230,10 +205,10 @@ export default function ListItem({
       <span className='flex gap-4 items-center justify-between w-2/5'>
         {reorderControls ? (
           <div
-            className={`px-1 py-2 -mx-3 rounded-lg ${_item.status === 'Completed' ? 'text-foreground/20' : 'text-foreground/50 cursor-grab'} text-lg`}
+            className={`px-1 py-2 -mx-3 rounded-lg ${item.status === 'Completed' ? 'text-foreground/20' : 'text-foreground/50 cursor-grab'} text-lg`}
             onPointerDown={e => {
               e.preventDefault();
-              if (_item.status !== 'Completed') reorderControls.start(e);
+              if (item.status !== 'Completed') reorderControls.start(e);
             }}
           >
             <GripVertical />
@@ -242,7 +217,7 @@ export default function ListItem({
 
         <Checkbox
           className='-mr-3'
-          isSelected={_item.status === 'Completed'}
+          isSelected={item.status === 'Completed'}
           tabIndex={0}
           onChange={e => {
             if (e.target.checked) itemHandlers.setComplete(elapsedLive);
@@ -252,41 +227,39 @@ export default function ListItem({
 
         <span className='flex gap-4 items-center justify-start grow flex-wrap'>
           <div className='flex grow shrink-0 flex-col w-64 gap-0 -mt-3 -mb-1'>
-            {_item.status === 'Completed' ? (
+            {item.status === 'Completed' ? (
               <span className='text-sm line-through text-foreground/50 text-nowrap overflow-hidden'>
-                {_item.name}
+                {item.name}
               </span>
             ) : (
               <span className={`-ml-1 flex ${hasDueDates || 'mt-1'}`}>
                 <ConfirmedTextInput
                   className='shrink'
                   updateValue={itemHandlers.setName}
-                  value={_item.name}
+                  value={item.name}
                   variant='underlined'
                 />
               </span>
             )}
 
-            {_item.status === 'Completed' ? (
+            {item.status === 'Completed' ? (
               <span className='text-xs text-secondary/75 relative top-3'>
-                {_item.dateCompleted
-                  ? `Completed ${formatDate(_item.dateCompleted)}`
-                  : `Due ${_item.dateDue ? formatDate(_item.dateDue) : ''}`}
+                {item.dateCompleted
+                  ? `Completed ${formatDate(item.dateCompleted)}`
+                  : `Due ${item.dateDue ? formatDate(item.dateDue) : ''}`}
               </span>
             ) : hasDueDates ? (
               <DateInput
                 className='h-fit'
                 color={
-                  _item.dateDue && _item.dateDue < today
-                    ? 'danger'
-                    : 'secondary'
+                  item.dateDue && item.dateDue < today ? 'danger' : 'secondary'
                 }
                 displayContent={
-                  _item.dateDue
-                    ? `Due ${formatDate(_item.dateDue)}`
+                  item.dateDue
+                    ? `Due ${formatDate(item.dateDue)}`
                     : 'Set due date'
                 }
-                value={_item.dateDue || new Date()}
+                value={item.dateDue || new Date()}
                 onValueChange={itemHandlers.setDueDate}
               />
             ) : null}
@@ -308,27 +281,27 @@ export default function ListItem({
       </span>
       <span className='flex gap-4 items-center justify-between w-3/5'>
         <Priority
-          isComplete={_item.status === 'Completed'}
-          priority={_item.priority}
+          isComplete={item.status === 'Completed'}
+          priority={item.priority}
           setPriority={itemHandlers.setPriority}
         />
 
         <Tags
           addNewTag={addNewTag}
           className='hidden lg:flex'
-          isComplete={_item.status === 'Completed'}
+          isComplete={item.status === 'Completed'}
           linkNewTag={itemHandlers.linkNewTag}
           linkTag={itemHandlers.linkTag}
-          tags={_item.tags}
+          tags={item.tags}
           tagsAvailable={tagsAvailable}
           unlinkTag={itemHandlers.unlinkTag}
         />
 
         {members.length > 1 ? (
           <Users
-            assignees={_item.assignees}
-            isComplete={_item.status === 'Completed'}
-            itemId={_item.id}
+            assignees={item.assignees}
+            isComplete={item.status === 'Completed'}
+            itemId={item.id}
             members={members}
           />
         ) : null}
@@ -337,16 +310,16 @@ export default function ListItem({
           {hasTimeTracking ? (
             <span className='hidden xl:flex gap-4'>
               <span
-                className={`flex gap-4 ${_item.status === 'Completed' ? 'opacity-50' : ''}`}
+                className={`flex gap-4 ${item.status === 'Completed' ? 'opacity-50' : ''}`}
               >
                 <ExpectedInput
-                  disabled={_item.status === 'Completed'}
-                  ms={_item.expectedMs}
+                  disabled={item.status === 'Completed'}
+                  ms={item.expectedMs}
                   updateMs={itemHandlers.setExpectedMs}
                 />
                 <span className='border-r-1 border-content3' />
                 <ElapsedInput
-                  disabled={_item.status === 'Completed'}
+                  disabled={item.status === 'Completed'}
                   ms={elapsedLive}
                   resetTime={set.resetTime}
                 />
@@ -354,7 +327,7 @@ export default function ListItem({
               <TimeButton
                 pauseRunning={set.pausedRunning}
                 startRunning={set.startedRunning}
-                status={_item.status}
+                status={item.status}
               />
             </span>
           ) : null}
@@ -364,11 +337,11 @@ export default function ListItem({
             elapsedLive={elapsedLive}
             hasDueDates={hasDueDates}
             hasTimeTracking={hasTimeTracking}
-            item={_item}
+            item={item}
             itemHandlers={itemHandlers}
             members={members}
             set={set}
-            tags={_item.tags}
+            tags={item.tags}
             tagsAvailable={tagsAvailable}
           />
         </span>

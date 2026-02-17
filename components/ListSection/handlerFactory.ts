@@ -22,7 +22,7 @@ import { ActionDispatch } from 'react';
 import api from '@/lib/api';
 import ListItem from '@/lib/model/listItem';
 
-import { Item, SectionAction } from './types';
+import { SectionAction } from '../List';
 
 /**
  * Produces all functions for interacting with a specific list section and its contents.
@@ -32,13 +32,11 @@ import { Item, SectionAction } from './types';
  *
  * @param listId The ID of the list the given section belongs to
  * @param id The given section's ID
- * @param items The list items in the given section (live React state, not starting data)
  * @param dispatchSection The callback for updating the given section's useReducer state
  */
 export default function sectionHandlerFactory(
   listId: string,
   id: string,
-  items: Map<string, Item>,
   dispatchSection: ActionDispatch<[action: SectionAction]>
 ) {
   /**
@@ -46,13 +44,10 @@ export default function sectionHandlerFactory(
    * interaction for reordering the item is finished.
    *
    * @param item The item that needs to be reordered
+   * @param newIndex The index to reorder the item to
    */
-  function reorderItem(item: ListItem) {
-    const newIndex = items.get(item.id)?.visualIndex;
+  function reorderItem(item: ListItem, newIndex: number) {
     const oldIndex = item.sectionIndex;
-
-    if (newIndex === undefined)
-      throw new Error(`Item with ID ${item.id} not found`);
 
     // `newIndex` gets updated every time the item visually swaps with another. `oldIndex`
     // is the index from before dragging started. If they're the same, the item is still
@@ -68,7 +63,12 @@ export default function sectionHandlerFactory(
       .then(res => {
         addToast({ title: res.message, color: 'success' });
 
-        dispatchSection({ type: 'ReorderItem', oldIndex, newIndex });
+        dispatchSection({
+          type: 'ReorderItem',
+          sectionId: id,
+          oldIndex,
+          newIndex
+        });
       })
       .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
