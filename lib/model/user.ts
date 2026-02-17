@@ -30,10 +30,8 @@ const userFormat = z
 
 export const ZodUser = z.strictObject({
   id: z.string().length(191),
-  name: userFormat,
   username: userFormat,
   email: z.email().max(128),
-  legacyPassword: z.string().min(10).max(128),
   color: z.enum(namedColors)
 });
 
@@ -44,7 +42,6 @@ export default class User {
   displayUsername: string | null;
   email: string;
   emailVerified: boolean;
-  legacyPassword: string | null;
   image: string | null;
   color: NamedColor;
   createdAt: Date;
@@ -60,7 +57,6 @@ export default class User {
     color?: NamedColor,
     username?: string,
     image?: string,
-    legacyPassword?: string,
     displayUsername?: string
   ) {
     if (!color) color = randomNamedColor();
@@ -73,7 +69,6 @@ export default class User {
     this.displayUsername = displayUsername;
     this.email = email;
     this.emailVerified = emailVerfied;
-    this.legacyPassword = legacyPassword ?? null;
     this.image = image ?? null;
     this.color = color;
     this.createdAt = createdAt;

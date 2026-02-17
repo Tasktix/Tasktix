@@ -32,7 +32,5 @@ export async function getUser(): Promise<User | false> {
 
   const user = await getUserById(session.user.id);
 
-  if (!user) return false;
-
   return user;
 }

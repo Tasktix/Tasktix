@@ -26,7 +26,7 @@ import { auth } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic'; // defaults to auto
 
-const PatchBody = ZodUser.omit({ id: true, legacyPassword: true })
+const PatchBody = ZodUser.omit({ id: true })
   .extend({
     oldPassword: z.string().min(10).max(128),
     newPassword: z.string().min(10).max(128)
