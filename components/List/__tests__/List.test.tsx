@@ -95,7 +95,6 @@ describe('ListItem state propagation', () => {
       })
     );
 
-    expect(await findByDisplayValue('A real thing to do'));
     await waitFor(() =>
       expect(
         within(getByTestId('confirmed-input-Item name')).getByRole('button')

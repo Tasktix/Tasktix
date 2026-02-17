@@ -34,7 +34,6 @@ import {
   sortItemsByCompleted,
   sortItemsByOrder
 } from '@/lib/sortItems';
-import ListItemType from '@/lib/model/listItem';
 
 import { ItemAction } from '../List';
 
@@ -73,7 +72,7 @@ export default function SectionBody({
   addNewTag
 }: {
   sectionId: string;
-  items: Map<string, ListItemType>;
+  items: Map<string, ListItemModel>;
   filters: Filters;
   members: ListMember[];
   tagsAvailable: Tag[];

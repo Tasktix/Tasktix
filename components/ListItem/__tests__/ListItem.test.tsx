@@ -89,10 +89,10 @@ it('Shows everything faded and shows the completion date instead of due date whe
   const { getAllByLabelText, getByLabelText, getByText, getByRole } = render(
     <HeroUIProvider disableRipple>
       <ListItem
+        hasDueDates
+        hasTimeTracking
         addNewTag={vi.fn()}
         dispatchItemChange={vi.fn()}
-        hasDueDates={true}
-        hasTimeTracking={true}
         item={item}
         members={[]}
         sectionId='section-id'
@@ -258,10 +258,10 @@ describe('Timers', () => {
     const { getByText } = render(
       <HeroUIProvider disableRipple>
         <ListItem
+          hasTimeTracking
           addNewTag={vi.fn()}
           dispatchItemChange={dispatchItemChange}
           hasDueDates={false}
-          hasTimeTracking={true}
           item={item}
           members={[]}
           sectionId='section-id'
@@ -314,10 +314,10 @@ describe('Timers', () => {
     const { getByText } = render(
       <HeroUIProvider disableRipple>
         <ListItem
+          hasTimeTracking
           addNewTag={vi.fn()}
           dispatchItemChange={dispatchItemChange}
           hasDueDates={false}
-          hasTimeTracking={true}
           item={item}
           members={[]}
           sectionId='section-id'
@@ -370,10 +370,10 @@ describe('Timers', () => {
     const { findByText, getByRole } = render(
       <HeroUIProvider disableRipple>
         <ListItem
+          hasTimeTracking
           addNewTag={vi.fn()}
           dispatchItemChange={dispatchItemChange}
           hasDueDates={false}
-          hasTimeTracking={true}
           item={item}
           members={[]}
           sectionId='section-id'
@@ -425,10 +425,10 @@ describe('Timers', () => {
     const { findByText, getByRole } = render(
       <HeroUIProvider disableRipple>
         <ListItem
+          hasTimeTracking
           addNewTag={vi.fn()}
           dispatchItemChange={dispatchItemChange}
           hasDueDates={false}
-          hasTimeTracking={true}
           item={item}
           members={[]}
           sectionId='section-id'
