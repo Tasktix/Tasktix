@@ -47,8 +47,8 @@ RUN addgroup --system --gid 1001 nodejs && \
 COPY --from=builder /app/public ./public
 
 # Set permissions for prerender cache
-RUN mkdir .next .next/cache
-RUN chown nextjs:nodejs .next/cache
+RUN mkdir .next .next/cache && \
+    chown nextjs:nodejs .next/cache
 
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
