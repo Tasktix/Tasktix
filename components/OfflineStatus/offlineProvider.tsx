@@ -25,16 +25,13 @@ import { OfflineContext } from "./offlineContext";
  * sent event connection handlers
  * 
  * @param children DOM tree that should be able to access state
- * @param clientOnlineAtStart Initial client connection state 
  */
 export default function OfflineProvider({
   children,
-  clientOnlineAtStart
 }: {
   children: ReactNode;
-  clientOnlineAtStart: boolean;
 }) {
-  const [ clientOnline, setClientOnline ] = useState( clientOnlineAtStart );
+  const [ clientOnline, setClientOnline ] = useState( true );
 
   return (
     <OfflineContext.Provider

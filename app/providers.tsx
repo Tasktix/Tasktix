@@ -24,6 +24,7 @@ import dynamic from 'next/dynamic';
 
 import AuthProvider from '@/components/AuthProvider';
 import User from '@/lib/model/user';
+import OfflineProvider from '@/components/OfflineStatus';
 
 export function Providers({
   children,
@@ -47,9 +48,11 @@ export function Providers({
       navigate={(href, routerOptions) => router.push(href, routerOptions)}
     >
       <ThemeProvider attribute='class' defaultTheme='system'>
-        <AuthProvider loggedInUserAtStart={loggedInUserAtStart}>
-          {children}
-        </AuthProvider>
+        <OfflineProvider>
+          <AuthProvider loggedInUserAtStart={loggedInUserAtStart}>
+            {children}
+          </AuthProvider>
+        </OfflineProvider>
       </ThemeProvider>
     </HeroUIProvider>
   );
