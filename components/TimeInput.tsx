@@ -38,7 +38,7 @@ export default function TimeInput({
   classNames,
   onValueChange
 }: {
-  'aria-label': string;
+  'aria-label'?: string;
   label?: string;
   labelPlacement?: 'outside' | 'outside-left' | 'inside';
   variant?: 'flat' | 'faded' | 'bordered' | 'underlined';

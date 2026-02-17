@@ -57,7 +57,7 @@ describe('ListItem state propagation', () => {
       content: undefined
     });
 
-    const { getByDisplayValue, getByTestId, findByDisplayValue } = render(
+    const { getByDisplayValue, getByTestId } = render(
       <HeroUIProvider disableRipple>
         <List
           startingList={JSON.stringify(

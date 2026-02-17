@@ -54,52 +54,11 @@ export default function ListItemGroup({
       : null;
   }
 
-  const [items, setItems] = useState<ListItemModel[]>(builtItems);
+  const [items] = useState<ListItemModel[]>(builtItems);
   const [tags, setTags] = useState<{ [id: string]: Tag[] }>(
     JSON.parse(startingTags)
   );
   const parsedMembers: { [id: string]: ListMember[] } = JSON.parse(members);
-
-  function setStatus(
-    index: number,
-    status: ListItemModel['status'],
-    dateCompleted?: ListItemModel['dateCompleted']
-  ) {
-    const newItems = structuredClone(items);
-
-    newItems[index].status = status;
-    if (dateCompleted !== undefined)
-      newItems[index].dateCompleted = dateCompleted;
-    setItems(newItems);
-  }
-
-  function updateExpectedMs(index: number, ms: number) {
-    const newItems = structuredClone(items);
-
-    newItems[index].expectedMs = ms;
-    setItems(newItems);
-  }
-
-  function updatePriority(index: number, priority: ListItemModel['priority']) {
-    const newItems = structuredClone(items);
-
-    newItems[index].priority = priority;
-    setItems(newItems);
-  }
-
-  function updateDueDate(index: number, date: ListItemModel['dateDue']) {
-    const newItems = structuredClone(items);
-
-    newItems[index].dateDue = date;
-    setItems(newItems);
-  }
-
-  function deleteItem(index: number) {
-    const newItems = structuredClone(items);
-
-    newItems.splice(index, 1);
-    setItems(newItems);
-  }
 
   function addNewTag(
     listId: string | undefined,
@@ -131,11 +90,11 @@ export default function ListItemGroup({
         items
           .sort(sortItems.bind(null, false, false))
           .filter((item, idx) => item.status !== 'Completed' && idx < 10)
-          .map((item, idx) => (
+          .map(item => (
             <ListItem
               key={item.id}
               addNewTag={addNewTag.bind(null, item.listId)}
-              deleteItem={deleteItem.bind(null, idx)}
+              dispatchItemChange={() => null}
               hasDueDates={
                 builtLists.find(list => list.id === item.listId)?.hasDueDates ||
                 false
@@ -147,14 +106,8 @@ export default function ListItemGroup({
               item={item}
               list={builtLists.find(list => list.id === item.listId)}
               members={item.listId ? parsedMembers[item.listId] : []}
-              resetTime={setStatus.bind(null, idx)}
-              setCompleted={setStatus.bind(null, idx, 'Completed')}
-              setPaused={() => setStatus(idx, 'Paused', null)}
-              setRunning={setStatus.bind(null, idx, 'In_Progress')}
+              sectionId='unknown'
               tagsAvailable={item.listId ? tags[item.listId] : []}
-              updateDueDate={updateDueDate.bind(null, idx)}
-              updateExpectedMs={updateExpectedMs.bind(null, idx)}
-              updatePriority={updatePriority.bind(null, idx)}
             />
           ))
       ) : (
