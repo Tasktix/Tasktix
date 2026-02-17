@@ -111,7 +111,7 @@ export default function SectionBody({
     // The state is currently out of sync, so don't render anything (sortItemsByOrder may
     // throw an error if rendering attempted). React will throw away this render result
     // and immediately rerender the component, anyway, since its state changed.
-    return <></>;
+    return null;
   }
 
   const filteredItems = [

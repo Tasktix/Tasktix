@@ -291,6 +291,7 @@ describe('Timers', () => {
     );
 
     expect(
+      // We know the DOM, so we know this element does have a parent - skipcq: JS-0339
       within(getByText('Elapsed').parentElement!).getByText('00:00')
     ).toBeVisible();
   });
@@ -348,6 +349,7 @@ describe('Timers', () => {
     );
 
     expect(
+      // We know the DOM, so we know this element does have a parent - skipcq: JS-0339
       within(getByText('Elapsed').parentElement!).getByText('00:02')
     ).toBeVisible();
   });
