@@ -30,7 +30,6 @@ import Assignee from '@/lib/model/assignee';
 import User from '@/lib/model/user';
 import ListMember from '@/lib/model/listMember';
 import List from '@/lib/model/list';
-import Tag from '@/lib/model/tag';
 
 import ListItem from '../ListItem';
 
@@ -182,60 +181,6 @@ it('Displays all members assigned to the item', () => {
 
   expect(getByText('UT')).toBeVisible();
   expect(getByText('UT').parentElement).toHaveClass('bg-blue-500');
-});
-
-it('Allows new tags to be created and linked to the item', async () => {
-  const item = new ListItemModel('Test item', {});
-
-  vi.mocked(api.post).mockResolvedValue({
-    code: 200,
-    message: 'Success',
-    content: undefined
-  });
-  const addNewTag = vi.fn(() => Promise.resolve('test-id'));
-  const dispatchItemChange = vi.fn();
-
-  const user = userEvent.setup();
-
-  const { getByLabelText } = render(
-    <HeroUIProvider disableRipple>
-      <ListItem
-        addNewTag={addNewTag}
-        dispatchItemChange={dispatchItemChange}
-        hasDueDates={false}
-        hasTimeTracking={false}
-        item={item}
-        members={[]}
-        sectionId='section-id'
-        tagsAvailable={[]}
-      />
-    </HeroUIProvider>
-  );
-
-  await user.click(getByLabelText('Update tags'));
-  await user.type(getByLabelText('Add tag...'), 'Test tag');
-  await user.click(getByLabelText('Pick color'));
-  await user.click(getByLabelText('Cyan'));
-  await user.click(getByLabelText('Submit'));
-
-  expect(addNewTag).toHaveBeenCalledTimes(1);
-  expect(addNewTag).toHaveBeenCalledWith('Test tag', 'Cyan');
-
-  expect(api.post).toHaveBeenCalledTimes(1);
-  expect(api.post).toHaveBeenCalledWith(
-    `/item/${item.id}/tag/test-id`,
-    expect.any(Object)
-  );
-
-  expect(dispatchItemChange).toHaveBeenCalledTimes(1);
-  expect(dispatchItemChange).toHaveBeenCalledWith(
-    expect.objectContaining({
-      type: 'LinkNewTagToItem',
-      sectionId: 'section-id',
-      itemId: item.id,
-      tag: expect.objectContaining({ name: 'Test tag', color: 'Cyan' }) as Tag
-    })
-  );
 });
 
 describe('Timers', () => {

@@ -27,6 +27,7 @@ import api from '@/lib/api';
 import ListModel from '@/lib/model/list';
 import ListSection from '@/lib/model/listSection';
 import ListItem from '@/lib/model/listItem';
+import Tag from '@/lib/model/tag';
 
 import List from '../List';
 
@@ -188,6 +189,8 @@ describe('ListItem state propagation', () => {
       </HeroUIProvider>
     );
 
+    expect(getByRole('checkbox')).not.toBeChecked();
+
     await user.click(getByRole('checkbox'));
 
     await waitFor(() =>
@@ -242,6 +245,9 @@ describe('ListItem state propagation', () => {
     );
 
     await user.click(getByLabelText('Expand section'));
+
+    expect(getByRole('checkbox')).toBeChecked();
+
     await user.click(getByRole('checkbox'));
 
     await waitFor(() =>
@@ -310,5 +316,221 @@ describe('ListItem state propagation', () => {
     );
 
     expect(popoverElement).toHaveAccessibleName('Expected 00:05');
+  });
+
+  test('New tags can be created and linked to the item', async () => {
+    vi.mocked(api.post).mockResolvedValueOnce({
+      code: 200,
+      message: 'Success',
+      content: '/item/item-id/tag/tag-id'
+    });
+    vi.mocked(api.post).mockResolvedValueOnce({
+      code: 200,
+      message: 'Success',
+      content: undefined
+    });
+
+    const user = userEvent.setup();
+
+    const { getByLabelText } = render(
+      <HeroUIProvider disableRipple>
+        <List
+          startingList={JSON.stringify(
+            new ListModel(
+              'List name',
+              'Amber',
+              [],
+              [
+                new ListSection('List section name', [
+                  new ListItem('List item name', {
+                    id: 'item-id'
+                  })
+                ])
+              ],
+              true,
+              true,
+              true,
+              'list-id'
+            )
+          )}
+          startingTagsAvailable='[]'
+        />
+      </HeroUIProvider>
+    );
+
+    expect(getByLabelText('Update tags')).not.toHaveTextContent('Test tag');
+
+    await user.click(getByLabelText('Update tags'));
+
+    await user.type(getByLabelText('Add tag...'), 'Test tag');
+    await user.click(getByLabelText('Pick color'));
+    await user.click(getByLabelText('Cyan'));
+    await user.click(
+      within(getByLabelText('Add tag...').closest('form')!).getByLabelText(
+        'Submit'
+      )
+    );
+
+    expect(api.post).toHaveBeenCalledTimes(2);
+    expect(api.post).toHaveBeenCalledWith(`/list/list-id/tag`, {
+      name: 'Test tag',
+      color: 'Cyan'
+    });
+    expect(api.post).toHaveBeenCalledWith(
+      `/item/item-id/tag/tag-id`,
+      expect.any(Object)
+    );
+
+    expect(getByLabelText('Update tags')).toHaveTextContent('Test tag');
+    expect(
+      within(getByLabelText('Update tags')).getByText('Test tag')
+    ).toHaveClass('text-cyan-500');
+  });
+
+  test('Existing tags can be linked to the item', async () => {
+    vi.mocked(api.post).mockResolvedValueOnce({
+      code: 200,
+      message: 'Success',
+      content: undefined
+    });
+
+    const user = userEvent.setup();
+
+    const { getByLabelText } = render(
+      <HeroUIProvider disableRipple>
+        <List
+          startingList={JSON.stringify(
+            new ListModel(
+              'List name',
+              'Amber',
+              [],
+              [
+                new ListSection('List section name', [
+                  new ListItem('List item name', {
+                    id: 'item-id'
+                  })
+                ])
+              ],
+              true,
+              true,
+              true,
+              'list-id'
+            )
+          )}
+          startingTagsAvailable={JSON.stringify([
+            new Tag('Tag name', 'Emerald', 'tag-id')
+          ])}
+        />
+      </HeroUIProvider>
+    );
+
+    expect(getByLabelText('Update tags')).not.toHaveTextContent('Tag name');
+
+    await user.click(getByLabelText('Update tags'));
+    await user.click(getByLabelText('Add Tag name to item'));
+
+    expect(api.post).toHaveBeenCalledExactlyOnceWith(
+      `/item/item-id/tag/tag-id`,
+      expect.any(Object)
+    );
+
+    expect(getByLabelText('Update tags')).toHaveTextContent('Tag name');
+    expect(
+      within(getByLabelText('Update tags')).getByText('Tag name')
+    ).toHaveClass('text-emerald-500');
+  });
+
+  test('Linked tags can be unlinked from the item', async () => {
+    vi.mocked(api.delete).mockResolvedValueOnce({
+      code: 200,
+      message: 'Success',
+      content: undefined
+    });
+
+    const user = userEvent.setup();
+
+    const { getByLabelText } = render(
+      <HeroUIProvider disableRipple>
+        <List
+          startingList={JSON.stringify(
+            new ListModel(
+              'List name',
+              'Amber',
+              [],
+              [
+                new ListSection('List section name', [
+                  new ListItem('List item name', {
+                    id: 'item-id',
+                    tags: [new Tag('Tag name', 'Emerald', 'tag-id')]
+                  })
+                ])
+              ],
+              true,
+              true,
+              true,
+              'list-id'
+            )
+          )}
+          startingTagsAvailable={JSON.stringify([
+            new Tag('Tag name', 'Emerald', 'tag-id')
+          ])}
+        />
+      </HeroUIProvider>
+    );
+
+    expect(getByLabelText('Update tags')).toHaveTextContent('Tag name');
+
+    await user.click(getByLabelText('Update tags'));
+    await user.click(getByLabelText('Remove Tag name from item'));
+
+    expect(api.delete).toHaveBeenCalledExactlyOnceWith(
+      `/item/item-id/tag/tag-id`
+    );
+    expect(getByLabelText('Update tags')).not.toHaveTextContent('Tag name');
+  });
+
+  test('Item can be deleted', async () => {
+    vi.mocked(api.delete).mockResolvedValueOnce({
+      code: 200,
+      message: 'Success',
+      content: undefined
+    });
+
+    const user = userEvent.setup();
+
+    const { queryByDisplayValue, getByLabelText, getByRole } = render(
+      <HeroUIProvider disableRipple>
+        <List
+          startingList={JSON.stringify(
+            new ListModel(
+              'List name',
+              'Amber',
+              [],
+              [
+                new ListSection('List section name', [
+                  new ListItem('List item name', {
+                    id: 'item-id'
+                  })
+                ])
+              ],
+              true,
+              true,
+              true,
+              'list-id'
+            )
+          )}
+          startingTagsAvailable='[]'
+        />
+      </HeroUIProvider>
+    );
+
+    expect(queryByDisplayValue('List item name')).toBeInTheDocument();
+
+    await user.click(getByLabelText('More item info'));
+    await user.click(getByRole('button', { name: 'Delete' }));
+
+    expect(api.delete).toHaveBeenCalledExactlyOnceWith(`/item/item-id`);
+
+    expect(queryByDisplayValue('List item name')).not.toBeInTheDocument();
   });
 });

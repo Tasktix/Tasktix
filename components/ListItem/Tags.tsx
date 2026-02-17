@@ -107,7 +107,7 @@ export default function Tags({
               {tag.name}
               <Button
                 isIconOnly
-                aria-label='Remove tag from item'
+                aria-label={`Remove ${tag.name} from item`}
                 className='rounded-lg w-8 h-8 min-w-8 min-h-8'
                 color='danger'
                 variant='flat'
@@ -131,7 +131,7 @@ export default function Tags({
                       {tag.name}
                       <Button
                         isIconOnly
-                        aria-label='Add tag to item'
+                        aria-label={`Add ${tag.name} to item`}
                         className='rounded-lg w-8 h-8 min-w-8 min-h-8'
                         color='primary'
                         variant='flat'
