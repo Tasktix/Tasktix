@@ -25,6 +25,7 @@ import { namedColors } from './model/color';
 
 const prisma = new PrismaClient();
 
+// auth functionality is tested where used - skipcq: TCV-001
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: 'mysql'

@@ -24,6 +24,7 @@ import {
   usernameClient
 } from 'better-auth/client/plugins';
 
+// authClient functionality is tested where used - skipcq: TCV-001
 export const authClient = createAuthClient({
   plugins: [usernameClient(), inferAdditionalFields<typeof auth>()]
 });
