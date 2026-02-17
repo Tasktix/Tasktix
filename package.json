@@ -21,7 +21,7 @@
     "prisma:seed": "prisma db seed",
     "test:vi": "vitest",
     "test:cy": "CYPRESS_EXIT=0; npm run start:test -- --detach && npm run testdb:reset; cypress run || CYPRESS_EXIT=$?; npm run stop:test && exit $CYPRESS_EXIT",
-    "start:test": "cross-env DB_PASSWORD=password DB_DATABASE=tasktix_test docker compose -f compose.yaml -f compose.test.yaml up --build",
+    "start:test": "cross-env DB_PASSWORD=password DB_DATABASE=tasktix_test BETTER_AUTH_URL=\"http://localhost:3000\" BETTER_AUTH_SECRET=\"CGWdsHolhwwL4Le08c7yvJKU01x3K0kRkoiYoWStseM=\" docker compose -f compose.yaml -f compose.test.yaml up --build",
     "stop:test": "docker compose -f compose.yaml -f compose.test.yaml down --volumes",
     "testdb:reset": "docker compose exec deploy npm run prisma:reset -- --force",
     "testdb:seed": "docker compose exec deploy npm run prisma:seed",
