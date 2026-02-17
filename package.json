@@ -40,6 +40,7 @@
     "react-bootstrap-icons": "^1.11.6",
     "react-dom": "19.2.3",
     "sharp": "^0.34.3",
+    "tsx": "^4.21.0",
     "zod": "^4.1.5"
   },
   "devDependencies": {
@@ -72,7 +73,6 @@
     "prettier": "^3.7.4",
     "prisma": "^6.19.0",
     "tailwindcss": "^4.1.16",
-    "ts-node": "^10.9.2",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.49.0",
     "vite-tsconfig-paths": "^6.0.5",

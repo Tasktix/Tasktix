@@ -22,6 +22,6 @@ import { defineConfig } from 'prisma/config';
 
 export default defineConfig({
   migrations: {
-    seed: `ts-node ${path.join('prisma', 'seed.ts')}`
+    seed: `tsx ${path.join('prisma', 'seed.ts')}`
   }
 });
