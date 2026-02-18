@@ -33,7 +33,9 @@ import List from '../List';
 
 vi.mock('@/lib/api');
 
+beforeAll(() => vi.stubEnv('TZ', 'UTC'));
 beforeEach(vi.resetAllMocks);
+afterAll(vi.unstubAllEnvs);
 
 describe('ListItem state propagation', () => {
   test('Item names update when changed', async () => {
@@ -590,6 +592,123 @@ describe('ListItem state propagation', () => {
     );
 
     expect(popoverElement).toHaveAccessibleName('Expected 00:05');
+  });
+
+  describe('Timers', () => {
+    it('Updates the database when "Start" is pressed', async () => {
+      vi.setSystemTime('2026-01-01');
+      vi.mocked(api.patch).mockResolvedValue({
+        code: 200,
+        message: 'Success',
+        content: undefined
+      });
+
+      const user = userEvent.setup();
+
+      const { getByRole, getByText } = render(
+        <HeroUIProvider disableRipple>
+          <List
+            startingList={JSON.stringify(
+              new ListModel(
+                'List name',
+                'Amber',
+                [],
+                [
+                  new ListSection('List section name', [
+                    new ListItem('List item name', {
+                      status: 'Unstarted',
+                      elapsedMs: 0,
+                      id: 'item-id'
+                    })
+                  ])
+                ],
+                true,
+                true,
+                true,
+                'list-id'
+              )
+            )}
+            startingTagsAvailable='[]'
+          />
+        </HeroUIProvider>
+      );
+
+      const popoverElement = getByRole('button', { name: 'Elapsed 00:00' });
+      const statusButton = getByText('Start');
+
+      await user.click(statusButton);
+
+      expect(api.patch).toHaveBeenCalledExactlyOnceWith(
+        '/item/item-id',
+        expect.objectContaining({
+          status: 'In_Progress',
+          dateStarted: new Date()
+        })
+      );
+
+      expect(statusButton).toHaveTextContent('Pause');
+      expect(popoverElement).toHaveAccessibleName('Elapsed 00:00');
+    });
+
+    it('Updates the database when "Pause" is pressed', async () => {
+      vi.setSystemTime('2026-01-01');
+      vi.mocked(api.patch).mockResolvedValue({
+        code: 200,
+        message: 'Success',
+        content: undefined
+      });
+
+      const user = userEvent.setup();
+
+      const { getByRole, getByText } = render(
+        <HeroUIProvider disableRipple>
+          <List
+            startingList={JSON.stringify(
+              new ListModel(
+                'List name',
+                'Amber',
+                [],
+                [
+                  new ListSection('List section name', [
+                    new ListItem('List item name', {
+                      status: 'In_Progress',
+                      elapsedMs: 2000 * 60,
+                      id: 'item-id'
+                    })
+                  ])
+                ],
+                true,
+                true,
+                true,
+                'list-id'
+              )
+            )}
+            startingTagsAvailable='[]'
+          />
+        </HeroUIProvider>
+      );
+
+      const popoverElement = getByRole('button', { name: 'Elapsed 00:02' });
+      const statusButton = getByText('Pause');
+
+      await user.click(statusButton);
+
+      expect(api.patch).toHaveBeenCalledExactlyOnceWith(
+        '/item/item-id',
+        expect.objectContaining({
+          status: 'Paused',
+          dateStarted: null,
+          elapsedMs: 2000 * 60
+        })
+      );
+
+      expect(statusButton).toHaveTextContent('Resume');
+      expect(popoverElement).toHaveAccessibleName('Elapsed 00:02');
+    });
+
+    // TODO: Need tests for timers actually incrementing after @testing-library/user-event
+    // supports Vitest fake timers:
+    // https://github.com/testing-library/react-testing-library/issues/1197
   });
 
   test('Elapsed time goes to 00:00 when time is reset', async () => {

@@ -20,12 +20,10 @@
 
 import '@testing-library/jest-dom';
 
-import { render, within } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { HeroUIProvider } from '@heroui/react';
-import userEvent from '@testing-library/user-event';
 
 import ListItemModel from '@/lib/model/listItem';
-import api from '@/lib/api';
 import Assignee from '@/lib/model/assignee';
 import User from '@/lib/model/user';
 import ListMember from '@/lib/model/listMember';
@@ -45,12 +43,7 @@ vi.mock(import('framer-motion'), async importOriginal => {
 vi.mock('@/lib/api');
 
 beforeAll(() => vi.stubEnv('TZ', 'UTC'));
-
-beforeEach(() => {
-  vi.resetAllMocks();
-  vi.useRealTimers();
-});
-
+beforeEach(vi.resetAllMocks);
 afterAll(vi.unstubAllEnvs);
 
 it('Shows everything faded and shows the completion date instead of due date when the item is marked completed', () => {
@@ -159,121 +152,4 @@ it('Displays all members assigned to the item', () => {
 
   expect(getByText('UT')).toBeVisible();
   expect(getByText('UT').parentElement).toHaveClass('bg-blue-500');
-});
-
-describe('Timers', () => {
-  it('Updates the database when "Start" is pressed', async () => {
-    const item = new ListItemModel('Test item', {
-      status: 'Unstarted',
-      elapsedMs: 0
-    });
-
-    vi.setSystemTime('2026-01-01');
-    vi.mocked(api.patch).mockResolvedValue({
-      code: 200,
-      message: 'Success',
-      content: undefined
-    });
-    const dispatchItemChange = vi.fn();
-
-    const user = userEvent.setup();
-
-    const { getByText } = render(
-      <HeroUIProvider disableRipple>
-        <ListItem
-          hasTimeTracking
-          addNewTag={vi.fn()}
-          dispatchItemChange={dispatchItemChange}
-          hasDueDates={false}
-          item={item}
-          members={[]}
-          sectionId='section-id'
-          tagsAvailable={[]}
-        />
-      </HeroUIProvider>
-    );
-
-    await user.click(getByText('Start'));
-
-    expect(api.patch).toHaveBeenCalledTimes(1);
-    expect(api.patch).toHaveBeenCalledWith(
-      `/item/${item.id}`,
-      expect.objectContaining({
-        status: 'In_Progress',
-        dateStarted: new Date()
-      })
-    );
-
-    expect(dispatchItemChange).toHaveBeenCalledTimes(1);
-    expect(dispatchItemChange).toHaveBeenCalledWith(
-      expect.objectContaining({
-        type: 'StartItemTime',
-        sectionId: 'section-id',
-        id: item.id
-      })
-    );
-
-    expect(
-      // We know the DOM, so we know this element does have a parent - skipcq: JS-0339
-      within(getByText('Elapsed').parentElement!).getByText('00:00')
-    ).toBeVisible();
-  });
-
-  it('Updates the database when "Pause" is pressed', async () => {
-    const item = new ListItemModel('Test item', {
-      status: 'In_Progress',
-      elapsedMs: 2000 * 60
-    });
-
-    vi.setSystemTime('2026-01-01');
-    vi.mocked(api.patch).mockResolvedValue({
-      code: 200,
-      message: 'Success',
-      content: undefined
-    });
-    const dispatchItemChange = vi.fn();
-
-    const user = userEvent.setup();
-
-    const { getByText } = render(
-      <HeroUIProvider disableRipple>
-        <ListItem
-          hasTimeTracking
-          addNewTag={vi.fn()}
-          dispatchItemChange={dispatchItemChange}
-          hasDueDates={false}
-          item={item}
-          members={[]}
-          sectionId='section-id'
-          tagsAvailable={[]}
-        />
-      </HeroUIProvider>
-    );
-
-    await user.click(getByText('Pause'));
-
-    expect(api.patch).toHaveBeenCalledTimes(1);
-    expect(api.patch).toHaveBeenCalledWith(
-      `/item/${item.id}`,
-      expect.objectContaining({
-        status: 'Paused',
-        dateStarted: null,
-        elapsedMs: 2000 * 60
-      })
-    );
-
-    expect(dispatchItemChange).toHaveBeenCalledTimes(1);
-    expect(dispatchItemChange).toHaveBeenCalledWith(
-      expect.objectContaining({
-        type: 'PauseItemTime',
-        sectionId: 'section-id',
-        id: item.id
-      })
-    );
-
-    expect(
-      // We know the DOM, so we know this element does have a parent - skipcq: JS-0339
-      within(getByText('Elapsed').parentElement!).getByText('00:02')
-    ).toBeVisible();
-  });
 });
