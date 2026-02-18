@@ -29,7 +29,7 @@ const MOCK_USER = new User(
   false,
   new Date(),
   new Date(),
-  {color: 'Amber'}
+  { color: 'Amber' }
 );
 
 const today = new Date();

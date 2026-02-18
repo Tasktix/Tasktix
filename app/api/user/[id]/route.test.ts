@@ -30,7 +30,7 @@ const MOCK_USER = new User(
   false,
   new Date(),
   new Date(),
-  {color: 'Amber'}
+  { color: 'Amber' }
 );
 const USER_PATH = `http://localhost/api/user/${MOCK_USER.id}` as const;
 
@@ -69,12 +69,12 @@ describe('PATCH', () => {
     );
 
     expect(response.status).toBe(200);
-    
+
     expect(auth.api.updateUser).toHaveBeenCalledTimes(1);
     expect(auth.api.updateUser).toHaveBeenCalledWith(
       expect.objectContaining({
         body: { name: 'new_name', username: 'new_name' }
-      })  
+      })
     );
 
     expect(auth.api.changeEmail).not.toHaveBeenCalled();
@@ -100,8 +100,8 @@ describe('PATCH', () => {
       expect.objectContaining({ body: { newEmail: 'new_email@example.com' } })
     );
 
-    expect(auth.api.updateUser).not.toHaveBeenCalled()
-    expect(auth.api.changePassword).not.toHaveBeenCalled()
+    expect(auth.api.updateUser).not.toHaveBeenCalled();
+    expect(auth.api.changePassword).not.toHaveBeenCalled();
     expect(updateUserColor).not.toHaveBeenCalled();
   });
 
@@ -122,10 +122,10 @@ describe('PATCH', () => {
     expect(updateUserColor).toHaveBeenCalledWith(
       expect.objectContaining({ color: 'Red' })
     );
-    
-    expect(auth.api.updateUser).not.toHaveBeenCalled()
-    expect(auth.api.changeEmail).not.toHaveBeenCalled()
-    expect(auth.api.changePassword).not.toHaveBeenCalled()
+
+    expect(auth.api.updateUser).not.toHaveBeenCalled();
+    expect(auth.api.changeEmail).not.toHaveBeenCalled();
+    expect(auth.api.changePassword).not.toHaveBeenCalled();
   });
 
   test('Provides warning if color update fails', async () => {
@@ -275,13 +275,15 @@ describe('PATCH', () => {
     );
 
     expect(response.status).toBe(200);
-    expect(auth.api.changePassword).toHaveBeenCalledWith(expect.objectContaining({
-      body: {
-          newPassword: "new_password",
-          currentPassword: "old_password",
+    expect(auth.api.changePassword).toHaveBeenCalledWith(
+      expect.objectContaining({
+        body: {
+          newPassword: 'new_password',
+          currentPassword: 'old_password',
           revokeOtherSessions: true
         }
-    }));
+      })
+    );
     expect(await response.json()).toEqual({ message: 'User updated' });
   });
 
