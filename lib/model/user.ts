@@ -54,10 +54,17 @@ export default class User {
     emailVerfied: boolean,
     createdAt: Date,
     updatedAt: Date,
-    color?: NamedColor,
-    username?: string,
-    image?: string,
-    displayUsername?: string
+    {
+      color,
+      username,
+      image,
+      displayUsername
+    }: {
+      color?: NamedColor;
+      username?: string;
+      image?: string;
+      displayUsername?: string;
+    } = {}
   ) {
     if (!color) color = randomNamedColor();
     if (!username) username = name;

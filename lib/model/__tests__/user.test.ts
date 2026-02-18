@@ -57,7 +57,7 @@ test('Uses the provided color', () => {
     false,
     fixedCreatedAt,
     fixedUpdatedAt,
-    'Amber'
+    { color: 'Amber' }
   );
 
   expect(user.color).toBe('Amber');
@@ -72,7 +72,7 @@ test('Assigns all properties correctly', () => {
     false,
     fixedCreatedAt,
     fixedUpdatedAt,
-    'Amber'
+    { color: 'Amber' }
   );
 
   expect(user.username).toBe('testUser');

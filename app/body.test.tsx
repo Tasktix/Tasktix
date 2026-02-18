@@ -65,7 +65,7 @@ describe('Body', () => {
         false,
         new Date(),
         new Date(),
-        'Amber'
+        { color: 'Amber' }
       ),
       setLoggedInUser: vi.fn()
     });
@@ -116,7 +116,7 @@ describe('Body', () => {
       false,
       '1/1/2000' as unknown as Date,
       '1/1/2000' as unknown as Date,
-      'Pink'
+      { color: 'Pink' }
     );
 
     vi.mocked(useAuth).mockReturnValue({
@@ -147,7 +147,7 @@ describe('Sign Out Process', () => {
       false,
       new Date(),
       new Date(),
-      'Amber'
+      { color: 'Amber' }
     );
     const setLoggedInUserMock = vi.fn();
 
