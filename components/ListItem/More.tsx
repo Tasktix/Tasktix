@@ -42,6 +42,7 @@ import ExpectedInput from './ExpectedInput';
 import ElapsedInput from './ElapsedInput';
 import TimeButton from './TimeButton';
 import { ItemHandlers, SetItem } from './types';
+import ItemSection from './ItemSection';
 
 /**
  * The UI for interacting with **all of** a single list item's data, such as the name,
@@ -143,6 +144,10 @@ export default function More({
                       onValueChange={itemHandlers.setDueDate}
                     />
                   ) : null}
+                  <ItemSection
+                    currentSection='Current Section'
+                    totalSections={['Example Section 1', 'Example section 2', 'Example Section 3']}
+                  />
                 </div>
 
                 <Tags
