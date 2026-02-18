@@ -47,8 +47,6 @@ export default function ExpectedInput({
       isOpen={isOpen}
       placement='bottom'
       onOpenChange={open => {
-        if (disabled) return;
-
         if (open) setValue(ms ?? 0);
         setIsOpen(open);
       }}
@@ -56,8 +54,8 @@ export default function ExpectedInput({
       <PopoverTrigger className='-mr-2 -my-3 -px-2 relative top-3'>
         <Button
           isIconOnly
-          className={`w-fit px-2! bg-transparent p-0 ${disabled ? '' : 'hover:bg-foreground/10'}`}
-          disabled={disabled}
+          className='w-fit px-2! bg-transparent p-0'
+          isDisabled={disabled}
           tabIndex={0}
         >
           <Time label='Expected' ms={ms || 0} />

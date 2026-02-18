@@ -33,19 +33,6 @@ import List from '../List';
 
 vi.mock('@/lib/api');
 
-/**
- * Mocking HeroUI Popover because the popover doesn't properly open in tests (presumably a
- * JSDom error). To ensure the popover is "open" and the contents can be pressed, all
- * contents of the popover are always rendered.
- */
-vi.mock(
-  import('@heroui/react'),
-  async importOriginal =>
-    ({
-      ...(await importOriginal())
-    }) as unknown as typeof import('@heroui/react')
-);
-
 beforeEach(vi.resetAllMocks);
 
 describe('ListItem state propagation', () => {
@@ -379,60 +366,6 @@ describe('ListItem state propagation', () => {
       expect(nameInput).not.toHaveClass('line-through');
   });
 
-  test('Expected time changes when new value inputted', async () => {
-    const user = userEvent.setup();
-
-    vi.mocked(api.patch).mockResolvedValue({
-      code: 200,
-      message: 'Success',
-      content: undefined
-    });
-
-    const { getByLabelText, getByRole } = render(
-      <HeroUIProvider disableRipple>
-        <List
-          startingList={JSON.stringify(
-            new ListModel(
-              'List name',
-              'Amber',
-              [],
-              [
-                new ListSection('List section name', [
-                  new ListItem('List item name', {
-                    expectedMs: 1000 * 60,
-                    id: 'item-id'
-                  })
-                ])
-              ],
-              true,
-              true,
-              true,
-              'list-id'
-            )
-          )}
-          startingTagsAvailable='[]'
-        />
-      </HeroUIProvider>
-    );
-
-    const popoverElement = getByRole('button', { name: 'Expected 00:01' });
-
-    await user.click(popoverElement);
-    await user.clear(getByLabelText('Expected Time'));
-    await user.type(getByLabelText('Expected Time'), '00:05{Enter}');
-
-    await waitFor(() =>
-      expect(api.patch).toHaveBeenCalledExactlyOnceWith(
-        '/item/item-id',
-        expect.objectContaining({
-          expectedMs: 1000 * 60 * 5
-        })
-      )
-    );
-
-    expect(popoverElement).toHaveAccessibleName('Expected 00:05');
-  });
-
   test('New tags can be created and linked to the item', async () => {
     vi.mocked(api.post).mockResolvedValueOnce({
       code: 200,
@@ -603,6 +536,115 @@ describe('ListItem state propagation', () => {
       '/item/item-id/tag/tag-id'
     );
     expect(getByLabelText('Update tags')).not.toHaveTextContent('Tag name');
+  });
+
+  test('Expected time changes when new value inputted', async () => {
+    const user = userEvent.setup();
+
+    vi.mocked(api.patch).mockResolvedValue({
+      code: 200,
+      message: 'Success',
+      content: undefined
+    });
+
+    const { getByLabelText, getByRole } = render(
+      <HeroUIProvider disableRipple>
+        <List
+          startingList={JSON.stringify(
+            new ListModel(
+              'List name',
+              'Amber',
+              [],
+              [
+                new ListSection('List section name', [
+                  new ListItem('List item name', {
+                    expectedMs: 1000 * 60,
+                    id: 'item-id'
+                  })
+                ])
+              ],
+              true,
+              true,
+              true,
+              'list-id'
+            )
+          )}
+          startingTagsAvailable='[]'
+        />
+      </HeroUIProvider>
+    );
+
+    const popoverElement = getByRole('button', { name: 'Expected 00:01' });
+
+    await user.click(popoverElement);
+    await user.clear(getByLabelText('Expected Time'));
+    await user.type(getByLabelText('Expected Time'), '00:05{Enter}');
+
+    await waitFor(() =>
+      expect(api.patch).toHaveBeenCalledExactlyOnceWith(
+        '/item/item-id',
+        expect.objectContaining({
+          expectedMs: 1000 * 60 * 5
+        })
+      )
+    );
+
+    expect(popoverElement).toHaveAccessibleName('Expected 00:05');
+  });
+
+  test('Elapsed time goes to 00:00 when time is reset', async () => {
+    const user = userEvent.setup();
+
+    vi.mocked(api.patch).mockResolvedValue({
+      code: 200,
+      message: 'Success',
+      content: undefined
+    });
+
+    const { getByRole } = render(
+      <HeroUIProvider disableRipple>
+        <List
+          startingList={JSON.stringify(
+            new ListModel(
+              'List name',
+              'Amber',
+              [],
+              [
+                new ListSection('List section name', [
+                  new ListItem('List item name', {
+                    status: 'Paused',
+                    elapsedMs: 1000 * 60 * 5,
+                    id: 'item-id'
+                  })
+                ])
+              ],
+              true,
+              true,
+              true,
+              'list-id'
+            )
+          )}
+          startingTagsAvailable='[]'
+        />
+      </HeroUIProvider>
+    );
+
+    const popoverElement = getByRole('button', { name: 'Elapsed 00:05' });
+
+    await user.click(popoverElement);
+    await user.click(getByRole('button', { name: 'Reset' }));
+
+    await waitFor(() =>
+      expect(api.patch).toHaveBeenCalledExactlyOnceWith(
+        '/item/item-id',
+        expect.objectContaining({
+          status: 'Unstarted',
+          elapsedMs: 0
+        })
+      )
+    );
+
+    expect(popoverElement).toHaveAccessibleName('Elapsed 00:00');
   });
 
   test('Item can be deleted', async () => {

@@ -148,10 +148,12 @@ export default function ListItem({
     },
 
     resetTime: () => {
-      const status = item.status === 'Completed' ? 'Completed' : 'Unstarted';
-
       api
-        .patch(`/item/${item.id}`, { dateStarted: null, status, elapsedMs: 0 })
+        .patch(`/item/${item.id}`, {
+          dateStarted: null,
+          status: 'Unstarted',
+          elapsedMs: 0
+        })
         .then(() => {
           _stopRunning();
 
@@ -162,8 +164,7 @@ export default function ListItem({
           dispatchItemChange({
             type: 'ResetItemTime',
             sectionId,
-            id: item.id,
-            status
+            id: item.id
           });
         })
         .catch(err => addToast({ title: err.message, color: 'danger' }));

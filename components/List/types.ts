@@ -88,12 +88,7 @@ export type ItemAction =
     }
   | { type: 'StartItemTime'; sectionId: string; id: string }
   | { type: 'PauseItemTime'; sectionId: string; id: string }
-  | {
-      type: 'ResetItemTime';
-      sectionId: string;
-      id: string;
-      status: Extract<ListItem['status'], 'Unstarted' | 'Completed'>;
-    }
+  | { type: 'ResetItemTime'; sectionId: string; id: string }
   | {
       type: 'LinkTagToItem';
       sectionId: string;

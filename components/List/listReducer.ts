@@ -154,7 +154,7 @@ export default function listReducer(
       break;
 
     case 'ResetItemTime':
-      getItem(newState, action.sectionId, action.id).status = action.status;
+      getItem(newState, action.sectionId, action.id).status = 'Unstarted';
       break;
 
     case 'LinkTagToItem': {
