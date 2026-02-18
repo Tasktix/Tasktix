@@ -207,6 +207,62 @@ describe('ListItem state propagation', () => {
     expect(getByText('List item name')).toHaveClass('line-through');
   });
 
+  test('Item marked completed when modal checkbox clicked', async () => {
+    const user = userEvent.setup();
+
+    vi.mocked(api.patch).mockResolvedValue({
+      code: 200,
+      message: 'Success',
+      content: undefined
+    });
+
+    const { getByLabelText, getByRole, getByText } = render(
+      <HeroUIProvider disableRipple>
+        <List
+          startingList={JSON.stringify(
+            new ListModel(
+              'List name',
+              'Amber',
+              [],
+              [
+                new ListSection('List section name', [
+                  new ListItem('List item name', {
+                    status: 'In_Progress',
+                    id: 'item-id'
+                  })
+                ])
+              ],
+              true,
+              true,
+              true,
+              'list-id'
+            )
+          )}
+          startingTagsAvailable='[]'
+        />
+      </HeroUIProvider>
+    );
+
+    await user.click(getByLabelText('More item info'));
+
+    expect(getByRole('checkbox')).not.toBeChecked();
+
+    await user.click(getByRole('checkbox'));
+
+    await waitFor(() =>
+      expect(api.patch).toHaveBeenCalledExactlyOnceWith(
+        '/item/item-id',
+        expect.objectContaining({
+          status: 'Completed',
+          dateStarted: null
+        })
+      )
+    );
+
+    expect(getByRole('checkbox')).toBeChecked();
+    expect(getByText('List item name')).toHaveClass('line-through');
+  });
+
   test('Item marked incomplete when checkbox clicked', async () => {
     const user = userEvent.setup();
 
@@ -262,6 +318,65 @@ describe('ListItem state propagation', () => {
 
     expect(getByRole('checkbox')).not.toBeChecked();
     expect(getByDisplayValue('List item name')).not.toHaveClass('line-through');
+  });
+
+  test('Item marked incomplete when modal checkbox clicked', async () => {
+    const user = userEvent.setup();
+
+    vi.mocked(api.patch).mockResolvedValue({
+      code: 200,
+      message: 'Success',
+      content: undefined
+    });
+
+    const { getAllByDisplayValue, getByLabelText, getByRole } = render(
+      <HeroUIProvider disableRipple>
+        <List
+          startingList={JSON.stringify(
+            new ListModel(
+              'List name',
+              'Amber',
+              [],
+              [
+                new ListSection('List section name', [
+                  new ListItem('List item name', {
+                    status: 'Completed',
+                    dateCompleted: new Date('2026-01-01'),
+                    id: 'item-id'
+                  })
+                ])
+              ],
+              true,
+              true,
+              true,
+              'list-id'
+            )
+          )}
+          startingTagsAvailable='[]'
+        />
+      </HeroUIProvider>
+    );
+
+    await user.click(getByLabelText('Expand section'));
+    await user.click(getByLabelText('More item info'));
+
+    expect(getByRole('checkbox')).toBeChecked();
+
+    await user.click(getByRole('checkbox'));
+
+    await waitFor(() =>
+      expect(api.patch).toHaveBeenCalledExactlyOnceWith(
+        '/item/item-id',
+        expect.objectContaining({
+          status: 'Paused',
+          dateCompleted: null
+        })
+      )
+    );
+
+    expect(getByRole('checkbox')).not.toBeChecked();
+    for (const nameInput of getAllByDisplayValue('List item name'))
+      expect(nameInput).not.toHaveClass('line-through');
   });
 
   test('Expected time changes when new value inputted', async () => {
