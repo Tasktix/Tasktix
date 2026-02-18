@@ -29,7 +29,7 @@ const MOCK_USER = new User(
   false,
   new Date(),
   new Date(),
-  'Amber'
+  {color: 'Amber'}
 );
 
 const today = new Date();
@@ -80,7 +80,7 @@ test('Returns false if no valid user session', async () => {
   expect(user).toBeFalsy();
 });
 
-test('Returns false if no valid database fetch fails', async () => {
+test('Returns false if database fetch fails', async () => {
   vi.mocked(auth.api.getSession).mockResolvedValue({
     session: MOCK_SESSION,
     user: MOCK_USER

@@ -136,7 +136,7 @@ export async function PATCH(
       const result = await updateUserColor(user);
 
       if (!result) {
-        return ServerError.Internal('Could not update user Color');
+        return ServerError.Internal('Could not update user color');
       }
     }
 

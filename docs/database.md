@@ -29,8 +29,8 @@ and apply it to your environment:
       database changes
 1. Run `npm run prisma:migrate`. This will create a new SQL migration file in the
    [migrations directory](../prisma/migrations/) to apply the changes
-      >[!NOTE]
-      > You will need to run prisma:migrate within the web docker container, then use `docker cp container:file-path local-path.` The CLI will warn you about dropping tables, but as long as you can see the `--create-only` flag, nothing will happen.
+> [!NOTE]
+> You will need to run `npm run prisma:migrate` within the web Docker container, then use `docker compose cp web:/app/path/to/file ./path/to/local/file`. The CLI will warn you about dropping tables, but as long as you can see the `--create-only` flag in the command preview, no database changes will actually be applied.
 1. Validate the generated SQL matches expected behavior
    - Renames may be implemented as `DROP` and `CREATE` statements by default. These should
      be edited by hand to avoid data loss when the migration is applied to the production

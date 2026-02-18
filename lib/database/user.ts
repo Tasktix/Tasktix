@@ -25,7 +25,7 @@ import { prisma } from './db_connect';
 /**
  * Updates a user Color in the database
  * Custom implementation necessary because BetterAuth doesn't provide API for modifying custom Fields
- * @param user
+ * @param user the user to update the color of. the new Color should be set on this User object
  */
 export async function updateUserColor(user: User): Promise<boolean> {
   const result = await prisma.user.update({
@@ -53,8 +53,7 @@ export async function getUserByUsername(
 /**
  * Returns a User object associated with email
  * Custom Implementation as querying an email is not supported by betterauth
- * @param email
- * @returns
+ * @param email The email to query for
  */
 export async function getUserByEmail(email: string): Promise<User | false> {
   const result = await prisma.user.findUnique({ where: { email } });

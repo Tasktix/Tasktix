@@ -30,7 +30,7 @@ const MOCK_USER = new User(
   false,
   new Date(),
   new Date(),
-  'Amber'
+  {color: 'Amber'}
 );
 const USER_PATH = `http://localhost/api/user/${MOCK_USER.id}` as const;
 
@@ -69,12 +69,17 @@ describe('PATCH', () => {
     );
 
     expect(response.status).toBe(200);
+    
     expect(auth.api.updateUser).toHaveBeenCalledTimes(1);
     expect(auth.api.updateUser).toHaveBeenCalledWith(
       expect.objectContaining({
         body: { name: 'new_name', username: 'new_name' }
-      })
+      })  
     );
+
+    expect(auth.api.changeEmail).not.toHaveBeenCalled();
+    expect(auth.api.changePassword).not.toHaveBeenCalled();
+    expect(updateUserColor).not.toHaveBeenCalled();
   });
 
   test('Allows email updates without altering other fields', async () => {
@@ -94,6 +99,10 @@ describe('PATCH', () => {
     expect(auth.api.changeEmail).toHaveBeenCalledWith(
       expect.objectContaining({ body: { newEmail: 'new_email@example.com' } })
     );
+
+    expect(auth.api.updateUser).not.toHaveBeenCalled()
+    expect(auth.api.changePassword).not.toHaveBeenCalled()
+    expect(updateUserColor).not.toHaveBeenCalled();
   });
 
   test('Allows color updates without altering other fields', async () => {
@@ -113,6 +122,10 @@ describe('PATCH', () => {
     expect(updateUserColor).toHaveBeenCalledWith(
       expect.objectContaining({ color: 'Red' })
     );
+    
+    expect(auth.api.updateUser).not.toHaveBeenCalled()
+    expect(auth.api.changeEmail).not.toHaveBeenCalled()
+    expect(auth.api.changePassword).not.toHaveBeenCalled()
   });
 
   test('Provides warning if color update fails', async () => {
@@ -133,7 +146,7 @@ describe('PATCH', () => {
       expect.objectContaining({ color: 'Red' })
     );
     expect(await response.json()).toEqual({
-      message: 'Could not update user Color'
+      message: 'Could not update user color'
     });
   });
 
@@ -262,7 +275,13 @@ describe('PATCH', () => {
     );
 
     expect(response.status).toBe(200);
-    expect(auth.api.changePassword).toHaveBeenCalled();
+    expect(auth.api.changePassword).toHaveBeenCalledWith(expect.objectContaining({
+      body: {
+          newPassword: "new_password",
+          currentPassword: "old_password",
+          revokeOtherSessions: true
+        }
+    }));
     expect(await response.json()).toEqual({ message: 'User updated' });
   });
 
@@ -302,7 +321,6 @@ describe('PATCH', () => {
 
   test('Rejects invalid email updates', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
-    expect(auth.api.changeEmail).not.toHaveBeenCalled();
 
     const response = await PATCH(
       new Request(USER_PATH, {

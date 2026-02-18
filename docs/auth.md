@@ -1,6 +1,6 @@
 # Authentication and Authorization
 
-The Tasktix project uses [Better-Auth](https://www.better-auth.com/) to provide authentication services for the application. BetterAuth was chosen over supabase or other alternatives because our database was setup as mysql, and additionaly migrating to postgres was deemed unnecessary. Better-Auth natively supports oauth and two factor which are left as future updates.   
+The Tasktix project uses [Better-Auth](https://www.better-auth.com/) to provide authentication services for the application. Better-Auth was chosen over Supabase or other alternatives because our database was setup as MySQL, and additionaly migrating to Postgres was deemed unnecessary. Better-Auth natively supports OAuth and two factor which are left as future updates.   
 
 >[!CAUTION]
 > Pulling up a previous Tasktix version to adopt Better-Auth includes breaking database changes, and will result in loss of User Accounts. This can be manually remediated by peforming the steps in the Database Updates section.
@@ -17,7 +17,7 @@ The `BETTER_AUTH_SECRET` variable should be set to any random token of a minimum
 The BETTER_AUTH_URL is the base URL of the application (e.g. http://localhost:3000)
 
 ## Client Side
-The client side auth objects are defined in `@lib/auth-client.ts` and can be used by any front-end page by by importing the `AuthClient` object. Its methods function as wrappers of API requests to `/api/auth/[..]` endpoints, and it's responses can be handdled in `onError` and `onSuccess` callbacks.
+The client side auth objects are defined in `@lib/auth-client.ts` and can be used by any front-end page by by importing the `AuthClient` object. Its methods function as wrappers of API requests to `/api/auth/[..]` endpoints, and its responses can be handled in `onError` and `onSuccess` callbacks.
 
 For example, to sign a user in: 
 ```ts
@@ -54,7 +54,7 @@ While it is possible to manually update Usernames, emails, etc. through handcraf
 ## Database Updates
 The required schema for BetterAuth can be found [here](https://www.better-auth.com/docs/concepts/database#core-schema). To add login by username, it is required to extend that schema as described [here](https://www.better-auth.com/docs/plugins/username#schema). .
 
-This results in the `User` table having the fields `name`, `username`, and `displayUsername`. For our circumstances, whenever creating/updating a username, you should be sure to update both `name` and `username` to prevent them getting out of sync. In general, consider the `username` field the source of truth. Note that the auth.api.isUsernameAvailable` only checks the `username` column. 
+This results in the `User` table having the fields `name`, `username`, and `displayUsername`. For our circumstances, whenever creating/updating a username, you should be sure to update both `name` and `username` to prevent them getting out of sync. In general, consider the `username` field the source of truth. Note that the `auth.api.isUsernameAvailable` only checks the `username` column. 
 
 `displayUsername` need never be considered/provided. Unless it is manually reconfigured, it will always be in sync with `username`.
 
