@@ -37,7 +37,7 @@ import { addToastForError } from '@/lib/error';
  * @param user A JSON string that contains the current user data
  */
 export default function UserProperties({ user }: { user: string }) {
-  const userDetails: User = JSON.parse(user);
+  const userDetails = JSON.parse(user) as User;
 
   /**
    * Sets the user's username
