@@ -26,20 +26,20 @@ import { formatTime } from '@/lib/date';
 /**
  * A time picker that allows for arbitrary time input in HHH:MM format (i.e. there is no
  * upper bound on times that can be selected; this input gathers total time, not time of
- * day). Built on a HeroUI <Input /> component
+ * day). Built on a HeroUI `<Input />` component
  *
  * @param value If specified, value to display in input (making it controlled)
  * @param defaultValue The initial value to use if uncontrolled
  * @param onValueChange If specified, callback to control the input
- * @param label The <Input /> component's label
- * @param labelPlacement The <Input /> component's label position
- * @param variant  The <Input /> component variant to use
- * @param color The <Input /> component's color
- * @param size The <Input /> component's size
- * @param autoFocus Whether the <Input /> component should be auto-focused
- * @param tabIndex The <Input /> component's tab index
- * @param className Classes to apply to the <Input /> component
- * @param classNames Classes to apply to slots in the <Input /> component
+ * @param label The `<Input />` component's label
+ * @param labelPlacement The `<Input />` component's label position
+ * @param variant  The `<Input />` component variant to use
+ * @param color The `<Input />` component's color
+ * @param size The `<Input />` component's size
+ * @param autoFocus Whether the `<Input />` component should be auto-focused
+ * @param tabIndex The `<Input />` component's tab index
+ * @param className Classes to apply to the `<Input />` component
+ * @param classNames Classes to apply to slots in the `<Input />` component
  */
 export default function TimeInput({
   value,

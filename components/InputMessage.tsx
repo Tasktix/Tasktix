@@ -22,7 +22,7 @@ export interface InputMessage {
 }
 
 /**
- * Displays a message with a specific color. Intended for use in HeroUI <Input />
+ * Displays a message with a specific color. Intended for use in HeroUI `<Input />`
  * components' message field to allow for a broader range of messages to be displayed, not
  * just error messages.
  *
