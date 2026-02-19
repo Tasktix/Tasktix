@@ -89,19 +89,26 @@ describe('get', () => {
   });
 
   // Test broken by JSDom upgrade for latest Vitest version: https://github.com/jsdom/jsdom/issues/3492
-  test.skip('Redirects to /signIn when response code is 403 and reject with server response', async () => {
-    const fakeResponse = createFetchResponse(403, 'Server error message', null);
+  test.todo(
+    'Redirects to /signIn when response code is 403 and reject with server response',
+    async () => {
+      const fakeResponse = createFetchResponse(
+        403,
+        'Server error message',
+        null
+      );
 
-    vi.mocked(globalThis.fetch).mockResolvedValue(fakeResponse);
+      vi.mocked(globalThis.fetch).mockResolvedValue(fakeResponse);
 
-    await expect(api.get('/resource')).rejects.toEqual({
-      code: 403,
-      message: 'Server error message',
-      content: null
-    });
+      await expect(api.get('/resource')).rejects.toEqual({
+        code: 403,
+        message: 'Server error message',
+        content: null
+      });
 
-    expect(window.location.href).toBe('/signIn');
-  });
+      expect(window.location.href).toBe('/signIn');
+    }
+  );
 
   test('Rejects for error responses with HTTP status codes >= 400 (other than 403)', async () => {
     const fakeResponse = createFetchResponse(500, 'Server error message', null);
@@ -202,19 +209,26 @@ describe('post', () => {
     );
   });
 
-  test.skip('Redirects to /signIn when response code is 403 and reject with server response', async () => {
-    const fakeResponse = createFetchResponse(403, 'Server error message', null);
+  test.todo(
+    'Redirects to /signIn when response code is 403 and reject with server response',
+    async () => {
+      const fakeResponse = createFetchResponse(
+        403,
+        'Server error message',
+        null
+      );
 
-    vi.mocked(globalThis.fetch).mockResolvedValue(fakeResponse);
+      vi.mocked(globalThis.fetch).mockResolvedValue(fakeResponse);
 
-    await expect(api.post('/resource', {})).rejects.toEqual({
-      code: 403,
-      message: 'Server error message',
-      content: null
-    });
+      await expect(api.post('/resource', {})).rejects.toEqual({
+        code: 403,
+        message: 'Server error message',
+        content: null
+      });
 
-    expect(window.location.href).toBe('/signIn');
-  });
+      expect(window.location.href).toBe('/signIn');
+    }
+  );
 
   test('Rejects for error responses with HTTP status codes >= 400 (other than 403)', async () => {
     const fakeResponse = createFetchResponse(500, 'Server error message', null);
@@ -305,19 +319,26 @@ describe('put', () => {
     await expect(api.put('/resource', {})).rejects.toThrow('Exception message');
   });
 
-  test.skip('Redirects to /signIn when response code is 403 and reject with server response', async () => {
-    const fakeResponse = createFetchResponse(403, 'Server error message', null);
+  test.todo(
+    'Redirects to /signIn when response code is 403 and reject with server response',
+    async () => {
+      const fakeResponse = createFetchResponse(
+        403,
+        'Server error message',
+        null
+      );
 
-    vi.mocked(globalThis.fetch).mockResolvedValue(fakeResponse);
+      vi.mocked(globalThis.fetch).mockResolvedValue(fakeResponse);
 
-    await expect(api.put('/resource', {})).rejects.toEqual({
-      code: 403,
-      message: 'Server error message',
-      content: null
-    });
+      await expect(api.put('/resource', {})).rejects.toEqual({
+        code: 403,
+        message: 'Server error message',
+        content: null
+      });
 
-    expect(window.location.href).toBe('/signIn');
-  });
+      expect(window.location.href).toBe('/signIn');
+    }
+  );
 
   test('Rejects for error responses with HTTP status codes >= 400 (other than 403)', async () => {
     const fakeResponse = createFetchResponse(500, 'Server error message', null);
@@ -410,19 +431,26 @@ describe('patch', () => {
     );
   });
 
-  test.skip('Redirects to /signIn when response code is 403 and reject with server response', async () => {
-    const fakeResponse = createFetchResponse(403, 'Server error message', null);
+  test.todo(
+    'Redirects to /signIn when response code is 403 and reject with server response',
+    async () => {
+      const fakeResponse = createFetchResponse(
+        403,
+        'Server error message',
+        null
+      );
 
-    vi.mocked(globalThis.fetch).mockResolvedValue(fakeResponse);
+      vi.mocked(globalThis.fetch).mockResolvedValue(fakeResponse);
 
-    await expect(api.patch('/resource', {})).rejects.toEqual({
-      code: 403,
-      message: 'Server error message',
-      content: null
-    });
+      await expect(api.patch('/resource', {})).rejects.toEqual({
+        code: 403,
+        message: 'Server error message',
+        content: null
+      });
 
-    expect(window.location.href).toBe('/signIn');
-  });
+      expect(window.location.href).toBe('/signIn');
+    }
+  );
 
   test('Rejects for error responses with HTTP status codes >= 400 (other than 403)', async () => {
     const fakeResponse = createFetchResponse(500, 'Server error message', null);
@@ -483,19 +511,26 @@ describe('delete', () => {
     await expect(api.delete('/resource')).rejects.toThrow('Exception message');
   });
 
-  test.skip('Redirects to /signIn when response code is 403 and reject with server response', async () => {
-    const fakeResponse = createFetchResponse(403, 'Server error message', null);
+  test.todo(
+    'Redirects to /signIn when response code is 403 and reject with server response',
+    async () => {
+      const fakeResponse = createFetchResponse(
+        403,
+        'Server error message',
+        null
+      );
 
-    vi.mocked(globalThis.fetch).mockResolvedValue(fakeResponse);
+      vi.mocked(globalThis.fetch).mockResolvedValue(fakeResponse);
 
-    await expect(api.delete('/resource')).rejects.toEqual({
-      code: 403,
-      message: 'Server error message',
-      content: null
-    });
+      await expect(api.delete('/resource')).rejects.toEqual({
+        code: 403,
+        message: 'Server error message',
+        content: null
+      });
 
-    expect(window.location.href).toBe('/signIn');
-  });
+      expect(window.location.href).toBe('/signIn');
+    }
+  );
 
   test('Rejects for error responses with HTTP status codes >= 400 (other than 403)', async () => {
     const fakeResponse = createFetchResponse(500, 'Server error message', null);
