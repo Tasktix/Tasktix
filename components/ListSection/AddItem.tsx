@@ -17,7 +17,6 @@
  */
 
 import {
-  addToast,
   Button,
   Input,
   Modal,
@@ -36,6 +35,7 @@ import { Check, Plus } from 'react-bootstrap-icons';
 import { default as api } from '@/lib/api';
 import ListItem from '@/lib/model/listItem';
 import { getBorderColor, getPriorityColor } from '@/lib/color';
+import { addToastForError } from '@/lib/error';
 
 import TimeInput from '../TimeInput';
 import DateInput2 from '../DateInput2';
@@ -186,7 +186,7 @@ export default function AddItem({
 
         setIsSliderOpen(false);
       })
-      .catch(err => addToast({ title: err.message, color: 'danger' }));
+      .catch(addToastForError);
   }
 
   return (

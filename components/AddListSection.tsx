@@ -18,11 +18,12 @@
 
 'use client';
 
-import { addToast, Button, Input } from '@heroui/react';
+import { Button, Input } from '@heroui/react';
 import { FormEvent, useState } from 'react';
 
 import api from '@/lib/api';
 import ListSection from '@/lib/model/listSection';
+import { addToastForError } from '@/lib/error';
 
 /**
  * An input for creating a new section & assigning it a name, designed to match the style
@@ -51,7 +52,7 @@ export default function AddListSection({
         onSectionAdded(new ListSection(name, [], id));
         setName('');
       })
-      .catch(err => addToast({ title: err.message, color: 'danger' }));
+      .catch(addToastForError);
   }
 
   return (
