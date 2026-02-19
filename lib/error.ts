@@ -18,6 +18,12 @@
 
 import { addToast } from '@heroui/react';
 
+/**
+ * Adds a toast message to the user with the error message received by the application
+ *
+ * @param error The error to add a toast for. `unknown` type because `.catch()` blocks'
+ *  callback argument is `any` type
+ */
 export function addToastForError(error: unknown) {
   let title = 'An unknown error occurred';
 
