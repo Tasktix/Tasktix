@@ -51,7 +51,7 @@ export function addClient(
   controller: ReadableStreamDefaultController,
   lists: string[]
 ): symbol {
-  const id = Symbol();
+  const id = Symbol('controller');
 
   for (const listId of lists) {
     console.log(clients);

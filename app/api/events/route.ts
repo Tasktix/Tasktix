@@ -25,20 +25,22 @@ export const runtime = 'nodejs';
 
 /**
  * API endpoint for subscribing to list state update events from clients.
- * Should be accessed using the SSE client like this:
- * ```ts
- * import { subscribe } from '@/lib/sse/client';
- * ...
- *   useEffect(() => subscribe(dispatchList), [dispatchList]);
- * ```
  *
  * @param req The client's request
  * @param req.list The ID of lists to subscribe to state update events on (this parameter
  *  can be specified more than 1 time given)
  * @returns A response stream that will include every event until the client disconnects
+ *
+ * @example
+ * // Should be accessed using the SSE client; something like this:
+ * import { subscribe } from '@/lib/sse/client';
+ * ...
+ *   useEffect(() => subscribe([list.id], dispatchList), [list.id]);
  */
 export function GET(req: NextRequest) {
   const lists = req.nextUrl.searchParams.getAll('list');
+
+  // TODO: Validate that the user has permission to subscribe to updates on each list
 
   const stream = new ReadableStream({
     start(controller) {

@@ -20,6 +20,21 @@ import { addToast, closeToast } from '@heroui/react';
 
 import { ListAction } from '@/components/List/types';
 
+/**
+ * Subscribes to Server-Sent Events for updates to the given lists' state, calling the
+ * given callback whenever an event is received
+ *
+ * @param lists IDs of the lists to subscribe to for updates
+ * @param onEvent Callback to handle received events (e.g. to update local state to match
+ *  changes made by other users)
+ * @returns A cleanup function to unsubscribe from updates
+ *
+ * @example
+ * // Can be used to update state until the component unmounts like this:
+ * import { subscribe } from '@/lib/sse/client';
+ * ...
+ *   useEffect(() => subscribe([list.id], dispatchList), [list.id]);
+ */
 export function subscribe(
   lists: string[],
   onEvent: (event: ListAction) => unknown
@@ -33,7 +48,7 @@ export function subscribe(
    */
   let expectClose = false;
   let hasOpened = false;
-  const setState = stateFactory();
+  const setState = pendingFactory();
 
   es.onopen = () => {
     if (hasOpened)
@@ -71,16 +86,31 @@ export function subscribe(
   };
 }
 
-function stateFactory() {
-  let resolve: ((v?: unknown) => void) | undefined = undefined;
+/**
+ * Tracks the pending state for a promise and toast that can be cleaned up and replaced
+ * with a new pending state via the returned function
+ *
+ * @returns A function that cleans up pending state (i.e. resolves the promise and clears
+ *  the toast) and sets a new pending state
+ */
+function pendingFactory() {
+  let resolve: ((v?: unknown) => void) | undefined;
   let toast: string | null = null;
 
+  /**
+   * Resolves the promise if a resolving function is set, then clears the resolving
+   * function
+   */
   const tryResolve = () => {
     if (resolve) {
       resolve();
       resolve = undefined;
     }
   };
+
+  /**
+   * Closes the toast if there is a saved ID for one, then clears the ID
+   */
   const tryCloseToast = () => {
     if (toast) {
       closeToast(toast);

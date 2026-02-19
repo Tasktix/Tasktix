@@ -29,6 +29,17 @@ import { broadcastEvent } from '@/lib/sse/server';
 
 const PatchBody = ZodList.omit({ id: true }).partial();
 
+/**
+ * Updates the specified parts of a list's metadata and triggers an SSE broadcast to
+ * clients subscribed to this list's changes
+ *
+ * @param params.id The list to modify
+ * @param request.name [optional] The new list name
+ * @param request.color [optional] The new list color
+ * @param request.hasTimeTracking [optional] Whether the list now has time tracking
+ * @param request.hasDueDates [optional] Whether the list now has due dates
+ * @param request.isAutoOrdered [optional] Whether the list is now auto-ordered
+ */
 export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -89,6 +100,11 @@ export async function PATCH(
   return Success.OK('List updated');
 }
 
+/**
+ * Deletes the given list and all associated data
+ *
+ * @param params.id The list to delete
+ */
 export async function DELETE(
   _: Request,
   { params }: { params: Promise<{ id: string }> }
