@@ -25,6 +25,7 @@ import {
 } from '@/lib/database/list';
 import { ZodList } from '@/lib/model/list';
 import { getUser } from '@/lib/session';
+import { broadcastEvent } from '@/lib/sse/server';
 
 const PatchBody = ZodList.omit({ id: true }).partial();
 
@@ -64,6 +65,26 @@ export async function PATCH(
   const result = await updateList(list);
 
   if (!result) return ServerError.Internal('Could not update list');
+
+  if (requestBody.name)
+    broadcastEvent(list.id, { type: 'SetListName', name: list.name });
+  if (requestBody.hasTimeTracking !== undefined)
+    broadcastEvent(list.id, {
+      type: 'SetHasTimeTracking',
+      hasTimeTracking: list.hasTimeTracking
+    });
+  if (requestBody.hasDueDates !== undefined)
+    broadcastEvent(list.id, {
+      type: 'SetHasDueDates',
+      hasDueDates: list.hasDueDates
+    });
+  if (requestBody.isAutoOrdered !== undefined)
+    broadcastEvent(list.id, {
+      type: 'SetIsAutoOrdered',
+      isAutoOrdered: list.isAutoOrdered
+    });
+  if (requestBody.color)
+    broadcastEvent(list.id, { type: 'SetListColor', color: list.color });
 
   return Success.OK('List updated');
 }
