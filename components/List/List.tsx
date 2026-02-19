@@ -116,10 +116,10 @@ export default function List({
       ))}
 
       <AddListSection
-        addListSection={section =>
+        listId={list.id}
+        onSectionAdded={section =>
           dispatchList({ type: 'AddSection', section })
         }
-        listId={list.id}
       />
     </>
   );

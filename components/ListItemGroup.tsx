@@ -29,6 +29,22 @@ import ListMember from '@/lib/model/listMember';
 import { NamedColor } from '@/lib/model/color';
 import List from '@/lib/model/list';
 
+/**
+ * An alternative container than `<List />` for displaying a collection of list items.
+ * Unlike `<List />`, this component allows items from multiple different lists to be
+ * displayed. Intended for use with the "Today" view and potentially custom views that
+ * highlight items from several different lists.
+ *
+ * @param startingLists The lists that items might belong to, JSON-stringified
+ * @param startingItems The initial state of items to display, JSON-stringified. Items may
+ *  be interacted with and their state may change from this point
+ * @param startingTags The initial tags that each list has, JSON-stringified. Object where
+ *  keys are list IDs and values are an array of tags belonging to that list. Tags may be
+ *  created on a list to change state from this point
+ * @param members The members each list has, JSON-stringified. Object where keys are list
+ *  IDs and values are an array of members of that list.
+ * @param alternate The fallback text to display if there are no items to render
+ */
 export default function ListItemGroup({
   startingLists,
   startingItems,
@@ -42,8 +58,8 @@ export default function ListItemGroup({
   members: string;
   alternate: string;
 }) {
-  const builtLists: List[] = JSON.parse(startingLists) || [];
-  const builtItems: ListItemModel[] = JSON.parse(startingItems) || [];
+  const builtLists = (JSON.parse(startingLists) as List[]) || [];
+  const builtItems = (JSON.parse(startingItems) as ListItemModel[]) || [];
 
   for (const item of builtItems) {
     item.dateCreated = new Date(item.dateCreated);
@@ -55,10 +71,10 @@ export default function ListItemGroup({
   }
 
   const [items, setItems] = useState<ListItemModel[]>(builtItems);
-  const [tags, setTags] = useState<{ [id: string]: Tag[] }>(
-    JSON.parse(startingTags)
+  const [tags, setTags] = useState(
+    JSON.parse(startingTags) as { [id: string]: Tag[] }
   );
-  const parsedMembers: { [id: string]: ListMember[] } = JSON.parse(members);
+  const parsedMembers = JSON.parse(members) as { [id: string]: ListMember[] };
 
   function setStatus(
     index: number,

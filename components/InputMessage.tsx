@@ -21,6 +21,14 @@ export interface InputMessage {
   color: 'default' | 'success' | 'warning' | 'danger';
 }
 
+/**
+ * Displays a message with a specific color. Intended for use in HeroUI <Input />
+ * components' message field to allow for a broader range of messages to be displayed, not
+ * just error messages.
+ *
+ * @param data.message The message to display
+ * @param data.color The semantic color to display the message with
+ */
 export default function Message({ data }: { data: InputMessage }) {
   return <span className={`text-${data.color}`}>{data.message}</span>;
 }
