@@ -16,40 +16,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-'use server';
+import type { auth } from './auth';
 
-import Session from '@/lib/model/session';
+import { createAuthClient } from 'better-auth/react';
+import {
+  inferAdditionalFields,
+  usernameClient
+} from 'better-auth/client/plugins';
 
-import { prisma } from './db_connect';
-
-export async function createSession(session: Session): Promise<boolean> {
-  try {
-    await prisma.session.create({
-      data: {
-        id: session.id,
-        userId: session.userId,
-        dateExpire: session.dateExpire
-      }
-    });
-  } catch {
-    return false;
-  }
-
-  return true;
-}
-
-export async function getSessionById(id: string): Promise<Session | false> {
-  const result = await prisma.session.findUnique({ where: { id } });
-
-  return result ?? false;
-}
-
-export async function deleteSession(id: string): Promise<boolean> {
-  try {
-    await prisma.session.delete({ where: { id } });
-  } catch {
-    return false;
-  }
-
-  return true;
-}
+// authClient functionality is tested where used - skipcq: TCV-001
+export const authClient = createAuthClient({
+  plugins: [usernameClient(), inferAdditionalFields<typeof auth>()]
+});

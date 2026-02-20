@@ -16,24 +16,35 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import z from 'zod';
+
 import { Success, ClientError, ServerError } from '@/lib/Response';
-import {
-  getUserByUsername,
-  getUserByEmail,
-  updateUser
-} from '@/lib/database/user';
+import { getUserByEmail, updateUserColor } from '@/lib/database/user';
 import { ZodUser } from '@/lib/model/user';
 import { getUser } from '@/lib/session';
+import { auth } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic'; // defaults to auto
 
-const PatchBody = ZodUser.omit({ id: true, password: true }).partial();
+const PatchBody = ZodUser.omit({ id: true })
+  .extend({
+    oldPassword: z.string().min(10).max(128),
+    newPassword: z.string().min(10).max(128)
+  })
+  .partial()
+  .refine(
+    user =>
+      (user.newPassword !== undefined && user.oldPassword !== undefined) ||
+      (user.newPassword === undefined && user.oldPassword === undefined)
+  );
 
 /**
- * Update a user's `username`, `email`, and/or `color`
+ * Update a user's `username`, `email`, `password` and/or `color`
  *
  * @param params.id The user to update (must match the logged-in user)
  * @param request.username The new username to use
+ * @param request.oldPassword The users current password
+ * @param request.newPassword The new password to use
  * @param request.email The new email address to use
  * @param request.color The new profile color to use
  */
@@ -57,9 +68,28 @@ export async function PATCH(
     const requestBody = parseResult.data;
 
     if (requestBody.username) {
-      if (await getUserByUsername(requestBody.username))
+      const res = await auth.api.isUsernameAvailable({
+        body: {
+          username: requestBody.username
+        },
+        headers: request.headers
+      });
+
+      if (!res.available) {
         return ClientError.BadRequest('Username unavailable');
-      user.username = requestBody.username;
+      }
+
+      const result = await auth.api.updateUser({
+        body: {
+          name: requestBody.username,
+          username: requestBody.username
+        },
+        headers: request.headers
+      });
+
+      if (!result.status) {
+        return ServerError.Internal('Failed to update username');
+      }
     }
 
     if (requestBody.email) {
@@ -67,17 +97,53 @@ export async function PATCH(
         return ClientError.BadRequest(
           'Another account already uses this email'
         );
-      user.email = requestBody.email;
+      const result = await auth.api.changeEmail({
+        body: {
+          newEmail: requestBody.email
+        },
+        headers: request.headers
+      });
+
+      if (!result.status) {
+        return ServerError.Internal('Failed to update email');
+      }
+    }
+    if (requestBody.newPassword && requestBody.oldPassword) {
+      const allowed = await auth.api.verifyPassword({
+        body: { password: requestBody.oldPassword },
+        headers: request.headers
+      });
+
+      if (!allowed.status) {
+        return ClientError.BadRequest('Incorrect Password');
+      }
+      const result = await auth.api.changePassword({
+        body: {
+          newPassword: requestBody.newPassword,
+          currentPassword: requestBody.oldPassword,
+          revokeOtherSessions: true
+        },
+        headers: request.headers
+      });
+
+      if (!result.token) {
+        return ServerError.Internal('Failed to update password');
+      }
     }
 
-    if (requestBody.color) user.color = requestBody.color;
+    if (requestBody.color) {
+      user.color = requestBody.color;
+      const result = await updateUserColor(user);
 
-    const result = await updateUser(user);
-
-    if (!result) return ServerError.Internal('Could not update user');
+      if (!result) {
+        return ServerError.Internal('Could not update user color');
+      }
+    }
 
     return Success.OK('User updated');
   } catch (error: unknown) {
-    return ServerError.Internal(error?.toString() ?? 'Internal Server Error');
+    console.log(error?.toString());
+
+    return ServerError.Internal('Internal Server Error');
   }
 }
