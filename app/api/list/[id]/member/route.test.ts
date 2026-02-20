@@ -30,7 +30,7 @@ const MOCK_USER = new User(
   false,
   new Date(),
   new Date(),
-  'Amber'
+  { color: 'Amber' }
 );
 const MOCK_NEW_USER = new User(
   'abcdefg',
@@ -39,7 +39,7 @@ const MOCK_NEW_USER = new User(
   false,
   new Date(),
   new Date(),
-  'Amber'
+  { color: 'Amber' }
 );
 
 const MEMBER_PATH = 'http://localhost/api/list/some-list-id/member' as const;

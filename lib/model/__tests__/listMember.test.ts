@@ -22,9 +22,10 @@ import User from '../user';
 test('Defaults all permissions to not granted', () => {
   const listMember = new ListMember(
     new User(
+      'userId',
       'testListMember',
       'test@example.com',
-      'secret',
+      true,
       new Date(),
       new Date(),
       {}
@@ -39,9 +40,10 @@ test('Defaults all permissions to not granted', () => {
 
 test('Assigns all properties correctly', () => {
   const user = new User(
+    'userId',
     'testListMember',
     'test@example.com',
-    'secret',
+    true,
     new Date(),
     new Date(),
     {}

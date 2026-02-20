@@ -114,7 +114,7 @@ export default function TagSettings({
           </span>
         ))}
       </span>
-      <TagInput addNewTag={addNewTag} />
+      <TagInput onTagCreated={addNewTag} />
     </>
   );
 }
