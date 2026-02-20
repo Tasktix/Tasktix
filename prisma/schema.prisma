@@ -22,7 +22,7 @@ model List {
 
 model ListSection {
   id     String @id @db.Char(16)
-  listId String
+  listId String @db.Char(16)
   name   String @db.VarChar(64)
   items  Item[]
   list   List   @relation(fields: [listId], references: [id], onDelete: Cascade)
@@ -38,8 +38,8 @@ model Item {
   isUnclear     Boolean        @default(false)
   expectedMs    Int?
   elapsedMs     Int            @default(0)
-  parentId      String?
-  sectionId     String
+  parentId      String?        @db.Char(16)
+  sectionId     String         @db.Char(16)
   sectionIndex  Int            @default(0)
   dateCreated   DateTime       @default(now()) @db.DateTime(0)
   dateDue       DateTime?      @db.DateTime(0)
@@ -60,7 +60,7 @@ model Tag {
   id     String @id @db.Char(16)
   name   String @db.VarChar(32)
   color  Color
-  listId String
+  listId String @db.Char(16)
   list   List   @relation(fields: [listId], references: [id], onDelete: Cascade)
   items  Item[] @relation("ItemToTag")
 
@@ -68,8 +68,8 @@ model Tag {
 }
 
 model ListMember {
-  userId      String
-  listId      String
+  userId      String  @db.VarChar(191)
+  listId      String  @db.Char(16)
   canAdd      Boolean @default(false)
   canRemove   Boolean @default(false)
   canComplete Boolean @default(false)
@@ -82,8 +82,8 @@ model ListMember {
 }
 
 model ItemAssignee {
-  userId String
-  itemId String
+  userId String @db.VarChar(191)
+  itemId String @db.Char(16)
   role   String @db.VarChar(64)
   item   Item   @relation(fields: [itemId], references: [id], onDelete: Cascade)
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
