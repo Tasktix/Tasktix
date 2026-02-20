@@ -37,7 +37,10 @@ these:
 Pod=tasktix.pod
 Image=ghcr.io/tasktix/tasktix-web
 
+Environment=BETTER_AUTH_URL=https://tasktix.com
+
 Secret=TASKTIX_DATABASE_URL,type=env,target=DATABASE_URL
+Secret=TASKTIX_BETTER_AUTH_SECRET,type=env,target=BETTER_AUTH_SECRET
 
 [Service]
 Restart=unless-stopped
@@ -93,6 +96,7 @@ foo@bar:~$ read
 <your-root-password-here>
 foo@bar:~$ echo "$REPLY" | podman secret create TASKTIX_DB_PASSWORD -
 foo@bar:~$ unset $REPLY
+foo@bar:~$ openssl rand -base64 32 | podman secret create TASKTIX_BETTER_AUTH_SECRET -
 foo@bar:~$ systemctl --user daemon-reload
 foo@bar:~$ systemctl --user start tasktix-pod
 foo@bar:~$ podman run --rm --pod tasktix --secret "TASKTIX_DATABASE_URL,type=env,target=DATABASE_URL" ghcr.io/tasktix/tasktix-deploy:latest
