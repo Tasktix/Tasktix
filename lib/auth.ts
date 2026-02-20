@@ -75,10 +75,13 @@ export const auth = betterAuth({
   socialProviders: {},
   plugins: [
     username(),
-    ...(process.env.ENABLE_PASSWORD_STRENGTH_CHECK === 'true' ? [
-      haveIBeenPwned({
-        customPasswordCompromisedMessage: 'Please choose a more secure password'
-      })
-    ] : [])
+    ...(process.env.ENABLE_PASSWORD_STRENGTH_CHECK === 'true'
+      ? [
+          haveIBeenPwned({
+            customPasswordCompromisedMessage:
+              'Please choose a more secure password'
+          })
+        ]
+      : [])
   ]
 });

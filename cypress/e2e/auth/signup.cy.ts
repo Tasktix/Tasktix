@@ -51,7 +51,9 @@ describe('Sign up', () => {
     cy.get('[data-toast="true"]')
       .should('be.visible')
       .within(() => {
-        cy.contains('Please choose a more secure password').should('be.visible');
+        cy.contains('Please choose a more secure password').should(
+          'be.visible'
+        );
       });
-  })
+  });
 });
