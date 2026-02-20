@@ -16,13 +16,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { addToast, Button, Checkbox, Input, User } from '@heroui/react';
+import { Button, Checkbox, Input, User } from '@heroui/react';
 import { SendPlus } from 'react-bootstrap-icons';
 import { FormEvent, useState } from 'react';
 
 import { getBackgroundColor } from '@/lib/color';
 import ListMember from '@/lib/model/listMember';
 import api from '@/lib/api';
+import { addToastForError } from '@/lib/error';
 
 /**
  * Displays all list members and their permissions. Allows adding new members and updating
@@ -59,7 +60,7 @@ export default function MemberSettings({
 
         setMembers([...members, listMember]);
       })
-      .catch(err => addToast({ title: err.message, color: 'danger' }));
+      .catch(addToastForError);
   }
 
   function handleUpdatePermissions(
@@ -88,7 +89,7 @@ export default function MemberSettings({
           )
         );
       })
-      .catch(err => addToast({ title: err.message, color: 'danger' }));
+      .catch(addToastForError);
   }
 
   return (

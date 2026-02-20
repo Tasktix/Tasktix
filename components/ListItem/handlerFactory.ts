@@ -24,6 +24,7 @@ import ListItem from '@/lib/model/listItem';
 import Tag from '@/lib/model/tag';
 import { NamedColor } from '@/lib/model/color';
 import { ItemAction } from '@/components/List';
+import { addToastForError } from '@/lib/error';
 
 /**
  * Produces all functions for interacting with a specific list item and its data. These
@@ -59,7 +60,7 @@ export function itemHandlerFactory(
       .then(() =>
         dispatchItemChange({ type: 'SetItemName', sectionId, id: itemId, name })
       )
-      .catch(err => addToast({ title: err.message, color: 'danger' }));
+      .catch(addToastForError);
   }
 
   /**
@@ -76,7 +77,7 @@ export function itemHandlerFactory(
           date
         });
       })
-      .catch(err => addToast({ title: err.message, color: 'danger' }));
+      .catch(addToastForError);
   }
 
   /**
@@ -93,7 +94,7 @@ export function itemHandlerFactory(
           priority
         });
       })
-      .catch(err => addToast({ title: err.message, color: 'danger' }));
+      .catch(addToastForError);
   }
 
   /**
@@ -109,7 +110,7 @@ export function itemHandlerFactory(
           id: itemId
         });
       })
-      .catch(err => addToast({ title: err.message, color: 'danger' }));
+      .catch(addToastForError);
   }
 
   /**
@@ -144,7 +145,7 @@ export function itemHandlerFactory(
           dateCompleted
         });
       })
-      .catch(err => addToast({ title: err.message, color: 'danger' }));
+      .catch(addToastForError);
   }
 
   /**
@@ -161,7 +162,7 @@ export function itemHandlerFactory(
           expectedMs
         });
       })
-      .catch(err => addToast({ title: err.message, color: 'danger' }));
+      .catch(addToastForError);
   }
 
   /**
@@ -181,7 +182,7 @@ export function itemHandlerFactory(
           tagsAvailable
         });
       })
-      .catch(err => addToast({ title: err.message, color: 'danger' }));
+      .catch(addToastForError);
   }
 
   /**
@@ -200,7 +201,7 @@ export function itemHandlerFactory(
           tagId: id
         })
       )
-      .catch(err => addToast({ title: err.message, color: 'danger' }));
+      .catch(addToastForError);
   }
 
   /**
@@ -230,7 +231,7 @@ export function itemHandlerFactory(
           tag: new Tag(name, color, id)
         });
       })
-      .catch(err => addToast({ title: err.message, color: 'danger' }));
+      .catch(addToastForError);
   }
 
   /**
@@ -245,7 +246,7 @@ export function itemHandlerFactory(
         // Let the user know we succeeded
         addToast({ title: res.message, color: 'success' });
       })
-      .catch(err => addToast({ title: err.message, color: 'danger' }));
+      .catch(addToastForError);
   }
 
   return {
