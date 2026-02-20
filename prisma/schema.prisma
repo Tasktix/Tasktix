@@ -96,7 +96,7 @@ model Account {
   id                    String    @id
   accountId             String    @db.Text
   providerId            String    @db.Text
-  userId                String
+  userId                String    @db.VarChar(191)
   accessToken           String?   @db.Text
   refreshToken          String?   @db.Text
   idToken               String?   @db.Text
@@ -119,7 +119,7 @@ model Session {
   updatedAt DateTime
   ipAddress String?  @db.Text
   userAgent String?  @db.Text
-  userId    String
+  userId    String   @db.VarChar(191)
   User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
