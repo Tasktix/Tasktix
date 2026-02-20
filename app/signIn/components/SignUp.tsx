@@ -105,7 +105,15 @@ export default function SignUp() {
         },
         {
           onError: ctx => {
-            addToast({ title: ctx.error.message, color: 'danger' });
+            if (ctx.error.code === 'PASSWORD_COMPROMISED') {
+              addToast({
+                title: 'Password Compromised',
+                description: ctx.error.message,
+                color: 'danger'
+              });
+            } else {
+              addToast({ title: ctx.error.message, color: 'danger' });
+            }
           },
           onSuccess: ctx => {
             setLoggedInUser(ctx.data.user);
