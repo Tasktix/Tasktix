@@ -116,7 +116,7 @@ export default function Users({
               <Avatar
                 key={assignee.user.id}
                 classNames={{ base: getBackgroundColor(assignee.user.color) }}
-                name={assignee.user.username ?? ''}
+                name={assignee.user.username ?? assignee.user.name}
                 size='sm'
                 {...(assignee.user.image && { src: assignee.user.image })}
               />
@@ -130,7 +130,7 @@ export default function Users({
             key={assignee.user.id}
             className={`${assignee.user.color ? getTextColor(assignee.user.color) : null} flex justify-between items-center w-full p-1.5`}
           >
-            {assignee.user.username}
+            {assignee.user.username ?? assignee.user.name}
             <Button
               isIconOnly
               className='rounded-lg w-8 h-8 min-w-8 min-h-8'
@@ -151,7 +151,7 @@ export default function Users({
               key={member.user.id}
               className={`${getTextColor(member.user.color)} flex justify-between items-center w-full p-1.5`}
             >
-              {member.user.username}
+              {member.user.username ?? member.user.name}
               <Button
                 isIconOnly
                 className='rounded-lg w-8 h-8 min-w-8 min-h-8'
