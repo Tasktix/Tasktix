@@ -19,7 +19,7 @@
 import { betterAuth, DBFieldType } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { PrismaClient } from '@prisma/client';
-import { username } from 'better-auth/plugins';
+import { haveIBeenPwned, username } from 'better-auth/plugins';
 
 import { namedColors } from './model/color';
 
@@ -73,5 +73,15 @@ export const auth = betterAuth({
   },
 
   socialProviders: {},
-  plugins: [username()]
+  plugins: [
+    username(),
+    ...(process.env.ENABLE_PASSWORD_STRENGTH_CHECK === 'true'
+      ? [
+          haveIBeenPwned({
+            customPasswordCompromisedMessage:
+              'Please choose a more secure password'
+          })
+        ]
+      : [])
+  ]
 });

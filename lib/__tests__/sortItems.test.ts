@@ -21,7 +21,8 @@ import ListItem from '@/lib/model/listItem';
 import {
   sortItems,
   sortItemsByCompleted,
-  sortItemsByIndex
+  sortItemsByIndex,
+  sortItemsByOrder
 } from '../sortItems';
 
 beforeAll(() => {
@@ -263,6 +264,72 @@ describe('sortItemsByIndex()', () => {
     const result = data.toSorted(sortItemsByIndex);
 
     expect(result).toMatchObject(expected);
+  });
+});
+
+describe('sortItemsByOrder', () => {
+  test('Items are sorted in ascending order by order value', () => {
+    const data = [
+      new ListItem('Some item', { id: 'item-2', sectionIndex: 2 }),
+      new ListItem('Some item', { id: 'item-1', sectionIndex: 1 })
+    ];
+    const order = new Map([
+      ['item-1', 1],
+      ['item-2', 2]
+    ]);
+
+    const expected = [
+      new ListItem('Some item', { id: 'item-1', sectionIndex: 1 }),
+      new ListItem('Some item', { id: 'item-2', sectionIndex: 2 })
+    ];
+
+    const result = data.toSorted(sortItemsByOrder.bind(null, order));
+
+    expect(result).toMatchObject(expected);
+  });
+
+  test('Items in ascending order are not reordered', () => {
+    const data = [
+      new ListItem('Some item', { id: 'item-1', sectionIndex: 1 }),
+      new ListItem('Some item', { id: 'item-2', sectionIndex: 2 })
+    ];
+    const order = new Map([
+      ['item-1', 1],
+      ['item-2', 2]
+    ]);
+
+    const expected = [
+      new ListItem('Some item', { id: 'item-1', sectionIndex: 1 }),
+      new ListItem('Some item', { id: 'item-2', sectionIndex: 2 })
+    ];
+
+    const result = data.toSorted(sortItemsByOrder.bind(null, order));
+
+    expect(result).toMatchObject(expected);
+  });
+
+  test('Throws an error if item a is not included in the order map', () => {
+    const data = [
+      new ListItem('Some item', { id: 'item-1', sectionIndex: 1 }),
+      new ListItem('Some item', { id: 'item-2', sectionIndex: 2 })
+    ];
+    const order = new Map([['item-2', 2]]);
+
+    expect(() => data.toSorted(sortItemsByOrder.bind(null, order))).toThrow(
+      'Cannot find index of item with ID item-1'
+    );
+  });
+
+  test('Throws an error if item b is not included in the order map', () => {
+    const data = [
+      new ListItem('Some item', { id: 'item-1', sectionIndex: 1 }),
+      new ListItem('Some item', { id: 'item-2', sectionIndex: 2 })
+    ];
+    const order = new Map([['item-1', 1]]);
+
+    expect(() => data.toSorted(sortItemsByOrder.bind(null, order))).toThrow(
+      'Cannot find index of item with ID item-2'
+    );
   });
 });
 

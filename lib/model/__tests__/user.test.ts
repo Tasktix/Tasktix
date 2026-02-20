@@ -37,9 +37,9 @@ afterEach(() => {
 
 test('Picks a color if none provided', () => {
   const user = new User(
+    'userId',
     'testUser',
     'test@example.com',
-    'secret',
     false,
     fixedCreatedAt,
     fixedUpdatedAt
@@ -51,9 +51,9 @@ test('Picks a color if none provided', () => {
 
 test('Uses the provided color', () => {
   const user = new User(
+    'userId',
     'testUser',
     'test@example.com',
-    'secret',
     false,
     fixedCreatedAt,
     fixedUpdatedAt,

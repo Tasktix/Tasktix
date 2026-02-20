@@ -29,7 +29,7 @@ import Tag from '@/lib/model/tag';
  * @param tagsAvailable All tags associated with the list
  */
 export function getFilterOptions(
-  list: List,
+  list: Omit<List, 'sections'>,
   tagsAvailable: Tag[]
 ): InputOptionGroup[] {
   const generalOptions: InputOption[] = [

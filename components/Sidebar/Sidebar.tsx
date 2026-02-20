@@ -32,6 +32,12 @@ import { randomNamedColor } from '@/lib/color';
 
 import { ListContext } from './listContext';
 
+/**
+ * Displays a sidebar with an entry for the "Today" view and an entry for each list the
+ * user has access to
+ *
+ * @param lists The lists the user has access to
+ */
 export default function Sidebar({ lists }: { lists: List[] }) {
   const [addingList, setAddingList] = useState(false);
   const router = useRouter();

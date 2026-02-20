@@ -94,7 +94,12 @@ export default function More({
 
   return (
     <>
-      <Button isIconOnly variant='ghost' onPress={onOpen}>
+      <Button
+        isIconOnly
+        aria-label='More item info'
+        variant='ghost'
+        onPress={onOpen}
+      >
         <ThreeDots />
       </Button>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
