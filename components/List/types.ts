@@ -17,11 +17,13 @@
  */
 
 import List from '@/lib/model/list';
+import ListItem from '@/lib/model/listItem';
 import ListSection from '@/lib/model/listSection';
 import Tag from '@/lib/model/tag';
 
 /**
- * Possible actions and the required data needed for the list reducer.
+ * Possible actions and the required data needed for updating a list with the list
+ * reducer.
  */
 export type ListAction =
   | { type: 'SetHasDueDates'; hasDueDates: List['hasDueDates'] }
@@ -32,10 +34,90 @@ export type ListAction =
   | { type: 'SetMembers'; members: List['members'] }
   | { type: 'AddTag'; tag: Tag }
   | { type: 'SetTagsAvailable'; tags: Tag[] }
-  | { type: 'AddSection'; section: ListSection }
+  | { type: 'AddSection'; section: ListSection };
+
+/**
+ * Possible actions and the required data needed for updating a list section with the the
+ * list reducer.
+ */
+export type SectionAction =
+  | { type: 'AddItemToSection'; sectionId: string; item: ListItem }
+  | {
+      type: 'ReorderItem';
+      sectionId: string;
+      oldIndex: number;
+      newIndex: number;
+    }
   | { type: 'DeleteSection'; id: string };
+
+/**
+ * Possible actions and the required data needed for updating a list item with the the
+ * list reducer.
+ */
+export type ItemAction =
+  | {
+      type: 'SetItemName';
+      sectionId: string;
+      id: string;
+      name: ListItem['name'];
+    }
+  | {
+      type: 'SetItemDueDate';
+      sectionId: string;
+      id: string;
+      date: ListItem['dateDue'];
+    }
+  | {
+      type: 'SetItemPriority';
+      sectionId: string;
+      id: string;
+      priority: ListItem['priority'];
+    }
+  | { type: 'SetItemIncomplete'; sectionId: string; id: string }
+  | {
+      type: 'SetItemComplete';
+      sectionId: string;
+      id: string;
+      dateCompleted: ListItem['dateCompleted'];
+    }
+  | {
+      type: 'SetItemExpectedMs';
+      sectionId: string;
+      id: string;
+      expectedMs: ListItem['expectedMs'];
+    }
+  | { type: 'StartItemTime'; sectionId: string; id: string }
+  | { type: 'PauseItemTime'; sectionId: string; id: string }
+  | { type: 'ResetItemTime'; sectionId: string; id: string }
+  | {
+      type: 'LinkTagToItem';
+      sectionId: string;
+      itemId: string;
+      tagId: string;
+      tagsAvailable: Tag[];
+    }
+  | { type: 'LinkNewTagToItem'; sectionId: string; itemId: string; tag: Tag }
+  | {
+      type: 'UnlinkTagFromItem';
+      sectionId: string;
+      itemId: string;
+      tagId: string;
+    }
+  | { type: 'DeleteItem'; sectionId: string; id: string };
+
+/**
+ * The state of a list section, as defined and modified by the list reducer.
+ */
+export type ListSectionState = Omit<ListSection, 'items'> & {
+  items: Map<string, ListItem>;
+};
 
 /**
  * The list state, as defined and modified by the list reducer.
  */
-export type ListState = { list: List; tagsAvailable: Tag[] };
+export type ListState = {
+  list: Omit<List, 'sections'> & {
+    sections: Map<string, ListSectionState>;
+  };
+  tagsAvailable: Tag[];
+};

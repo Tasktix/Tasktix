@@ -47,7 +47,7 @@ const users = [
     false,
     new Date(),
     new Date(),
-    'Violet'
+    { color: 'Violet' }
   ),
   new User(
     'user2-id',
@@ -56,7 +56,7 @@ const users = [
     false,
     new Date(),
     new Date(),
-    'Violet'
+    { color: 'Violet' }
   )
 ];
 

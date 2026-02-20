@@ -38,9 +38,10 @@ describe('root route redirect logic', () => {
   it('redirects authenticated users to /list', async () => {
     vi.mocked(getUser).mockResolvedValue(
       new User(
+        'userId',
         'testUser',
         'test@example.com',
-        'password123',
+        true,
         new Date(),
         new Date(),
         {}

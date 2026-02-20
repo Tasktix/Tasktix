@@ -16,7 +16,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ListAction, ListState } from './types';
+import Tag from '@/lib/model/tag';
+
+import { ItemAction, ListAction, ListState, SectionAction } from './types';
 
 /**
  * The reducer for managing <List />'s state
@@ -30,7 +32,7 @@ import { ListAction, ListState } from './types';
  */
 export default function listReducer(
   state: ListState,
-  action: ListAction
+  action: ListAction | SectionAction | ItemAction
 ): ListState {
   const newState = structuredClone(state);
 
@@ -68,15 +70,142 @@ export default function listReducer(
       break;
 
     case 'AddSection':
-      newState.list.sections.push(action.section);
+      newState.list.sections.set(action.section.id, {
+        ...action.section,
+        items: new Map()
+      });
       break;
 
     case 'DeleteSection':
-      for (let i = 0; i < newState.list.sections.length; i++)
-        if (newState.list.sections[i].id === action.id)
-          newState.list.sections.splice(i, 1);
+      newState.list.sections.delete(action.id);
+      break;
+
+    case 'AddItemToSection': {
+      const section = newState.list.sections.get(action.sectionId);
+
+      if (!section)
+        throw new Error(`Unable to find section with ID ${action.sectionId}`);
+
+      section.items.set(action.item.id, action.item);
+      break;
+    }
+
+    case 'ReorderItem': {
+      const section = newState.list.sections.get(action.sectionId);
+
+      if (!section)
+        throw new Error(`Unable to find section with ID ${action.sectionId}`);
+
+      const wasShiftedUp = action.oldIndex > action.newIndex;
+      const lowIndex = Math.min(action.newIndex, action.oldIndex);
+      const highIndex = Math.max(action.newIndex, action.oldIndex);
+
+      for (const item of section.items.values()) {
+        if (item.sectionIndex === action.oldIndex)
+          item.sectionIndex = action.newIndex;
+        else {
+          if (item.sectionIndex >= lowIndex && item.sectionIndex <= highIndex) {
+            item.sectionIndex += wasShiftedUp ? 1 : -1;
+          }
+        }
+      }
+      break;
+    }
+
+    case 'SetItemName':
+      getItem(newState, action.sectionId, action.id).name = action.name;
+      break;
+
+    case 'SetItemDueDate':
+      getItem(newState, action.sectionId, action.id).dateDue = action.date;
+      break;
+
+    case 'SetItemPriority':
+      getItem(newState, action.sectionId, action.id).priority = action.priority;
+      break;
+
+    case 'SetItemIncomplete': {
+      const item = getItem(newState, action.sectionId, action.id);
+
+      item.status = 'Paused';
+      item.dateCompleted = null;
+      break;
+    }
+
+    case 'SetItemComplete': {
+      const item = getItem(newState, action.sectionId, action.id);
+
+      item.status = 'Completed';
+      item.dateCompleted = action.dateCompleted;
+      break;
+    }
+
+    case 'SetItemExpectedMs':
+      getItem(newState, action.sectionId, action.id).expectedMs =
+        action.expectedMs;
+      break;
+
+    case 'StartItemTime':
+      getItem(newState, action.sectionId, action.id).status = 'In_Progress';
+      break;
+
+    case 'PauseItemTime':
+      getItem(newState, action.sectionId, action.id).status = 'Paused';
+      break;
+
+    case 'ResetItemTime':
+      getItem(newState, action.sectionId, action.id).status = 'Unstarted';
+      break;
+
+    case 'LinkTagToItem': {
+      const tag = action.tagsAvailable?.find(tag => tag.id === action.tagId);
+
+      if (!tag) throw new Error(`Could not find tag with id ${action.tagId}`);
+
+      newState.list.sections
+        .get(action.sectionId)
+        ?.items.get(action.itemId)
+        ?.tags.push(new Tag(tag.name, tag.color, action.tagId));
+      break;
+    }
+
+    case 'LinkNewTagToItem':
+      getItem(newState, action.sectionId, action.itemId).tags.push(action.tag);
+      break;
+
+    case 'UnlinkTagFromItem': {
+      const item = getItem(newState, action.sectionId, action.itemId);
+
+      for (let i = 0; i < item.tags.length; i++)
+        if (item.tags[i].id === action.tagId) item.tags.splice(i, 1);
+      break;
+    }
+
+    case 'DeleteItem':
+      newState.list.sections.get(action.sectionId)?.items.delete(action.id);
       break;
   }
 
   return newState;
+}
+
+/**
+ * Helper function to find a list item that's expected to exist, throwing an error if not
+ * found
+ *
+ * @param state The state to look for the item in
+ * @param sectionId The ID of the section the item to look for belongs to
+ * @param itemId The ID of the item to look for
+ *
+ * @returns The item that was looked for
+ */
+function getItem(state: ListState, sectionId: string, itemId: string) {
+  const item = state.list.sections.get(sectionId)?.items.get(itemId);
+
+  if (!item)
+    throw new Error(
+      `Unable to find item with ID ${itemId} in section ${sectionId}`
+    );
+
+  return item;
 }

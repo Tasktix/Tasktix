@@ -35,7 +35,7 @@ const MOCK_MEMBER = new ListMember(
     false,
     new Date(),
     new Date(),
-    'Amber'
+    { color: 'Amber' }
   ),
   true,
   false,
