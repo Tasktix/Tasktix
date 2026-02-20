@@ -146,7 +146,7 @@ function AccountButton() {
           aria-label='Profile Actions Dropdown'
           as={Button}
           className={getBackgroundColor(loggedInUser.color)}
-          name={loggedInUser.username ?? ''}
+          name={loggedInUser.username ?? loggedInUser.name}
           {...(loggedInUser.image && { src: loggedInUser.image })}
 
         />

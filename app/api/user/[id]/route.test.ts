@@ -73,7 +73,7 @@ describe('PATCH', () => {
     expect(auth.api.updateUser).toHaveBeenCalledTimes(1);
     expect(auth.api.updateUser).toHaveBeenCalledWith(
       expect.objectContaining({
-        body: { name: 'new_name', username: 'new_name' }
+        body: { username: 'new_name' }
       })
     );
 
@@ -175,7 +175,7 @@ describe('PATCH', () => {
     expect(auth.api.updateUser).toHaveBeenCalledTimes(1);
     expect(auth.api.updateUser).toHaveBeenCalledWith(
       expect.objectContaining({
-        body: { name: 'new_name', username: 'new_name' }
+        body: { username: 'new_name' }
       })
     );
     expect(auth.api.changeEmail).toHaveBeenCalledTimes(1);
