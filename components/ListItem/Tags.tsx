@@ -144,10 +144,13 @@ export default function Tags({
               })
           : null}
         <TagInput
-          addNewTag={addNewTag}
           className='p-1.5 pl-1'
           classNames={{ name: 'w-24' }}
-          linkNewTag={linkNewTag}
+          onTagCreated={async (name, color) => {
+            const id = await addNewTag(name, color);
+
+            if (linkNewTag) await linkNewTag(id, name, color);
+          }}
         />
       </PopoverContent>
     </Popover>
