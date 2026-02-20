@@ -18,9 +18,10 @@
 
 'use client';
 
-import { addToast, Button, Input } from '@heroui/react';
+import { addToast, Button, Input, Divider } from '@heroui/react';
 import { FormEvent, startTransition, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Github } from 'react-bootstrap-icons';
 
 import { useAuth } from '@/components/AuthProvider';
 import { authClient } from '@/lib/auth-client';
@@ -37,7 +38,20 @@ export default function SignIn() {
   function handlePasswordInput(input: string) {
     setInputs({ ...inputs, password: input });
   }
-
+  async function handleOauth(provider: string) {
+    await authClient.signIn.social({
+      provider: provider,
+    }, 
+    {
+      onSuccess: ctx => {
+        setLoggedInUser( ctx.data.User)
+        router.push('/list')
+      },
+      onError: ctx => {
+        addToast({ title: ctx.error.message, color: 'danger' });
+      }
+    })
+  }
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     startTransition(async () => {
@@ -76,11 +90,28 @@ export default function SignIn() {
         variant='bordered'
         onValueChange={handlePasswordInput}
       />
-      <div className='flex justify-center mt-6'>
+
+      <div className='flex justify-center my-4'>
         <Button color='primary' type='submit'>
           Sign In
         </Button>
       </div>
+      <div className="flex items-center gap-4 py-2">
+          <Divider className="flex-1" />
+          <p className="text-tiny text-default-500 shrink-0">OR</p>
+          <Divider className="flex-1" />
+        </div>
+      <div className='flex justify-center mt-6'>
+          <Button
+            startContent={<Github/>}
+            variant="bordered"
+            aria-label='sign in with github'
+            onPress={(e) => handleOauth('github')}
+          >
+            Continue with Github
+          </Button>
+      </div>
+
     </form>
   );
 }
