@@ -79,7 +79,7 @@ export const auth = betterAuth({
       ? [
           haveIBeenPwned({
             customPasswordCompromisedMessage:
-              'Please choose a non-compromised password'
+              'Please choose a more secure password'
           })
         ]
       : [])
