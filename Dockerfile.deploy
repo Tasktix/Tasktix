@@ -7,5 +7,7 @@ RUN npm ci --ignore-scripts
 COPY scripts/test_service_entry.sh ./entry.sh
 COPY tsconfig.json prisma.config.ts ./
 COPY prisma ./prisma
+COPY lib/auth.ts ./lib/auth.ts
+COPY lib/model/color.ts ./lib/model/color.ts
 
 CMD [ "sh", "entry.sh" ]

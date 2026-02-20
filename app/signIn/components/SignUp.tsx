@@ -18,7 +18,7 @@
 
 'use client';
 
-import { FormEvent, useState } from 'react';
+import { FormEvent, startTransition, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { addToast, Button, Input } from '@heroui/react';
 
@@ -28,9 +28,9 @@ import {
   validateEmail,
   validatePassword
 } from '@/lib/validate';
-import { default as api } from '@/lib/api';
+import { authClient } from '@/lib/auth-client';
+import { randomNamedColor } from '@/lib/color';
 import { useAuth } from '@/components/AuthProvider';
-import User from '@/lib/model/user';
 
 import {
   getUsernameMessage,
@@ -94,32 +94,26 @@ export default function SignUp() {
 
       return;
     }
-
-    api
-      .post('/user', inputs)
-      .then(() => {
-        api
-          .post('/session', {
-            username: inputs.username,
-            password: inputs.password
-          })
-          .then(res => {
-            const content =
-              res.content &&
-              (JSON.parse(res.content) as { location: string; user: User });
-
-            if (!content) throw new Error('User not provided in response');
-
-            setLoggedInUser(content.user);
-            router.replace('/list');
-          })
-          .catch(err => {
-            addToast({ title: err.message, color: 'danger' });
-          });
-      })
-      .catch(err => {
-        addToast({ title: err.message, color: 'danger' });
-      });
+    startTransition(async () => {
+      await authClient.signUp.email(
+        {
+          email: inputs.email,
+          password: inputs.password,
+          name: inputs.username,
+          username: inputs.username,
+          color: randomNamedColor()
+        },
+        {
+          onError: ctx => {
+            addToast({ title: ctx.error.message, color: 'danger' });
+          },
+          onSuccess: ctx => {
+            setLoggedInUser(ctx.data.user);
+            router.push('/list');
+          }
+        }
+      );
+    });
   }
 
   return (
