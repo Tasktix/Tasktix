@@ -2,8 +2,9 @@
 
 The Tasktix project uses [Better-Auth](https://www.better-auth.com/) to provide authentication services for the application. Better-Auth was chosen over Supabase or other alternatives because our database was setup as MySQL, and additionaly migrating to Postgres was deemed unnecessary. Better-Auth natively supports OAuth and two factor which are left as future updates.   
 
->[!CAUTION]
-> Pulling up a previous Tasktix version to adopt Better-Auth includes breaking database changes, and will result in loss of User Accounts. This can be manually remediated by peforming the steps in the Database Updates section.
+> [!CAUTION]
+>
+> Pulling up a previous Tasktix version to adopt Better-Auth includes breaking database changes that require manual resolution. It also contains unavoidable password hashing changes and will result users losing the ability to sign in with their current account.
 
 Better Auth requires setting the following environment variables
 ```
