@@ -10,6 +10,8 @@ services:
       - DATABASE_URL=mysql://root:${DB_PASSWORD}@mariadb/${DB_DATABASE}
       - BETTER_AUTH_URL=${BETTER_AUTH_URL}
       - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
+      - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
+      - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
 
   mariadb:
     image: mariadb:latest
