@@ -24,21 +24,24 @@ import { getUserByUsername } from '@/lib/database/user';
 import { POST } from './route';
 
 const MOCK_USER = new User(
+  'abcdefg',
   'username',
   'email@example.com',
-  'password',
+  false,
   new Date(),
   new Date(),
   { color: 'Amber' }
 );
 const MOCK_NEW_USER = new User(
+  'abcdefg',
   'username',
   'email@example.com',
-  'password',
+  false,
   new Date(),
   new Date(),
   { color: 'Amber' }
 );
+
 const MEMBER_PATH = 'http://localhost/api/list/some-list-id/member' as const;
 
 vi.mock('@/lib/session');

@@ -5,7 +5,8 @@
     "Reorderable",
     "stringable",
     "Tasktix",
-    "Unstarted"
+    "Unstarted",
+    "unstub"
   ],
   "containers.containerClient": "com.microsoft.visualstudio.containers.docker",
   "containers.orchestratorClient": "com.microsoft.visualstudio.orchestrators.dockercompose",

@@ -16,45 +16,79 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import * as generateIdModule from '@/lib/generateId'; // Needed for mocking - skipcq: JS-C1003
+import { getUser } from '@/lib/session';
+import { auth } from '@/lib/auth';
+import { getUserById } from '@/lib/database/user';
 
-import Session from '../session';
+import User from '../user';
 
-beforeAll(() => {
-  vi.useFakeTimers();
-  vi.setSystemTime(new Date('2023-01-01 00:00:00'));
-});
+const MOCK_USER = new User(
+  'abcdefg',
+  'username',
+  'email@example.com',
+  false,
+  new Date(),
+  new Date(),
+  { color: 'Amber' }
+);
+
+const today = new Date();
+const MOCK_SESSION = {
+  id: 'sessionid',
+  createdAt: today,
+  updatedAt: today,
+  userId: MOCK_USER.id,
+  expiresAt: today,
+  token: 'token'
+};
+
+vi.mock('next/headers', () => ({
+  headers: vi.fn(() => Promise.resolve(new Headers()))
+}));
+
+vi.mock('@/lib/database/user');
+
+vi.mock('@/lib/auth', () => ({
+  auth: {
+    api: {
+      getSession: vi.fn()
+    }
+  }
+}));
 
 beforeEach(() => {
-  vi.spyOn(generateIdModule, 'generateId').mockReturnValue('mock-generated-id');
+  vi.resetAllMocks();
 });
 
-afterEach(() => {
-  vi.restoreAllMocks();
+test('Returns a valid user Object under happy path', async () => {
+  vi.mocked(auth.api.getSession).mockResolvedValue({
+    session: MOCK_SESSION,
+    user: MOCK_USER
+  });
+  vi.mocked(getUserById).mockResolvedValue(MOCK_USER);
+  const user = await getUser();
+
+  expect(getUserById).toHaveBeenCalledExactlyOnceWith(MOCK_SESSION.userId);
+  expect(user).toEqual(MOCK_USER);
 });
 
-afterAll(() => {
-  vi.useRealTimers();
+test('Returns false if no valid user session', async () => {
+  vi.mocked(auth.api.getSession).mockResolvedValue(null);
+
+  const user = await getUser();
+
+  expect(user).toBeFalsy();
 });
 
-test('Generates an id if none provided', () => {
-  const session = new Session('user-id', new Date());
+test('Returns false if database fetch fails', async () => {
+  vi.mocked(auth.api.getSession).mockResolvedValue({
+    session: MOCK_SESSION,
+    user: MOCK_USER
+  });
+  vi.mocked(getUserById).mockResolvedValue(false);
 
-  expect(session.id).toBe('mock-generated-id');
-  expect(generateIdModule.generateId).toHaveBeenCalled();
-});
+  const user = await getUser();
 
-test('Uses the provided id', () => {
-  const session = new Session('user-id', new Date(), 'provided-id');
-
-  expect(session.id).toBe('provided-id');
-  expect(generateIdModule.generateId).not.toHaveBeenCalled();
-});
-
-test('Assigns all properties correctly', () => {
-  const session = new Session('user-id', new Date(), 'provided-id');
-
-  expect(session.id).toBe('provided-id');
-  expect(session.userId).toBe('user-id');
-  expect(session.dateExpire).toEqual(new Date());
+  expect(getUserById).toHaveBeenCalledExactlyOnceWith(MOCK_SESSION.userId);
+  expect(user).toBeFalsy();
 });

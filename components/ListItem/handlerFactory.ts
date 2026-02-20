@@ -23,8 +23,7 @@ import api from '@/lib/api';
 import ListItem from '@/lib/model/listItem';
 import Tag from '@/lib/model/tag';
 import { NamedColor } from '@/lib/model/color';
-
-import { ItemAction } from './types';
+import { ItemAction } from '@/components/List';
 
 /**
  * Produces all functions for interacting with a specific list item and its data. These
@@ -33,20 +32,15 @@ import { ItemAction } from './types';
  * definition.
  *
  * @param itemId The ID for the item that the functions are for
+ * @param sectionId The ID for the section that the item belongs to
  * @param timerData All data and callbacks needed to interact with the ListItem
  *  component's internal timer state
  * @param tagsAvailable All tags associated with the list the item belongs to
- * @param dispatchItem Callback for updating the item's useReducer state
- * @param updateDueDate Callback to propagate state changes for the item's due date
- * @param updatePriority Callback to propagate state changes for the item's priority
- * @param setPaused Callback to propagate state changes for the item's status
- * @param setCompleted Callback to propagate state changes for the item's status
- * @param updateExpectedMs Callback to propagate state changes for the item's expected
- *  completion time
- * @param deleteItem Callback to propagate state changes to delete the item
+ * @param dispatchItemChange Callback to propagate state changes to the item
  */
 export function itemHandlerFactory(
   itemId: string,
+  sectionId: string,
   timerData: {
     timer: RefObject<NodeJS.Timeout | undefined>;
     lastTime: RefObject<Date>;
@@ -54,13 +48,7 @@ export function itemHandlerFactory(
     stopRunning: () => unknown;
   },
   tagsAvailable: Tag[],
-  dispatchItem: ActionDispatch<[action: ItemAction]>,
-  updateDueDate: (date: ListItem['dateDue']) => unknown,
-  updatePriority: (priority: ListItem['priority']) => unknown,
-  setPaused: () => unknown,
-  setCompleted: (date: ListItem['dateCompleted']) => unknown,
-  updateExpectedMs: (ms: number) => unknown,
-  deleteItem: () => unknown
+  dispatchItemChange: ActionDispatch<[action: ItemAction]>
 ) {
   /**
    * @param name The item's new name
@@ -68,7 +56,9 @@ export function itemHandlerFactory(
   function setName(name: ListItem['name']) {
     api
       .patch(`/item/${itemId}`, { name })
-      .then(() => dispatchItem({ type: 'SetName', name }))
+      .then(() =>
+        dispatchItemChange({ type: 'SetItemName', sectionId, id: itemId, name })
+      )
       .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
@@ -79,9 +69,12 @@ export function itemHandlerFactory(
     api
       .patch(`/item/${itemId}`, { dateDue: date })
       .then(() => {
-        dispatchItem({ type: 'SetDueDate', date });
-
-        updateDueDate(date); // Send parent the update for reordering items
+        dispatchItemChange({
+          type: 'SetItemDueDate',
+          sectionId,
+          id: itemId,
+          date
+        });
       })
       .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
@@ -93,9 +86,12 @@ export function itemHandlerFactory(
     api
       .patch(`/item/${itemId}`, { priority })
       .then(() => {
-        dispatchItem({ type: 'SetPriority', priority });
-
-        updatePriority(priority); // Send parent the update for reordering items
+        dispatchItemChange({
+          type: 'SetItemPriority',
+          sectionId,
+          id: itemId,
+          priority
+        });
       })
       .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
@@ -107,9 +103,11 @@ export function itemHandlerFactory(
     api
       .patch(`/item/${itemId}`, { status: 'Paused', dateCompleted: null })
       .then(() => {
-        dispatchItem({ type: 'SetIncomplete' });
-
-        setPaused(); // Send parent the update for reordering items
+        dispatchItemChange({
+          type: 'SetItemIncomplete',
+          sectionId,
+          id: itemId
+        });
       })
       .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
@@ -139,9 +137,12 @@ export function itemHandlerFactory(
         if (newElapsed) timerData.setElapsedLive(newElapsed);
 
         // Update the internal state
-        dispatchItem({ type: 'SetComplete', dateCompleted });
-
-        setCompleted(dateCompleted); // Send parent the update for reordering items
+        dispatchItemChange({
+          type: 'SetItemComplete',
+          sectionId,
+          id: itemId,
+          dateCompleted
+        });
       })
       .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
@@ -153,9 +154,12 @@ export function itemHandlerFactory(
     api
       .patch(`/item/${itemId}`, { expectedMs })
       .then(() => {
-        dispatchItem({ type: 'SetExpectedMs', expectedMs });
-
-        updateExpectedMs(expectedMs); // Send parent the update for reordering items
+        dispatchItemChange({
+          type: 'SetItemExpectedMs',
+          sectionId,
+          id: itemId,
+          expectedMs
+        });
       })
       .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
@@ -169,7 +173,13 @@ export function itemHandlerFactory(
     api
       .post(`/item/${itemId}/tag/${id}`, {})
       .then(() => {
-        dispatchItem({ type: 'LinkTag', id, tagsAvailable });
+        dispatchItemChange({
+          type: 'LinkTagToItem',
+          sectionId,
+          itemId,
+          tagId: id,
+          tagsAvailable
+        });
       })
       .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
@@ -182,7 +192,14 @@ export function itemHandlerFactory(
   function unlinkTag(id: string) {
     api
       .delete(`/item/${itemId}/tag/${id}`)
-      .then(() => dispatchItem({ type: 'UnlinkTag', id }))
+      .then(() =>
+        dispatchItemChange({
+          type: 'UnlinkTagFromItem',
+          sectionId,
+          itemId,
+          tagId: id
+        })
+      )
       .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
@@ -206,7 +223,12 @@ export function itemHandlerFactory(
     return api
       .post(`/item/${itemId}/tag/${id}`, {})
       .then(() => {
-        dispatchItem({ type: 'LinkNewTag', id, name, color });
+        dispatchItemChange({
+          type: 'LinkNewTagToItem',
+          sectionId,
+          itemId,
+          tag: new Tag(name, color, id)
+        });
       })
       .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
@@ -218,7 +240,7 @@ export function itemHandlerFactory(
     api
       .delete(`/item/${itemId}`)
       .then(res => {
-        deleteItem(); // Send parent the update to remove this component
+        dispatchItemChange({ type: 'DeleteItem', sectionId, id: itemId }); // Send parent the update to remove this component
 
         // Let the user know we succeeded
         addToast({ title: res.message, color: 'success' });

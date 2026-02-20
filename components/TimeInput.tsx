@@ -31,6 +31,7 @@ import { formatTime } from '@/lib/date';
  * @param value If specified, value to display in input (making it controlled)
  * @param defaultValue The initial value to use if uncontrolled
  * @param onValueChange If specified, callback to control the input
+ * @param ariaLabel The `<Input />` component's aria-label
  * @param label The `<Input />` component's label
  * @param labelPlacement The `<Input />` component's label position
  * @param variant  The `<Input />` component variant to use
@@ -45,6 +46,7 @@ export default function TimeInput({
   value,
   defaultValue,
   onValueChange,
+  'aria-label': ariaLabel,
   label,
   labelPlacement,
   variant,
@@ -58,6 +60,7 @@ export default function TimeInput({
   value?: number;
   defaultValue?: number;
   onValueChange?: (value: number) => unknown;
+  'aria-label'?: string;
   label?: string;
   labelPlacement?: 'outside' | 'outside-left' | 'inside';
   variant?: 'flat' | 'faded' | 'bordered' | 'underlined';
@@ -90,6 +93,7 @@ export default function TimeInput({
 
   return (
     <Input
+      aria-label={ariaLabel}
       autoFocus={autoFocus ?? true}
       className={className}
       classNames={classNames}

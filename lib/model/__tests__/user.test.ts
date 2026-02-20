@@ -21,8 +21,8 @@ import * as colorModule from '@/lib/color'; // Needed for mocking - skipcq: JS-C
 
 import User from '../user';
 
-const fixedDateCreated = new Date('2020-01-01T00:00:00Z');
-const fixedDateSignedIn = new Date('2020-01-02T00:00:00Z');
+const fixedCreatedAt = new Date('2020-01-01T00:00:00Z');
+const fixedUpdatedAt = new Date('2020-01-02T00:00:00Z');
 
 beforeEach(() => {
   vi.spyOn(generateIdModule, 'generateId').mockReturnValue('mock-generated-id');
@@ -35,42 +35,14 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-test('Generates an id if none provided', () => {
-  const user = new User(
-    'testUser',
-    'test@example.com',
-    'secret',
-    fixedDateCreated,
-    fixedDateSignedIn,
-    {}
-  );
-
-  expect(user.id).toBe('mock-generated-id');
-  expect(generateIdModule.generateId).toHaveBeenCalled();
-});
-
-test('Uses the provided id', () => {
-  const user = new User(
-    'testUser',
-    'test@example.com',
-    'secret',
-    fixedDateCreated,
-    fixedDateSignedIn,
-    { id: 'provided-id' }
-  );
-
-  expect(user.id).toBe('provided-id');
-  expect(generateIdModule.generateId).not.toHaveBeenCalled();
-});
-
 test('Picks a color if none provided', () => {
   const user = new User(
+    'userId',
     'testUser',
     'test@example.com',
-    'secret',
-    fixedDateCreated,
-    fixedDateSignedIn,
-    {}
+    false,
+    fixedCreatedAt,
+    fixedUpdatedAt
   );
 
   expect(user.color).toBe('mock-color');
@@ -79,33 +51,36 @@ test('Picks a color if none provided', () => {
 
 test('Uses the provided color', () => {
   const user = new User(
+    'userId',
     'testUser',
     'test@example.com',
-    'secret',
-    fixedDateCreated,
-    fixedDateSignedIn,
-    { color: 'provided-color' as never }
+    false,
+    fixedCreatedAt,
+    fixedUpdatedAt,
+    { color: 'Amber' }
   );
 
-  expect(user.color).toBe('provided-color');
+  expect(user.color).toBe('Amber');
   expect(colorModule.randomNamedColor).not.toHaveBeenCalled();
 });
 
 test('Assigns all properties correctly', () => {
   const user = new User(
+    'provided-id',
     'testUser',
     'test@example.com',
-    'secret',
-    fixedDateCreated,
-    fixedDateSignedIn,
-    { id: 'provided-id', color: 'provided-color' as never }
+    false,
+    fixedCreatedAt,
+    fixedUpdatedAt,
+    { color: 'Amber' }
   );
 
   expect(user.username).toBe('testUser');
   expect(user.email).toBe('test@example.com');
-  expect(user.password).toBe('secret');
-  expect(user.dateCreated).toBe(fixedDateCreated);
-  expect(user.dateSignedIn).toBe(fixedDateSignedIn);
+  expect(user.createdAt).toBe(fixedCreatedAt);
+  expect(user.updatedAt).toBe(fixedUpdatedAt);
+  expect(user.emailVerified).toBe(false);
   expect(user.id).toBe('provided-id');
-  expect(user.color).toBe('provided-color');
+  expect(user.color).toBe('Amber');
+  expect(user.image).toBeNull();
 });
