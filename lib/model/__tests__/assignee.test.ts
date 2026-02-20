@@ -27,7 +27,7 @@ test('Assigns all properties correctly', () => {
     false,
     new Date(),
     new Date(),
-    'Amber'
+    { color: 'Amber' }
   );
 
   const listMember = new Assignee(user, 'role-name');

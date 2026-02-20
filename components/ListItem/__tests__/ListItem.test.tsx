@@ -112,17 +112,19 @@ it('Displays the associated list when one is provided', () => {
 it('Displays all members assigned to the item', () => {
   const members = [
     new User(
+      'user1Id',
       'user one',
       'user1@example.com',
-      'password123',
+      true,
       new Date(),
       new Date(),
       { color: 'Amber' }
     ),
     new User(
+      'user2Id',
       'user two',
       'user2@example.com',
-      'password123',
+      true,
       new Date(),
       new Date(),
       { color: 'Blue' }

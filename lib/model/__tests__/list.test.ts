@@ -59,9 +59,10 @@ describe('List constructor', () => {
     const members = [
       new ListMember(
         new User(
+          'user1Id',
           'user1',
           'test@example.com',
-          'secret',
+          true,
           new Date(),
           new Date(),
           {}
@@ -69,9 +70,10 @@ describe('List constructor', () => {
       ),
       new ListMember(
         new User(
+          'user2Id',
           'user2',
           'test@not-example.com',
-          'an0th3rSecret',
+          true,
           new Date(),
           new Date(),
           {}
