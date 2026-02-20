@@ -46,7 +46,8 @@ export const auth = betterAuth({
     additionalFields: {
       color: {
         type: namedColors as unknown as DBFieldType,
-        required: true
+        required: true,
+        defaultValue: 'Blue'
       },
       legacyPassword: {
         type: 'string',
