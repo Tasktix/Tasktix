@@ -118,6 +118,7 @@ export default function Users({
                 classNames={{ base: getBackgroundColor(assignee.user.color) }}
                 name={assignee.user.username ?? ''}
                 size='sm'
+                {...(assignee.user.image && { src: assignee.user.image })}
               />
             ))}
           </AvatarGroup>
