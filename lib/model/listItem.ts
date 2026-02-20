@@ -36,7 +36,7 @@ export const ZodListItem = z.strictObject({
   status: z.enum(statuses),
   priority: z.enum(priorities),
   isUnclear: z.boolean(),
-  expectedMs: z.number().min(0).max(DATABASE_LIMITS.INT_MAX).optional(),
+  expectedMs: z.number().min(0).max(DATABASE_LIMITS.INT_MAX).nullable(),
   elapsedMs: z.number().min(0).max(DATABASE_LIMITS.INT_MAX),
   sectionIndex: z.number().min(0).max(DATABASE_LIMITS.INT_MAX),
   dateDue: z.iso.datetime({ offset: true }).nullable(),

@@ -29,7 +29,7 @@ const PostBody = ZodListItem.omit({
   elapsedMs: true,
   dateStarted: true,
   dateCompleted: true
-});
+}).partial({ dateDue: true, expectedMs: true });
 
 /**
  * Creates a new list item in the given section
