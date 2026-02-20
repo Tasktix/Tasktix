@@ -37,7 +37,7 @@ these:
 Pod=tasktix.pod
 Image=ghcr.io/tasktix/tasktix-web
 
-Environment=BETTER_AUTH_URL=https://tasktix.com
+Environment=BETTER_AUTH_URL=<PATH_TO_TASKTIX_ROOT>
 
 Secret=TASKTIX_DATABASE_URL,type=env,target=DATABASE_URL
 Secret=TASKTIX_BETTER_AUTH_SECRET,type=env,target=BETTER_AUTH_SECRET
@@ -65,6 +65,10 @@ Secret=TASKTIX_DB_ROOT_PASSWORD,type=mount,target=/run/secrets/db_root_password
 [Service]
 Restart=always
 ```
+- `<PATH_TO_TASKTIX_ROOT>` (including the `<>`) should be replaced with the URL to the
+  root of your Tasktix deployment. For example, if you deploy to
+  `https://tasktix.example.com`, that should be the specified path. If you deploy to
+  `https://containers.example.com/tasktix`, that should be the specified path.
 
 .config/containers/systemd/tasktix-db.volume
 
