@@ -173,6 +173,12 @@ export async function getListMemberByItem(
   return result ?? false;
 }
 
+/**
+ * Checks whether the given user is a member of the given list
+ *
+ * @param userId The user to check
+ * @param listId The list to check membership on
+ */
 export async function getIsListMember(
   userId: string,
   listId: string
