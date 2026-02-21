@@ -146,6 +146,12 @@ export async function getListMembersByUser(
   return returnVal;
 }
 
+/**
+ *
+ * @param userId
+ * @param listId
+ * @returns
+ */
 export async function getListMember(
   userId: string,
   listId: string
@@ -184,6 +190,12 @@ export async function getIsListAssignee(
   return result > 0;
 }
 
+/**
+ * Checks whether the user is a member of all given lists
+ *
+ * @param userId The user to check
+ * @param listIds The lists to check membership on
+ */
 export async function getIsAllListsMember(
   userId: string,
   listIds: string[]
@@ -195,6 +207,12 @@ export async function getIsAllListsMember(
   return result === listIds.length;
 }
 
+/**
+ * Checks whether the given user is a member of the list that the given item belongs to
+ *
+ * @param userId The user to check
+ * @param itemId The item in the list to check membership on
+ */
 export async function getIsListAssigneeByItem(
   userId: string,
   itemId: string
@@ -209,6 +227,11 @@ export async function getIsListAssigneeByItem(
   return result > 0;
 }
 
+/**
+ * Gets a tag's data from its ID, if there's a tag with that ID in the database
+ *
+ * @param id The ID of the tag to fetch
+ */
 export async function getTagById(id: string): Promise<Tag | false> {
   const result = await prisma.tag.findUnique({
     where: { id }
@@ -217,6 +240,13 @@ export async function getTagById(id: string): Promise<Tag | false> {
   return result ?? false;
 }
 
+/**
+ * Gets all tags for all lists that the user is a member of
+ *
+ * @param userId The user to fetch tags for
+ * @returns An object of all tags, where each key is a list ID and its value is an array
+ *  of all tags belonging to that list
+ */
 export async function getTagsByUser(
   userId: string
 ): Promise<{ [id: string]: Tag[] } | false> {
@@ -236,6 +266,11 @@ export async function getTagsByUser(
   return returnVal;
 }
 
+/**
+ * Gets all tags for a specific list, if the list exists
+ *
+ * @param id The list to get tags for
+ */
 export async function getTagsByListId(id: string): Promise<Tag[] | false> {
   const result = await prisma.tag.findMany({
     where: { listId: id },
@@ -245,6 +280,12 @@ export async function getTagsByListId(id: string): Promise<Tag[] | false> {
   return result ?? false;
 }
 
+/**
+ * Updates a list's metadata to match the given list object
+ *
+ * @param list The new list data
+ * @returns Whether the database accepted the update
+ */
 export async function updateList(
   list: Omit<List, 'members' | 'sections'>
 ): Promise<boolean> {
@@ -265,6 +306,12 @@ export async function updateList(
   return true;
 }
 
+/**
+ * Updates a tag's data to match the given tag object
+ *
+ * @param tag The new tag data
+ * @returns Whether the database accepted the update
+ */
 export async function updateTag(tag: Tag): Promise<boolean> {
   try {
     await prisma.tag.update({
@@ -278,6 +325,14 @@ export async function updateTag(tag: Tag): Promise<boolean> {
   return true;
 }
 
+/**
+ * Updates a list member's permissions to match the given object
+ *
+ * @param listId The list to update the membership permissions on
+ * @param userId The user to update the membership permissions of
+ * @param member The new membership permissions
+ * @returns Whether the database accepted the update
+ */
 export async function updateListMember(
   listId: string,
   userId: string,
@@ -295,6 +350,12 @@ export async function updateListMember(
   return true;
 }
 
+/**
+ * Deletes the given list and all of its data
+ *
+ * @param id The list to delete
+ * @returns Whether the database accepted the deletion
+ */
 export async function deleteList(id: string): Promise<boolean> {
   try {
     await prisma.list.delete({ where: { id } });
@@ -305,6 +366,12 @@ export async function deleteList(id: string): Promise<boolean> {
   return true;
 }
 
+/**
+ * Deletes a given tag and all links of that tag to items
+ *
+ * @param id The tag to delete
+ * @returns Whether the database accepted the deletion
+ */
 export async function deleteTag(id: string): Promise<boolean> {
   try {
     await prisma.tag.delete({ where: { id } });
