@@ -184,6 +184,17 @@ export async function getIsListAssignee(
   return result > 0;
 }
 
+export async function getIsAllListsAssignee(
+  userId: string,
+  listIds: string[]
+): Promise<boolean> {
+  const result = await prisma.list.count({
+    where: { id: { in: listIds }, members: { some: { userId } } }
+  });
+
+  return result === listIds.length;
+}
+
 export async function getIsListAssigneeByItem(
   userId: string,
   itemId: string

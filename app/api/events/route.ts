@@ -19,6 +19,9 @@
 import { NextRequest } from 'next/server';
 
 import { addClient, removeClient } from '@/lib/sse/server';
+import { getUser } from '@/lib/session';
+import { ClientError } from '@/lib/Response';
+import { getIsAllListsAssignee } from '@/lib/database/list';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -37,10 +40,16 @@ export const runtime = 'nodejs';
  * ...
  *   useEffect(() => subscribe([list.id], dispatchList), [list.id]);
  */
-export function GET(req: NextRequest) {
+export async function GET(req: NextRequest) {
+  const user = await getUser();
+
+  if (!user) return ClientError.Unauthenticated('Not logged in');
+
   const lists = req.nextUrl.searchParams.getAll('list');
 
-  // TODO: Validate that the user has permission to subscribe to updates on each list
+  const isAllListsAssignee = await getIsAllListsAssignee(user.id, lists);
+
+  if (!isAllListsAssignee) return ClientError.NotFound('Not all lists found');
 
   const stream = new ReadableStream({
     start(controller) {

@@ -55,7 +55,7 @@ export async function PATCH(
 
   const isMember = await getIsListAssignee(user.id, id);
 
-  if (!isMember) return ClientError.BadRequest('List not found');
+  if (!isMember) return ClientError.NotFound('List not found');
 
   const parseResult = PatchBody.safeParse(await request.json());
 
