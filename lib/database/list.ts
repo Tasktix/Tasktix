@@ -184,7 +184,7 @@ export async function getIsListAssignee(
   return result > 0;
 }
 
-export async function getIsAllListsAssignee(
+export async function getIsAllListsMember(
   userId: string,
   listIds: string[]
 ): Promise<boolean> {

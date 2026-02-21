@@ -21,7 +21,7 @@ import { NextRequest } from 'next/server';
 import User from '@/lib/model/user';
 import { getUser } from '@/lib/session';
 import { addClient, removeClient } from '@/lib/sse/server';
-import { getIsAllListsAssignee } from '@/lib/database/list';
+import { getIsAllListsMember } from '@/lib/database/list';
 
 import { GET } from './route';
 
@@ -49,7 +49,7 @@ describe('GET', () => {
     const abortController = new AbortController();
 
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
-    vi.mocked(getIsAllListsAssignee).mockResolvedValue(true);
+    vi.mocked(getIsAllListsMember).mockResolvedValue(true);
 
     const response = await GET(
       new NextRequest(PATH + params.toString(), {
@@ -78,7 +78,7 @@ describe('GET', () => {
     const abortController = new AbortController();
 
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
-    vi.mocked(getIsAllListsAssignee).mockResolvedValue(true);
+    vi.mocked(getIsAllListsMember).mockResolvedValue(true);
 
     const response = await GET(
       new NextRequest(PATH + params.toString(), {
@@ -104,7 +104,7 @@ describe('GET', () => {
     const abortController = new AbortController();
 
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
-    vi.mocked(getIsAllListsAssignee).mockResolvedValue(true);
+    vi.mocked(getIsAllListsMember).mockResolvedValue(true);
 
     const response = await GET(
       new NextRequest(PATH + params.toString(), {
@@ -148,7 +148,7 @@ describe('GET', () => {
       const abortController = new AbortController();
 
       vi.mocked(getUser).mockResolvedValue(MOCK_USER);
-      vi.mocked(getIsAllListsAssignee).mockResolvedValue(false);
+      vi.mocked(getIsAllListsMember).mockResolvedValue(false);
 
       const response = await GET(
         new NextRequest(PATH + params.toString(), {

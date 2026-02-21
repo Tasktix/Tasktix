@@ -21,7 +21,7 @@ import { NextRequest } from 'next/server';
 import { addClient, removeClient } from '@/lib/sse/server';
 import { getUser } from '@/lib/session';
 import { ClientError } from '@/lib/Response';
-import { getIsAllListsAssignee } from '@/lib/database/list';
+import { getIsAllListsMember } from '@/lib/database/list';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -47,7 +47,7 @@ export async function GET(req: NextRequest) {
 
   const lists = req.nextUrl.searchParams.getAll('list');
 
-  const isAllListsAssignee = await getIsAllListsAssignee(user.id, lists);
+  const isAllListsAssignee = await getIsAllListsMember(user.id, lists);
 
   if (!isAllListsAssignee) return ClientError.NotFound('Not all lists found');
 
