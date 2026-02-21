@@ -27,8 +27,10 @@ class MockEventSource {
   onerror = null;
   readyState = 0;
 
-  constructor(_: string) {}
-  close = () => {};
+  // TypeScript expects this constructor to exist - skipcq: JS-0358
+  constructor(_: string) {
+    // Mock constructor doesn't need an implementation
+  }
 
   CONNECTING = 0;
   OPEN = 1;

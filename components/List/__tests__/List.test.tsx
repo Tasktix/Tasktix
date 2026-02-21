@@ -36,8 +36,10 @@ class MockEventSource {
   onmessage = null;
   onerror = null;
 
-  constructor(_: string) {}
-  close() {}
+  // Mock function shouldn't be a static method - skipcq: JS-0105
+  close() {
+    // Mock function doesn't need an implementation
+  }
 }
 
 vi.mock('@/lib/api');

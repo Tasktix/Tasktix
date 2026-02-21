@@ -82,7 +82,7 @@ describe('PATCH', () => {
     expect(fields).not.toMatchObject({ hasTimeTracking: false });
     expect(fields).not.toMatchObject({ hasDueDates: false });
     expect(fields).not.toMatchObject({ isAutoOrdered: false });
-    expect(!('color' in fields) || fields.color == 'Amber').toBe(true);
+    expect(!('color' in fields) || fields.color === 'Amber').toBe(true);
 
     expect(broadcastEvent).toHaveBeenCalledExactlyOnceWith('list-id', {
       type: 'SetListName',
