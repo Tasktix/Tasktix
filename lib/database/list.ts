@@ -146,12 +146,6 @@ export async function getListMembersByUser(
   return returnVal;
 }
 
-/**
- *
- * @param userId
- * @param listId
- * @returns
- */
 export async function getListMember(
   userId: string,
   listId: string
