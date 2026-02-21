@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { getIsListAssignee, createListMember } from '@/lib/database/list';
+import { getIsListMember, createListMember } from '@/lib/database/list';
 import User from '@/lib/model/user';
 import { getUser } from '@/lib/session';
 import { getUserByUsername } from '@/lib/database/user';
@@ -55,9 +55,9 @@ beforeEach(() => {
 describe('POST', () => {
   test('Allows adding new members by username with no permissions', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
-    vi.mocked(getIsListAssignee).mockResolvedValueOnce(true);
+    vi.mocked(getIsListMember).mockResolvedValueOnce(true);
     vi.mocked(getUserByUsername).mockResolvedValue(MOCK_NEW_USER);
-    vi.mocked(getIsListAssignee).mockResolvedValueOnce(false);
+    vi.mocked(getIsListMember).mockResolvedValueOnce(false);
     vi.mocked(createListMember).mockResolvedValue(true);
 
     const response = await POST(
@@ -99,7 +99,7 @@ describe('POST', () => {
 
   test('Rejects requests to modify lists not a member of', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
-    vi.mocked(getIsListAssignee).mockResolvedValue(false);
+    vi.mocked(getIsListMember).mockResolvedValue(false);
 
     const response = await POST(
       new Request(MEMBER_PATH, {
@@ -115,7 +115,7 @@ describe('POST', () => {
 
   test("Rejects requests to add members that don't exist", async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
-    vi.mocked(getIsListAssignee).mockResolvedValue(true);
+    vi.mocked(getIsListMember).mockResolvedValue(true);
     vi.mocked(getUserByUsername).mockResolvedValue(false);
 
     const response = await POST(
@@ -132,7 +132,7 @@ describe('POST', () => {
 
   test('Rejects requests to add members already part of the list', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
-    vi.mocked(getIsListAssignee).mockResolvedValue(true);
+    vi.mocked(getIsListMember).mockResolvedValue(true);
     vi.mocked(getUserByUsername).mockResolvedValue(MOCK_NEW_USER);
 
     const response = await POST(
@@ -149,7 +149,7 @@ describe('POST', () => {
 
   test('Rejects requests with malformed bodies', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
-    vi.mocked(getIsListAssignee).mockResolvedValue(true);
+    vi.mocked(getIsListMember).mockResolvedValue(true);
     vi.mocked(getUserByUsername).mockResolvedValue(MOCK_NEW_USER);
 
     const response = await POST(
@@ -166,9 +166,9 @@ describe('POST', () => {
 
   test('Warns the user if updating the member failed', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
-    vi.mocked(getIsListAssignee).mockResolvedValueOnce(true);
+    vi.mocked(getIsListMember).mockResolvedValueOnce(true);
     vi.mocked(getUserByUsername).mockResolvedValue(MOCK_NEW_USER);
-    vi.mocked(getIsListAssignee).mockResolvedValueOnce(false);
+    vi.mocked(getIsListMember).mockResolvedValueOnce(false);
     vi.mocked(createListMember).mockResolvedValue(false);
 
     const response = await POST(

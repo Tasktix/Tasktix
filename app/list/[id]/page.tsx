@@ -19,7 +19,7 @@
 import { redirect } from 'next/navigation';
 
 import {
-  getIsListAssignee,
+  getIsListMember,
   getListById,
   getTagsByListId
 } from '@/lib/database/list';
@@ -39,7 +39,7 @@ export default async function Page({
 
   if (!list || !user) redirect('/list');
 
-  const isMember = await getIsListAssignee(user.id, list.id);
+  const isMember = await getIsListMember(user.id, list.id);
 
   if (!isMember) redirect('/list');
 

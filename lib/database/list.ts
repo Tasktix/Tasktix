@@ -173,7 +173,7 @@ export async function getListMemberByItem(
   return result ?? false;
 }
 
-export async function getIsListAssignee(
+export async function getIsListMember(
   userId: string,
   listId: string
 ): Promise<boolean> {
@@ -184,7 +184,7 @@ export async function getIsListAssignee(
   return result > 0;
 }
 
-export async function getIsListAssigneeByItem(
+export async function getIsListMemberByItem(
   userId: string,
   itemId: string
 ): Promise<boolean> {
