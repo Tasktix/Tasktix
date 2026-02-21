@@ -112,7 +112,6 @@ export default function ListSettings({
                 title='General'
               >
                 <GeneralSettings
-                  dispatchList={dispatchList}
                   hasDueDates={hasDueDates}
                   hasTimeTracking={hasTimeTracking}
                   isAutoOrdered={isAutoOrdered}
