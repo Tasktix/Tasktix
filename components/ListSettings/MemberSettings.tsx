@@ -16,12 +16,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { addToast, Button, Checkbox, Input, User } from '@heroui/react';
+import {
+  addToast,
+  Button,
+  Input,
+  Select,
+  SelectItem,
+  User
+} from '@heroui/react';
 import { SendPlus } from 'react-bootstrap-icons';
 import { FormEvent, useState } from 'react';
 
 import { getBackgroundColor } from '@/lib/color';
 import ListMember from '@/lib/model/listMember';
+import Role from '@/lib/model/role';
 import api from '@/lib/api';
 
 /**
@@ -42,6 +50,30 @@ export default function MemberSettings({
   setMembers: (members: ListMember[]) => unknown;
 }>) {
   const [newUsername, setNewUsername] = useState('');
+
+  const roles: Pick<Role, 'name' | 'description'>[] = [
+    {
+      name: 'Admin',
+      description: 'Full access, including destructive actions'
+    },
+    {
+      name: 'Manager',
+      description: 'Manage tags, tasks, and members; cannot delete list'
+    },
+    {
+      name: 'Product Owner',
+      description: 'Manage tags and tasks, including assigning tasks'
+    },
+    {
+      name: 'Collaborator',
+      description: 'Add and update tasks, excluding assigning tasks'
+    },
+    {
+      name: 'Stakeholder',
+      description: 'Viewer permissions and add tasks'
+    },
+    { name: 'Viewer', description: 'Can only view current status' }
+  ];
 
   function handleAddMember(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -109,74 +141,26 @@ export default function MemberSettings({
           Send Invite
         </Button>
       </form>
-      <table className='mt-4 w-full overflow-scroll'>
-        <thead>
-          <tr>
-            <th style={{ flexGrow: 2 }}>Member</th>
-            <th className='grow font-normal'>Can Add</th>
-            <th className='grow font-normal'>Can Assign</th>
-            <th className='grow font-normal'>Can Complete</th>
-            <th className='grow font-normal'>Can Remove</th>
-          </tr>
-        </thead>
-        <tbody>
-          {members.map(member => (
-            <tr key={member.user.id}>
-              <td className='py-2'>
-                <User
-                  avatarProps={{
-                    classNames: {
-                      base: getBackgroundColor(member.user.color)
-                    },
-                    size: 'sm'
-                  }}
-                  name={member.user.username}
-                />
-              </td>
-              <td className='text-center py-2'>
-                <Checkbox
-                  isSelected={member.canAdd}
-                  onValueChange={selected =>
-                    handleUpdatePermissions(member.user.id, {
-                      canAdd: selected
-                    })
-                  }
-                />
-              </td>
-              <td className='text-center py-2'>
-                <Checkbox
-                  isSelected={member.canAssign}
-                  onValueChange={selected =>
-                    handleUpdatePermissions(member.user.id, {
-                      canAssign: selected
-                    })
-                  }
-                />
-              </td>
-              <td className='text-center py-2'>
-                <Checkbox
-                  isSelected={member.canComplete}
-                  onValueChange={selected =>
-                    handleUpdatePermissions(member.user.id, {
-                      canComplete: selected
-                    })
-                  }
-                />
-              </td>
-              <td className='text-center py-2'>
-                <Checkbox
-                  isSelected={member.canRemove}
-                  onValueChange={selected =>
-                    handleUpdatePermissions(member.user.id, {
-                      canRemove: selected
-                    })
-                  }
-                />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {members.map(member => (
+        <span key={member.user.id}>
+          <User
+            avatarProps={{
+              classNames: {
+                base: getBackgroundColor(member.user.color)
+              },
+              size: 'sm'
+            }}
+            name={member.user.username}
+          />
+          <Select label='Role' onSelectionChange={handleUpdatePermissions}>
+            {roles.map(role => (
+              <SelectItem key={role.name} description={role.description}>
+                {role.name}
+              </SelectItem>
+            ))}
+          </Select>
+        </span>
+      ))}
     </span>
   );
 }
