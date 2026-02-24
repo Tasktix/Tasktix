@@ -16,31 +16,24 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-'use client';
+import { addToast } from '@heroui/react';
 
-import { ReactNode, useReducer } from 'react';
+/**
+ * Adds a toast message to the user with the error message received by the application
+ *
+ * @param error The error to add a toast for. `unknown` type because `.catch()` blocks'
+ *  callback argument is `any` type
+ */
+export function addToastForError(error: unknown) {
+  let title = 'An unknown error occurred';
 
-import Sidebar, { listReducer, ListContext } from '@/components/Sidebar';
-import List from '@/lib/model/list';
+  if (
+    typeof error === 'object' &&
+    error !== null &&
+    'message' in error &&
+    typeof error.message === 'string'
+  )
+    title = error.message;
 
-export default function LayoutClient({
-  startingLists,
-  children
-}: {
-  startingLists: string;
-  children: ReactNode;
-}) {
-  const [lists, dispatchEvent] = useReducer(
-    listReducer,
-    JSON.parse(startingLists) as List[]
-  );
-
-  return (
-    <ListContext.Provider value={dispatchEvent}>
-      <div className='flex h-1/4 grow'>
-        <Sidebar lists={lists} />
-        {children}
-      </div>
-    </ListContext.Provider>
-  );
+  addToast({ title, color: 'danger' });
 }

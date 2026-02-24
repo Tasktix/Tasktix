@@ -17,13 +17,14 @@
  */
 
 import { useEffect, useRef, useState } from 'react';
-import { addToast, Checkbox, Chip } from '@heroui/react';
+import { Checkbox, Chip } from '@heroui/react';
 import { CardChecklist, GripVertical } from 'react-bootstrap-icons';
 import Link from 'next/link';
 
 import { default as api } from '@/lib/api';
 import { formatDate } from '@/lib/date';
 import { getBackgroundColor, getTextColor } from '@/lib/color';
+import { addToastForError } from '@/lib/error';
 
 import DateInput from '../DateInput';
 import ConfirmedTextInput from '../ConfirmedTextInput';
@@ -122,7 +123,7 @@ export default function ListItem({
           // Update the internal state
           dispatchItemChange({ type: 'StartItemTime', sectionId, id: item.id });
         })
-        .catch(err => addToast({ title: err.message, color: 'danger' }));
+        .catch(addToastForError);
     },
 
     pausedRunning: () => {
@@ -144,7 +145,7 @@ export default function ListItem({
           // Update the internal state
           dispatchItemChange({ type: 'PauseItemTime', sectionId, id: item.id });
         })
-        .catch(err => addToast({ title: err.message, color: 'danger' }));
+        .catch(addToastForError);
     },
 
     resetTime: () => {
@@ -167,7 +168,7 @@ export default function ListItem({
             id: item.id
           });
         })
-        .catch(err => addToast({ title: err.message, color: 'danger' }));
+        .catch(addToastForError);
     }
   };
 

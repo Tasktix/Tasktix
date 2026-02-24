@@ -22,6 +22,7 @@ import { ActionDispatch } from 'react';
 import api from '@/lib/api';
 import { NamedColor } from '@/lib/model/color';
 import Tag from '@/lib/model/tag';
+import { addToastForError } from '@/lib/error';
 
 import { ListAction, SectionAction } from './types';
 
@@ -48,7 +49,7 @@ export function listHandlerFactory(
         dispatchList({ type: 'SetListName', name });
         window.location.reload();
       })
-      .catch(err => addToast({ title: err.message, color: 'danger' }));
+      .catch(addToastForError);
   }
 
   /**
@@ -94,12 +95,7 @@ export function listHandlerFactory(
 
         dispatchList({ type: 'DeleteSection', id });
       })
-      .catch(err =>
-        addToast({
-          title: err.message,
-          color: 'danger'
-        })
-      );
+      .catch(addToastForError);
   }
 
   return {

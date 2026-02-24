@@ -69,7 +69,10 @@ test('Newly created items are added to the section', async () => {
     expect.objectContaining({
       type: 'AddItemToSection',
       sectionId: 'section-id',
-      item: expect.objectContaining({ name: 'Item 1', priority: 'High' })
+      item: expect.objectContaining({
+        name: 'Item 1',
+        priority: 'High'
+      }) as ListItem
     })
   );
 });

@@ -21,9 +21,11 @@
 import { addToast, Button, Input } from '@heroui/react';
 import { FormEvent, startTransition, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { SuccessContext } from 'better-auth/react';
 
 import { useAuth } from '@/components/AuthProvider';
 import { authClient } from '@/lib/auth-client';
+import User from '@/lib/model/user';
 
 export default function SignIn() {
   const { setLoggedInUser } = useAuth();
@@ -50,7 +52,7 @@ export default function SignIn() {
           onError: ctx => {
             addToast({ title: ctx.error.message, color: 'danger' });
           },
-          onSuccess: ctx => {
+          onSuccess: (ctx: SuccessContext<{ User: User }>) => {
             setLoggedInUser(ctx.data.User);
             router.push('/list');
           }
