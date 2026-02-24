@@ -10,26 +10,20 @@ title: Tasktix System Architecture
 flowchart LR
   c[Client]
   subgraph AWS EC2
-
     s[Web server]
-
     d@{shape: cyl, label: Database}
-
-  end
-  subgraph AWS Lambda
-    w[Websocket server]
+    a[BetterAuth Authentication]
   end
 
   subgraph External services
     g@{shape: processes, label: Services (e.g. GitHub)}
-    a[Auth provider]
   end
 
-  c <-->|HTTP| s <-->|MySQL| d
-  s <-->|WS| w <-->|WS| c
+  c <-->|HTTP| s -->|SSE| c
+  s <-->|MySQL| d
   g -->|HTTP| s
-  c -->|HTTP| a
   a <-->|HTTP| s
+  a <-->|HTTP| g
 ```
 
 Some key notes about the architecture design:
@@ -37,11 +31,12 @@ Some key notes about the architecture design:
 - The web server is responsible for performing all persistent state updates after
   authentication & authorization checks. These state updates include starting/ending user
   sessions and persisting user-entered data.
-- The websocket server is responsible for letting all clients know when a state change has
-  occurred for the list they are viewing (i.e. from another user's interaction). This is
-  separated from the main web server because Next.js doesn't natively support websockets.
-  Also, AWS Lambda functions scale to zero when not in use, helping reduce costs while our
-  user base remains small.
+- Tasktix utilizes Server-Sent Events to push state changes to connected clients who are
+  viewing a list that is shared by multiple clients (e.g. multiple User accounts or a
+  single User on a mobile device and desktop)
+- Better Auth Authentication operates similar to a microservice, but contained within the
+  Tasktix web server. It has additional communication with the external services such as
+  GitHub to provide OAuth/Social Sign On.
 - Tasktix can communicate with other services (e.g. GitHub) over HTTP via webhooks those
   services expose.
 
@@ -60,17 +55,14 @@ title: Client Setup
 ---
 sequenceDiagram
   participant c as Client
-  participant w as Websocket server
   participant s as Server
   participant d as Database
 
-  w<<->>s: Internal state messages
-
   c->>s: Request page
-  c->>w: Initiate WebSocket connection
   s->>d: SQL query
   d->>s: Query results
   s->>c: Requested page
+  c->>s: Initiate Server-Sent Events connection
 ```
 
 After the client has the list data, they can then trigger a request to update the data:
@@ -82,21 +74,16 @@ title: Client Update
 sequenceDiagram
   participant Other_clients@{type: collections}
   participant c as Client
-  participant w as Websocket server
   participant s as Server
   participant d as Database
 
-  par
-    w<<->>Other_clients: Persistent pipe
-    w<<->>s: Internal state messages
-  end
+  s<<->>Other_clients: Persistent pipe
 
   c->>s: New content
   s->>d: SQL query
   d->>s: Query results
   s->>c: Response status
-  s->>w: New content
 
-  w->>c: Broadcast new content
-  w->>Other_clients:
+  s->>c: Broadcast new content
+  s->>Other_clients:
 ```
