@@ -18,7 +18,7 @@
 
 import { addToast, Button, Switch } from '@heroui/react';
 import { TrashFill } from 'react-bootstrap-icons';
-import { ActionDispatch, useContext } from 'react';
+import { useContext } from 'react';
 import { useRouter } from 'next/navigation';
 
 import ColorPicker from '@/components/ColorPicker';
@@ -26,7 +26,6 @@ import ConfirmedTextInput from '@/components/ConfirmedTextInput';
 import { NamedColor } from '@/lib/model/color';
 import api from '@/lib/api';
 import { ListContext } from '@/components/Sidebar';
-import { ListAction } from '@/components/List/types';
 
 /**
  * Displays list settings such as its name, whether due dates are enabled, etc. Allows
@@ -53,7 +52,6 @@ export default function GeneralSettings({
   hasDueDates,
   hasTimeTracking,
   isAutoOrdered,
-  dispatchList,
   setListName
 }: Readonly<{
   listId: string;
@@ -62,7 +60,6 @@ export default function GeneralSettings({
   isAutoOrdered: boolean;
   hasDueDates: boolean;
   hasTimeTracking: boolean;
-  dispatchList: ActionDispatch<[action: ListAction]>;
   setListName: (name: string) => unknown;
 }>) {
   const router = useRouter();
@@ -73,7 +70,6 @@ export default function GeneralSettings({
 
     api
       .patch(`/list/${listId}`, { hasTimeTracking: value })
-      .then(() => dispatchList({ type: 'SetHasTimeTracking', hasTimeTracking }))
       .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
@@ -82,7 +78,6 @@ export default function GeneralSettings({
 
     api
       .patch(`/list/${listId}`, { hasDueDates: value })
-      .then(() => dispatchList({ type: 'SetHasDueDates', hasDueDates }))
       .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
@@ -91,7 +86,6 @@ export default function GeneralSettings({
 
     api
       .patch(`/list/${listId}`, { isAutoOrdered: value })
-      .then(() => dispatchList({ type: 'SetIsAutoOrdered', isAutoOrdered }))
       .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
@@ -100,7 +94,6 @@ export default function GeneralSettings({
 
     api
       .patch(`/list/${listId}`, { color })
-      .then(() => dispatchList({ type: 'SetListColor', color }))
       .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 

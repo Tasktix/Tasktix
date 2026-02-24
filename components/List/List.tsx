@@ -18,7 +18,7 @@
 
 'use client';
 
-import { useReducer, useState } from 'react';
+import { useEffect, useReducer, useState } from 'react';
 
 import AddListSection from '@/components/AddListSection';
 import SearchBar from '@/components/SearchBar';
@@ -27,6 +27,7 @@ import ListSettings from '@/components/ListSettings';
 import ListModel from '@/lib/model/list';
 import Tag from '@/lib/model/tag';
 import ListItem from '@/lib/model/listItem';
+import { subscribe } from '@/lib/sse/client';
 
 import ListSection from '../ListSection/ListSection';
 
@@ -85,6 +86,8 @@ export default function List({
   const filterOptions = getFilterOptions(list, tagsAvailable);
 
   const listHandlers = listHandlerFactory(list.id, dispatchList);
+
+  useEffect(() => subscribe([list.id], dispatchList), [list.id]);
 
   return (
     <>

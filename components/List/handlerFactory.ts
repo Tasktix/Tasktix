@@ -44,10 +44,7 @@ export function listHandlerFactory(
   function setName(name: string) {
     api
       .patch(`/list/${listId}`, { name })
-      .then(() => {
-        dispatchList({ type: 'SetListName', name });
-        window.location.reload();
-      })
+      .then(() => window.location.reload())
       .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 

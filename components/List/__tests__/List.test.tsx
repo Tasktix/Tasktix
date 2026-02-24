@@ -31,11 +31,28 @@ import Tag from '@/lib/model/tag';
 
 import List from '../List';
 
+class MockEventSource {
+  onopen = null;
+  onmessage = null;
+  onerror = null;
+
+  // Mock function shouldn't be a static method - skipcq: JS-0105
+  close() {
+    // Mock function doesn't need an implementation
+  }
+}
+
 vi.mock('@/lib/api');
 
-beforeAll(() => vi.stubEnv('TZ', 'UTC'));
+beforeAll(() => {
+  vi.stubEnv('TZ', 'UTC');
+  vi.stubGlobal('EventSource', MockEventSource);
+});
 beforeEach(vi.resetAllMocks);
-afterAll(vi.unstubAllEnvs);
+afterAll(() => {
+  vi.unstubAllEnvs();
+  vi.unstubAllGlobals();
+});
 
 describe('ListItem state propagation', () => {
   test('Item names update when changed', async () => {
