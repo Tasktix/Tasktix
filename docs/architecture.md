@@ -10,6 +10,7 @@ title: Tasktix System Architecture
 flowchart LR
   c[Client]
   subgraph AWS EC2
+    direction BT
     s[Web server]
     d@{shape: cyl, label: Database}
     a[BetterAuth Authentication]
@@ -19,7 +20,7 @@ flowchart LR
     g@{shape: processes, label: Services (e.g. GitHub)}
   end
 
-  c <-->|HTTP| s -->|SSE| c
+  c <--->|HTTP| s ---->|SSE| c
   s <-->|MySQL| d
   g -->|HTTP| s
   a <-->|HTTP| s
