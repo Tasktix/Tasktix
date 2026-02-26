@@ -33,9 +33,9 @@ import {
 import { authClient } from '@/lib/auth-client';
 import { randomNamedColor } from '@/lib/color';
 import { useAuth } from '@/components/AuthProvider';
-import { handleOauth } from '../oauth';
 import User from '@/lib/model/user';
 
+import { handleOauth } from '../oauth';
 import {
   getUsernameMessage,
   getEmailMessage,
@@ -162,20 +162,24 @@ export default function SignUp() {
           Sign Up
         </Button>
       </div>
-      <div className="flex items-center gap-4 py-2">
-          <Divider className="flex-1" />
-          <p className="text-tiny text-default-500 shrink-0">OR</p>
-          <Divider className="flex-1" />
-        </div>
+      <div className='flex items-center gap-4 py-2'>
+        <Divider className='flex-1' />
+        <p className='text-tiny text-default-500 shrink-0'>OR</p>
+        <Divider className='flex-1' />
+      </div>
       <div className='flex justify-center mt-6'>
-          <Button
-            startContent={<Github/>}
-            variant="bordered"
-            aria-label='sign in with github'
-            onPress={() => handleOauth('github', { setLoggedInUser, router })}
-          >
-            Continue with Github
-          </Button>
+        <Button
+          aria-label='sign in with github'
+          startContent={<Github />}
+          variant='bordered'
+          onPress={() =>
+            startTransition(() =>
+              handleOauth('github', { setLoggedInUser, router })
+            )
+          }
+        >
+          Continue with Github
+        </Button>
       </div>
     </form>
   );

@@ -16,22 +16,25 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { addToast } from "@heroui/react";
+import { addToast } from '@heroui/react';
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
+import { SuccessContext } from 'better-auth/react';
+
 import { authClient } from '@/lib/auth-client';
+import User from '@/lib/model/user';
 
 interface OAuthOptions {
-  setLoggedInUser: (user: any) => void;
+  setLoggedInUser: (user: User) => void;
   router: AppRouterInstance;
 }
 
 export async function handleOauth(provider: string, options: OAuthOptions) {
   await authClient.signIn.social(
     {
-      provider: provider,
+      provider: provider
     },
     {
-      onSuccess: ctx => {
+      onSuccess: (ctx: SuccessContext<{ User: User }>) => {
         options.setLoggedInUser(ctx.data.User);
         options.router.push('/list');
       },
