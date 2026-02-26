@@ -17,7 +17,6 @@
  */
 
 import {
-  addToast,
   Button,
   Input,
   Modal,
@@ -36,11 +35,10 @@ import { Check, Plus } from 'react-bootstrap-icons';
 import { default as api } from '@/lib/api';
 import ListItem from '@/lib/model/listItem';
 import { getBorderColor, getPriorityColor } from '@/lib/color';
+import { addToastForError } from '@/lib/error';
 
 import TimeInput from '../TimeInput';
 import DateInput2 from '../DateInput2';
-
-import { Item } from './types';
 
 /**
  * Inputs with the necessary details to create a new list item
@@ -65,7 +63,7 @@ export default function AddItem({
   hasTimeTracking: boolean;
   hasDueDates: boolean;
   nextIndex: number;
-  addItem: (_: Item) => unknown;
+  addItem: (_: ListItem) => unknown;
 }) {
   const zeroMin = new Date();
 
@@ -175,19 +173,20 @@ export default function AddItem({
         setValues(startingInputValues);
 
         const id = res.content?.split('/').at(-1);
-        const item = new ListItem(values.name, {
-          priority,
-          expectedMs: newItem.expectedMs,
-          sectionIndex: nextIndex,
-          dateDue: newItem.dateDue,
-          id
-        });
 
-        addItem({ ...item, visualIndex: nextIndex });
+        addItem(
+          new ListItem(values.name, {
+            priority,
+            expectedMs: newItem.expectedMs,
+            sectionIndex: nextIndex,
+            dateDue: newItem.dateDue,
+            id
+          })
+        );
 
         setIsSliderOpen(false);
       })
-      .catch(err => addToast({ title: err.message, color: 'danger' }));
+      .catch(addToastForError);
   }
 
   return (

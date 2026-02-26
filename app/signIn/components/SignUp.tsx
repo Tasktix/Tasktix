@@ -22,6 +22,7 @@ import { FormEvent, startTransition, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { addToast, Button, Input, Divider } from '@heroui/react';
 import { Github } from 'react-bootstrap-icons';
+import { SuccessContext } from 'better-auth/react';
 
 import Message, { InputMessage } from '@/components/InputMessage';
 import {
@@ -33,6 +34,7 @@ import { authClient } from '@/lib/auth-client';
 import { randomNamedColor } from '@/lib/color';
 import { useAuth } from '@/components/AuthProvider';
 import { handleOauth } from '../oauth';
+import User from '@/lib/model/user';
 
 import {
   getUsernameMessage,
@@ -107,9 +109,17 @@ export default function SignUp() {
         },
         {
           onError: ctx => {
-            addToast({ title: ctx.error.message, color: 'danger' });
+            if (ctx.error.code === 'PASSWORD_COMPROMISED') {
+              addToast({
+                title: 'Password Compromised',
+                description: ctx.error.message,
+                color: 'danger'
+              });
+            } else {
+              addToast({ title: ctx.error.message, color: 'danger' });
+            }
           },
-          onSuccess: ctx => {
+          onSuccess: (ctx: SuccessContext<{ user: User }>) => {
             setLoggedInUser(ctx.data.user);
             router.push('/list');
           }

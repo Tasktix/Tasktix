@@ -38,7 +38,7 @@ beforeEach(() => {
 describe('authorize', () => {
   test('Does nothing if user is authenticated', async () => {
     vi.mocked(getUser).mockResolvedValue(
-      new User('username', 'email', 'password', new Date(), new Date(), {})
+      new User('userId', 'username', 'email', true, new Date(), new Date(), {})
     );
     await authorize();
 

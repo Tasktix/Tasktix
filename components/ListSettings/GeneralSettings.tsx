@@ -27,6 +27,7 @@ import { NamedColor } from '@/lib/model/color';
 import api from '@/lib/api';
 import { ListContext } from '@/components/Sidebar';
 import { ListAction } from '@/components/List/types';
+import { addToastForError } from '@/lib/error';
 
 /**
  * Displays list settings such as its name, whether due dates are enabled, etc. Allows
@@ -74,7 +75,7 @@ export default function GeneralSettings({
     api
       .patch(`/list/${listId}`, { hasTimeTracking: value })
       .then(() => dispatchList({ type: 'SetHasTimeTracking', hasTimeTracking }))
-      .catch(err => addToast({ title: err.message, color: 'danger' }));
+      .catch(addToastForError);
   }
 
   function updateHasDueDates(value: boolean) {
@@ -83,7 +84,7 @@ export default function GeneralSettings({
     api
       .patch(`/list/${listId}`, { hasDueDates: value })
       .then(() => dispatchList({ type: 'SetHasDueDates', hasDueDates }))
-      .catch(err => addToast({ title: err.message, color: 'danger' }));
+      .catch(addToastForError);
   }
 
   function updateIsAutoOrdered(value: boolean) {
@@ -92,7 +93,7 @@ export default function GeneralSettings({
     api
       .patch(`/list/${listId}`, { isAutoOrdered: value })
       .then(() => dispatchList({ type: 'SetIsAutoOrdered', isAutoOrdered }))
-      .catch(err => addToast({ title: err.message, color: 'danger' }));
+      .catch(addToastForError);
   }
 
   function updateColor(color: NamedColor | null) {
@@ -101,7 +102,7 @@ export default function GeneralSettings({
     api
       .patch(`/list/${listId}`, { color })
       .then(() => dispatchList({ type: 'SetListColor', color }))
-      .catch(err => addToast({ title: err.message, color: 'danger' }));
+      .catch(addToastForError);
   }
 
   function deleteList() {
@@ -119,7 +120,7 @@ export default function GeneralSettings({
         dispatchEvent({ type: 'remove', id: listId });
         router.replace('/list');
       })
-      .catch(err => addToast({ title: err.message, color: 'danger' }));
+      .catch(addToastForError);
   }
 
   return (

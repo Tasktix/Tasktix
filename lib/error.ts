@@ -16,30 +16,24 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import List from '@/lib/model/list';
-
-import { Action } from './types';
+import { addToast } from '@heroui/react';
 
 /**
- * A state reducer for updating the lists the current user has access to
+ * Adds a toast message to the user with the error message received by the application
  *
- * @param lists The current state of lists the user has access to
- * @param action The action for modifying the current state:
- *  - Add: The user should have access to another list
- *  - Remove: The user has lost access to a list
+ * @param error The error to add a toast for. `unknown` type because `.catch()` blocks'
+ *  callback argument is `any` type
  */
-export default function listReducer(lists: List[], action: Action) {
-  switch (action.type) {
-    case 'add':
-      if (!action.name || !action.color)
-        throw new Error('Missing required action parameters');
+export function addToastForError(error: unknown) {
+  let title = 'An unknown error occurred';
 
-      return [
-        ...lists,
-        new List(action.name, action.color, [], [], true, true, true, action.id)
-      ];
+  if (
+    typeof error === 'object' &&
+    error !== null &&
+    'message' in error &&
+    typeof error.message === 'string'
+  )
+    title = error.message;
 
-    case 'remove':
-      return lists.filter(list => list.id !== action.id);
-  }
+  addToast({ title, color: 'danger' });
 }

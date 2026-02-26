@@ -38,6 +38,32 @@ export function sortItemsByIndex(a: ListItem, b: ListItem): number {
   return 0;
 }
 
+/**
+ * A helper function to sort an array of `ListItem`s based on their order in their list
+ * section. Intended **only** for sorting `ListItem`s that are *all in the same section*.
+ *
+ * @param itemOrder A map of each item's unique ID to its order in the section
+ * @param a The first item to compare
+ * @param b The second item to compare
+ * @returns A positive number if `a` should be before `b`; a negative number if `b` should
+ *  be before `a`; 0 if `a` == `b`
+ */
+export function sortItemsByOrder(
+  itemOrder: Map<string, number>,
+  a: ListItem,
+  b: ListItem
+): number {
+  const indexA = itemOrder.get(a.id);
+  const indexB = itemOrder.get(b.id);
+
+  if (indexA === undefined)
+    throw new Error(`Cannot find index of item with ID ${a.id}`);
+  if (indexB === undefined)
+    throw new Error(`Cannot find index of item with ID ${b.id}`);
+
+  return indexA - indexB;
+}
+
 export function sortItems(
   hasTimeTracking: boolean,
   hasDueDates: boolean,

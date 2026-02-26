@@ -29,8 +29,22 @@ const PostBody = ZodListItem.omit({
   elapsedMs: true,
   dateStarted: true,
   dateCompleted: true
-});
+}).partial({ dateDue: true, expectedMs: true });
 
+/**
+ * Creates a new list item in the given section
+ *
+ * @param request.name The new item's name
+ * @param request.priority The new item's priority
+ * @param request.sectionId The section the new item belongs in
+ * @param request.sectionIndex Which index the new item is at in the section (must be an
+ *  index not currently taken by another item; cannot be used to simultaneously reorder
+ * items)
+ * @param request.dateDue [optional] The new item's due date (required if the list has due
+ *  dates enabled)
+ * @param expectedMs [optional] The expected time to complete the new item (required if
+ *  the list has time tracking enabled)
+ */
 export async function POST(request: Request) {
   const user = await getUser();
 

@@ -32,6 +32,7 @@ import Assignee from '@/lib/model/assignee';
 import { getBackgroundColor, getTextColor } from '@/lib/color';
 import ListMember from '@/lib/model/listMember';
 import { default as api } from '@/lib/api';
+import { addToastForError } from '@/lib/error';
 
 export default function Users({
   itemId,
@@ -64,12 +65,7 @@ export default function Users({
             newAssignees.push(new Assignee(member.user, ''));
         setAssignees(newAssignees);
       })
-      .catch(err =>
-        addToast({
-          title: err.message,
-          color: 'danger'
-        })
-      );
+      .catch(addToastForError);
   }
 
   function removeAssignee(userId: string) {
@@ -86,12 +82,7 @@ export default function Users({
           if (newAssignees[i].user.id === userId) newAssignees.splice(i, 1);
         setAssignees(newAssignees);
       })
-      .catch(err =>
-        addToast({
-          title: err.message,
-          color: 'danger'
-        })
-      );
+      .catch(addToastForError);
   }
 
   return (

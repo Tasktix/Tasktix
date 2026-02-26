@@ -18,18 +18,27 @@
 
 'use client';
 
-import { addToast, Button, Input } from '@heroui/react';
+import { Button, Input } from '@heroui/react';
 import { FormEvent, useState } from 'react';
 
 import api from '@/lib/api';
 import ListSection from '@/lib/model/listSection';
+import { addToastForError } from '@/lib/error';
 
+/**
+ * An input for creating a new section & assigning it a name, designed to match the style
+ * of other components on the `/list/[id]` page.
+ *
+ * @param listId The list to add the section to
+ * @param onSectionAdded A callback to handle the creation of a section (after the API
+ *  call already succeeded; only state update needed)
+ */
 export default function AddListSection({
   listId,
-  addListSection
+  onSectionAdded
 }: {
   listId: string;
-  addListSection: (_: ListSection) => unknown;
+  onSectionAdded: (_: ListSection) => unknown;
 }) {
   const [name, setName] = useState('');
 
@@ -40,10 +49,10 @@ export default function AddListSection({
       .then(res => {
         const id = res.content?.split('/').at(-1);
 
-        addListSection(new ListSection(name, [], id));
+        onSectionAdded(new ListSection(name, [], id));
         setName('');
       })
-      .catch(err => addToast({ title: err.message, color: 'danger' }));
+      .catch(addToastForError);
   }
 
   return (
