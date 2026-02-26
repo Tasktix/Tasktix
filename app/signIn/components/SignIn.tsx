@@ -25,6 +25,7 @@ import { Github } from 'react-bootstrap-icons';
 
 import { useAuth } from '@/components/AuthProvider';
 import { authClient } from '@/lib/auth-client';
+import { handleOauth } from '../oauth';
 
 export default function SignIn() {
   const { setLoggedInUser } = useAuth();
@@ -37,20 +38,6 @@ export default function SignIn() {
 
   function handlePasswordInput(input: string) {
     setInputs({ ...inputs, password: input });
-  }
-  async function handleOauth(provider: string) {
-    await authClient.signIn.social({
-      provider: provider,
-    }, 
-    {
-      onSuccess: ctx => {
-        setLoggedInUser( ctx.data.User)
-        router.push('/list')
-      },
-      onError: ctx => {
-        addToast({ title: ctx.error.message, color: 'danger' });
-      }
-    })
   }
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -106,7 +93,7 @@ export default function SignIn() {
             startContent={<Github/>}
             variant="bordered"
             aria-label='sign in with github'
-            onPress={(e) => handleOauth('github')}
+            onPress={() => handleOauth('github', { setLoggedInUser, router })}
           >
             Continue with Github
           </Button>
