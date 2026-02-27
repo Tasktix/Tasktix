@@ -89,6 +89,7 @@ test('Properly handles failed github authentication', async () => {
   vi.mocked(authClient.signIn.social).mockImplementation(
     (options, fetchOptions) => {
       if (fetchOptions?.onError) {
+        // void required to suppres eslint complaint - skipcq: JS-0098
         void fetchOptions.onError(exampleError as unknown as ErrorContext);
       }
     }
@@ -120,6 +121,7 @@ test('Properly redirects and sets logged in user on succesful github authenticat
   vi.mocked(authClient.signIn.social).mockImplementation(
     (options, fetchOptions) => {
       if (fetchOptions?.onSuccess) {
+        // void required to suppres eslint complaint - skipcq: JS-0098
         void fetchOptions.onSuccess(
           exampleSuccess as unknown as SuccessContext
         );
