@@ -21,6 +21,7 @@ import {
   Button,
   Input,
   Select,
+  Selection,
   SelectItem,
   User
 } from '@heroui/react';
@@ -29,7 +30,7 @@ import { FormEvent, useState } from 'react';
 
 import { getBackgroundColor } from '@/lib/color';
 import ListMember from '@/lib/model/listMember';
-import Role from '@/lib/model/role';
+import MemberRole from '@/lib/model/memberRole';
 import api from '@/lib/api';
 
 /**
@@ -43,37 +44,15 @@ import api from '@/lib/api';
 export default function MemberSettings({
   listId,
   members,
+  roles,
   setMembers
 }: Readonly<{
   listId: string;
   members: ListMember[];
+  roles: Map<string, MemberRole>;
   setMembers: (members: ListMember[]) => unknown;
 }>) {
   const [newUsername, setNewUsername] = useState('');
-
-  const roles: Pick<Role, 'name' | 'description'>[] = [
-    {
-      name: 'Admin',
-      description: 'Full access, including destructive actions'
-    },
-    {
-      name: 'Manager',
-      description: 'Manage tags, tasks, and members; cannot delete list'
-    },
-    {
-      name: 'Product Owner',
-      description: 'Manage tags and tasks, including assigning tasks'
-    },
-    {
-      name: 'Collaborator',
-      description: 'Add and update tasks, excluding assigning tasks'
-    },
-    {
-      name: 'Stakeholder',
-      description: 'Viewer permissions and add tasks'
-    },
-    { name: 'Viewer', description: 'Can only view current status' }
-  ];
 
   function handleAddMember(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -94,29 +73,34 @@ export default function MemberSettings({
       .catch(err => addToast({ title: err.message, color: 'danger' }));
   }
 
-  function handleUpdatePermissions(
-    userId: string,
-    values: {
-      canAdd?: boolean;
-      canRemove?: boolean;
-      canAssign?: boolean;
-      canComplete?: boolean;
+  function handleUpdatePermissions(userId: string, roleId: Selection) {
+    let trueRoleId: string;
+
+    if (roleId === 'all') {
+      const id = roles.values().next().value?.id;
+
+      if (!id) throw new Error('Unexpected empty set of possible roles');
+
+      trueRoleId = id;
+    } else {
+      const id = roleId.keys().next().value;
+
+      if (typeof id === 'number') throw new Error('Unexpected numeric key');
+      if (!id) return; // User tried to clear selection
+
+      trueRoleId = id;
     }
-  ) {
+
     api
-      .patch(`/list/${listId}/member/${userId}`, values)
+      .patch(`/list/${listId}/member/${userId}`, { roleId })
       .then(() => {
+        const role = roles.get(trueRoleId);
+
+        if (!role) throw new Error(`Unable to find role ${trueRoleId}`);
+
         setMembers(
           members.map(m =>
-            m.user.id === userId
-              ? new ListMember(
-                  m.user,
-                  values.canAdd ?? m.canAdd,
-                  values.canRemove ?? m.canRemove,
-                  values.canComplete ?? m.canComplete,
-                  values.canAssign ?? m.canAssign
-                )
-              : m
+            m.user.id === userId ? new ListMember(m.user, role) : m
           )
         );
       })
@@ -152,8 +136,14 @@ export default function MemberSettings({
             }}
             name={member.user.username}
           />
-          <Select label='Role' onSelectionChange={handleUpdatePermissions}>
-            {roles.map(role => (
+          <Select
+            label='Role'
+            onSelectionChange={handleUpdatePermissions.bind(
+              null,
+              member.user.id
+            )}
+          >
+            {Array.from(roles.values()).map(role => (
               <SelectItem key={role.name} description={role.description}>
                 {role.name}
               </SelectItem>

@@ -33,6 +33,7 @@ import Tag from '@/lib/model/tag';
 import { NamedColor } from '@/lib/model/color';
 import ListMember from '@/lib/model/listMember';
 import { ListAction } from '@/components/List/types';
+import MemberRole from '@/lib/model/memberRole';
 
 import GeneralSettings from './GeneralSettings';
 import MemberSettings from './MemberSettings';
@@ -65,6 +66,7 @@ import TagSettings from './TagSettings';
 export default function ListSettings({
   listId,
   members,
+  roles,
   listName,
   listColor,
   tagsAvailable,
@@ -77,6 +79,7 @@ export default function ListSettings({
 }: Readonly<{
   listId: string;
   members: ListMember[];
+  roles: Map<string, MemberRole>;
   listName: string;
   listColor: NamedColor;
   tagsAvailable: Tag[];
@@ -129,6 +132,7 @@ export default function ListSettings({
                 <MemberSettings
                   listId={listId}
                   members={members}
+                  roles={roles}
                   setMembers={members =>
                     dispatchList({ type: 'SetMembers', members })
                   }

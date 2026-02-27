@@ -19,6 +19,7 @@
 'use client';
 
 import { useReducer, useState } from 'react';
+import { MemberRole } from '@prisma/client';
 
 import AddListSection from '@/components/AddListSection';
 import SearchBar from '@/components/SearchBar';
@@ -51,13 +52,18 @@ import { ListState } from './types';
  */
 export default function List({
   startingList,
-  startingTagsAvailable
+  startingTagsAvailable,
+  startingRoles
 }: {
   startingList: string;
   startingTagsAvailable: string;
+  startingRoles: string;
 }) {
   const builtList = JSON.parse(startingList) as ListModel;
   const builtSections: ListState['list']['sections'] = new Map();
+  const builtRoles: Map<string, MemberRole> = new Map(
+    (JSON.parse(startingRoles) as MemberRole[]).map(role => [role.id, role])
+  );
 
   // Rebuild Date objects turned to JSON strings & convert arrays to Maps
   for (const section of builtList.sections) {
@@ -100,6 +106,7 @@ export default function List({
           listId={list.id}
           listName={list.name}
           members={list.members}
+          roles={builtRoles}
           setListName={listHandlers.setName}
           tagsAvailable={tagsAvailable}
         />
