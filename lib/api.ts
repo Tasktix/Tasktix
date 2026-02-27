@@ -104,7 +104,7 @@ async function request(
     content: parsedResult.content
   };
 
-  if (serverResponse.code === 403) window.location.href = '/signIn';
+  if (serverResponse.code === 401) window.location.href = '/signIn';
   // eslint-disable-next-line @typescript-eslint/only-throw-error
   if (serverResponse.code >= 400) throw serverResponse;
 
