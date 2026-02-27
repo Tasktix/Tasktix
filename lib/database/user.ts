@@ -18,6 +18,7 @@
 
 'use server';
 
+import MemberRole from '@/lib/model/memberRole';
 import User from '@/lib/model/user';
 
 import { prisma } from './db_connect';
@@ -57,6 +58,18 @@ export async function getUserByUsername(
  */
 export async function getUserByEmail(email: string): Promise<User | false> {
   const result = await prisma.user.findUnique({ where: { email } });
+
+  return result ?? false;
+}
+
+export async function getMemberRoles(): Promise<MemberRole[] | false> {
+  const result = await prisma.memberRole.findMany();
+
+  return result ?? false;
+}
+
+export async function getRole(id: string): Promise<MemberRole | false> {
+  const result = await prisma.memberRole.findUnique({ where: { id } });
 
   return result ?? false;
 }

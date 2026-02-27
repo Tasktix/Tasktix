@@ -19,7 +19,7 @@
 import z from 'zod';
 
 import { ClientError, ServerError, Success } from '@/lib/Response';
-import { getIsListAssignee } from '@/lib/database/list';
+import { getRoleByList } from '@/lib/database/list';
 import { updateSectionIndices } from '@/lib/database/listItem';
 import { getUser } from '@/lib/session';
 import { ZodListItem } from '@/lib/model/listItem';
@@ -39,9 +39,11 @@ export async function PATCH(
 
   if (!user) return ClientError.Unauthenticated('Not logged in');
 
-  const isMember = await getIsListAssignee(user.id, id);
+  const role = await getRoleByList(user.id, id);
 
-  if (!isMember) return ClientError.BadRequest('List not found');
+  if (!role) return ClientError.BadRequest('List not found');
+  if (!role.canManageItems)
+    return ClientError.Forbidden('Insufficient permissions to reorder items');
 
   const parseResult = PatchBody.safeParse(await request.json());
 

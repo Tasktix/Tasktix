@@ -19,7 +19,7 @@
 import { ClientError, ServerError, Success } from '@/lib/Response';
 import {
   deleteTag,
-  getIsListAssignee,
+  getRoleByList,
   getTagById,
   updateTag
 } from '@/lib/database/list';
@@ -37,9 +37,11 @@ export async function PATCH(
 
   if (!user) return ClientError.Unauthenticated('Not logged in');
 
-  const isMember = await getIsListAssignee(user.id, id);
+  const role = await getRoleByList(user.id, id);
 
-  if (!isMember) return ClientError.BadRequest('List not found');
+  if (!role) return ClientError.BadRequest('List not found');
+  if (!role.canManageTags)
+    return ClientError.Forbidden('Insufficient permissions to update tag');
 
   const tag = await getTagById(tagId);
 
@@ -58,9 +60,9 @@ export async function PATCH(
 
   const result = await updateTag(tag);
 
-  if (!result) return ServerError.Internal('Could not add tag');
+  if (!result) return ServerError.Internal('Could not update tag');
 
-  return Success.OK('Tag added');
+  return Success.OK('Tag updated');
 }
 
 export async function DELETE(
@@ -72,9 +74,11 @@ export async function DELETE(
 
   if (!user) return ClientError.Unauthenticated('Not logged in');
 
-  const isMember = await getIsListAssignee(user.id, id);
+  const role = await getRoleByList(user.id, id);
 
-  if (!isMember) return ClientError.BadRequest('List not found');
+  if (!role) return ClientError.BadRequest('List not found');
+  if (!role.canManageTags)
+    return ClientError.Forbidden('Insufficient permissions to remove tagId');
 
   const result = await deleteTag(tagId);
 

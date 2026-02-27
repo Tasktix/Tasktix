@@ -18,14 +18,14 @@
 
 import {
   getIsListAssignee,
-  getListMember,
+  getRoleByList,
   updateListMember
 } from '@/lib/database/list';
 import { ZodListMember } from '@/lib/model/listMember';
 import { ClientError, ServerError, Success } from '@/lib/Response';
 import { getUser } from '@/lib/session';
 
-const PatchBody = ZodListMember.omit({ listId: true, userId: true }).partial();
+const PatchBody = ZodListMember.omit({ listId: true, userId: true });
 
 /**
  * Update a member's permissions for a specific list
@@ -46,13 +46,15 @@ export async function PATCH(
 
   if (!user) return ClientError.Unauthenticated('Not logged in');
 
-  const isMember = await getIsListAssignee(user.id, id);
+  const role = await getRoleByList(user.id, id);
 
-  if (!isMember) return ClientError.NotFound('List not found');
+  if (!role) return ClientError.NotFound('List not found');
+  if (!role.canManageMembers)
+    return ClientError.Forbidden('Insufficient permissions to update member');
 
-  const member = await getListMember(userId, id);
+  const isMember = await getIsListAssignee(userId, id);
 
-  if (!member) return ClientError.NotFound('Member not found');
+  if (!isMember) return ClientError.NotFound('Member not found');
 
   const parseResult = PatchBody.safeParse(await request.json());
 
@@ -61,15 +63,7 @@ export async function PATCH(
 
   const requestBody = parseResult.data;
 
-  if (requestBody.canAdd !== undefined) member.canAdd = requestBody.canAdd;
-  if (requestBody.canAssign !== undefined)
-    member.canAssign = requestBody.canAssign;
-  if (requestBody.canComplete !== undefined)
-    member.canComplete = requestBody.canComplete;
-  if (requestBody.canRemove !== undefined)
-    member.canRemove = requestBody.canRemove;
-
-  const result = await updateListMember(id, userId, member);
+  const result = await updateListMember(id, userId, requestBody.roleId);
 
   if (!result) return ServerError.Internal('Could not update member');
 

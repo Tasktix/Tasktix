@@ -20,44 +20,44 @@ import z from 'zod';
 
 import { generateId } from '../generateId';
 
-export const ZodRole = z.strictObject({
+export const ZodMemberRole = z.strictObject({
   id: z.string().length(16),
   name: z.string().min(1).max(32),
   description: z.string().min(1).max(64),
   canAddItems: z.boolean(),
-  canCompleteItems: z.boolean(),
   canUpdateItems: z.boolean(),
-  canAssignItems: z.boolean(),
-  canDeleteItems: z.boolean(),
+  canManageItems: z.boolean(),
+  canManageTags: z.boolean(),
+  canManageAssignees: z.boolean(),
   canManageMembers: z.boolean(),
-  canManageList: z.boolean(),
-  canDeleteList: z.boolean()
+  canUpdateList: z.boolean(),
+  canManageList: z.boolean()
 });
 
-export default class Role {
+export default class MemberRole {
   id: string;
   name: string;
   description: string;
   canAddItems: boolean;
-  canCompleteItems: boolean;
   canUpdateItems: boolean;
-  canAssignItems: boolean;
-  canDeleteItems: boolean;
+  canManageItems: boolean;
+  canManageTags: boolean;
+  canManageAssignees: boolean;
   canManageMembers: boolean;
+  canUpdateList: boolean;
   canManageList: boolean;
-  canDeleteList: boolean;
 
   constructor(
     name: string,
     description: string,
     canAddItems: boolean,
-    canCompleteItems: boolean,
     canUpdateItems: boolean,
-    canAssignItems: boolean,
-    canDeleteItems: boolean,
+    canManageItems: boolean,
+    canManageTags: boolean,
+    canManageAssignees: boolean,
     canManageMembers: boolean,
+    canUpdateList: boolean,
     canManageList: boolean,
-    canDeleteList: boolean,
     id?: string
   ) {
     if (!id) id = generateId();
@@ -66,12 +66,12 @@ export default class Role {
     this.name = name;
     this.description = description;
     this.canAddItems = canAddItems;
-    this.canCompleteItems = canCompleteItems;
+    this.canManageItems = canManageItems;
     this.canUpdateItems = canUpdateItems;
-    this.canAssignItems = canAssignItems;
-    this.canDeleteItems = canDeleteItems;
+    this.canManageTags = canManageTags;
+    this.canManageAssignees = canManageAssignees;
     this.canManageMembers = canManageMembers;
+    this.canUpdateList = canUpdateList;
     this.canManageList = canManageList;
-    this.canDeleteList = canDeleteList;
   }
 }

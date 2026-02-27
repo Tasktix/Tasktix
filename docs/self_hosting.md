@@ -105,3 +105,79 @@ foo@bar:~$ systemctl --user daemon-reload
 foo@bar:~$ systemctl --user start tasktix-pod
 foo@bar:~$ podman run --rm --pod tasktix --secret "TASKTIX_DATABASE_URL,type=env,target=DATABASE_URL" ghcr.io/tasktix/tasktix-deploy:latest
 ```
+
+```sql
+INSERT INTO `MemberRole` (
+  `id`,
+  `name`,
+  `description`,
+  `canAddItems`,
+  `canUpdateItems`,
+  `canManageItems`,
+  `canManageTags`,
+  `canManageAssignees`,
+  `canManageMembers`,
+  `canUpdateList`,
+  `canManageList`
+) VALUES (
+  'Ok2GO5KJcAXOjnnT',
+  'Manager',
+  'Manage tags, tasks, and members; cannot delete list',
+  TRUE,
+  TRUE,
+  TRUE,
+  TRUE,
+  TRUE,
+  TRUE,
+  TRUE,
+  FALSE
+), (
+  'V4A5fgB4Yui8et75',
+  'Product Owner',
+  'Manage tags and tasks, including assigning tasks',
+  TRUE,
+  TRUE,
+  TRUE,
+  TRUE,
+  TRUE,
+  FALSE,
+  FALSE,
+  FALSE
+), (
+  'y9Be3uYVU9JLtUYm',
+  'Collaborator',
+  'Add and update tasks, excluding assigning tasks',
+  TRUE,
+  TRUE,
+  TRUE,
+  FALSE,
+  FALSE,
+  FALSE,
+  FALSE,
+  FALSE
+), (
+  'YbkaiSyYGyQDWzt7',
+  'Stakeholder',
+  'Viewer permissions and add tasks',
+  TRUE,
+  FALSE,
+  FALSE,
+  FALSE,
+  FALSE,
+  FALSE,
+  FALSE,
+  FALSE
+), (
+  'EVCEq6rSFUDa0uGt',
+  'Viewer',
+  'Can only view current status',
+  FALSE,
+  FALSE,
+  FALSE,
+  FALSE,
+  FALSE,
+  FALSE,
+  FALSE,
+  FALSE
+);
+```

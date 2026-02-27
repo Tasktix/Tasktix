@@ -17,7 +17,7 @@
  */
 
 import { ClientError, ServerError, Success } from '@/lib/Response';
-import { getIsListAssigneeByItem } from '@/lib/database/list';
+import { getRoleByItem } from '@/lib/database/list';
 import { linkTag, unlinkTag } from '@/lib/database/listItem';
 import { getUser } from '@/lib/session';
 
@@ -30,9 +30,11 @@ export async function POST(
 
   if (!user) return ClientError.Unauthenticated('Not logged in');
 
-  const isMember = await getIsListAssigneeByItem(user.id, id);
+  const role = await getRoleByItem(user.id, id);
 
-  if (!isMember) return ClientError.BadRequest('List item not found');
+  if (!role) return ClientError.BadRequest('List item not found');
+  if (!role.canUpdateItems)
+    return ClientError.Forbidden('Insufficient permissions to link tag');
 
   const result = await linkTag(id, tagId);
 
@@ -50,9 +52,11 @@ export async function DELETE(
 
   if (!user) return ClientError.Unauthenticated('Not logged in');
 
-  const isMember = await getIsListAssigneeByItem(user.id, id);
+  const role = await getRoleByItem(user.id, id);
 
-  if (!isMember) return ClientError.BadRequest('List not found');
+  if (!role) return ClientError.BadRequest('List not found');
+  if (!role.canUpdateItems)
+    return ClientError.Forbidden('Insufficient permissions to unlink tag');
 
   const result = await unlinkTag(id, tagId);
 

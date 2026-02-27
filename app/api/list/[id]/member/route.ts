@@ -17,13 +17,20 @@
  */
 
 import { ClientError, ServerError, Success } from '@/lib/Response';
-import { createListMember, getIsListAssignee } from '@/lib/database/list';
-import { getUserByUsername } from '@/lib/database/user';
+import {
+  createListMember,
+  getIsListAssignee,
+  getRoleByList
+} from '@/lib/database/list';
+import { getRole, getUserByUsername } from '@/lib/database/user';
 import ListMember from '@/lib/model/listMember';
 import { getUser } from '@/lib/session';
 import { ZodUser } from '@/lib/model/user';
+import { ZodMemberRole } from '@/lib/model/memberRole';
 
-const PostBody = ZodUser.pick({ username: true });
+const PostBody = ZodUser.pick({ username: true }).extend({
+  roleId: ZodMemberRole.shape.id
+});
 
 /**
  * Add a user as a member of the list so they can view it and be assigned items to
@@ -42,11 +49,11 @@ export async function POST(
 
   if (!user) return ClientError.Unauthenticated('Not logged in');
 
-  const isMember = await getIsListAssignee(user.id, id);
+  const role = await getRoleByList(user.id, id);
 
-  if (!isMember) return ClientError.NotFound('List not found');
-
-  // TODO: Should add permission & authorization for adding users
+  if (!role) return ClientError.NotFound('List not found');
+  if (!role.canManageMembers)
+    return ClientError.Forbidden('Insufficient permissions to add member');
 
   const parseResult = PostBody.safeParse(await request.json());
 
@@ -62,7 +69,11 @@ export async function POST(
   if (await getIsListAssignee(newUser.id, id))
     return ClientError.Conflict('User is already a member');
 
-  const listMember = new ListMember(newUser);
+  const newRole = await getRole(requestBody.roleId);
+
+  if (!newRole) return ClientError.NotFound('Role not found');
+
+  const listMember = new ListMember(newUser, newRole);
 
   const result = await createListMember(id, listMember);
 

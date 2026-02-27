@@ -17,7 +17,7 @@
  */
 
 import { ClientError, ServerError, Success } from '@/lib/Response';
-import { getListBySectionId, getListMember } from '@/lib/database/list';
+import { getListBySectionId, getRoleByList } from '@/lib/database/list';
 import { createListItem } from '@/lib/database/listItem';
 import ListItem, { ZodListItem } from '@/lib/model/listItem';
 import { getUser } from '@/lib/session';
@@ -54,12 +54,11 @@ export async function POST(request: Request) {
 
   if (!list) return ClientError.BadRequest('List not found');
 
-  const member = await getListMember(user.id, list.id);
+  const role = await getRoleByList(user.id, list.id);
 
-  if (!member) return ClientError.BadRequest('List not found');
-
-  if (!member.canAdd)
-    return ClientError.BadRequest('Insufficient permissions to add item');
+  if (!role) return ClientError.BadRequest('List not found');
+  if (!role.canAddItems)
+    return ClientError.Forbidden('Insufficient permissions to add item');
 
   if (!dateDue && list.hasDueDates)
     return ClientError.BadRequest('Invalid due date');

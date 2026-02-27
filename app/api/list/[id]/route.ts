@@ -19,8 +19,8 @@
 import { ClientError, ServerError, Success } from '@/lib/Response';
 import {
   deleteList,
-  getIsListAssignee,
   getListById,
+  getRoleByList,
   updateList
 } from '@/lib/database/list';
 import { ZodList } from '@/lib/model/list';
@@ -41,9 +41,11 @@ export async function PATCH(
 
   if (!list) return ClientError.NotFound('List not found');
 
-  const isMember = await getIsListAssignee(user.id, id);
+  const role = await getRoleByList(user.id, id);
 
-  if (!isMember) return ClientError.BadRequest('List not found');
+  if (!role) return ClientError.BadRequest('List not found');
+  if (!role.canUpdateList)
+    return ClientError.Forbidden('Insufficient permissions to update list');
 
   const parseResult = PatchBody.safeParse(await request.json());
 
@@ -77,9 +79,11 @@ export async function DELETE(
 
   if (!user) return ClientError.Unauthenticated('Not logged in');
 
-  const isMember = await getIsListAssignee(user.id, id);
+  const role = await getRoleByList(user.id, id);
 
-  if (!isMember) return ClientError.BadRequest('List not found');
+  if (!role) return ClientError.BadRequest('List not found');
+  if (!role.canManageList)
+    return ClientError.Forbidden('Insufficient permissions to delete list');
 
   const result = await deleteList(id);
 

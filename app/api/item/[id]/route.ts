@@ -17,7 +17,7 @@
  */
 
 import { ClientError, ServerError, Success } from '@/lib/Response';
-import { getListMemberByItem } from '@/lib/database/list';
+import { getRoleByItem } from '@/lib/database/list';
 import {
   deleteListItem,
   getListItemById,
@@ -45,9 +45,11 @@ export async function PATCH(
 
   if (!item) return ClientError.NotFound('List item not found');
 
-  const member = await getListMemberByItem(user.id, id);
+  const role = await getRoleByItem(user.id, id);
 
-  if (!member) return ClientError.BadRequest('List item not found');
+  if (!role) return ClientError.BadRequest('List item not found');
+  if (!role.canUpdateItems)
+    return ClientError.Forbidden('Insufficient permissions to update item');
 
   const parseResult = PatchBody.safeParse(await request.json());
 
@@ -57,13 +59,7 @@ export async function PATCH(
   const requestBody = parseResult.data;
 
   if (requestBody.name) item.name = requestBody.name;
-  if (requestBody.status) {
-    if (requestBody.status === 'Completed' && !member.canComplete)
-      return ClientError.BadRequest(
-        'Insufficient permissions to complete item'
-      );
-    item.status = requestBody.status;
-  }
+  if (requestBody.status) item.status = requestBody.status;
   if (requestBody.priority) item.priority = requestBody.priority;
   if (requestBody.dateDue) item.dateDue = new Date(requestBody.dateDue);
   if (requestBody.expectedMs) item.expectedMs = requestBody.expectedMs;
@@ -94,11 +90,11 @@ export async function DELETE(
 
   if (!user) return ClientError.Unauthenticated('Not logged in');
 
-  const member = await getListMemberByItem(user.id, id);
+  const role = await getRoleByItem(user.id, id);
 
-  if (!member) return ClientError.BadRequest('List not found');
-  if (!member.canRemove)
-    return ClientError.BadRequest('Insufficient permissions to remove item');
+  if (!role) return ClientError.BadRequest('List not found');
+  if (!role.canManageItems)
+    return ClientError.Forbidden('Insufficient permissions to remove item');
 
   const result = await deleteListItem(id);
 
