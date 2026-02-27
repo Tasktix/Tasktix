@@ -20,7 +20,6 @@
 
 import List from '@/lib/model/list';
 import ListMember from '@/lib/model/listMember';
-import MemberRole from '@/lib/model/memberRole';
 import Tag from '@/lib/model/tag';
 
 import { prisma } from './db_connect';
@@ -147,46 +146,6 @@ export async function getListMembersByUser(
   }
 
   return returnVal;
-}
-
-export async function getRoleByList(
-  userId: string,
-  listId: string
-): Promise<MemberRole | false> {
-  const result = await prisma.memberRole.findFirst({
-    where: {
-      listMembers: {
-        some: {
-          userId,
-          list: {
-            id: listId
-          }
-        }
-      }
-    }
-  });
-
-  return result ?? false;
-}
-
-export async function getRoleByItem(
-  userId: string,
-  itemId: string
-): Promise<MemberRole | false> {
-  const result = await prisma.memberRole.findFirst({
-    where: {
-      listMembers: {
-        some: {
-          userId,
-          list: {
-            sections: { some: { items: { some: { id: itemId } } } }
-          }
-        }
-      }
-    }
-  });
-
-  return result ?? false;
 }
 
 export async function getIsListAssignee(

@@ -19,7 +19,7 @@
 import z from 'zod';
 
 import { ClientError, ServerError, Success } from '@/lib/Response';
-import { getRoleByList } from '@/lib/database/list';
+import { getRoleByList } from '@/lib/database/user';
 import { updateSectionIndices } from '@/lib/database/listItem';
 import { getUser } from '@/lib/session';
 import { ZodListItem } from '@/lib/model/listItem';

@@ -18,9 +18,9 @@
 
 import {
   getIsListAssignee,
-  getRoleByList,
   updateListMember
 } from '@/lib/database/list';
+import { getRoleByList } from '@/lib/database/user';
 import { ZodListMember } from '@/lib/model/listMember';
 import { ClientError, ServerError, Success } from '@/lib/Response';
 import { getUser } from '@/lib/session';

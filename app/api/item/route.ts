@@ -17,7 +17,8 @@
  */
 
 import { ClientError, ServerError, Success } from '@/lib/Response';
-import { getListBySectionId, getRoleByList } from '@/lib/database/list';
+import { getListBySectionId } from '@/lib/database/list';
+import { getRoleByList } from '@/lib/database/user';
 import { createListItem } from '@/lib/database/listItem';
 import ListItem, { ZodListItem } from '@/lib/model/listItem';
 import { getUser } from '@/lib/session';

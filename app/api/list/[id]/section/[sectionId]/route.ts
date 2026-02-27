@@ -17,7 +17,7 @@
  */
 
 import { ClientError, ServerError, Success } from '@/lib/Response';
-import { getRoleByList } from '@/lib/database/list';
+import { getRoleByList } from '@/lib/database/user';
 import {
   deleteListSection,
   updateListSection

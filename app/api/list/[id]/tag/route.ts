@@ -17,7 +17,8 @@
  */
 
 import { ClientError, ServerError, Success } from '@/lib/Response';
-import { createTag, getRoleByList } from '@/lib/database/list';
+import { createTag } from '@/lib/database/list';
+import { getRoleByList } from '@/lib/database/user';
 import Tag, { ZodTag } from '@/lib/model/tag';
 import { getUser } from '@/lib/session';
 

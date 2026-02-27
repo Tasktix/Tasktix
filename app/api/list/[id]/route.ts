@@ -20,9 +20,9 @@ import { ClientError, ServerError, Success } from '@/lib/Response';
 import {
   deleteList,
   getListById,
-  getRoleByList,
   updateList
 } from '@/lib/database/list';
+import { getRoleByList } from '@/lib/database/user';
 import { ZodList } from '@/lib/model/list';
 import { getUser } from '@/lib/session';
 

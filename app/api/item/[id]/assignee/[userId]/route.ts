@@ -17,7 +17,7 @@
  */
 
 import { ClientError, ServerError, Success } from '@/lib/Response';
-import { getRoleByItem } from '@/lib/database/list';
+import { getRoleByItem } from '@/lib/database/user';
 import { linkAssignee, unlinkAssignee } from '@/lib/database/listItem';
 import { getUser } from '@/lib/session';
 

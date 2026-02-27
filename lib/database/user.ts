@@ -73,3 +73,43 @@ export async function getRole(id: string): Promise<MemberRole | false> {
 
   return result ?? false;
 }
+
+export async function getRoleByItem(
+  userId: string,
+  itemId: string
+): Promise<MemberRole | false> {
+  const result = await prisma.memberRole.findFirst({
+    where: {
+      listMembers: {
+        some: {
+          userId,
+          list: {
+            sections: { some: { items: { some: { id: itemId } } } }
+          }
+        }
+      }
+    }
+  });
+
+  return result ?? false;
+}
+
+export async function getRoleByList(
+  userId: string,
+  listId: string
+): Promise<MemberRole | false> {
+  const result = await prisma.memberRole.findFirst({
+    where: {
+      listMembers: {
+        some: {
+          userId,
+          list: {
+            id: listId
+          }
+        }
+      }
+    }
+  });
+
+  return result ?? false;
+}

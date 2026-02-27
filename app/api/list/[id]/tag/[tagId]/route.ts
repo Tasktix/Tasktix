@@ -19,10 +19,10 @@
 import { ClientError, ServerError, Success } from '@/lib/Response';
 import {
   deleteTag,
-  getRoleByList,
   getTagById,
   updateTag
 } from '@/lib/database/list';
+import { getRoleByList } from '@/lib/database/user';
 import { ZodTag } from '@/lib/model/tag';
 import { getUser } from '@/lib/session';
 
