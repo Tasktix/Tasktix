@@ -58,8 +58,9 @@ ALTER TABLE `ListMember` DROP COLUMN `canAdd`,
     DROP COLUMN `canAssign`,
     DROP COLUMN `canComplete`,
     DROP COLUMN `canRemove`,
-    ADD COLUMN `roleId` CHAR(16) NOT NULL DEFAULT 'yZW3BwhhtgSQ7zhb',
-    ALTER COLUMN `roleId` DROP DEFAULT;
+    ADD COLUMN `roleId` CHAR(16) NOT NULL DEFAULT 'yZW3BwhhtgSQ7zhb';
+
+ALTER TABLE `ListMember` ALTER COLUMN `roleId` DROP DEFAULT;
 
 -- AddForeignKey
 ALTER TABLE `ListMember` ADD CONSTRAINT `ListMember_roleId_fkey` FOREIGN KEY (`roleId`) REFERENCES `MemberRole`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
