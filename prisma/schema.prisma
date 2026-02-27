@@ -68,16 +68,12 @@ model Tag {
 }
 
 model ListMember {
-  userId      String     @db.VarChar(191)
-  listId      String     @db.Char(16)
-  canAdd      Boolean    @default(false)
-  canRemove   Boolean    @default(false)
-  canComplete Boolean    @default(false)
-  canAssign   Boolean    @default(false)
-  roleId      String     @db.Char(16)
-  list        List       @relation(fields: [listId], references: [id], onDelete: Cascade)
-  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  role        MemberRole @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  userId String     @db.VarChar(191)
+  listId String     @db.Char(16)
+  roleId String     @db.Char(16)
+  list   List       @relation(fields: [listId], references: [id], onDelete: Cascade)
+  user   User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role   MemberRole @relation(fields: [roleId], references: [id], onDelete: Cascade)
 
   @@id([userId, listId])
   @@index([listId])
