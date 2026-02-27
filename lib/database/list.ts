@@ -35,8 +35,6 @@ export async function createList(
         members: {
           createMany: {
             data: list.members.map(m => ({
-              ...m,
-              user: undefined,
               userId: m.user.id,
               roleId: m.role.id
             }))

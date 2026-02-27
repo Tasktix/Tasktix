@@ -18,9 +18,9 @@
 
 import { ClientError, ServerError, Success } from '@/lib/Response';
 import { createList } from '@/lib/database/list';
+import { getCreatorRole } from '@/lib/database/user';
 import List, { ZodList } from '@/lib/model/list';
 import ListMember from '@/lib/model/listMember';
-import MemberRole from '@/lib/model/memberRole';
 import { getUser } from '@/lib/session';
 
 const PostBody = ZodList.pick({ name: true, color: true });
@@ -39,9 +39,9 @@ export async function POST(request: Request) {
 
   const name = requestBody.name;
   const color = requestBody.color;
+  const role = await getCreatorRole();
 
-  // TODO: how to handle finding default role?
-  const listMember = new ListMember(session, new MemberRole());
+  const listMember = new ListMember(session, role);
   const list = new List(name, color, [listMember], [], true, true, true);
 
   const result = await createList(list);

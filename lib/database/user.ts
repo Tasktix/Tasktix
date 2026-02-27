@@ -74,6 +74,13 @@ export async function getRole(id: string): Promise<MemberRole | false> {
   return result ?? false;
 }
 
+// TODO: Is this the right way to handle finding the creator role?
+export async function getCreatorRole(): Promise<MemberRole> {
+  return prisma.memberRole.findUniqueOrThrow({
+    where: { id: 'yZW3BwhhtgSQ7zhb' } // ID from admin role in migration file
+  });
+}
+
 export async function getRoleByItem(
   userId: string,
   itemId: string
