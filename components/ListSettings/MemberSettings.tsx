@@ -32,6 +32,7 @@ import { getBackgroundColor } from '@/lib/color';
 import ListMember from '@/lib/model/listMember';
 import MemberRole from '@/lib/model/memberRole';
 import api from '@/lib/api';
+import { sortRolesByPermissions } from '@/lib/sort';
 
 /**
  * Displays all list members and their permissions. Allows adding new members and updating
@@ -145,11 +146,13 @@ export default function MemberSettings({
             )}
           >
             {/* TODO: sort by permission level */}
-            {Array.from(roles.values()).map(role => (
-              <SelectItem key={role.id} description={role.description}>
-                {role.name}
-              </SelectItem>
-            ))}
+            {Array.from(roles.values())
+              .sort(sortRolesByPermissions)
+              .map(role => (
+                <SelectItem key={role.id} description={role.description}>
+                  {role.name}
+                </SelectItem>
+              ))}
           </Select>
         </span>
       ))}

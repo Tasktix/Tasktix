@@ -17,6 +17,26 @@
  */
 
 import ListItem from '@/lib/model/listItem';
+import MemberRole from '@/lib/model/memberRole';
+
+export function sortRolesByPermissions(a: MemberRole, b: MemberRole): number {
+  function sumPerms(perms: MemberRole): number {
+    let sum = 0;
+
+    if (perms.canAddItems) sum += 0b1;
+    if (perms.canUpdateItems) sum += 0b10;
+    if (perms.canManageItems) sum += 0b100;
+    if (perms.canManageTags) sum += 0b1000;
+    if (perms.canManageAssignees) sum += 0b10000;
+    if (perms.canManageMembers) sum += 0b100000;
+    if (perms.canUpdateList) sum += 0b1000000;
+    if (perms.canManageList) sum += 0b10000000;
+
+    return sum;
+  }
+
+  return sumPerms(b) - sumPerms(a);
+}
 
 export function sortItemsByCompleted(a: ListItem, b: ListItem): number {
   if (a.dateCompleted && b.dateCompleted) {
