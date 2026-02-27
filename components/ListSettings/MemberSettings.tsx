@@ -138,13 +138,15 @@ export default function MemberSettings({
           />
           <Select
             label='Role'
+            selectedKeys={[member.role.id]}
             onSelectionChange={handleUpdatePermissions.bind(
               null,
               member.user.id
             )}
           >
+            {/* TODO: sort by permission level */}
             {Array.from(roles.values()).map(role => (
-              <SelectItem key={role.name} description={role.description}>
+              <SelectItem key={role.id} description={role.description}>
                 {role.name}
               </SelectItem>
             ))}
