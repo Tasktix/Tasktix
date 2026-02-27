@@ -35,6 +35,7 @@ import {
 import { useRouter } from 'next/navigation';
 import { ReactNode, startTransition } from 'react';
 import Image from 'next/image';
+import { DoorClosedFill, PersonFill } from 'react-bootstrap-icons';
 
 import ThemeSwitcher from '@/components/ThemeSwitcher';
 import { useAuth } from '@/components/AuthProvider';
@@ -150,10 +151,20 @@ function AccountButton() {
         />
       </DropdownTrigger>
       <DropdownMenu aria-label='User Actions'>
-        <DropdownItem key='settings' href='/profile'>
+        <DropdownItem
+          key='settings'
+          href='/profile'
+          startContent={<PersonFill />}
+        >
           Profile
         </DropdownItem>
-        <DropdownItem key='signOut' onPress={handleClick}>
+        <DropdownItem
+          key='signOut'
+          className='text-danger'
+          color='danger'
+          startContent={<DoorClosedFill />}
+          onPress={handleClick}
+        >
           Log Out
         </DropdownItem>
       </DropdownMenu>
