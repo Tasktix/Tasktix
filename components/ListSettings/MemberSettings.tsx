@@ -93,7 +93,7 @@ export default function MemberSettings({
     }
 
     api
-      .patch(`/list/${listId}/member/${userId}`, { roleId })
+      .patch(`/list/${listId}/member/${userId}`, { roleId: trueRoleId })
       .then(() => {
         const role = roles.get(trueRoleId);
 
