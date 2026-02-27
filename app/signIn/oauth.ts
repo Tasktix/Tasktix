@@ -23,20 +23,23 @@ import { SuccessContext } from 'better-auth/react';
 import { authClient } from '@/lib/auth-client';
 import User from '@/lib/model/user';
 
-interface OAuthOptions {
+export interface OAuthControllers {
   setLoggedInUser: (user: User) => void;
   router: AppRouterInstance;
 }
 
-export async function handleOauth(provider: string, options: OAuthOptions) {
+export async function handleOauth(
+  provider: string,
+  controllers: OAuthControllers
+) {
   await authClient.signIn.social(
     {
       provider: provider
     },
     {
       onSuccess: (ctx: SuccessContext<{ User: User }>) => {
-        options.setLoggedInUser(ctx.data.User);
-        options.router.push('/list');
+        controllers.setLoggedInUser(ctx.data.User);
+        controllers.router.push('/list');
       },
       onError: ctx => {
         addToast({ title: ctx.error.message, color: 'danger' });

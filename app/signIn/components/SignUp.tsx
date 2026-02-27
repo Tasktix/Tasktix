@@ -20,8 +20,7 @@
 
 import { FormEvent, startTransition, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { addToast, Button, Input, Divider } from '@heroui/react';
-import { Github } from 'react-bootstrap-icons';
+import { addToast, Button, Input } from '@heroui/react';
 import { SuccessContext } from 'better-auth/react';
 
 import Message, { InputMessage } from '@/components/InputMessage';
@@ -35,12 +34,13 @@ import { randomNamedColor } from '@/lib/color';
 import { useAuth } from '@/components/AuthProvider';
 import User from '@/lib/model/user';
 
-import { handleOauth } from '../oauth';
 import {
   getUsernameMessage,
   getEmailMessage,
   getPasswordMessage
 } from '../messages';
+
+import OAuth from './OAuth';
 
 export default function SignUp() {
   interface InputMessages {
@@ -162,25 +162,7 @@ export default function SignUp() {
           Sign Up
         </Button>
       </div>
-      <div className='flex items-center gap-4 py-2'>
-        <Divider className='flex-1' />
-        <p className='text-tiny text-default-500 shrink-0'>OR</p>
-        <Divider className='flex-1' />
-      </div>
-      <div className='flex justify-center mt-6'>
-        <Button
-          aria-label='sign in with github'
-          startContent={<Github />}
-          variant='bordered'
-          onPress={() =>
-            startTransition(() =>
-              handleOauth('github', { setLoggedInUser, router })
-            )
-          }
-        >
-          Continue with Github
-        </Button>
-      </div>
+      <OAuth router={router} setLoggedInUser={setLoggedInUser} />
     </form>
   );
 }
