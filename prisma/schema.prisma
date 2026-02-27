@@ -68,17 +68,34 @@ model Tag {
 }
 
 model ListMember {
-  userId      String  @db.VarChar(191)
-  listId      String  @db.Char(16)
-  canAdd      Boolean @default(false)
-  canRemove   Boolean @default(false)
-  canComplete Boolean @default(false)
-  canAssign   Boolean @default(false)
-  list        List    @relation(fields: [listId], references: [id], onDelete: Cascade)
-  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String     @db.VarChar(191)
+  listId      String     @db.Char(16)
+  canAdd      Boolean    @default(false)
+  canRemove   Boolean    @default(false)
+  canComplete Boolean    @default(false)
+  canAssign   Boolean    @default(false)
+  roleId      String     @db.Char(16)
+  list        List       @relation(fields: [listId], references: [id], onDelete: Cascade)
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role        MemberRole @relation(fields: [roleId], references: [id], onDelete: Cascade)
 
   @@id([userId, listId])
   @@index([listId])
+}
+
+model MemberRole {
+  id                 String       @id @db.Char(16)
+  name               String       @db.VarChar(32)
+  description        String       @db.VarChar(64)
+  canAddItems        Boolean
+  canUpdateItems     Boolean
+  canManageItems     Boolean
+  canManageTags      Boolean
+  canManageAssignees Boolean
+  canManageMembers   Boolean
+  canUpdateList      Boolean
+  canManageList      Boolean
+  listMembers        ListMember[]
 }
 
 model ItemAssignee {
