@@ -61,7 +61,6 @@ export async function handleOauth(
   if (!SUPPORTED_PROVIDERS.includes(provider)) {
     return;
   }
-
   await authClient.signIn.social(
     {
       provider
