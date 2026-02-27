@@ -16,10 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {
-  getIsListAssignee,
-  updateListMember
-} from '@/lib/database/list';
+import { getIsListAssignee, updateListMember } from '@/lib/database/list';
 import { getRoleByList } from '@/lib/database/user';
 import { ZodListMember } from '@/lib/model/listMember';
 import { ClientError, ServerError, Success } from '@/lib/Response';
@@ -62,6 +59,8 @@ export async function PATCH(
     return ClientError.BadRequest('Invalid request data');
 
   const requestBody = parseResult.data;
+
+  // TODO: don't allow last Admin to have role downgraded
 
   const result = await updateListMember(id, userId, requestBody.roleId);
 
