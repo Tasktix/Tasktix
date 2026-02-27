@@ -22,9 +22,22 @@ import { Button, Divider } from '@heroui/react';
 import { Github } from 'react-bootstrap-icons';
 import { startTransition } from 'react';
 
-import { handleOauth } from '../oauth';
-import { OAuthControllers } from '../oauth';
+import { handleOauth, OAuthControllers } from '../oauth';
 
+/**
+ * OAuth component that provides GitHub authentication options for user sign-in.
+ *
+ * Displays a divider section with an "OR" label followed by a GitHub sign-in button.
+ * Uses React's `startTransition` to handle the OAuth flow without blocking the UI.
+ *
+ * @component
+ * @param {OAuthControllers} props - The OAuth controller props
+ * @param {Function} props.setLoggedInUser - Callback function to set the logged-in user state
+ * @param {NextRouter} props.router - Next.js router instance for navigation after authentication
+ *
+ * @example
+ * <OAuth setLoggedInUser={setUser} router={router} />
+ */
 export default function OAuth({ setLoggedInUser, router }: OAuthControllers) {
   return (
     <div>

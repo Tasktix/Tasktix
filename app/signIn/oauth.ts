@@ -28,13 +28,43 @@ export interface OAuthControllers {
   router: AppRouterInstance;
 }
 
+const SUPPORTED_PROVIDERS = ['github'];
+/**
+ * Handles OAuth social sign-in authentication flow.
+ *
+ * Initiates a social authentication process with the specified provider and manages
+ * the success/error callbacks. On successful authentication, sets the logged-in user
+ * and navigates to the task list page. On error, displays a toast notification with
+ * the error message.
+ *
+ * @param provider - The OAuth provider name (e.g., 'google', 'github')
+ * @param controllers - Object containing callback functions and router instance
+ * @param controllers.setLoggedInUser - Callback to set the authenticated user in application state
+ * @param controllers.router - Next.js App Router instance for navigation
+ *
+ * @returns Promise<void>
+ *
+ * @example
+ * ```typescript
+ * await handleOauth('github', {
+ *   setLoggedInUser: (user) => setUser(user),
+ *   router: useRouter()
+ * });
+ * ```
+ */
+
 export async function handleOauth(
   provider: string,
   controllers: OAuthControllers
 ) {
+  // Error Early if provider is not supported
+  if (!SUPPORTED_PROVIDERS.includes(provider)) {
+    return;
+  }
+
   await authClient.signIn.social(
     {
-      provider: provider
+      provider
     },
     {
       onSuccess: (ctx: SuccessContext<{ User: User }>) => {
