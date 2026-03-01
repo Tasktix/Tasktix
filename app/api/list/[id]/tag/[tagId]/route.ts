@@ -17,11 +17,7 @@
  */
 
 import { ClientError, ServerError, Success } from '@/lib/Response';
-import {
-  deleteTag,
-  getTagById,
-  updateTag
-} from '@/lib/database/list';
+import { deleteTag, getTagById, updateTag } from '@/lib/database/list';
 import { getRoleByList } from '@/lib/database/user';
 import { ZodTag } from '@/lib/model/tag';
 import { getUser } from '@/lib/session';
@@ -78,7 +74,7 @@ export async function DELETE(
 
   if (!role) return ClientError.BadRequest('List not found');
   if (!role.canManageTags)
-    return ClientError.Forbidden('Insufficient permissions to remove tagId');
+    return ClientError.Forbidden('Insufficient permissions to remove tag');
 
   const result = await deleteTag(tagId);
 
