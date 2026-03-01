@@ -106,6 +106,8 @@ foo@bar:~$ systemctl --user start tasktix-pod
 foo@bar:~$ podman run --rm --pod tasktix --secret "TASKTIX_DATABASE_URL,type=env,target=DATABASE_URL" ghcr.io/tasktix/tasktix-deploy:latest
 ```
 
+After setting up the project, you may want to add additional roles beyond the Admin role
+for users to limit list members' permissions. Some sensible defaults might look like this:
 ```sql
 INSERT INTO `MemberRole` (
   `id`,
