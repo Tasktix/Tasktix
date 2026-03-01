@@ -251,13 +251,11 @@ export async function updateListMember(
           data: { roleId }
         });
 
-        if (roleId === ADMIN_ROLE_ID) {
-          const admins = await tx.listMember.count({
-            where: { listId, roleId: ADMIN_ROLE_ID }
-          });
+        const admins = await tx.listMember.count({
+          where: { listId, roleId: ADMIN_ROLE_ID }
+        });
 
-          if (admins < 1) throw new Error('Must have an admin for the list');
-        }
+        if (admins < 1) throw new Error('Must have an admin for the list');
       },
       { isolationLevel: Prisma.TransactionIsolationLevel.ReadCommitted }
     );
