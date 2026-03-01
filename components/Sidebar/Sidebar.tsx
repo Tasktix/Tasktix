@@ -39,7 +39,15 @@ import { ListContext } from './listContext';
  *
  * @param lists The lists the user has access to
  */
-export default function Sidebar({ lists }: { lists: List[] }) {
+export default function Sidebar({
+  lists,
+  className = '',
+  onNavigate
+}: {
+  lists: List[];
+  className?: string;
+  onNavigate?: () => void;
+}) {
   const [addingList, setAddingList] = useState(false);
   const router = useRouter();
   const dispatchEvent = useContext(ListContext);
@@ -73,8 +81,10 @@ export default function Sidebar({ lists }: { lists: List[] }) {
   }
 
   return (
-    <aside className='w-48 bg-transparent shadow-l-lg shadow-content4 p-4 pr-0 flex flex-col gap-4 overflow-auto'>
-      <NavItem link='/list' name='Today' />
+    <aside
+      className={`w-48 bg-transparent shadow-l-lg shadow-content4 p-4 pr-0 flex flex-col gap-4 overflow-auto ${className}`}
+    >
+      <NavItem link='/list' name='Today' onNavigate={onNavigate} />
       <NavSection
         endContent={<AddList addList={() => setAddingList(true)} />}
         name='Lists'
@@ -82,7 +92,12 @@ export default function Sidebar({ lists }: { lists: List[] }) {
         {lists
           .sort((a, b) => (a.name > b.name ? 1 : 0))
           .map(list => (
-            <NavItem key={list.id} link={`/list/${list.id}`} name={list.name} />
+            <NavItem
+              key={list.id}
+              link={`/list/${list.id}`}
+              name={list.name}
+              onNavigate={onNavigate}
+            />
           ))}
         {addingList ? (
           <NewItem finalize={finalizeNew} remove={removeNew} />
@@ -114,11 +129,13 @@ function NavSection({
 export function NavItem({
   name,
   link,
-  endContent
+  endContent,
+  onNavigate
 }: {
   name: string;
   link: string;
   endContent?: ReactNode;
+  onNavigate?: () => void;
 }) {
   const pathname = usePathname();
   const isActive = pathname === link;
@@ -127,7 +144,7 @@ export function NavItem({
     <span
       className={`pl-2 my-1 flex items-center justify-between border-l-2 ${isActive ? 'border-primary' : 'border-transparent'} text-sm`}
     >
-      <Link color='foreground' href={link}>
+      <Link color='foreground' href={link} onPress={onNavigate}>
         {name}
       </Link>
       {endContent}

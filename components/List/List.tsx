@@ -88,7 +88,7 @@ export default function List({
 
   return (
     <>
-      <span className='flex gap-4 items-center'>
+      <span className='flex w-full min-w-0 flex-wrap items-start gap-4 md:flex-nowrap md:items-center'>
         <SearchBar inputOptions={filterOptions} onValueChange={setFilters} />
         <ListSettings
           addNewTag={listHandlers.addNewTag}
