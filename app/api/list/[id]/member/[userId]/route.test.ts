@@ -17,7 +17,7 @@
  */
 
 import {
-  getIsListAssignee,
+  getIsListMember,
   getListMember,
   updateListMember
 } from '@/lib/database/list';
@@ -55,7 +55,7 @@ beforeEach(() => {
 describe('PATCH', () => {
   test('Allows updating canAdd without altering other fields', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_MEMBER.user);
-    vi.mocked(getIsListAssignee).mockResolvedValue(true);
+    vi.mocked(getIsListMember).mockResolvedValue(true);
     vi.mocked(getListMember).mockResolvedValue(structuredClone(MOCK_MEMBER));
     vi.mocked(updateListMember).mockResolvedValue(true);
 
@@ -91,7 +91,7 @@ describe('PATCH', () => {
 
   test('Allows updating canRemove without altering other fields', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_MEMBER.user);
-    vi.mocked(getIsListAssignee).mockResolvedValue(true);
+    vi.mocked(getIsListMember).mockResolvedValue(true);
     vi.mocked(getListMember).mockResolvedValue(structuredClone(MOCK_MEMBER));
     vi.mocked(updateListMember).mockResolvedValue(true);
 
@@ -127,7 +127,7 @@ describe('PATCH', () => {
 
   test('Allows updating canComplete without altering other fields', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_MEMBER.user);
-    vi.mocked(getIsListAssignee).mockResolvedValue(true);
+    vi.mocked(getIsListMember).mockResolvedValue(true);
     vi.mocked(getListMember).mockResolvedValue(structuredClone(MOCK_MEMBER));
     vi.mocked(updateListMember).mockResolvedValue(true);
 
@@ -161,7 +161,7 @@ describe('PATCH', () => {
 
   test('Allows updating canAssign without altering other fields', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_MEMBER.user);
-    vi.mocked(getIsListAssignee).mockResolvedValue(true);
+    vi.mocked(getIsListMember).mockResolvedValue(true);
     vi.mocked(getListMember).mockResolvedValue(structuredClone(MOCK_MEMBER));
     vi.mocked(updateListMember).mockResolvedValue(true);
 
@@ -197,7 +197,7 @@ describe('PATCH', () => {
 
   test('Allows multiple field updates at the same time', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_MEMBER.user);
-    vi.mocked(getIsListAssignee).mockResolvedValue(true);
+    vi.mocked(getIsListMember).mockResolvedValue(true);
     vi.mocked(getListMember).mockResolvedValue(structuredClone(MOCK_MEMBER));
     vi.mocked(updateListMember).mockResolvedValue(true);
 
@@ -255,7 +255,7 @@ describe('PATCH', () => {
 
   test('Rejects requests to modify lists not a member of', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_MEMBER.user);
-    vi.mocked(getIsListAssignee).mockResolvedValue(false);
+    vi.mocked(getIsListMember).mockResolvedValue(false);
 
     const response = await PATCH(
       new Request(MEMBER_PATH, {
@@ -276,7 +276,7 @@ describe('PATCH', () => {
 
   test('Rejects requests to modify members not part of the list', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_MEMBER.user);
-    vi.mocked(getIsListAssignee).mockResolvedValue(true);
+    vi.mocked(getIsListMember).mockResolvedValue(true);
     vi.mocked(getListMember).mockResolvedValue(false);
 
     const response = await PATCH(
@@ -298,7 +298,7 @@ describe('PATCH', () => {
 
   test('Rejects requests with malformed bodies', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_MEMBER.user);
-    vi.mocked(getIsListAssignee).mockResolvedValue(true);
+    vi.mocked(getIsListMember).mockResolvedValue(true);
     vi.mocked(getListMember).mockResolvedValue(structuredClone(MOCK_MEMBER));
 
     const response = await PATCH(
@@ -320,7 +320,7 @@ describe('PATCH', () => {
 
   test('Warns the user if updating the member failed', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_MEMBER.user);
-    vi.mocked(getIsListAssignee).mockResolvedValue(true);
+    vi.mocked(getIsListMember).mockResolvedValue(true);
     vi.mocked(getListMember).mockResolvedValue(structuredClone(MOCK_MEMBER));
     vi.mocked(updateListMember).mockResolvedValue(false);
 

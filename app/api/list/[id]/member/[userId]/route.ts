@@ -17,7 +17,7 @@
  */
 
 import {
-  getIsListAssignee,
+  getIsListMember,
   getListMember,
   updateListMember
 } from '@/lib/database/list';
@@ -46,7 +46,7 @@ export async function PATCH(
 
   if (!user) return ClientError.Unauthenticated('Not logged in');
 
-  const isMember = await getIsListAssignee(user.id, id);
+  const isMember = await getIsListMember(user.id, id);
 
   if (!isMember) return ClientError.NotFound('List not found');
 
