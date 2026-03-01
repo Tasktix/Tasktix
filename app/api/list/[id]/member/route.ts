@@ -17,9 +17,7 @@
  */
 
 import { ClientError, ServerError, Success } from '@/lib/Response';
-import {
-  createListMember,
-  getIsListAssignee} from '@/lib/database/list';
+import { createListMember, getIsListAssignee } from '@/lib/database/list';
 import { getRoleByList } from '@/lib/database/user';
 import { getRole, getUserByUsername } from '@/lib/database/user';
 import ListMember from '@/lib/model/listMember';

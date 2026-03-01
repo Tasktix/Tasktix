@@ -29,10 +29,7 @@ const PatchBody = ZodListMember.omit({ listId: true, userId: true });
  *
  * @param params.id The list to modify the member for
  * @param params.userId The user to modify membership data for
- * @param request.canAdd [optional] Whether the user can add items to the list
- * @param request.canRemove [optional] Whether the user can delete items from the list
- * @param request.canComplete [optional] Whether the user can mark items as completed
- * @param request.canAssign [optional] Whether the user can assign items to other users
+ * @param request.roleId The new role to give the user
  */
 export async function PATCH(
   request: Request,
