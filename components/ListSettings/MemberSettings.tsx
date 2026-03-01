@@ -145,7 +145,6 @@ export default function MemberSettings({
               member.user.id
             )}
           >
-            {/* TODO: sort by permission level */}
             {Array.from(roles.values())
               .sort(sortRolesByPermissions)
               .map(role => (
