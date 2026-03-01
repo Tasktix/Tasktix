@@ -18,7 +18,6 @@
 
 import { ClientError, ServerError, Success } from '@/lib/Response';
 import { getListBySectionId } from '@/lib/database/list';
-import { getRoleByList } from '@/lib/database/user';
 import { createListItem } from '@/lib/database/listItem';
 import ListItem, { ZodListItem } from '@/lib/model/listItem';
 import { getUser } from '@/lib/session';
@@ -55,10 +54,10 @@ export async function POST(request: Request) {
 
   if (!list) return ClientError.BadRequest('List not found');
 
-  const role = await getRoleByList(user.id, list.id);
+  const member = list.members.find(m => m.user.id === user.id);
 
-  if (!role) return ClientError.BadRequest('List not found');
-  if (!role.canAddItems)
+  if (!member) return ClientError.BadRequest('List not found');
+  if (!member.role.canAddItems)
     return ClientError.Forbidden('Insufficient permissions to add item');
 
   if (!dateDue && list.hasDueDates)
