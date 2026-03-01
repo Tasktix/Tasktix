@@ -34,6 +34,11 @@ export const ZodMemberRole = z.strictObject({
   canManageList: z.boolean()
 });
 
+/**
+ * Admin role ID in database (has all permissions)
+ */
+export const ADMIN_ROLE_ID = 'yZW3BwhhtgSQ7zhb' as const;
+
 export default class MemberRole {
   id: string;
   name: string;

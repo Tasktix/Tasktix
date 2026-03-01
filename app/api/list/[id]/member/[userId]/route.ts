@@ -60,8 +60,6 @@ export async function PATCH(
 
   const requestBody = parseResult.data;
 
-  // TODO: don't allow last Admin to have role downgraded
-
   const result = await updateListMember(id, userId, requestBody.roleId);
 
   if (!result) return ServerError.Internal('Could not update member');

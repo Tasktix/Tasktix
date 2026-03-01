@@ -18,9 +18,13 @@
 
 'use server';
 
+import { Prisma } from '@prisma/client';
+
 import List from '@/lib/model/list';
 import ListMember from '@/lib/model/listMember';
 import Tag from '@/lib/model/tag';
+
+import { ADMIN_ROLE_ID } from '../model/memberRole';
 
 import { prisma } from './db_connect';
 
@@ -232,10 +236,31 @@ export async function updateListMember(
   roleId: string
 ): Promise<boolean> {
   try {
-    await prisma.listMember.update({
-      where: { userId_listId: { userId, listId } },
-      data: { roleId }
-    });
+    await prisma.$transaction(
+      async tx => {
+        // Prevent race conditions removing all admins by locking admin rows for
+        // full transaction duration
+        await tx.$queryRaw`
+          SELECT userId FROM ListMember
+          WHERE listId = ${listId} AND roleId = ${ADMIN_ROLE_ID}
+          FOR UPDATE;
+        `;
+
+        await tx.listMember.update({
+          where: { userId_listId: { userId, listId } },
+          data: { roleId }
+        });
+
+        if (roleId === ADMIN_ROLE_ID) {
+          const admins = await tx.listMember.count({
+            where: { listId, roleId: ADMIN_ROLE_ID }
+          });
+
+          if (admins < 1) throw new Error('Must have an admin for the list');
+        }
+      },
+      { isolationLevel: Prisma.TransactionIsolationLevel.ReadCommitted }
+    );
   } catch {
     return false;
   }
