@@ -127,7 +127,7 @@ export default function MemberSettings({
         </Button>
       </form>
       {members.map(member => (
-        <span key={member.user.id}>
+        <div key={member.user.id} className='flex gap-4'>
           <User
             avatarProps={{
               classNames: {
@@ -138,8 +138,9 @@ export default function MemberSettings({
             name={member.user.username}
           />
           <Select
-            label='Role'
+            aria-label='Role'
             selectedKeys={[member.role.id]}
+            variant='underlined'
             onSelectionChange={handleUpdatePermissions.bind(
               null,
               member.user.id
@@ -153,7 +154,7 @@ export default function MemberSettings({
                 </SelectItem>
               ))}
           </Select>
-        </span>
+        </div>
       ))}
     </span>
   );
