@@ -104,7 +104,7 @@ export default function UserProperties({ user }: { user: string }) {
           label='Username'
           labelPlacement='outside'
           updateValue={setUsername}
-          value={userDetails.username as string}
+          value={userDetails.username ?? userDetails.name}
           variant='flat'
         />
 

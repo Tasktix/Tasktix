@@ -27,6 +27,8 @@ import { useAuth } from '@/components/AuthProvider';
 import { authClient } from '@/lib/auth-client';
 import User from '@/lib/model/user';
 
+import OAuth from './OAuth';
+
 export default function SignIn() {
   const { setLoggedInUser } = useAuth();
   const [inputs, setInputs] = useState({ username: '', password: '' });
@@ -39,7 +41,6 @@ export default function SignIn() {
   function handlePasswordInput(input: string) {
     setInputs({ ...inputs, password: input });
   }
-
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     startTransition(async () => {
@@ -78,11 +79,13 @@ export default function SignIn() {
         variant='bordered'
         onValueChange={handlePasswordInput}
       />
-      <div className='flex justify-center mt-6'>
+
+      <div className='flex justify-center my-4'>
         <Button color='primary' type='submit'>
           Sign In
         </Button>
       </div>
+      <OAuth router={router} setLoggedInUser={setLoggedInUser} />
     </form>
   );
 }

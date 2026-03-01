@@ -40,6 +40,8 @@ import {
   getPasswordMessage
 } from '../messages';
 
+import OAuth from './OAuth';
+
 export default function SignUp() {
   interface InputMessages {
     username: InputMessage;
@@ -160,6 +162,7 @@ export default function SignUp() {
           Sign Up
         </Button>
       </div>
+      <OAuth router={router} setLoggedInUser={setLoggedInUser} />
     </form>
   );
 }

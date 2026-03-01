@@ -55,6 +55,10 @@ While it is possible to manually update Usernames, emails, etc. through handcraf
 ## Database Updates
 The required schema for BetterAuth can be found [here](https://www.better-auth.com/docs/concepts/database#core-schema). To add login by username, it is required to extend that schema as described [here](https://www.better-auth.com/docs/plugins/username#schema). .
 
-This results in the `User` table having the fields `name`, `username`, and `displayUsername`. For our circumstances, whenever creating/updating a username, you should be sure to update both `name` and `username` to prevent them getting out of sync. In general, consider the `username` field the source of truth. Note that the `auth.api.isUsernameAvailable` only checks the `username` column. 
+This results in the `User` table having the fields `name`, `username`, and `displayUsername`. Whenever creating an standard (non-OAuth) account, ensure you set `name` and username`, OAuth logins only provide the `name` field, and will have a null `username`. If an OAuth account wishes to go by a different name, it should be allowed to update the username field. For this reason, all accesses of username should be as follows:
 
-`displayUsername` need never be considered/provided. Unless it is manually reconfigured, it will always be in sync with `username`.
+```ts
+const username = user.username ?? user.name;
+```
+
+`displayUsername` need never be considered/provided. Unless it is manually reconfigured, it will always be in sync with `username`. Additionally, Note that the `auth.api.isUsernameAvailable` only checks the `username` column. 

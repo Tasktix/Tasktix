@@ -46,7 +46,8 @@ export const auth = betterAuth({
     additionalFields: {
       color: {
         type: namedColors as unknown as DBFieldType,
-        required: true
+        required: true,
+        defaultValue: 'Blue'
       },
       legacyPassword: {
         type: 'string',
@@ -71,8 +72,12 @@ export const auth = betterAuth({
     enabled: true,
     minPasswordLength: 10
   },
-
-  socialProviders: {},
+  socialProviders: {
+    github: {
+      clientId: process.env.GITHUB_CLIENT_ID as string,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET as string
+    }
+  },
   plugins: [
     username(),
     ...(process.env.ENABLE_PASSWORD_STRENGTH_CHECK === 'true'

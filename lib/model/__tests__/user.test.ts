@@ -84,3 +84,23 @@ test('Assigns all properties correctly', () => {
   expect(user.color).toBe('Amber');
   expect(user.image).toBeNull();
 });
+
+test('Assigns custom Username and Display Username if provided', () => {
+  const user = new User(
+    'provided-id',
+    'testUser',
+    'test@example.com',
+    false,
+    fixedCreatedAt,
+    fixedUpdatedAt,
+    {
+      color: 'Amber',
+      username: 'differentUserName',
+      displayUsername: 'Different Display Username'
+    }
+  );
+
+  expect(user.name).toBe('testUser');
+  expect(user.username).toBe('differentUserName');
+  expect(user.displayUsername).toBe('Different Display Username');
+});
