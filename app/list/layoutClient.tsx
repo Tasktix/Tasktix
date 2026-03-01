@@ -104,9 +104,9 @@ export default function LayoutClient({
       >
         <div className='absolute inset-0 bg-black/50' />
         <div
-          id='mobile-sidebar-drawer'
           ref={drawerRef}
           className={`absolute left-0 top-0 flex h-full w-72 max-w-[85vw] flex-col border-r border-content3 bg-content1 p-4 shadow-2xl transition-transform duration-200 ${isDrawerOpen ? 'translate-x-0' : '-translate-x-full'}`}
+          id='mobile-sidebar-drawer'
           tabIndex={-1}
           onClick={event => event.stopPropagation()}
         >
