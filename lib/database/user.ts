@@ -108,12 +108,7 @@ export async function getRoleByList(
   const result = await prisma.memberRole.findFirst({
     where: {
       listMembers: {
-        some: {
-          userId,
-          list: {
-            id: listId
-          }
-        }
+        some: { userId, list: { id: listId } }
       }
     }
   });
