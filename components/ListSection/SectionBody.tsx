@@ -47,6 +47,8 @@ import { Item, SectionAction } from './types';
  * @param hasTimeTracking Whether time tracking is enabled in the list's settings
  * @param hasDueDates Whether due dates are enabled in the list's settings
  * @param isAutoOrdered Whether auto-ordering is enabled in the list's settings
+ * @param currentSection The section this item is currently associated with
+ * @param totalSections A total list of sections in the larger list
  * @param setItems Callback for overwriting the React state of items (used when dragging
  *  items to a different order)
  * @param dispatchSection Callback for updating the given section's useReducer state
@@ -63,6 +65,8 @@ export default function SectionBody({
   hasTimeTracking,
   hasDueDates,
   isAutoOrdered,
+  currentSection,
+  totalSections,
   setItems,
   dispatchSection,
   reorderItem,
@@ -75,6 +79,8 @@ export default function SectionBody({
   hasTimeTracking: boolean;
   hasDueDates: boolean;
   isAutoOrdered: boolean;
+  currentSection: string;
+  totalSections: string[];
   setItems: (items: Item[]) => unknown;
   dispatchSection: ActionDispatch<[action: SectionAction]>;
   reorderItem: (item: ListItemModel) => unknown;
@@ -96,6 +102,8 @@ export default function SectionBody({
     item,
     members,
     tagsAvailable,
+    currentSection,
+    totalSections,
     resetTime: status =>
       dispatchSection({ type: 'ResetItemTime', itemId: item.id, status }),
     setPaused: () =>

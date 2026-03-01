@@ -36,6 +36,8 @@ export interface ListItemParams {
   tagsAvailable: Tag[];
   hasTimeTracking: boolean;
   hasDueDates: boolean;
+  currentSection?: string;
+  totalSections?: string[];
   reorderControls?: DragControls;
   updateDueDate: (date: ListItem['dateDue']) => unknown;
   updatePriority: (priority: ListItem['priority']) => unknown;

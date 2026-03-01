@@ -54,6 +54,8 @@ import { ListItemParams, SetItem } from './types';
  *  complete list items. Start/pause buttons, a timer, and expected time-to-complete are
  *  shown if so
  * @param hasDueDates Whether the list settings enable due dates for items
+ * @param currentSection The section this item is currently associated with
+ * @param totalSections A total list of sections in the larger list
  * @param reorderControls Controller for Framer Motion's reordering feature. Used to
  *  trigger reordering when the user grabs the drag icon in the list item
  * @param updateDueDate Callback to propagate state changes for the item's due date
@@ -75,6 +77,8 @@ export default function ListItem({
   tagsAvailable,
   hasTimeTracking,
   hasDueDates,
+  currentSection,
+  totalSections,
   reorderControls,
   updateDueDate,
   updatePriority,
@@ -361,6 +365,7 @@ export default function ListItem({
 
           <More
             addNewTag={addNewTag}
+            currentSection={currentSection}
             elapsedLive={elapsedLive}
             hasDueDates={hasDueDates}
             hasTimeTracking={hasTimeTracking}
@@ -370,6 +375,7 @@ export default function ListItem({
             set={set}
             tags={_item.tags}
             tagsAvailable={tagsAvailable}
+            totalSections={totalSections}
           />
         </span>
       </span>

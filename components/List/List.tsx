@@ -100,6 +100,7 @@ export default function List({
       {list.sections.map(section => (
         <ListSection
           key={section.id}
+          currentSection='Current Section Example'
           filters={filters}
           hasDueDates={list.hasDueDates}
           hasTimeTracking={list.hasTimeTracking}
@@ -110,6 +111,7 @@ export default function List({
           name={section.name}
           startingItems={section.items}
           tagsAvailable={tagsAvailable}
+          totalSections={['Section Example 1', 'Section Example 2', 'Section Example 3']}
           onDelete={listHandlers.deleteListSection.bind(null, section.id)}
           onTagCreate={listHandlers.addNewTag}
         />

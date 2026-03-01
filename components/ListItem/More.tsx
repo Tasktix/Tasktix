@@ -63,6 +63,8 @@ import ItemSection from './ItemSection';
  * @param set Functions for updating the list item timer
  * @param itemHandlers Functions for making API calls & state changes when the item is
  *  interacted with
+ * @param currentSection The section this item is currently associated with
+ * @param totalSections A total list of sections in the larger list
  * @param addNewTag Callback to propagate state changes when a new tag is created from the
  *  "add tag" menu
  */
@@ -76,6 +78,8 @@ export default function More({
   elapsedLive,
   set,
   itemHandlers,
+  currentSection,
+  totalSections,
   addNewTag
 }: {
   item: ListItem;
@@ -87,6 +91,8 @@ export default function More({
   elapsedLive: number;
   set: SetItem;
   itemHandlers: ItemHandlers;
+  currentSection?: string;
+  totalSections?: string[];
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
 }) {
   const isComplete = item.status === 'Completed';
@@ -145,8 +151,8 @@ export default function More({
                     />
                   ) : null}
                   <ItemSection
-                    currentSection='Current Section'
-                    totalSections={['Example Section 1', 'Example section 2', 'Example Section 3']}
+                    currentSection={currentSection || 'No Section Info'}
+                    totalSections={totalSections || ['No Section Info']}
                   />
                 </div>
 

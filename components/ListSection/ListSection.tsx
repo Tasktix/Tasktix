@@ -62,6 +62,8 @@ import sectionHandlerFactory from './handlerFactory';
  * @param hasTimeTracking Whether time tracking is enabled in the list's settings
  * @param hasDueDates Whether due dates are enabled in the list's settings
  * @param isAutoOrdered Whether auto-ordering is enabled in the list's settings
+ * @param currentSection The section this item is currently associated with
+ * @param totalSections A total list of sections in the larger list
  * @param onDelete Callback to delete a section and remove it from React's state
  * @param onTagCreate Callback to propagate state changes when a new tag is created from
  *  the "add tag" menu
@@ -77,6 +79,8 @@ export default function ListSection({
   hasTimeTracking,
   hasDueDates,
   isAutoOrdered,
+  currentSection,
+  totalSections,
   onDelete,
   onTagCreate
 }: {
@@ -90,6 +94,8 @@ export default function ListSection({
   hasTimeTracking: boolean;
   hasDueDates: boolean;
   isAutoOrdered: boolean;
+  currentSection: string;
+  totalSections: string[];
   onDelete: () => unknown;
   onTagCreate: (name: string, color: NamedColor) => Promise<string>;
 }) {
@@ -183,6 +189,7 @@ export default function ListSection({
           >
             <SectionBody
               addNewTag={onTagCreate}
+              currentSection={currentSection}
               dispatchSection={dispatchSection}
               filters={filters}
               hasDueDates={hasDueDates}
@@ -191,11 +198,9 @@ export default function ListSection({
               items={items}
               members={members}
               reorderItem={sectionHandlers.reorderItem}
-              setItems={items =>
-                dispatchSection({ type: 'SetItems', items: itemsToMap(items) })
-              }
-              tagsAvailable={tagsAvailable}
-            />
+              setItems={items => dispatchSection({ type: 'SetItems', items: itemsToMap(items) })}
+              tagsAvailable={tagsAvailable}         
+              totalSections={totalSections}   />
           </motion.section>
         )}
       </AnimatePresence>
