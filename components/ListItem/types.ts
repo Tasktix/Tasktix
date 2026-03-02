@@ -50,6 +50,7 @@ export interface ListItemParams {
   setCompleted: (date: ListItem['dateCompleted']) => unknown;
   updateExpectedMs: (ms: number) => unknown;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
+  updateSection: (e: any) => unknown;
 }
 
 /**

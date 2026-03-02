@@ -32,6 +32,7 @@ import ListSection from '../ListSection/ListSection';
 import { getFilterOptions } from './filters';
 import listReducer from './listReducer';
 import { listHandlerFactory } from './handlerFactory';
+import { addToast } from '@heroui/react';
 
 /**
  * This component provides the full list GUI: filters, settings, each section and its
@@ -78,6 +79,10 @@ export default function List({
 
   const listHandlers = listHandlerFactory(list.id, dispatchList);
 
+  const changeItemSection = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    addToast({ title: e.target.value, color: 'danger' })
+  };
+
   return (
     <>
       <span className='flex gap-4 items-center'>
@@ -100,7 +105,6 @@ export default function List({
       {list.sections.map(section => (
         <ListSection
           key={section.id}
-          currentSection='Current Section Example'
           filters={filters}
           hasDueDates={list.hasDueDates}
           hasTimeTracking={list.hasTimeTracking}
@@ -111,9 +115,10 @@ export default function List({
           name={section.name}
           startingItems={section.items}
           tagsAvailable={tagsAvailable}
-          totalSections={['Section Example 1', 'Section Example 2', 'Section Example 3']}
+          totalSections={list.sections.map(section => section.name)}
           onDelete={listHandlers.deleteListSection.bind(null, section.id)}
           onTagCreate={listHandlers.addNewTag}
+          updateSection={changeItemSection}
         />
       ))}
 

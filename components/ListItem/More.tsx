@@ -67,6 +67,7 @@ import ItemSection from './ItemSection';
  * @param totalSections A total list of sections in the larger list
  * @param addNewTag Callback to propagate state changes when a new tag is created from the
  *  "add tag" menu
+ * @param updateSection The passed function that changes an item's section
  */
 export default function More({
   item,
@@ -80,7 +81,8 @@ export default function More({
   itemHandlers,
   currentSection,
   totalSections,
-  addNewTag
+  addNewTag,
+  updateSection
 }: {
   item: ListItem;
   tags: Tag[];
@@ -94,6 +96,7 @@ export default function More({
   currentSection?: string;
   totalSections?: string[];
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
+  updateSection: (e: any) => unknown;
 }) {
   const isComplete = item.status === 'Completed';
 
@@ -153,6 +156,7 @@ export default function More({
                   <ItemSection
                     currentSection={currentSection || 'No Section Info'}
                     totalSections={totalSections || ['No Section Info']}
+                    updateSection={updateSection}
                   />
                 </div>
 

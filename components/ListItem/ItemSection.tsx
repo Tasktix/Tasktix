@@ -18,12 +18,22 @@
 
 import { Select, SelectItem } from "@heroui/react";
 
+
+/**
+ * This is the component used for changing sections within an item's 'more' menu.
+ *
+ * @param currentSection The section this item is currently associated with
+ * @param totalSections A total list of sections in the larger list
+ * @param updateSection The passed function that changes an item's section
+ */
 export default function ItemSection({
   currentSection,
-  totalSections
+  totalSections,
+  updateSection
 }: {
   currentSection: string;
   totalSections: string[];
+  updateSection: (e: any) => unknown;
 }) {
   const selectItems = totalSections.map(item => ({ id: item, label: item }))
 
@@ -33,7 +43,8 @@ export default function ItemSection({
         className={`w-28 grow-0 shrink-0`}
         items={selectItems}
         label={<span className='ml-2 text-foreground'>Section</span>}
-        placeholder={currentSection} >
+        placeholder={currentSection} 
+        onChange={updateSection}>
           {(selectItems) => <SelectItem>{selectItems.label}</SelectItem>}
       </Select>
     </div>

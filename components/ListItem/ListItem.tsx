@@ -69,6 +69,7 @@ import { ListItemParams, SetItem } from './types';
  *  completion time
  * @param addNewTag Callback to propagate state changes when a new tag is created from the
  *  "add tag" menu
+ * @param updateSection The passed function that changes an item's section
  */
 export default function ListItem({
   item,
@@ -88,7 +89,8 @@ export default function ListItem({
   resetTime,
   setCompleted,
   updateExpectedMs,
-  addNewTag
+  addNewTag,
+  updateSection
 }: ListItemParams) {
   const minute = 1000 * 60;
   const today = new Date();
@@ -376,6 +378,7 @@ export default function ListItem({
             tags={_item.tags}
             tagsAvailable={tagsAvailable}
             totalSections={totalSections}
+            updateSection={updateSection}
           />
         </span>
       </span>

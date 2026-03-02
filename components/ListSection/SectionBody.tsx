@@ -56,6 +56,7 @@ import { Item, SectionAction } from './types';
  *  state
  * @param addNewTag Callback to propagate state changes when a new tag is created from the
  *  "add tag" menu
+ * @param updateSection The passed function that changes an item's section
  */
 export default function SectionBody({
   items,
@@ -70,7 +71,8 @@ export default function SectionBody({
   setItems,
   dispatchSection,
   reorderItem,
-  addNewTag
+  addNewTag,
+  updateSection
 }: {
   items: Map<string, Item>;
   filters: Filters;
@@ -85,6 +87,7 @@ export default function SectionBody({
   dispatchSection: ActionDispatch<[action: SectionAction]>;
   reorderItem: (item: ListItemModel) => unknown;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
+  updateSection: (e: any) => unknown;
 }) {
   const filteredItems = [
     ...items.values().filter(item => checkItemFilter(item, filters))
@@ -104,6 +107,7 @@ export default function SectionBody({
     tagsAvailable,
     currentSection,
     totalSections,
+    updateSection,
     resetTime: status =>
       dispatchSection({ type: 'ResetItemTime', itemId: item.id, status }),
     setPaused: () =>
