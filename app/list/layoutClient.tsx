@@ -20,6 +20,7 @@
 
 import { ReactNode, useEffect, useReducer, useRef, useState } from 'react';
 import { List as ListIcon, X } from 'react-bootstrap-icons';
+import { Button } from '@heroui/react';
 
 import Sidebar, { listReducer, ListContext } from '@/components/Sidebar';
 import List from '@/lib/model/list';
@@ -78,17 +79,17 @@ export default function LayoutClient({
 
         <div className='flex min-w-0 grow flex-col'>
           <header className='sticky top-0 z-20 flex items-center border-b border-content3 bg-content1/90 p-3 backdrop-blur md:hidden'>
-            <button
+            <Button
               ref={hamburgerRef}
+              isIconOnly
               aria-controls='mobile-sidebar-drawer'
               aria-expanded={isDrawerOpen}
               aria-label='Open navigation menu'
-              className='inline-flex h-10 w-10 items-center justify-center rounded-md border border-content3'
-              type='button'
-              onClick={() => setIsDrawerOpen(true)}
+              variant='ghost'
+              onPress={() => setIsDrawerOpen(true)}
             >
               <ListIcon size={20} />
-            </button>
+            </Button>
           </header>
 
           {children}
@@ -112,14 +113,14 @@ export default function LayoutClient({
         >
           <div className='mb-2 flex items-center justify-between'>
             <span className='text-sm font-semibold'>Navigation</span>
-            <button
+            <Button
+              isIconOnly
               aria-label='Close navigation menu'
-              className='inline-flex h-10 w-10 items-center justify-center rounded-md border border-content3'
-              type='button'
-              onClick={closeDrawer}
+              variant='ghost'
+              onPress={closeDrawer}
             >
               <X size={20} />
-            </button>
+            </Button>
           </div>
           <Sidebar
             className='w-full flex-1 p-0 pr-0 shadow-none'
