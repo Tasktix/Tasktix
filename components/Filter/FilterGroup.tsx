@@ -88,9 +88,13 @@ export default function FilterGroup({
   // DOM structure for filter group component
   return (
     <>
-      <div className='relative'>
-        {index == 0 && <>Where:</>}
-        <div className='pl-12'>
+      {index == 0 && <>Where:</>}
+      <div className='flex'>
+        <div className='flex'>
+          <div className='w-6'></div>
+          <div className='w-6 border-2 border-r-0 rounded-l-lg'></div>
+        </div>
+        <div>
           {filters.filters.map(filter => {
             if ('filters' in filter) {
               // Render a filterGroup component
