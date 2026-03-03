@@ -39,12 +39,6 @@ import { addToastForError } from '@/lib/error';
  * @param hasTimeTracking Whether time tracking is currently enabled for the list
  * @param isAutoOrdered Whether auto-ordering is currently enabled for the list
  * @param setListName A callback for updating React state with a new list name
- * @param setListColor A callback for updating React state with a new list color
- * @param setHasTimeTracking A callback for updating React state when time tracking is
- *  toggled
- * @param setHasDueDates A callback for updating React state when due dates are toggled
- * @param setIsAutoOrdered A callback for updating React state when auto-ordering is
- *  toggled
  */
 export default function GeneralSettings({
   listId,
