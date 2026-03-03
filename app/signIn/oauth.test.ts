@@ -55,22 +55,6 @@ const MOCK_USER = new User(
   { color: 'Amber' }
 );
 
-test('Does not attempt to sign in for unsupported Provider', async () => {
-  const routerMock = {
-    push: vi.fn()
-  } as unknown as AppRouterInstance;
-  const setLoggedInUserMock = vi.fn();
-
-  await handleOAuth('unsupported', {
-    setLoggedInUser: setLoggedInUserMock,
-    router: routerMock
-  });
-
-  expect(authClient.signIn.social).not.toHaveBeenCalled();
-  expect(setLoggedInUserMock).not.toHaveBeenCalled();
-  // eslint-disable-next-line @typescript-eslint/unbound-method
-  expect(routerMock.push).not.toHaveBeenCalled();
-});
 
 test('Properly handles failed github authentication', async () => {
   const routerMock = {

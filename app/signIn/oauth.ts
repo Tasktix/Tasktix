@@ -28,7 +28,7 @@ export interface OAuthControllers {
   router: AppRouterInstance;
 }
 
-const SUPPORTED_PROVIDERS = ['github'];
+type supportedProvider = 'github';
 /**
  * Handles OAuth social sign-in authentication flow.
  *
@@ -52,13 +52,10 @@ const SUPPORTED_PROVIDERS = ['github'];
  */
 
 export async function handleOAuth(
-  provider: string,
+  provider: supportedProvider,
   controllers: OAuthControllers
 ) {
-  // Error Early if provider is not supported
-  if (!SUPPORTED_PROVIDERS.includes(provider)) {
-    return;
-  }
+
   await authClient.signIn.social(
     {
       provider
