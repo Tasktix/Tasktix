@@ -90,11 +90,11 @@ export default function FilterGroup({
     <>
       {index == 0 && <>Where:</>}
       <div className='flex'>
-        <div className='flex'>
+        <div className={`flex ${filters.filters.length > 1 ? 'py-5' : 'py-2'}`}>
           <div className='w-6'></div>
-          <div className='w-6 border-2 border-r-0 rounded-l-lg'></div>
+          <div className={`w-6 border-content3-foreground border-r-0 rounded-l-lg ${filters.filters.length ? 'border-2' : ''}`}></div>
         </div>
-        <div>
+        <div className='w-full'>
           {filters.filters.map(filter => {
             if ('filters' in filter) {
               // Render a filterGroup component
@@ -119,8 +119,6 @@ export default function FilterGroup({
               );
             }
           })}
-        </div>
-      </div>
       <div style={{ display: 'flex', flexDirection: 'row', gap: '5px' }}>
         <Button onPress={addRow}>
           <AddRowIcon />
@@ -132,6 +130,8 @@ export default function FilterGroup({
             Add Filter Group
           </Button>
         )}
+      </div>
+        </div>
       </div>
     </>
   );
