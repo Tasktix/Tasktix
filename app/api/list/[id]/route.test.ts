@@ -16,11 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {
-  getIsListAssignee,
-  getListById,
-  updateList
-} from '@/lib/database/list';
+import { getIsListMember, getListById, updateList } from '@/lib/database/list';
 import List from '@/lib/model/list';
 import User from '@/lib/model/user';
 import { getUser } from '@/lib/session';
@@ -62,7 +58,7 @@ describe('PATCH', () => {
   test('Allows updating list name without altering other fields', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
     vi.mocked(getListById).mockResolvedValue(structuredClone(MOCK_LIST));
-    vi.mocked(getIsListAssignee).mockResolvedValue(true);
+    vi.mocked(getIsListMember).mockResolvedValue(true);
     vi.mocked(updateList).mockResolvedValue(true);
 
     const response = await PATCH(
@@ -93,7 +89,7 @@ describe('PATCH', () => {
   test('Allows updating time tracking without altering other fields', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
     vi.mocked(getListById).mockResolvedValue(structuredClone(MOCK_LIST));
-    vi.mocked(getIsListAssignee).mockResolvedValue(true);
+    vi.mocked(getIsListMember).mockResolvedValue(true);
     vi.mocked(updateList).mockResolvedValue(true);
 
     const response = await PATCH(
@@ -124,7 +120,7 @@ describe('PATCH', () => {
   test('Allows updating due dates without altering other fields', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
     vi.mocked(getListById).mockResolvedValue(structuredClone(MOCK_LIST));
-    vi.mocked(getIsListAssignee).mockResolvedValue(true);
+    vi.mocked(getIsListMember).mockResolvedValue(true);
     vi.mocked(updateList).mockResolvedValue(true);
 
     const response = await PATCH(
@@ -155,7 +151,7 @@ describe('PATCH', () => {
   test('Allows updating auto-ordering without altering other fields', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
     vi.mocked(getListById).mockResolvedValue(structuredClone(MOCK_LIST));
-    vi.mocked(getIsListAssignee).mockResolvedValue(true);
+    vi.mocked(getIsListMember).mockResolvedValue(true);
     vi.mocked(updateList).mockResolvedValue(true);
 
     const response = await PATCH(
@@ -186,7 +182,7 @@ describe('PATCH', () => {
   test('Allows updating color without altering other fields', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
     vi.mocked(getListById).mockResolvedValue(structuredClone(MOCK_LIST));
-    vi.mocked(getIsListAssignee).mockResolvedValue(true);
+    vi.mocked(getIsListMember).mockResolvedValue(true);
     vi.mocked(updateList).mockResolvedValue(true);
 
     const response = await PATCH(
@@ -251,7 +247,7 @@ describe('PATCH', () => {
     test('Rejects requests to modify list not a member of', async () => {
       vi.mocked(getUser).mockResolvedValue(MOCK_USER);
       vi.mocked(getListById).mockResolvedValue(structuredClone(MOCK_LIST));
-      vi.mocked(getIsListAssignee).mockResolvedValue(false);
+      vi.mocked(getIsListMember).mockResolvedValue(false);
 
       const response = await PATCH(
         new Request(LIST_PATH, {
@@ -269,7 +265,7 @@ describe('PATCH', () => {
     test('Rejects requests with malformed bodies', async () => {
       vi.mocked(getUser).mockResolvedValue(MOCK_USER);
       vi.mocked(getListById).mockResolvedValue(structuredClone(MOCK_LIST));
-      vi.mocked(getIsListAssignee).mockResolvedValue(true);
+      vi.mocked(getIsListMember).mockResolvedValue(true);
 
       const response = await PATCH(
         new Request(LIST_PATH, {
@@ -287,7 +283,7 @@ describe('PATCH', () => {
     test("Warns the user and doesn't push updates if updating the list fails", async () => {
       vi.mocked(getUser).mockResolvedValue(MOCK_USER);
       vi.mocked(getListById).mockResolvedValue(structuredClone(MOCK_LIST));
-      vi.mocked(getIsListAssignee).mockResolvedValue(true);
+      vi.mocked(getIsListMember).mockResolvedValue(true);
       vi.mocked(updateList).mockResolvedValue(false);
 
       const response = await PATCH(
