@@ -113,10 +113,10 @@ export default function MemberSettings({
         <thead>
           <tr>
             <th style={{ flexGrow: 2 }}>Member</th>
-            <th className='grow font-normal'>Can Add</th>
-            <th className='grow font-normal'>Can Assign</th>
-            <th className='grow font-normal'>Can Complete</th>
-            <th className='grow font-normal'>Can Remove</th>
+            <th className='grow font-normal'>Add</th>
+            <th className='grow font-normal'>Assign</th>
+            <th className='grow font-normal'>Complete</th>
+            <th className='grow font-normal'>Remove</th>
           </tr>
         </thead>
         <tbody>

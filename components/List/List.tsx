@@ -18,18 +18,16 @@
 
 'use client';
 
-import { useReducer, useState } from 'react';
+import { useReducer } from 'react';
 
 import AddListSection from '@/components/AddListSection';
-import SearchBar from '@/components/SearchBar';
-import { Filters } from '@/components/SearchBar/types';
+import Filter from '@/components/Filter';
 import ListSettings from '@/components/ListSettings';
 import ListModel from '@/lib/model/list';
 import Tag from '@/lib/model/tag';
 
 import ListSection from '../ListSection/ListSection';
 
-import { getFilterOptions } from './filters';
 import listReducer from './listReducer';
 import { listHandlerFactory } from './handlerFactory';
 
@@ -73,15 +71,12 @@ export default function List({
     tagsAvailable: JSON.parse(startingTagsAvailable) as Tag[]
   });
 
-  const [filters, setFilters] = useState<Filters>({});
-  const filterOptions = getFilterOptions(list, tagsAvailable);
-
   const listHandlers = listHandlerFactory(list.id, dispatchList);
 
   return (
     <>
       <span className='flex gap-4 items-center'>
-        <SearchBar inputOptions={filterOptions} onValueChange={setFilters} />
+        <Filter filterOptions={[]} />
         <ListSettings
           addNewTag={listHandlers.addNewTag}
           dispatchList={dispatchList}
@@ -102,7 +97,7 @@ export default function List({
           key={section.id}
           addNewTag={listHandlers.addNewTag}
           deleteSection={listHandlers.deleteListSection.bind(null, section.id)}
-          filters={filters}
+          filters={{}}
           hasDueDates={list.hasDueDates}
           hasTimeTracking={list.hasTimeTracking}
           id={section.id}
