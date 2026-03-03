@@ -55,7 +55,6 @@ export async function handleOAuth(
   provider: supportedProvider,
   controllers: OAuthControllers
 ) {
-
   await authClient.signIn.social(
     {
       provider

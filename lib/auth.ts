@@ -48,7 +48,7 @@ export const auth = betterAuth({
       color: {
         type: namedColors as unknown as DBFieldType,
         required: true,
-        defaultValue: randomNamedColor(),
+        defaultValue: randomNamedColor()
       },
       legacyPassword: {
         type: 'string',

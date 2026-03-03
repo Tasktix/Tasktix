@@ -55,7 +55,6 @@ const MOCK_USER = new User(
   { color: 'Amber' }
 );
 
-
 test('Properly handles failed github authentication', async () => {
   const routerMock = {
     push: vi.fn()
