@@ -147,7 +147,7 @@ function AccountButton() {
           as={Button}
           className={getBackgroundColor(loggedInUser.color)}
           name={loggedInUser.username ?? loggedInUser.name}
-          {...(loggedInUser.image && { src: loggedInUser.image })}
+          src={loggedInUser.image ?? undefined}
         />
       </DropdownTrigger>
       <DropdownMenu aria-label='User Actions'>

@@ -25,7 +25,7 @@ import '@testing-library/jest-dom';
 import SignIn from '@/app/signIn/components/SignIn';
 import { useAuth } from '@/components/AuthProvider';
 
-import { handleOauth } from '../oauth';
+import { handleOAuth } from '../oauth';
 
 vi.mock('@/components/AuthProvider', async importOriginal => ({
   ...(await importOriginal()),
@@ -56,5 +56,5 @@ test('Pressing Github Button attempts Oauth Login', () => {
 
   fireEvent.click(githubButton);
 
-  expect(handleOauth).toHaveBeenCalled();
+  expect(handleOAuth).toHaveBeenCalled();
 });

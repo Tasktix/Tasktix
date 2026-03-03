@@ -42,8 +42,6 @@ const SUPPORTED_PROVIDERS = ['github'];
  * @param controllers.setLoggedInUser - Callback to set the authenticated user in application state
  * @param controllers.router - Next.js App Router instance for navigation
  *
- * @returns Promise<void>
- *
  * @example
  * ```typescript
  * await handleOauth('github', {
@@ -53,7 +51,7 @@ const SUPPORTED_PROVIDERS = ['github'];
  * ```
  */
 
-export async function handleOauth(
+export async function handleOAuth(
   provider: string,
   controllers: OAuthControllers
 ) {

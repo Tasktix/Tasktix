@@ -157,7 +157,7 @@ export default function SignUp() {
         variant='bordered'
         onValueChange={handlePasswordInput}
       />
-      <div className='flex justify-center mt-6'>
+      <div className='flex justify-center mt-4'>
         <Button color='primary' type='submit'>
           Sign Up
         </Button>

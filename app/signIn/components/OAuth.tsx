@@ -22,7 +22,7 @@ import { Button, Divider } from '@heroui/react';
 import { Github } from 'react-bootstrap-icons';
 import { startTransition } from 'react';
 
-import { handleOauth, OAuthControllers } from '../oauth';
+import { handleOAuth, OAuthControllers } from '../oauth';
 
 /**
  * OAuth component that provides GitHub authentication options for user sign-in.
@@ -31,9 +31,9 @@ import { handleOauth, OAuthControllers } from '../oauth';
  * Uses React's `startTransition` to handle the OAuth flow without blocking the UI.
  *
  * @component
- * @param {OAuthControllers} props - The OAuth controller props
- * @param {Function} props.setLoggedInUser - Callback function to set the logged-in user state
- * @param {NextRouter} props.router - Next.js router instance for navigation after authentication
+ * @param props - The OAuth controller props
+ * @param props.setLoggedInUser - Callback function to set the logged-in user state
+ * @param props.router - Next.js router instance for navigation after authentication
  *
  * @example
  * <OAuth setLoggedInUser={setUser} router={router} />
@@ -41,19 +41,19 @@ import { handleOauth, OAuthControllers } from '../oauth';
 export default function OAuth({ setLoggedInUser, router }: OAuthControllers) {
   return (
     <div>
-      <div className='flex items-center gap-4 py-2'>
+      <div className='flex items-center gap-4 my-6'>
         <Divider className='flex-1' />
         <p className='text-tiny text-default-500 shrink-0'>OR</p>
         <Divider className='flex-1' />
       </div>
-      <div className='flex justify-center mt-6'>
+      <div className='flex justify-center'>
         <Button
           aria-label='sign in with github'
           startContent={<Github />}
           variant='bordered'
           onPress={() =>
             startTransition(() =>
-              handleOauth('github', { setLoggedInUser, router })
+              handleOAuth('github', { setLoggedInUser, router })
             )
           }
         >

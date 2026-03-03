@@ -51,14 +51,26 @@ To manage sessions from the client it should be prefered to use the `useAuth` ho
 
 While it is possible to manually update Usernames, emails, etc. through handcrafted database writes, It should be preferred to use the Better-Auth wrapper (e.g. `auth.api.changeEmail()`). If a required operation is not supported by Better-Auth API, (e.g getting a user by email), it's custom implementation should be documented as such. 
 
+## Github OAuth
+To support Tasktix Integration with Github Projects, Single Sign On is supported via the Tasktix Github App (or any custom Github App for self-hosters).
+
+To setup a Github App, follow the instructions on [Githubs Documentation](https://docs.github.com/en/apps/creating-github-apps/about-creating-github-apps/about-creating-github-apps), then copy the Client ID and a Client Secret to your `.env` as below:
+```
+.env/
+GITHUB_CLIENT_ID=
+GITHUB_CLIENT_SECRET=
+```
+
+>[!NOTE]
+> When Creating your Github App, you must assign Read permissions for Email. Other permissions will be necessary to allow all features of Github Projects integration, but Authentication will succeed with only read permission for email.
 
 ## Database Updates
 The required schema for BetterAuth can be found [here](https://www.better-auth.com/docs/concepts/database#core-schema). To add login by username, it is required to extend that schema as described [here](https://www.better-auth.com/docs/plugins/username#schema). .
 
-This results in the `User` table having the fields `name`, `username`, and `displayUsername`. Whenever creating an standard (non-OAuth) account, ensure you set `name` and username`, OAuth logins only provide the `name` field, and will have a null `username`. If an OAuth account wishes to go by a different name, it should be allowed to update the username field. For this reason, all accesses of username should be as follows:
+This results in the `User` table having the fields `name`, `username`, and `displayUsername`. Whenever creating an standard (non-OAuth) account, ensure you set `name` and `username`, OAuth logins only provide the `name` field, and will have a null `username`. If an OAuth account wishes to go by a different name, it should be allowed to update the username field. For this reason, all accesses of username should be as follows:
 
 ```ts
 const username = user.username ?? user.name;
 ```
 
-`displayUsername` need never be considered/provided. Unless it is manually reconfigured, it will always be in sync with `username`. Additionally, Note that the `auth.api.isUsernameAvailable` only checks the `username` column. 
+`displayUsername` need never be considered/provided. Unless it is manually reconfigured, it will always be in sync with `username`. Additionally, note that the `auth.api.isUsernameAvailable` only checks the `username` column. 

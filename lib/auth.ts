@@ -22,6 +22,7 @@ import { PrismaClient } from '@prisma/client';
 import { haveIBeenPwned, username } from 'better-auth/plugins';
 
 import { namedColors } from './model/color';
+import { randomNamedColor } from './color';
 
 const prisma = new PrismaClient();
 
@@ -47,7 +48,7 @@ export const auth = betterAuth({
       color: {
         type: namedColors as unknown as DBFieldType,
         required: true,
-        defaultValue: 'Blue'
+        defaultValue: randomNamedColor(),
       },
       legacyPassword: {
         type: 'string',

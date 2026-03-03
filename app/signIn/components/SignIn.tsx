@@ -80,7 +80,7 @@ export default function SignIn() {
         onValueChange={handlePasswordInput}
       />
 
-      <div className='flex justify-center my-4'>
+      <div className='flex justify-center mt-4'>
         <Button color='primary' type='submit'>
           Sign In
         </Button>

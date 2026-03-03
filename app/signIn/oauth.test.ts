@@ -24,7 +24,7 @@ import { ErrorContext, SuccessContext } from 'better-auth/react';
 import User from '@/lib/model/user';
 import { authClient } from '@/lib/auth-client';
 
-import { handleOauth } from './oauth';
+import { handleOAuth } from './oauth';
 
 vi.mock('@heroui/react');
 
@@ -61,7 +61,7 @@ test('Does not attempt to sign in for unsupported Provider', async () => {
   } as unknown as AppRouterInstance;
   const setLoggedInUserMock = vi.fn();
 
-  await handleOauth('unsupported', {
+  await handleOAuth('unsupported', {
     setLoggedInUser: setLoggedInUserMock,
     router: routerMock
   });
@@ -95,7 +95,7 @@ test('Properly handles failed github authentication', async () => {
     }
   );
 
-  await handleOauth('github', {
+  await handleOAuth('github', {
     setLoggedInUser: setLoggedInUserMock,
     router: routerMock
   });
@@ -129,7 +129,7 @@ test('Properly redirects and sets logged in user on succesful github authenticat
     }
   );
 
-  await handleOauth('github', {
+  await handleOAuth('github', {
     setLoggedInUser: setLoggedInUserMock,
     router: routerMock
   });
