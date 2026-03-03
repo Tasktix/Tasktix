@@ -26,6 +26,7 @@ import ConfirmedTextInput from '@/components/ConfirmedTextInput';
 import { NamedColor } from '@/lib/model/color';
 import api from '@/lib/api';
 import { ListContext } from '@/components/Sidebar';
+import { addToastForError } from '@/lib/error';
 
 /**
  * Displays list settings such as its name, whether due dates are enabled, etc. Allows
@@ -70,7 +71,7 @@ export default function GeneralSettings({
 
     api
       .patch(`/list/${listId}`, { hasTimeTracking: value })
-      .catch(err => addToast({ title: err.message, color: 'danger' }));
+      .catch(addToastForError);
   }
 
   function updateHasDueDates(value: boolean) {
@@ -78,7 +79,7 @@ export default function GeneralSettings({
 
     api
       .patch(`/list/${listId}`, { hasDueDates: value })
-      .catch(err => addToast({ title: err.message, color: 'danger' }));
+      .catch(addToastForError);
   }
 
   function updateIsAutoOrdered(value: boolean) {
@@ -86,15 +87,13 @@ export default function GeneralSettings({
 
     api
       .patch(`/list/${listId}`, { isAutoOrdered: value })
-      .catch(err => addToast({ title: err.message, color: 'danger' }));
+      .catch(addToastForError);
   }
 
   function updateColor(color: NamedColor | null) {
     if (color === null) return;
 
-    api
-      .patch(`/list/${listId}`, { color })
-      .catch(err => addToast({ title: err.message, color: 'danger' }));
+    api.patch(`/list/${listId}`, { color }).catch(addToastForError);
   }
 
   function deleteList() {
@@ -112,7 +111,7 @@ export default function GeneralSettings({
         dispatchEvent({ type: 'remove', id: listId });
         router.replace('/list');
       })
-      .catch(err => addToast({ title: err.message, color: 'danger' }));
+      .catch(addToastForError);
   }
 
   return (

@@ -21,6 +21,7 @@
 import { FormEvent, startTransition, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { addToast, Button, Input } from '@heroui/react';
+import { SuccessContext } from 'better-auth/react';
 
 import Message, { InputMessage } from '@/components/InputMessage';
 import {
@@ -31,6 +32,7 @@ import {
 import { authClient } from '@/lib/auth-client';
 import { randomNamedColor } from '@/lib/color';
 import { useAuth } from '@/components/AuthProvider';
+import User from '@/lib/model/user';
 
 import {
   getUsernameMessage,
@@ -115,7 +117,7 @@ export default function SignUp() {
               addToast({ title: ctx.error.message, color: 'danger' });
             }
           },
-          onSuccess: ctx => {
+          onSuccess: (ctx: SuccessContext<{ user: User }>) => {
             setLoggedInUser(ctx.data.user);
             router.push('/list');
           }

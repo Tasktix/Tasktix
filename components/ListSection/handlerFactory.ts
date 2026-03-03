@@ -21,6 +21,7 @@ import { ActionDispatch } from 'react';
 
 import api from '@/lib/api';
 import ListItem from '@/lib/model/listItem';
+import { addToastForError } from '@/lib/error';
 
 import { SectionAction } from '../List';
 
@@ -70,7 +71,7 @@ export default function sectionHandlerFactory(
           newIndex
         });
       })
-      .catch(err => addToast({ title: err.message, color: 'danger' }));
+      .catch(addToastForError);
   }
 
   return {

@@ -17,7 +17,7 @@
  */
 
 import { ClientError, ServerError, Success } from '@/lib/Response';
-import { createTag, getIsListAssignee } from '@/lib/database/list';
+import { createTag, getIsListMember } from '@/lib/database/list';
 import Tag, { ZodTag } from '@/lib/model/tag';
 import { getUser } from '@/lib/session';
 
@@ -32,7 +32,7 @@ export async function POST(
 
   if (!user) return ClientError.Unauthenticated('Not logged in');
 
-  const isMember = await getIsListAssignee(user.id, id);
+  const isMember = await getIsListMember(user.id, id);
 
   if (!isMember) return ClientError.BadRequest('List not found');
 
