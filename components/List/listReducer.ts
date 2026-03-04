@@ -38,15 +38,15 @@ export default function listReducer(
 
   switch (action.type) {
     case 'SetHasDueDates':
-      newState.list.hasDueDates = !action.hasDueDates;
+      newState.list.hasDueDates = action.hasDueDates;
       break;
 
     case 'SetHasTimeTracking':
-      newState.list.hasTimeTracking = !action.hasTimeTracking;
+      newState.list.hasTimeTracking = action.hasTimeTracking;
       break;
 
     case 'SetIsAutoOrdered':
-      newState.list.isAutoOrdered = !action.isAutoOrdered;
+      newState.list.isAutoOrdered = action.isAutoOrdered;
       break;
 
     case 'SetListColor':

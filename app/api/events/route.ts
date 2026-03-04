@@ -16,40 +16,44 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { addClient, removeClient } from '@/lib/sse';
+import { NextRequest } from 'next/server';
 
-// Don't need to test 'cause this is just a demo - skipcq: TCV-001
+import { addClient, removeClient } from '@/lib/sse/server';
+import { getUser } from '@/lib/session';
+import { ClientError } from '@/lib/Response';
+import { getIsAllListsMember } from '@/lib/database/list';
+
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 /**
- * API endpoint for subscribing to state update events from clients on the `/count` page.
- * Should be accessed like this:
- * ```ts
- * useEffect(() => {
- *   const es = new EventSource('/api/events');
- *
- *   es.onmessage = event => {
- *     const data = JSON.parse(event.data as string) as { count: number };
- *     setCount(data.count);
- *   };
- *
- *   es.onerror = () => {
- *     addToast({ title: 'Error connecting for live updates', color: 'danger' });
- *     es.close();
- *   };
- *
- *    return () => es.close();
- * }, []);
- * ```
+ * API endpoint for subscribing to list state update events from clients.
  *
  * @param req The client's request
+ * @param req.list The ID of lists to subscribe to state update events on (this parameter
+ *  can be specified more than 1 time given)
  * @returns A response stream that will include every event until the client disconnects
+ *
+ * @example
+ * // Should be accessed using the SSE client; something like this:
+ * import { subscribe } from '@/lib/sse/client';
+ * ...
+ *   useEffect(() => subscribe([list.id], dispatchList), [list.id]);
  */
-export function GET(req: Request) {
+export async function GET(req: NextRequest) {
+  const user = await getUser();
+
+  if (!user) return ClientError.Unauthenticated('Not logged in');
+
+  const lists = req.nextUrl.searchParams.getAll('list');
+
+  const isAllListsAssignee = await getIsAllListsMember(user.id, lists);
+
+  if (!isAllListsAssignee) return ClientError.NotFound('Not all lists found');
+
   const stream = new ReadableStream({
     start(controller) {
-      const id = addClient(controller);
+      const id = addClient(controller, lists);
 
       req.signal.addEventListener('abort', () => removeClient(id));
     }
