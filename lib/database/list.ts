@@ -173,7 +173,13 @@ export async function getListMemberByItem(
   return result ?? false;
 }
 
-export async function getIsListAssignee(
+/**
+ * Checks whether the given user is a member of the given list
+ *
+ * @param userId The user to check
+ * @param listId The list to check membership on
+ */
+export async function getIsListMember(
   userId: string,
   listId: string
 ): Promise<boolean> {
@@ -184,7 +190,7 @@ export async function getIsListAssignee(
   return result > 0;
 }
 
-export async function getIsListAssigneeByItem(
+export async function getIsListMemberByItem(
   userId: string,
   itemId: string
 ): Promise<boolean> {
