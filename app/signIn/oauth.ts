@@ -22,10 +22,12 @@ import { SuccessContext } from 'better-auth/react';
 
 import { authClient } from '@/lib/auth-client';
 import User from '@/lib/model/user';
+import { OAuthConfig } from '@/lib/auth';
 
 export interface OAuthControllers {
   setLoggedInUser: (user: User) => void;
   router: AppRouterInstance;
+  oauthConfig?: OAuthConfig;
 }
 
 type supportedProvider = 'github';

@@ -22,8 +22,22 @@ import { PrismaClient } from '@prisma/client';
 import { haveIBeenPwned, username } from 'better-auth/plugins';
 
 import { namedColors } from './model/color';
+import { randomNamedColor } from './color';
 
 const prisma = new PrismaClient();
+
+export type OAuthConfig = {
+  githubEnabled: boolean;
+};
+
+export const getOAuthConfig = () => {
+  const config: OAuthConfig = {
+    githubEnabled:
+      !!process.env.GITHUB_CLIENT_ID && !!process.env.GITHUB_CLIENT_SECRET
+  };
+
+  return config;
+};
 
 // auth functionality is tested where used - skipcq: TCV-001
 export const auth = betterAuth({
@@ -46,8 +60,7 @@ export const auth = betterAuth({
     additionalFields: {
       color: {
         type: namedColors as unknown as DBFieldType,
-        required: true,
-        defaultValue: 'Blue'
+        required: true
       },
       legacyPassword: {
         type: 'string',
@@ -73,10 +86,19 @@ export const auth = betterAuth({
     minPasswordLength: 10
   },
   socialProviders: {
-    github: {
-      clientId: process.env.GITHUB_CLIENT_ID as string,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET as string
-    }
+    ...(getOAuthConfig().githubEnabled
+      ? {
+          github: {
+            clientId: process.env.GITHUB_CLIENT_ID as string,
+            clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
+            mapProfileToUser: () => {
+              return {
+                color: randomNamedColor()
+              };
+            }
+          }
+        }
+      : {})
   },
   plugins: [
     username(),

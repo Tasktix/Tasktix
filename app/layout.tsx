@@ -20,8 +20,10 @@ import type { Metadata } from 'next';
 
 import Body from '@/app/body';
 import { getUser } from '@/lib/session';
+import { getOAuthConfig } from '@/lib/auth';
 
 import { Providers } from './providers';
+
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -35,7 +37,10 @@ export default async function RootLayout({
   return (
     <html suppressHydrationWarning lang='en'>
       <body>
-        <Providers loggedInUserAtStart={await getUser()}>
+        <Providers
+          loggedInUserAtStart={await getUser()}
+          oauthConfig={getOAuthConfig()}
+        >
           <Body>{children}</Body>
         </Providers>
       </body>

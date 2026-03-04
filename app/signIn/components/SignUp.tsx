@@ -49,8 +49,7 @@ export default function SignUp() {
     password: InputMessage;
   }
 
-  const { setLoggedInUser } = useAuth();
-
+  const { setLoggedInUser, oauthConfig } = useAuth();
   const defaultMessage: InputMessage = { message: '', color: 'default' };
 
   const [inputs, setInputs] = useState({
@@ -162,7 +161,11 @@ export default function SignUp() {
           Sign Up
         </Button>
       </div>
-      <OAuth router={router} setLoggedInUser={setLoggedInUser} />
+      <OAuth
+        oauthConfig={oauthConfig}
+        router={router}
+        setLoggedInUser={setLoggedInUser}
+      />
     </form>
   );
 }

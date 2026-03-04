@@ -23,7 +23,6 @@ import { Github } from 'react-bootstrap-icons';
 import { startTransition } from 'react';
 
 import { handleOAuth, OAuthControllers } from '../oauth';
-
 /**
  * OAuth component that provides GitHub authentication options for user sign-in.
  *
@@ -34,12 +33,19 @@ import { handleOAuth, OAuthControllers } from '../oauth';
  * @param props - The OAuth controller props
  * @param props.setLoggedInUser - Callback function to set the logged-in user state
  * @param props.router - Next.js router instance for navigation after authentication
+ * @param props.oauthConfig - Supported Oauth Providers configuration
  *
  * @example
  * <OAuth setLoggedInUser={setUser} router={router} />
  */
-export default function OAuth({ setLoggedInUser, router }: OAuthControllers) {
-  return (
+export default function OAuth({
+  setLoggedInUser,
+  router,
+  oauthConfig
+}: OAuthControllers) {
+  return !!!oauthConfig?.githubEnabled ? (
+    <></>
+  ) : (
     <div>
       <div className='flex items-center gap-4 my-6'>
         <Divider className='flex-1' />

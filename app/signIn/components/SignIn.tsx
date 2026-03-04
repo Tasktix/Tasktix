@@ -30,7 +30,7 @@ import User from '@/lib/model/user';
 import OAuth from './OAuth';
 
 export default function SignIn() {
-  const { setLoggedInUser } = useAuth();
+  const { setLoggedInUser, oauthConfig } = useAuth();
   const [inputs, setInputs] = useState({ username: '', password: '' });
   const router = useRouter();
 
@@ -85,7 +85,11 @@ export default function SignIn() {
           Sign In
         </Button>
       </div>
-      <OAuth router={router} setLoggedInUser={setLoggedInUser} />
+      <OAuth
+        oauthConfig={oauthConfig}
+        router={router}
+        setLoggedInUser={setLoggedInUser}
+      />
     </form>
   );
 }
