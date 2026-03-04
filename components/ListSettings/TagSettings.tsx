@@ -48,7 +48,7 @@ export default function TagSettings({
 }>) {
   function updateTagName(tag: Tag, name: string) {
     api
-      .patch(`/list/${listId}/tag/${tag.id}`, { ...tag, name })
+      .patch(`/list/${listId}/tag/${tag.id}`, { name })
       .then(() => {
         setTagsAvailable(
           tagsAvailable.map(t =>
@@ -62,7 +62,7 @@ export default function TagSettings({
   function updateTagColor(tag: Tag, color: NamedColor | null) {
     if (color)
       api
-        .patch(`/list/${listId}/tag/${tag.id}`, { ...tag, color })
+        .patch(`/list/${listId}/tag/${tag.id}`, { color })
         .then(() => {
           setTagsAvailable(
             tagsAvailable.map(t =>
