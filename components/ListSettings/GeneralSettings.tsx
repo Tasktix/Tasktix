@@ -18,7 +18,7 @@
 
 import { addToast, Button, Switch } from '@heroui/react';
 import { TrashFill } from 'react-bootstrap-icons';
-import { ActionDispatch, useContext } from 'react';
+import { useContext } from 'react';
 import { useRouter } from 'next/navigation';
 
 import ColorPicker from '@/components/ColorPicker';
@@ -26,7 +26,6 @@ import ConfirmedTextInput from '@/components/ConfirmedTextInput';
 import { NamedColor } from '@/lib/model/color';
 import api from '@/lib/api';
 import { ListContext } from '@/components/Sidebar';
-import { ListAction } from '@/components/List/types';
 import { addToastForError } from '@/lib/error';
 
 /**
@@ -40,12 +39,6 @@ import { addToastForError } from '@/lib/error';
  * @param hasTimeTracking Whether time tracking is currently enabled for the list
  * @param isAutoOrdered Whether auto-ordering is currently enabled for the list
  * @param setListName A callback for updating React state with a new list name
- * @param setListColor A callback for updating React state with a new list color
- * @param setHasTimeTracking A callback for updating React state when time tracking is
- *  toggled
- * @param setHasDueDates A callback for updating React state when due dates are toggled
- * @param setIsAutoOrdered A callback for updating React state when auto-ordering is
- *  toggled
  */
 export default function GeneralSettings({
   listId,
@@ -54,7 +47,6 @@ export default function GeneralSettings({
   hasDueDates,
   hasTimeTracking,
   isAutoOrdered,
-  dispatchList,
   setListName
 }: Readonly<{
   listId: string;
@@ -63,7 +55,6 @@ export default function GeneralSettings({
   isAutoOrdered: boolean;
   hasDueDates: boolean;
   hasTimeTracking: boolean;
-  dispatchList: ActionDispatch<[action: ListAction]>;
   setListName: (name: string) => unknown;
 }>) {
   const router = useRouter();
@@ -74,7 +65,6 @@ export default function GeneralSettings({
 
     api
       .patch(`/list/${listId}`, { hasTimeTracking: value })
-      .then(() => dispatchList({ type: 'SetHasTimeTracking', hasTimeTracking }))
       .catch(addToastForError);
   }
 
@@ -83,7 +73,6 @@ export default function GeneralSettings({
 
     api
       .patch(`/list/${listId}`, { hasDueDates: value })
-      .then(() => dispatchList({ type: 'SetHasDueDates', hasDueDates }))
       .catch(addToastForError);
   }
 
@@ -92,17 +81,13 @@ export default function GeneralSettings({
 
     api
       .patch(`/list/${listId}`, { isAutoOrdered: value })
-      .then(() => dispatchList({ type: 'SetIsAutoOrdered', isAutoOrdered }))
       .catch(addToastForError);
   }
 
   function updateColor(color: NamedColor | null) {
     if (color === null) return;
 
-    api
-      .patch(`/list/${listId}`, { color })
-      .then(() => dispatchList({ type: 'SetListColor', color }))
-      .catch(addToastForError);
+    api.patch(`/list/${listId}`, { color }).catch(addToastForError);
   }
 
   function deleteList() {
