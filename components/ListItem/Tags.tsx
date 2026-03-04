@@ -58,7 +58,21 @@ export default function Tags({
   unlinkTag: (id: string) => unknown;
 }) {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [prevAvailableTags, setPrevAvailableTags] = useState(tagsAvailable);
 
+  if(tagsAvailable !== prevAvailableTags){
+    tags.forEach(tag => {
+      const updatedTag = tagsAvailable?.find(availableTag => availableTag.id === tag.id);
+      if(!updatedTag) {
+        unlinkTag(tag.id)
+      } else {
+        tag.name = updatedTag.name;
+        tag.color = updatedTag.color;
+      }
+    });
+    setPrevAvailableTags(tagsAvailable);
+  }
+  console.log(tags)
   return (
     <Popover
       isOpen={isPopoverOpen}
