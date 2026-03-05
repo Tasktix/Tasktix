@@ -29,8 +29,7 @@ import { FilterState, FilterInputState, FilterType } from './types';
 
 // Input type for the filter modal
 type FilterGroupProps = {
-  key: number;
-  index: number;
+  ids: number[];
   filters: FilterState;
   filterOptions: FilterType[];
   onFilterChange: (f: FilterState) => unknown;
@@ -38,7 +37,7 @@ type FilterGroupProps = {
 
 // Filter group implementation
 export default function FilterGroup({
-  index,
+  ids,
   filters,
   filterOptions,
   onFilterChange
@@ -89,17 +88,17 @@ export default function FilterGroup({
   return (
     <>
       <div className='relative'>
-        {index == 0 && <>Where:</>}
+        {ids.length == 0 && <>Where:</>}
         <div className='pl-12'>
-          {filters.filters.map(filter => {
+          {filters.filters.map((filter, i) => {
             if ('filters' in filter) {
               // Render a filterGroup component
               return (
                 <FilterGroup
-                  key={filter.id}
+                  key={[...ids, i].join('.')}
                   filterOptions={filterOptions}
                   filters={filter}
-                  index={index + 1}
+                  ids={[...ids, i]}
                   onFilterChange={handleChildChange.bind(null, filter)}
                 />
               );
@@ -107,7 +106,7 @@ export default function FilterGroup({
               // Render a FilterRow component
               return (
                 <FilterRow
-                  key={filter.id}
+                  key={[...ids, i].join('.')}
                   filterInput={filter}
                   filterOptions={filterOptions}
                   onFilterChange={handleChildChange.bind(null, filter)}
@@ -122,7 +121,7 @@ export default function FilterGroup({
           <AddRowIcon />
           Add Filter Row
         </Button>
-        {index < 3 && (
+        {ids.length < 3 && (
           <Button onPress={addGroup}>
             <AddGroupIcon />
             Add Filter Group
