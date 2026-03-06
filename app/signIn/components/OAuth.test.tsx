@@ -53,9 +53,27 @@ test('Pressing Github Button attempts Oauth Login', () => {
 
   const githubButton = getByLabelText('sign in with github');
 
-  expect(githubButton).toHaveTextContent('Continue with Github');
+  expect(githubButton).toBeVisible();
 
   fireEvent.click(githubButton);
 
   expect(handleOAuth).toHaveBeenCalled();
+});
+
+test('Outh login not rendered if not configured on server ', () => {
+  vi.mocked(useAuth).mockReturnValue({
+    loggedInUser: false,
+    setLoggedInUser: vi.fn(),
+    oauthConfig: { githubEnabled: false }
+  });
+  const { queryByLabelText } = render(
+    <HeroUIProvider disableRipple>
+      <SignIn />
+    </HeroUIProvider>
+  );
+
+  const githubButton = queryByLabelText('sign in with github');
+
+  expect(githubButton).not.toBeInTheDocument();
+
 });

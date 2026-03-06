@@ -42,10 +42,8 @@ export default function OAuth({
   oauthConfig
 }: Readonly<OAuthControllers>) {
   if (!oauthConfig?.githubEnabled) {
-    /* Required to appease TypeScript skipcq JS-0045*/
-    return <></>;
+    return null;
   }
-
   return (
     <div>
       <div className='flex items-center gap-4 my-6'>
