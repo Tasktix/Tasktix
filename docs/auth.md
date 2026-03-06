@@ -54,7 +54,8 @@ While it is possible to manually update Usernames, emails, etc. through handcraf
 ## Github OAuth
 To support Tasktix Integration with Github Projects, Single Sign On is supported via the Tasktix Github App (or any custom Github App for self-hosters).
 
-To setup a Github App, follow the instructions on [Githubs Documentation](https://docs.github.com/en/apps/creating-github-apps/about-creating-github-apps/about-creating-github-apps), then copy the Client ID and a Client Secret to your `.env` as below:
+To setup a Github App, visit your accounts [Github App Settings](https://github.com/settings/apps), Create a new Github App, then copy the Client ID and a Client Secret to your `.env` as below:
+
 ```
 .env/
 GITHUB_CLIENT_ID=
@@ -63,6 +64,8 @@ GITHUB_CLIENT_SECRET=
 
 >[!NOTE]
 > When Creating your Github App, you must assign Read permissions for Email. Other permissions will be necessary to allow all features of Github Projects integration, but Authentication will succeed with only read permission for email.
+
+With the Github App created and properly permissioned, set the Homepage url to the url where you are hosting tasktix, then set the callback url to `<homepageURL>/api/auth/callback/github`. All other fields of the Application should be left blank/default.
 
 ## Database Updates
 The required schema for BetterAuth can be found [here](https://www.better-auth.com/docs/concepts/database#core-schema). To add login by username, it is required to extend that schema as described [here](https://www.better-auth.com/docs/plugins/username#schema). .
