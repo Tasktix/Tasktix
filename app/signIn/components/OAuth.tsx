@@ -44,6 +44,7 @@ export default function OAuth({
   if (!oauthConfig?.githubEnabled) {
     return null;
   }
+
   return (
     <div>
       <div className='flex items-center gap-4 my-6'>

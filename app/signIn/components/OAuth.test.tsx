@@ -75,5 +75,4 @@ test('Outh login not rendered if not configured on server ', () => {
   const githubButton = queryByLabelText('sign in with github');
 
   expect(githubButton).not.toBeInTheDocument();
-
 });
