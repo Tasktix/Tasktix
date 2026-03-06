@@ -32,7 +32,6 @@ import { handleOAuth, OAuthControllers } from '../oauth';
  * @component
  * @param props - The OAuth controller props
  * @param props.setLoggedInUser - Callback function to set the logged-in user state
- * @param props.router - Next.js router instance for navigation after authentication
  * @param props.oauthConfig - Supported Oauth Providers configuration
  *
  * @example
@@ -40,7 +39,6 @@ import { handleOAuth, OAuthControllers } from '../oauth';
  */
 export default function OAuth({
   setLoggedInUser,
-  router,
   oauthConfig
 }: Readonly<OAuthControllers>) {
   if (!oauthConfig?.githubEnabled) {
@@ -61,9 +59,7 @@ export default function OAuth({
           startContent={<Github />}
           variant='bordered'
           onPress={() =>
-            startTransition(() =>
-              handleOAuth('github', { setLoggedInUser, router })
-            )
+            startTransition(() => handleOAuth('github', { setLoggedInUser }))
           }
         >
           Continue with Github

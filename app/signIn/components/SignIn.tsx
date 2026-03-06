@@ -85,11 +85,7 @@ export default function SignIn() {
           Sign In
         </Button>
       </div>
-      <OAuth
-        oauthConfig={oauthConfig}
-        router={router}
-        setLoggedInUser={setLoggedInUser}
-      />
+      <OAuth oauthConfig={oauthConfig} setLoggedInUser={setLoggedInUser} />
     </form>
   );
 }

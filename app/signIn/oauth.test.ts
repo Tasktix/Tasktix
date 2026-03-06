@@ -16,8 +16,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { useRouter } from 'next/navigation';
-import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 import { addToast } from '@heroui/react';
 import { ErrorContext, SuccessContext } from 'better-auth/react';
 
@@ -36,11 +34,6 @@ vi.mock('@/lib/auth-client', () => ({
   }
 }));
 
-vi.mock(import('next/navigation'), async importOriginal => ({
-  ...(await importOriginal()),
-  useRouter: vi.fn()
-}));
-
 beforeEach(() => {
   vi.resetAllMocks();
 });
@@ -56,9 +49,6 @@ const MOCK_USER = new User(
 );
 
 test('Properly handles failed github authentication', async () => {
-  const routerMock = {
-    push: vi.fn()
-  } as unknown as AppRouterInstance;
   const setLoggedInUserMock = vi.fn();
   const exampleError = {
     error: {
@@ -79,13 +69,10 @@ test('Properly handles failed github authentication', async () => {
   );
 
   await handleOAuth('github', {
-    setLoggedInUser: setLoggedInUserMock,
-    router: routerMock
+    setLoggedInUser: setLoggedInUserMock
   });
 
   expect(authClient.signIn.social).toHaveBeenCalled();
-  // eslint-disable-next-line @typescript-eslint/unbound-method
-  expect(routerMock.push).not.toHaveBeenCalled();
   expect(setLoggedInUserMock).not.toHaveBeenCalled();
   expect(addToast).toHaveBeenCalledWith({
     title: 'Provider not found',
@@ -94,13 +81,9 @@ test('Properly handles failed github authentication', async () => {
 });
 
 test('Properly redirects and sets logged in user on succesful github authentication', async () => {
-  const routerMock = {
-    push: vi.fn()
-  } as unknown as AppRouterInstance;
   const setLoggedInUserMock = vi.fn();
   const exampleSuccess = { data: { User: MOCK_USER } };
 
-  vi.mocked(useRouter).mockReturnValue(routerMock);
   vi.mocked(authClient.signIn.social).mockImplementation(
     (options, fetchOptions) => {
       if (fetchOptions?.onSuccess) {
@@ -113,13 +96,10 @@ test('Properly redirects and sets logged in user on succesful github authenticat
   );
 
   await handleOAuth('github', {
-    setLoggedInUser: setLoggedInUserMock,
-    router: routerMock
+    setLoggedInUser: setLoggedInUserMock
   });
 
   expect(authClient.signIn.social).toHaveBeenCalled();
-  // eslint-disable-next-line @typescript-eslint/unbound-method
-  expect(routerMock.push).toHaveBeenCalledWith('/list');
   expect(setLoggedInUserMock).toHaveBeenCalledWith(MOCK_USER);
   expect(addToast).not.toHaveBeenCalled();
 });

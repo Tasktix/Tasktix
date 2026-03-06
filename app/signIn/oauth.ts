@@ -17,7 +17,6 @@
  */
 
 import { addToast } from '@heroui/react';
-import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 import { SuccessContext } from 'better-auth/react';
 
 import { authClient } from '@/lib/auth-client';
@@ -26,7 +25,6 @@ import { OAuthConfig } from '@/lib/auth';
 
 export interface OAuthControllers {
   setLoggedInUser: (user: User) => void;
-  router: AppRouterInstance;
   oauthConfig?: OAuthConfig;
 }
 
@@ -42,13 +40,11 @@ type supportedProvider = 'github';
  * @param provider - The OAuth provider name (e.g., 'google', 'github')
  * @param controllers - Object containing callback functions and router instance
  * @param controllers.setLoggedInUser - Callback to set the authenticated user in application state
- * @param controllers.router - Next.js App Router instance for navigation
  *
  * @example
  * ```typescript
  * await handleOauth('github', {
  *   setLoggedInUser: (user) => setUser(user),
- *   router: useRouter()
  * });
  * ```
  */
@@ -59,12 +55,12 @@ export async function handleOAuth(
 ) {
   await authClient.signIn.social(
     {
-      provider
+      provider: provider,
+      callbackURL: '/list'
     },
     {
       onSuccess: (ctx: SuccessContext<{ User: User }>) => {
         controllers.setLoggedInUser(ctx.data.User);
-        controllers.router.push('/list');
       },
       onError: ctx => {
         addToast({ title: ctx.error.message, color: 'danger' });

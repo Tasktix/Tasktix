@@ -161,11 +161,7 @@ export default function SignUp() {
           Sign Up
         </Button>
       </div>
-      <OAuth
-        oauthConfig={oauthConfig}
-        router={router}
-        setLoggedInUser={setLoggedInUser}
-      />
+      <OAuth oauthConfig={oauthConfig} setLoggedInUser={setLoggedInUser} />
     </form>
   );
 }
