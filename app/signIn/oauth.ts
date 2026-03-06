@@ -55,7 +55,7 @@ export async function handleOAuth(
 ) {
   await authClient.signIn.social(
     {
-      provider: provider,
+      provider,
       callbackURL: '/list'
     },
     {
