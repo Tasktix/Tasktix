@@ -42,7 +42,7 @@ export default function OAuth({
   setLoggedInUser,
   router,
   oauthConfig
-}: OAuthControllers) {
+}: Readonly<OAuthControllers>) {
   if (!oauthConfig?.githubEnabled) {
     /* Required to appease TypeScript skipcq JS-0045*/
     return <></>;
