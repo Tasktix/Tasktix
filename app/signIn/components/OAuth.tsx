@@ -43,11 +43,12 @@ export default function OAuth({
   router,
   oauthConfig
 }: OAuthControllers) {
-  if (Boolean(!oauthConfig?.githubEnabled)){
+  if (!oauthConfig?.githubEnabled) {
     /* Required to appease TypeScript skipcq JS-0045*/
-    return <></>
+    return <></>;
   }
-  return(
+
+  return (
     <div>
       <div className='flex items-center gap-4 my-6'>
         <Divider className='flex-1' />
