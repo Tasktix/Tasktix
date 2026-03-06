@@ -41,6 +41,10 @@ import { useAuth } from '@/components/AuthProvider';
 import { getBackgroundColor } from '@/lib/color';
 import { authClient } from '@/lib/auth-client';
 
+/**
+ * Main Layout of Tasktix Application
+ * @param children - main page content to be rendered
+ */
 export default function Body({ children }: Readonly<{ children: ReactNode }>) {
   const { loggedInUser } = useAuth();
   const logoHref = loggedInUser ? '/list' : '/about';
@@ -103,11 +107,18 @@ export default function Body({ children }: Readonly<{ children: ReactNode }>) {
   );
 }
 
+/**
+ * Renders Account Icon in Tasktix Navbar
+ */
 function AccountButton() {
   const { loggedInUser, setLoggedInUser } = useAuth();
 
   const router = useRouter();
 
+  /**
+   * Handles clicking of Logout button on Profile Icon dropdown
+   * Sings out user, redirects to Home/About page and suppreses errors
+   */
   function handleClick() {
     startTransition(async () => {
       await authClient.signOut({

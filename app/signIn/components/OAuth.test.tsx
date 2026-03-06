@@ -42,7 +42,8 @@ vi.mock('../oauth');
 test('Pressing Github Button attempts Oauth Login', () => {
   vi.mocked(useAuth).mockReturnValue({
     loggedInUser: false,
-    setLoggedInUser: vi.fn()
+    setLoggedInUser: vi.fn(),
+    oauthConfig: {githubEnabled: true}
   });
   const { getByLabelText } = render(
     <HeroUIProvider disableRipple>

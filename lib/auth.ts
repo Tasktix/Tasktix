@@ -30,10 +30,16 @@ export type OAuthConfig = {
   githubEnabled: boolean;
 };
 
+/**
+ * Server function that allows client to access state of OAuth configuration, available from the useAuth hook.
+ * Should not be called from client
+ * 
+ * @returns Object contianing all supported oauth providers and whether they have been configured 
+ */
 export const getOAuthConfig = () => {
   const config: OAuthConfig = {
     githubEnabled:
-      !!process.env.GITHUB_CLIENT_ID && !!process.env.GITHUB_CLIENT_SECRET
+      Boolean(process.env.GITHUB_CLIENT_ID) && Boolean(process.env.GITHUB_CLIENT_SECRET)
   };
 
   return config;
@@ -91,11 +97,6 @@ export const auth = betterAuth({
           github: {
             clientId: process.env.GITHUB_CLIENT_ID as string,
             clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
-            mapProfileToUser: () => {
-              return {
-                color: randomNamedColor()
-              };
-            }
           }
         }
       : {})
