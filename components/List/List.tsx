@@ -88,22 +88,26 @@ export default function List({
 
   return (
     <>
-      <span className='flex w-full min-w-0 flex-wrap items-start gap-4 md:flex-nowrap md:items-center'>
-        <SearchBar inputOptions={filterOptions} onValueChange={setFilters} />
-        <ListSettings
-          addNewTag={listHandlers.addNewTag}
-          dispatchList={dispatchList}
-          hasDueDates={list.hasDueDates}
-          hasTimeTracking={list.hasTimeTracking}
-          isAutoOrdered={list.isAutoOrdered}
-          listColor={list.color}
-          listId={list.id}
-          listName={list.name}
-          members={list.members}
-          setListName={listHandlers.setName}
-          tagsAvailable={tagsAvailable}
-        />
-      </span>
+      <div className='flex w-full min-w-0 items-center gap-3 sm:gap-4'>
+        <div className='min-w-0 grow'>
+          <SearchBar inputOptions={filterOptions} onValueChange={setFilters} />
+        </div>
+        <div className='shrink-0 self-center'>
+          <ListSettings
+            addNewTag={listHandlers.addNewTag}
+            dispatchList={dispatchList}
+            hasDueDates={list.hasDueDates}
+            hasTimeTracking={list.hasTimeTracking}
+            isAutoOrdered={list.isAutoOrdered}
+            listColor={list.color}
+            listId={list.id}
+            listName={list.name}
+            members={list.members}
+            setListName={listHandlers.setName}
+            tagsAvailable={tagsAvailable}
+          />
+        </div>
+      </div>
 
       {Array.from(list.sections.values()).map(section => (
         <ListSection

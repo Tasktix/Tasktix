@@ -96,9 +96,10 @@ export default function ListSettings({
         className='bg-content1 shadow-lg shadow-content2'
         size='lg'
         variant='ghost'
+        aria-label='List settings'
         onPress={onOpen}
       >
-        <GearWideConnected aria-label='Settings' size={20} />
+        <GearWideConnected size={20} />
       </Button>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent className='h-1/2'>

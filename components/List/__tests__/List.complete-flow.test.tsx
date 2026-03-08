@@ -81,6 +81,35 @@ describe('List mock task rendering and completion flow', () => {
     vi.clearAllMocks();
   });
 
+  it('keeps the filter bar and list settings button in the same row container', () => {
+    const startingList = new ListModel(
+      'List name',
+      'Amber',
+      [],
+      [new ListSectionModel('Section', [new ListItemModel('Item', {})])],
+      false,
+      false,
+      false,
+      'list-id'
+    );
+
+    render(
+      <List
+        startingList={JSON.stringify(startingList)}
+        startingTagsAvailable='[]'
+      />
+    );
+
+    const searchBar = screen.getByTestId('search-bar');
+    const settings = screen.getByTestId('list-settings');
+    const sharedRow = searchBar.parentElement?.parentElement;
+
+    expect(sharedRow).toHaveClass('flex');
+    expect(sharedRow).toHaveClass('items-center');
+    expect(searchBar.parentElement).toHaveClass('grow');
+    expect(settings.parentElement).toHaveClass('shrink-0');
+  });
+
   it('renders a mock task, shows title and priority badge, and fires mark-complete callback when checkbox is clicked', () => {
     const startingList = new ListModel(
       'List name',
