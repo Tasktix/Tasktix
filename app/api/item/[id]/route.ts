@@ -93,7 +93,7 @@ export async function DELETE(
   const role = await getRoleByItem(user.id, id);
 
   if (!role) return ClientError.BadRequest('List not found');
-  if (!role.canManageItems)
+  if (!role.canDeleteItems)
     return ClientError.Forbidden('Insufficient permissions to remove item');
 
   const result = await deleteListItem(id);

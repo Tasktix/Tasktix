@@ -42,7 +42,7 @@ export async function PATCH(
   const role = await getRoleByList(user.id, id);
 
   if (!role) return ClientError.BadRequest('List not found');
-  if (!role.canManageItems)
+  if (!role.canUpdateList)
     return ClientError.Forbidden('Insufficient permissions to reorder items');
 
   const parseResult = PatchBody.safeParse(await request.json());

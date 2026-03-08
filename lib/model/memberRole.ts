@@ -45,12 +45,12 @@ export default class MemberRole {
   description: string;
   canAddItems: boolean;
   canUpdateItems: boolean;
-  canManageItems: boolean;
+  canDeleteItems: boolean;
   canManageTags: boolean;
   canManageAssignees: boolean;
   canManageMembers: boolean;
   canUpdateList: boolean;
-  canManageList: boolean;
+  canDeleteList: boolean;
 
   constructor(
     name: string,
@@ -71,12 +71,12 @@ export default class MemberRole {
     this.name = name;
     this.description = description;
     this.canAddItems = canAddItems;
-    this.canManageItems = canManageItems;
+    this.canDeleteItems = canManageItems;
     this.canUpdateItems = canUpdateItems;
     this.canManageTags = canManageTags;
     this.canManageAssignees = canManageAssignees;
     this.canManageMembers = canManageMembers;
     this.canUpdateList = canUpdateList;
-    this.canManageList = canManageList;
+    this.canDeleteList = canManageList;
   }
 }

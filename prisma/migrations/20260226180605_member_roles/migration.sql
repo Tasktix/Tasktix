@@ -16,12 +16,12 @@ CREATE TABLE `MemberRole` (
     `description` VARCHAR(64) NOT NULL,
     `canAddItems` BOOLEAN NOT NULL,
     `canUpdateItems` BOOLEAN NOT NULL,
-    `canManageItems` BOOLEAN NOT NULL,
+    `canDeleteItems` BOOLEAN NOT NULL,
     `canManageTags` BOOLEAN NOT NULL,
     `canManageAssignees` BOOLEAN NOT NULL,
     `canManageMembers` BOOLEAN NOT NULL,
     `canUpdateList` BOOLEAN NOT NULL,
-    `canManageList` BOOLEAN NOT NULL,
+    `canDeleteList` BOOLEAN NOT NULL,
 
     UNIQUE INDEX `MemberRole_name_key`(`name`),
     PRIMARY KEY (`id`)
@@ -34,12 +34,12 @@ INSERT INTO `MemberRole` (
     `description`,
     `canAddItems`,
     `canUpdateItems`,
-    `canManageItems`,
+    `canDeleteItems`,
     `canManageTags`,
     `canManageAssignees`,
     `canManageMembers`,
     `canUpdateList`,
-    `canManageList`
+    `canDeleteList`
 ) VALUES (
     'yZW3BwhhtgSQ7zhb',
     'Admin',

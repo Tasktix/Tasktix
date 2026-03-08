@@ -25,12 +25,12 @@ export function sortRolesByPermissions(a: MemberRole, b: MemberRole): number {
 
     if (perms.canAddItems) sum += 0b1;
     if (perms.canUpdateItems) sum += 0b10;
-    if (perms.canManageItems) sum += 0b100;
+    if (perms.canDeleteItems) sum += 0b100;
     if (perms.canManageTags) sum += 0b1000;
     if (perms.canManageAssignees) sum += 0b10000;
     if (perms.canManageMembers) sum += 0b100000;
     if (perms.canUpdateList) sum += 0b1000000;
-    if (perms.canManageList) sum += 0b10000000;
+    if (perms.canDeleteList) sum += 0b10000000;
 
     return sum;
   }

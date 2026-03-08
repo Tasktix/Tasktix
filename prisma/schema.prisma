@@ -85,12 +85,12 @@ model MemberRole {
   description        String       @db.VarChar(64)
   canAddItems        Boolean
   canUpdateItems     Boolean
-  canManageItems     Boolean
+  canDeleteItems     Boolean
   canManageTags      Boolean
   canManageAssignees Boolean
   canManageMembers   Boolean
   canUpdateList      Boolean
-  canManageList      Boolean
+  canDeleteList      Boolean
   listMembers        ListMember[]
 }
 
