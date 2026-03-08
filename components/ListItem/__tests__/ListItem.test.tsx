@@ -155,3 +155,25 @@ it('Displays all members assigned to the item', () => {
   expect(getByText('UT')).toBeVisible();
   expect(getByText('UT').parentElement).toHaveClass('bg-blue-500');
 });
+
+it('uses read-only task name text on mobile and keeps inline editing desktop-only', () => {
+  const { getByText, getByDisplayValue } = render(
+    <HeroUIProvider disableRipple>
+      <ListItem
+        addNewTag={vi.fn()}
+        dispatchItemChange={vi.fn()}
+        hasDueDates={false}
+        hasTimeTracking={false}
+        item={new ListItemModel('Test item', {})}
+        members={[]}
+        sectionId='section-id'
+        tagsAvailable={[]}
+      />
+    </HeroUIProvider>
+  );
+
+  expect(getByText('Test item')).toHaveClass('md:hidden');
+  expect(getByDisplayValue('Test item')).toBeInTheDocument();
+  expect(getByDisplayValue('Test item').closest('span')).toHaveClass('hidden');
+  expect(getByDisplayValue('Test item').closest('span')).toHaveClass('md:flex');
+});
