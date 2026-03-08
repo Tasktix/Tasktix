@@ -16,8 +16,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { clearTimeout, setTimeout } from 'timers';
-
 import {
   Button,
   Listbox,
@@ -27,80 +25,70 @@ import {
   PopoverTrigger
 } from '@heroui/react';
 import { useTheme } from 'next-themes';
-import { useRef, useState } from 'react';
-import { Display, MoonFill, SunFill } from 'react-bootstrap-icons';
+import { useState } from 'react';
+import { ChevronDown, Display, MoonFill, SunFill } from 'react-bootstrap-icons';
 
 /**
  * Input for switching between light, dark, and system themes. Provides a button for
- * toggling between light/dark mode. When the toggle is hovered over, opens a menu that
- * allows system theme to be selected in addition to light/dark.
+ * toggling between light/dark mode plus a separate button that opens a click-driven
+ * menu for choosing light, dark, or system mode.
  */
 export default function ThemeSwitcher() {
-  const timer = useRef<NodeJS.Timeout>(undefined);
-  const { theme, setTheme } = useTheme();
+  const { theme, resolvedTheme, setTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
 
-  const systemTheme =
-    window.matchMedia &&
-    window.matchMedia('(prefers-color-scheme: dark)').matches
-      ? 'dark'
-      : 'light';
-  const themeIcon = theme === 'system' ? systemTheme : theme;
+  const selectedTheme = theme || 'system';
+  const activeTheme =
+    selectedTheme === 'system' ? (resolvedTheme ?? 'light') : selectedTheme;
+  const nextTheme = activeTheme === 'dark' ? 'light' : 'dark';
 
-  function handleMouse(isHovering: boolean) {
-    if (isHovering) {
-      clearTimeout(timer.current);
-      setIsOpen(true);
-    } else timer.current = setTimeout(() => setIsOpen(false), 100);
+  function chooseTheme(themeKey: string) {
+    setTheme(themeKey);
+    setIsOpen(false);
   }
 
   return (
-    <Popover isOpen={isOpen}>
-      <PopoverTrigger
-        onMouseLeave={() => handleMouse(false)}
-        onMouseOver={() => handleMouse(true)}
+    <div className='flex items-center gap-1'>
+      <Button
+        isIconOnly
+        aria-label={`Set ${nextTheme} theme`}
+        variant='ghost'
+        onPress={() => setTheme(nextTheme)}
       >
-        <Button
-          isIconOnly
-          aria-label={`Set ${themeIcon === 'dark' ? 'light' : 'dark'} theme`}
-          variant='ghost'
-          onPress={() => setTheme(themeIcon === 'dark' ? 'light' : 'dark')}
-        >
-          {themeIcon === 'dark' ? <SunFill /> : <MoonFill />}
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent
-        onMouseLeave={() => handleMouse(false)}
-        onMouseOver={() => handleMouse(true)}
-      >
-        <Listbox
-          aria-label='Choose theme'
-          selectedKeys={[theme || 'system']}
-          selectionMode='single'
-        >
-          <ListboxItem
-            key='light'
-            startContent={<SunFill />}
-            onPress={() => setTheme('light')}
+        {activeTheme === 'dark' ? <SunFill /> : <MoonFill />}
+      </Button>
+
+      <Popover isOpen={isOpen} placement='bottom-end' onOpenChange={setIsOpen}>
+        <PopoverTrigger>
+          <Button
+            isIconOnly
+            aria-expanded={isOpen}
+            aria-haspopup='menu'
+            aria-label='Choose theme'
+            variant='ghost'
           >
-            Light
-          </ListboxItem>
-          <ListboxItem
-            key='dark'
-            startContent={<MoonFill />}
-            onPress={() => setTheme('dark')}
+            <ChevronDown />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className='p-0'>
+          <Listbox
+            aria-label='Theme options'
+            selectedKeys={[selectedTheme]}
+            selectionMode='single'
+            onAction={key => chooseTheme(String(key))}
           >
-            Dark
-          </ListboxItem>
-          <ListboxItem
-            key='system'
-            startContent={<Display />}
-            onPress={() => setTheme('system')}
-          >
-            System
-          </ListboxItem>
-        </Listbox>
-      </PopoverContent>
-    </Popover>
+            <ListboxItem key='light' startContent={<SunFill />}>
+              Light
+            </ListboxItem>
+            <ListboxItem key='dark' startContent={<MoonFill />}>
+              Dark
+            </ListboxItem>
+            <ListboxItem key='system' startContent={<Display />}>
+              System
+            </ListboxItem>
+          </Listbox>
+        </PopoverContent>
+      </Popover>
+    </div>
   );
 }
