@@ -240,7 +240,9 @@ export default function ListItem({
                 >
                   {item.name}
                 </span>
-                <span className={`-ml-1 hidden md:flex ${hasDueDates || 'mt-1'}`}>
+                <span
+                  className={`-ml-1 hidden md:flex ${hasDueDates || 'mt-1'}`}
+                >
                   <ConfirmedTextInput
                     aria-label='Item name'
                     className='shrink'
