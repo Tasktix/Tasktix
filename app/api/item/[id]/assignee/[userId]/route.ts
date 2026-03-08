@@ -32,9 +32,9 @@ export async function POST(
 
   const role = await getRoleByItem(user.id, id);
 
-  if (!role) return ClientError.BadRequest('List item not found');
+  if (!role) return ClientError.NotFound('List item not found');
   if (!role.canManageAssignees)
-    return ClientError.BadRequest('Insufficient permissions to assign');
+    return ClientError.Forbidden('Insufficient permissions to assign');
 
   const result = await linkAssignee(id, userId, '');
 
