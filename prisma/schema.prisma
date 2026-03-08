@@ -81,7 +81,7 @@ model ListMember {
 
 model MemberRole {
   id                 String       @id @db.Char(16)
-  name               String       @db.VarChar(32)
+  name               String       @unique @db.VarChar(32)
   description        String       @db.VarChar(64)
   canAddItems        Boolean
   canUpdateItems     Boolean

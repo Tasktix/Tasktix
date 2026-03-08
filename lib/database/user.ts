@@ -18,7 +18,7 @@
 
 'use server';
 
-import MemberRole, { ADMIN_ROLE_ID } from '@/lib/model/memberRole';
+import MemberRole from '@/lib/model/memberRole';
 import User from '@/lib/model/user';
 
 import { prisma } from './db_connect';
@@ -74,10 +74,9 @@ export async function getRole(id: string): Promise<MemberRole | false> {
   return result ?? false;
 }
 
-// TODO: Is this the right way to handle finding the creator role?
-export async function getCreatorRole(): Promise<MemberRole> {
+export async function getAdminRole(): Promise<MemberRole> {
   return prisma.memberRole.findUniqueOrThrow({
-    where: { id: ADMIN_ROLE_ID }
+    where: { name: 'Admin' }
   });
 }
 

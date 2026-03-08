@@ -23,6 +23,7 @@ CREATE TABLE `MemberRole` (
     `canUpdateList` BOOLEAN NOT NULL,
     `canManageList` BOOLEAN NOT NULL,
 
+    UNIQUE INDEX `MemberRole_name_key`(`name`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 

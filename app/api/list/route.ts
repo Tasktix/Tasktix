@@ -18,7 +18,7 @@
 
 import { ClientError, ServerError, Success } from '@/lib/Response';
 import { createList } from '@/lib/database/list';
-import { getCreatorRole } from '@/lib/database/user';
+import { getAdminRole } from '@/lib/database/user';
 import List, { ZodList } from '@/lib/model/list';
 import ListMember from '@/lib/model/listMember';
 import { getUser } from '@/lib/session';
@@ -39,7 +39,7 @@ export async function POST(request: Request) {
 
   const name = requestBody.name;
   const color = requestBody.color;
-  const role = await getCreatorRole();
+  const role = await getAdminRole();
 
   const listMember = new ListMember(session, role);
   const list = new List(name, color, [listMember], [], true, true, true);

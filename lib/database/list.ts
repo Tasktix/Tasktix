@@ -24,8 +24,6 @@ import List from '@/lib/model/list';
 import ListMember from '@/lib/model/listMember';
 import Tag from '@/lib/model/tag';
 
-import { ADMIN_ROLE_ID } from '../model/memberRole';
-
 import { prisma } from './db_connect';
 
 export async function createList(
@@ -241,8 +239,8 @@ export async function updateListMember(
         // Prevent race conditions removing all admins by locking admin rows for
         // full transaction duration
         await tx.$queryRaw`
-          SELECT userId FROM ListMember
-          WHERE listId = ${listId} AND roleId = ${ADMIN_ROLE_ID}
+          SELECT \`userId\` FROM \`ListMember\`
+          WHERE \`listId\` = ${listId} AND \`name\` = 'Admin'
           FOR UPDATE;
         `;
 
@@ -252,7 +250,7 @@ export async function updateListMember(
         });
 
         const admins = await tx.listMember.count({
-          where: { listId, roleId: ADMIN_ROLE_ID }
+          where: { listId, role: { name: 'Admin' } }
         });
 
         if (admins < 1) throw new Error('Must have an admin for the list');
