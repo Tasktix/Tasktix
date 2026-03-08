@@ -57,12 +57,12 @@ export default class MemberRole {
     description: string,
     canAddItems: boolean,
     canUpdateItems: boolean,
-    canManageItems: boolean,
+    canDeleteItems: boolean,
     canManageTags: boolean,
     canManageAssignees: boolean,
     canManageMembers: boolean,
     canUpdateList: boolean,
-    canManageList: boolean,
+    canDeleteList: boolean,
     id?: string
   ) {
     if (!id) id = generateId();
@@ -71,12 +71,12 @@ export default class MemberRole {
     this.name = name;
     this.description = description;
     this.canAddItems = canAddItems;
-    this.canDeleteItems = canManageItems;
+    this.canDeleteItems = canDeleteItems;
     this.canUpdateItems = canUpdateItems;
     this.canManageTags = canManageTags;
     this.canManageAssignees = canManageAssignees;
     this.canManageMembers = canManageMembers;
     this.canUpdateList = canUpdateList;
-    this.canDeleteList = canManageList;
+    this.canDeleteList = canDeleteList;
   }
 }
