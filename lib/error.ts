@@ -16,22 +16,24 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { OK } from '@/lib/Response/Success';
-import { broadcast } from '@/lib/sse';
+import { addToast } from '@heroui/react';
 
 /**
- * API endpoint for updating the `count` state across all clients. Calling this endpoint
- * triggers a broadcast of the new `count` to all clients connected to the `/count` page.
+ * Adds a toast message to the user with the error message received by the application
  *
- * @param req The client's request
- * @returns An HTTP response indicating the API request was processed
+ * @param error The error to add a toast for. `unknown` type because `.catch()` blocks'
+ *  callback argument is `any` type
  */
-export async function POST(req: Request) {
-  // Don't need to test 'cause this is just a demo - skipcq: TCV-001
+export function addToastForError(error: unknown) {
+  let title = 'An unknown error occurred';
 
-  const body = (await req.json()) as { count: number };
+  if (
+    typeof error === 'object' &&
+    error !== null &&
+    'message' in error &&
+    typeof error.message === 'string'
+  )
+    title = error.message;
 
-  broadcast(`{ "count": ${body.count} }`);
-
-  return OK('Broadcast');
+  addToast({ title, color: 'danger' });
 }

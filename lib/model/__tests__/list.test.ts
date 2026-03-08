@@ -26,6 +26,20 @@ import List from '../list';
 import ListMember from '../listMember';
 import ListSection from '../listSection';
 import User from '../user';
+import MemberRole from '../memberRole';
+
+const MOCK_ROLE_CAN_VIEW = new MemberRole(
+  'Viewer',
+  'No explicit permissions',
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false
+);
 
 beforeEach(() => {
   vi.resetAllMocks();
@@ -66,7 +80,8 @@ describe('List constructor', () => {
           new Date(),
           new Date(),
           {}
-        )
+        ),
+        MOCK_ROLE_CAN_VIEW
       ),
       new ListMember(
         new User(
@@ -77,7 +92,8 @@ describe('List constructor', () => {
           new Date(),
           new Date(),
           {}
-        )
+        ),
+        MOCK_ROLE_CAN_VIEW
       )
     ];
     const sections = [

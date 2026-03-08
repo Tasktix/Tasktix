@@ -17,7 +17,6 @@
  */
 
 import {
-  addToast,
   Button,
   Input,
   Select,
@@ -33,6 +32,7 @@ import ListMember from '@/lib/model/listMember';
 import MemberRole from '@/lib/model/memberRole';
 import api from '@/lib/api';
 import { sortRolesByPermissions } from '@/lib/sort';
+import { addToastForError } from '@/lib/error';
 
 /**
  * Displays all list members and their permissions. Allows adding new members and updating
@@ -71,7 +71,7 @@ export default function MemberSettings({
 
         setMembers([...members, listMember]);
       })
-      .catch(err => addToast({ title: err.message, color: 'danger' }));
+      .catch(addToastForError);
   }
 
   function handleUpdatePermissions(userId: string, roleId: Selection) {
@@ -105,7 +105,7 @@ export default function MemberSettings({
           )
         );
       })
-      .catch(err => addToast({ title: err.message, color: 'danger' }));
+      .catch(addToastForError);
   }
 
   return (
@@ -138,7 +138,7 @@ export default function MemberSettings({
             name={member.user.username}
           />
           <Select
-            aria-label='Role'
+            aria-label={`${member.user.username} Role`}
             selectedKeys={[member.role.id]}
             variant='underlined'
             onSelectionChange={handleUpdatePermissions.bind(

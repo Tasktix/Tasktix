@@ -29,6 +29,7 @@ import User from '@/lib/model/user';
 import ConfirmedTextInput from '@/components/ConfirmedTextInput';
 import ColorPicker from '@/components/ColorPicker';
 import { NamedColor } from '@/lib/model/color';
+import { addToastForError } from '@/lib/error';
 
 /**
  * Handles client-side functions for the profile page
@@ -36,7 +37,7 @@ import { NamedColor } from '@/lib/model/color';
  * @param user A JSON string that contains the current user data
  */
 export default function UserProperties({ user }: { user: string }) {
-  const userDetails: User = JSON.parse(user);
+  const userDetails = JSON.parse(user) as User;
 
   /**
    * Sets the user's username
@@ -52,12 +53,7 @@ export default function UserProperties({ user }: { user: string }) {
         newUserData.username = username;
         location.reload();
       })
-      .catch(err =>
-        addToast({
-          title: err.message,
-          color: 'danger'
-        })
-      );
+      .catch(addToastForError);
   }
 
   /**
@@ -74,12 +70,7 @@ export default function UserProperties({ user }: { user: string }) {
         newUserData.email = email;
         location.reload();
       })
-      .catch(err =>
-        addToast({
-          title: err.message,
-          color: 'danger'
-        })
-      );
+      .catch(addToastForError);
   }
 
   /**
@@ -102,12 +93,7 @@ export default function UserProperties({ user }: { user: string }) {
           newUserData.color = color;
           location.reload();
         })
-        .catch(err =>
-          addToast({
-            title: err.message,
-            color: 'danger'
-          })
-        );
+        .catch(addToastForError);
     }
   }
 

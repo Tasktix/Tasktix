@@ -17,26 +17,8 @@
  */
 
 import ListMember from '../listMember';
+import MemberRole from '../memberRole';
 import User from '../user';
-
-test('Defaults all permissions to not granted', () => {
-  const listMember = new ListMember(
-    new User(
-      'userId',
-      'testListMember',
-      'test@example.com',
-      true,
-      new Date(),
-      new Date(),
-      {}
-    )
-  );
-
-  expect(listMember.canAdd).toBe(false);
-  expect(listMember.canRemove).toBe(false);
-  expect(listMember.canComplete).toBe(false);
-  expect(listMember.canAssign).toBe(false);
-});
 
 test('Assigns all properties correctly', () => {
   const user = new User(
@@ -48,12 +30,21 @@ test('Assigns all properties correctly', () => {
     new Date(),
     {}
   );
+  const role = new MemberRole(
+    'Viewer',
+    'No explicit permissions',
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+  );
 
-  const listMember = new ListMember(user, true, false, true, true);
+  const listMember = new ListMember(user, role);
 
   expect(listMember.user).toBe(user);
-  expect(listMember.canAdd).toBe(true);
-  expect(listMember.canRemove).toBe(false);
-  expect(listMember.canComplete).toBe(true);
-  expect(listMember.canAssign).toBe(true);
+  expect(listMember.role).toBe(role);
 });

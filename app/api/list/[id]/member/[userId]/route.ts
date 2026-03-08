@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { getIsListAssignee, updateListMember } from '@/lib/database/list';
+import { getIsListMember, updateListMember } from '@/lib/database/list';
 import { getRoleByList } from '@/lib/database/user';
 import { ZodListMember } from '@/lib/model/listMember';
 import { ClientError, ServerError, Success } from '@/lib/Response';
@@ -46,7 +46,7 @@ export async function PATCH(
   if (!role.canManageMembers)
     return ClientError.Forbidden('Insufficient permissions to update member');
 
-  const isMember = await getIsListAssignee(userId, id);
+  const isMember = await getIsListMember(userId, id);
 
   if (!isMember) return ClientError.NotFound('Member not found');
 

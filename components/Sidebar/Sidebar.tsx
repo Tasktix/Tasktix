@@ -29,6 +29,7 @@ import { default as api } from '@/lib/api';
 import { validateListName } from '@/lib/validate';
 import List from '@/lib/model/list';
 import { randomNamedColor } from '@/lib/color';
+import { addToastForError } from '@/lib/error';
 
 import { ListContext } from './listContext';
 
@@ -59,7 +60,7 @@ export default function Sidebar({ lists }: { lists: List[] }) {
         router.push(`${res.content}`);
         dispatchEvent({ type: 'add', id, name, color });
       })
-      .catch(err => addToast({ title: err.message, color: 'danger' }));
+      .catch(addToastForError);
   }
 
   async function removeNew() {

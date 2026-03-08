@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { addToast, Button } from '@heroui/react';
+import { Button } from '@heroui/react';
 import { TrashFill } from 'react-bootstrap-icons';
 
 import ColorPicker from '@/components/ColorPicker';
@@ -25,6 +25,7 @@ import TagInput from '@/components/TagInput';
 import Tag from '@/lib/model/tag';
 import api from '@/lib/api';
 import { NamedColor } from '@/lib/model/color';
+import { addToastForError } from '@/lib/error';
 
 /**
  * Displays all tags in the List and allows tags to be added, edited, and deleted
@@ -55,7 +56,7 @@ export default function TagSettings({
           )
         );
       })
-      .catch(err => addToast({ title: err.message, color: 'danger' }));
+      .catch(addToastForError);
   }
 
   function updateTagColor(tag: Tag, color: NamedColor | null) {
@@ -69,7 +70,7 @@ export default function TagSettings({
             )
           );
         })
-        .catch(err => addToast({ title: err.message, color: 'danger' }));
+        .catch(addToastForError);
   }
 
   function deleteTag(id: string) {
@@ -85,7 +86,7 @@ export default function TagSettings({
       .then(() => {
         setTagsAvailable(tagsAvailable.filter(tag => tag.id !== id));
       })
-      .catch(err => addToast({ title: err.message, color: 'danger' }));
+      .catch(addToastForError);
   }
 
   return (

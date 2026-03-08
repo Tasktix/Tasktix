@@ -17,7 +17,7 @@
  */
 
 import { ClientError, ServerError, Success } from '@/lib/Response';
-import { createListMember, getIsListAssignee } from '@/lib/database/list';
+import { createListMember, getIsListMember } from '@/lib/database/list';
 import { getRoleByList } from '@/lib/database/user';
 import { getRole, getUserByUsername } from '@/lib/database/user';
 import ListMember from '@/lib/model/listMember';
@@ -63,7 +63,7 @@ export async function POST(
 
   if (!newUser) return ClientError.NotFound('User not found');
 
-  if (await getIsListAssignee(newUser.id, id))
+  if (await getIsListMember(newUser.id, id))
     return ClientError.Conflict('User is already a member');
 
   const newRole = await getRole(requestBody.roleId);
