@@ -75,29 +75,19 @@ export default function MemberSettings({
   }
 
   function handleUpdatePermissions(userId: string, roleId: Selection) {
-    let trueRoleId: string;
+    // roleId is always `Set<string>`: can't be `"all"` because the `<Select>` is
+    // single-select; can't be `Set<number>` because all keys are role IDs, which are
+    // strings
+    const trueRoleId = (roleId as Set<string>).keys().next().value;
 
-    if (roleId === 'all') {
-      const id = roles.values().next().value?.id;
-
-      if (!id) throw new Error('Unexpected empty set of possible roles');
-
-      trueRoleId = id;
-    } else {
-      const id = roleId.keys().next().value;
-
-      if (typeof id === 'number') throw new Error('Unexpected numeric key');
-      if (!id) return; // User tried to clear selection
-
-      trueRoleId = id;
-    }
+    if (!trueRoleId) return; // User tried to clear selection
 
     api
       .patch(`/list/${listId}/member/${userId}`, { roleId: trueRoleId })
       .then(() => {
-        const role = roles.get(trueRoleId);
-
-        if (!role) throw new Error(`Unable to find role ${trueRoleId}`);
+        // `trueRoleId` guaranteed to be a key in `roles` because the dropdown options, of
+        // which `trueRoleId` is one, is generated based on the `roles`
+        const role = roles.get(trueRoleId) as MemberRole;
 
         setMembers(
           members.map(m =>

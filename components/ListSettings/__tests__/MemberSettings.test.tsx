@@ -274,4 +274,31 @@ describe('Updating permissions', () => {
       expect.arrayContaining([new ListMember(users[0], MOCK_ROLE_CAN_ADMIN)])
     );
   });
+
+  it('Does not allow member role being removed', async () => {
+    const setMembers = vi.fn();
+    const user = userEvent.setup();
+
+    const { getByLabelText, getByRole } = render(
+      <MemberSettings
+        listId='list-id'
+        members={[
+          new ListMember(users[0], MOCK_ROLE_CAN_VIEW),
+          new ListMember(users[1], MOCK_ROLE_CAN_VIEW)
+        ]}
+        roles={
+          new Map([
+            [MOCK_ROLE_CAN_VIEW.id, MOCK_ROLE_CAN_VIEW],
+            [MOCK_ROLE_CAN_ADMIN.id, MOCK_ROLE_CAN_ADMIN]
+          ])
+        }
+        setMembers={setMembers}
+      />
+    );
+
+    await user.click(getByLabelText('user1 Role'));
+    await user.click(getByRole('option', { name: 'Viewer' }));
+
+    expect(setMembers).not.toHaveBeenCalled();
+  });
 });
