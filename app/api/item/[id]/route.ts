@@ -57,6 +57,8 @@ export async function PATCH(
   const requestBody = parseResult.data;
 
   if (requestBody.name) item.name = requestBody.name;
+  if (requestBody.description !== undefined)
+    item.description = requestBody.description;
   if (requestBody.status) {
     if (requestBody.status === 'Completed' && !member.canComplete)
       return ClientError.BadRequest(
