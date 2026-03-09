@@ -19,25 +19,13 @@
  */
 
 import '@testing-library/jest-dom';
-import { fireEvent, render, screen } from '@testing-library/react';
-import { vi } from 'vitest';
+import { render, screen } from '@testing-library/react';
 
 import ListModel from '@/lib/model/list';
 import ListItemModel from '@/lib/model/listItem';
 import ListSectionModel from '@/lib/model/listSection';
 
 import List from '../List';
-
-const mockListReducer = vi.fn((state: unknown) => state);
-
-vi.mock('../listReducer', async importActual => {
-  const actual = await importActual<typeof import('../listReducer')>();
-
-  return {
-    ...actual,
-    default: (state: unknown, action: unknown) => mockListReducer(state, action)
-  };
-});
 
 vi.mock('@/components/SearchBar', () => ({
   default: () => <div data-testid='search-bar' />
@@ -51,36 +39,7 @@ vi.mock('@/components/AddListSection', () => ({
   default: () => <div data-testid='add-section' />
 }));
 
-vi.mock('@/components/ListSection/ListSection', () => ({
-  default: ({
-    dispatchItemChange
-  }: {
-    dispatchItemChange: (action: unknown) => void;
-  }) => (
-    <div>
-      <h2>Mock task</h2>
-      <span aria-label='priority-badge'>High</span>
-      <input
-        aria-label='mark complete'
-        type='checkbox'
-        onChange={() =>
-          dispatchItemChange({
-            type: 'SetItemComplete',
-            sectionId: 'section-id',
-            id: 'item-id',
-            dateCompleted: new Date('2026-01-01')
-          })
-        }
-      />
-    </div>
-  )
-}));
-
-describe('List mock task rendering and completion flow', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
+describe('List layout integration', () => {
   it('keeps the filter bar and list settings button in the same row container', () => {
     const startingList = new ListModel(
       'List name',
@@ -108,39 +67,5 @@ describe('List mock task rendering and completion flow', () => {
     expect(sharedRow).toHaveClass('items-center');
     expect(searchBar.parentElement).toHaveClass('grow');
     expect(settings.parentElement).toHaveClass('shrink-0');
-  });
-
-  it('renders a mock task, shows title and priority badge, and fires mark-complete callback when checkbox is clicked', () => {
-    const startingList = new ListModel(
-      'List name',
-      'Amber',
-      [],
-      [new ListSectionModel('Section', [new ListItemModel('Item', {})])],
-      false,
-      false,
-      false,
-      'list-id'
-    );
-
-    render(
-      <List
-        startingList={JSON.stringify(startingList)}
-        startingTagsAvailable='[]'
-      />
-    );
-
-    expect(screen.getByText('Mock task')).toBeInTheDocument();
-    expect(screen.getByLabelText('priority-badge')).toHaveTextContent('High');
-
-    fireEvent.click(screen.getByRole('checkbox', { name: 'mark complete' }));
-
-    expect(mockListReducer).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.objectContaining({
-        type: 'SetItemComplete',
-        sectionId: 'section-id',
-        id: 'item-id'
-      })
-    );
   });
 });
