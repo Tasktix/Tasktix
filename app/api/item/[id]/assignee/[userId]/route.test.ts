@@ -16,13 +16,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { linkAssignee } from '@/lib/database/listItem';
+import { linkAssignee, unlinkAssignee } from '@/lib/database/listItem';
 import { getRoleByItem } from '@/lib/database/user';
 import MemberRole from '@/lib/model/memberRole';
 import User from '@/lib/model/user';
 import { getUser } from '@/lib/session';
 
-import { POST } from './route';
+import { DELETE, POST } from './route';
 
 const MOCK_USER = new User(
   'abcdefg',
@@ -127,7 +127,7 @@ describe('POST', () => {
       vi.mocked(getUser).mockResolvedValue(MOCK_USER);
       vi.mocked(getRoleByItem).mockResolvedValue(
         new MemberRole(
-          'AssigneeManager',
+          'NotAssigneeManager',
           'Does everything but manage assignees',
           true,
           true,
@@ -184,6 +184,127 @@ describe('POST', () => {
             userId: MOCK_USER.id
           })
         }
+      );
+
+      expect(response.status).toBe(500);
+    });
+  });
+});
+
+describe('DELETE', () => {
+  test('Removes the given assignee when requestor has permissions', async () => {
+    vi.mocked(getUser).mockResolvedValue(MOCK_USER);
+    vi.mocked(getRoleByItem).mockResolvedValue(
+      new MemberRole(
+        'AssigneeManager',
+        'Manages assignees and does nothing else',
+        false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false
+      )
+    );
+    vi.mocked(unlinkAssignee).mockResolvedValue(true);
+
+    const response = await DELETE(
+      new Request(MEMBER_PATH, {
+        method: 'DELETE'
+      }),
+      { params: Promise.resolve({ id: 'list-id', userId: MOCK_USER.id }) }
+    );
+
+    expect(response.status).toBe(200);
+    expect(unlinkAssignee).toHaveBeenCalledExactlyOnceWith(
+      'list-id',
+      MOCK_USER.id
+    );
+  });
+
+  describe('Errors', () => {
+    test('Rejects unauthenticated users', async () => {
+      vi.mocked(getUser).mockResolvedValue(false);
+
+      const response = await DELETE(
+        new Request(MEMBER_PATH, {
+          method: 'DELETE'
+        }),
+        { params: Promise.resolve({ id: 'list-id', userId: MOCK_USER.id }) }
+      );
+
+      expect(response.status).toBe(401);
+      expect(unlinkAssignee).not.toHaveBeenCalled();
+    });
+
+    test('Indicates no resource exists if requestor is not a member of the list', async () => {
+      vi.mocked(getUser).mockResolvedValue(MOCK_USER);
+      vi.mocked(getRoleByItem).mockResolvedValue(false);
+
+      const response = await DELETE(
+        new Request(MEMBER_PATH, {
+          method: 'DELETE'
+        }),
+        { params: Promise.resolve({ id: 'list-id', userId: MOCK_USER.id }) }
+      );
+
+      expect(response.status).toBe(404);
+      expect(unlinkAssignee).not.toHaveBeenCalled();
+    });
+
+    test('Rejects request if requestor has insufficient permissions to remove assignees', async () => {
+      vi.mocked(getUser).mockResolvedValue(MOCK_USER);
+      vi.mocked(getRoleByItem).mockResolvedValue(
+        new MemberRole(
+          'NotAssigneeManager',
+          'Does everything but manage assignees',
+          true,
+          true,
+          true,
+          true,
+          false,
+          true,
+          true,
+          true
+        )
+      );
+
+      const response = await DELETE(
+        new Request(MEMBER_PATH, {
+          method: 'DELETE'
+        }),
+        { params: Promise.resolve({ id: 'list-id', userId: MOCK_USER.id }) }
+      );
+
+      expect(response.status).toBe(403);
+      expect(unlinkAssignee).not.toHaveBeenCalled();
+    });
+
+    test('Informs the requestor if database update fails', async () => {
+      vi.mocked(getUser).mockResolvedValue(MOCK_USER);
+      vi.mocked(getRoleByItem).mockResolvedValue(
+        new MemberRole(
+          'AssigneeManager',
+          'Manages assignees and does nothing else',
+          false,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          false
+        )
+      );
+      vi.mocked(unlinkAssignee).mockResolvedValue(false);
+
+      const response = await DELETE(
+        new Request(MEMBER_PATH, {
+          method: 'DELETE'
+        }),
+        { params: Promise.resolve({ id: 'list-id', userId: MOCK_USER.id }) }
       );
 
       expect(response.status).toBe(500);

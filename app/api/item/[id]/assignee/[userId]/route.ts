@@ -54,9 +54,9 @@ export async function DELETE(
 
   const role = await getRoleByItem(user.id, id);
 
-  if (!role) return ClientError.BadRequest('List not found');
+  if (!role) return ClientError.NotFound('List not found');
   if (!role.canManageAssignees)
-    return ClientError.BadRequest('Insufficient permissions to unassign');
+    return ClientError.Forbidden('Insufficient permissions to unassign');
 
   const result = await unlinkAssignee(id, userId);
 

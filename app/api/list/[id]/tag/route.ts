@@ -35,7 +35,7 @@ export async function POST(
 
   const role = await getRoleByList(user.id, id);
 
-  if (!role) return ClientError.BadRequest('List not found');
+  if (!role) return ClientError.NotFound('List not found');
   if (!role.canManageTags)
     return ClientError.Forbidden('Insufficient permissions to create tag');
 

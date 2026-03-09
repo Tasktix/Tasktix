@@ -35,14 +35,14 @@ export async function PATCH(
 
   const role = await getRoleByList(user.id, id);
 
-  if (!role) return ClientError.BadRequest('List not found');
+  if (!role) return ClientError.NotFound('Tag not found');
   if (!role.canManageTags)
     return ClientError.Forbidden('Insufficient permissions to update tag');
 
   const tag = await getTagById(tagId);
 
   // TODO: need to handle security gap: editing someone else's tag
-  if (!tag) return ClientError.BadRequest('Tag not found');
+  if (!tag) return ClientError.NotFound('Tag not found');
 
   const parseResult = PatchBody.safeParse(await request.json());
 
@@ -72,7 +72,7 @@ export async function DELETE(
 
   const role = await getRoleByList(user.id, id);
 
-  if (!role) return ClientError.BadRequest('List not found');
+  if (!role) return ClientError.NotFound('Tag not found');
   if (!role.canManageTags)
     return ClientError.Forbidden('Insufficient permissions to remove tag');
 
