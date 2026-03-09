@@ -28,7 +28,9 @@ import { ItemAction, ListAction, ListState, SectionAction } from './types';
  *
  * Default case intentionally omitted to surface TS error if not all cases are explicitly
  * handled (e.g. because the Color type was expanded). All VALID code paths (based on the
- * Color type) do return - skipcq: JS-0045
+ * Color type) do return. Also, cyclomatic complexity of this function is high, but each
+ * individual case is simple and there have to be this many cases for the `switch`
+ * statement - skipcq: JS-0045, JS-R1005
  */
 export default function listReducer(
   state: ListState,
