@@ -33,7 +33,7 @@ const MOCK_USER = new User(
   new Date(),
   { color: 'Amber' }
 );
-const SECTION_PATH = `http://localhost/api/list/list-id/section` as const;
+const SECTION_PATH = 'http://localhost/api/list/list-id/section' as const;
 
 vi.mock('@/lib/session');
 vi.mock('@/lib/database/listSection');

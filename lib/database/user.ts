@@ -62,24 +62,41 @@ export async function getUserByEmail(email: string): Promise<User | false> {
   return result ?? false;
 }
 
+/**
+ * Gets all roles a member can have
+ */
 export async function getMemberRoles(): Promise<MemberRole[] | false> {
   const result = await prisma.memberRole.findMany();
 
   return result ?? false;
 }
 
+/**
+ * Gets a specific member role's details
+ *
+ * @param id The ID of the role to get
+ */
 export async function getRole(id: string): Promise<MemberRole | false> {
   const result = await prisma.memberRole.findUnique({ where: { id } });
 
   return result ?? false;
 }
 
+/**
+ * Gets the Admin role (fully-permissioned user hardcoded into migrations)
+ */
 export async function getAdminRole(): Promise<MemberRole> {
-  return prisma.memberRole.findUniqueOrThrow({
+  return await prisma.memberRole.findUniqueOrThrow({
     where: { name: 'Admin' }
   });
 }
 
+/**
+ * Gets the given user's role (permissions) for the list that the given item belongs to
+ *
+ * @param userId The user to retrieve the role for
+ * @param itemId The item to find the list to retrieve the role for
+ */
 export async function getRoleByItem(
   userId: string,
   itemId: string
@@ -100,6 +117,12 @@ export async function getRoleByItem(
   return result ?? false;
 }
 
+/**
+ * Gets the given user's role (permissions) for the given list
+ *
+ * @param userId The user to retrieve the role for
+ * @param listId The list to retrieve the role for
+ */
 export async function getRoleByList(
   userId: string,
   listId: string

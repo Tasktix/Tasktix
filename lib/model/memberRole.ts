@@ -35,10 +35,10 @@ export const ZodMemberRole = z.strictObject({
 });
 
 /**
- * Admin role ID in database (has all permissions)
+ * Represents a role (for Role-Based Access Control) that includes a role name,
+ * description to explain what permissions the role grants, and several booleans
+ * representing whether users with the role can perform specific actions
  */
-export const ADMIN_ROLE_ID = 'yZW3BwhhtgSQ7zhb' as const;
-
 export default class MemberRole {
   id: string;
   name: string;

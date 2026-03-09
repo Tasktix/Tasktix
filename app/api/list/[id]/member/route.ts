@@ -18,8 +18,7 @@
 
 import { ClientError, ServerError, Success } from '@/lib/Response';
 import { createListMember, getIsListMember } from '@/lib/database/list';
-import { getRoleByList } from '@/lib/database/user';
-import { getRole, getUserByUsername } from '@/lib/database/user';
+import { getRole, getRoleByList, getUserByUsername } from '@/lib/database/user';
 import ListMember from '@/lib/model/listMember';
 import { getUser } from '@/lib/session';
 import { ZodUser } from '@/lib/model/user';
