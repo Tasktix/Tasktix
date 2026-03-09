@@ -84,7 +84,7 @@ export default class ListItem {
       listId
     }: {
       id?: string;
-      description: string;
+      description?: string;
       status?: Status;
       priority?: Priority;
       isUnclear?: boolean;
