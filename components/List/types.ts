@@ -62,6 +62,12 @@ export type ItemAction =
       name: ListItem['name'];
     }
   | {
+      type: 'SetItemDescription';
+      sectionId: string;
+      id: string;
+      description: ListItem['description'];
+    }
+  | {
       type: 'SetItemDueDate';
       sectionId: string;
       id: string;

@@ -116,6 +116,11 @@ export default function listReducer(
       getItem(newState, action.sectionId, action.id).name = action.name;
       break;
 
+    case 'SetItemDescription':
+      getItem(newState, action.sectionId, action.id).description =
+        action.description;
+      break;
+
     case 'SetItemDueDate':
       getItem(newState, action.sectionId, action.id).dateDue = action.date;
       break;
