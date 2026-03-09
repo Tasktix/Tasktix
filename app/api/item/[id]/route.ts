@@ -47,7 +47,7 @@ export async function PATCH(
 
   const role = await getRoleByItem(user.id, id);
 
-  if (!role) return ClientError.BadRequest('List item not found');
+  if (!role) return ClientError.NotFound('List item not found');
   if (!role.canUpdateItems)
     return ClientError.Forbidden('Insufficient permissions to update item');
 
@@ -92,7 +92,7 @@ export async function DELETE(
 
   const role = await getRoleByItem(user.id, id);
 
-  if (!role) return ClientError.BadRequest('List not found');
+  if (!role) return ClientError.NotFound('List not found');
   if (!role.canDeleteItems)
     return ClientError.Forbidden('Insufficient permissions to remove item');
 

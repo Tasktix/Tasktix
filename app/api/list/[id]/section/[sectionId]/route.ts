@@ -38,7 +38,7 @@ export async function PATCH(
 
   const role = await getRoleByList(user.id, id);
 
-  if (!role) return ClientError.BadRequest('List not found');
+  if (!role) return ClientError.NotFound('List not found');
   if (!role.canUpdateList)
     return ClientError.Forbidden('Insufficient permissions to rename section');
 
@@ -69,8 +69,8 @@ export async function DELETE(
 
   const role = await getRoleByList(user.id, id);
 
-  if (!role) return ClientError.BadRequest('List not found');
-  if (!role.canDeleteList)
+  if (!role) return ClientError.NotFound('List not found');
+  if (!role.canUpdateList)
     return ClientError.Forbidden('Insufficient permissions to delete section');
 
   const result = await deleteListSection(sectionId);
