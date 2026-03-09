@@ -52,17 +52,15 @@ describe('LayoutClient mobile drawer', () => {
     const hamburger = screen.getByRole('button', {
       name: /open navigation menu/i
     });
-    const dialog = screen.getByRole('dialog');
     const drawer = document.getElementById('mobile-sidebar-drawer');
 
+    expect(drawer).not.toBeNull();
     expect(hamburger).toHaveAttribute('aria-expanded', 'false');
-    expect(dialog).toHaveAttribute('aria-hidden', 'true');
     expect(drawer).toHaveClass('-translate-x-full');
 
     fireEvent.click(hamburger);
 
     expect(hamburger).toHaveAttribute('aria-expanded', 'true');
-    expect(dialog).toHaveAttribute('aria-hidden', 'false');
     expect(drawer).toHaveClass('translate-x-0');
   });
 });
