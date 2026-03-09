@@ -62,7 +62,7 @@ export default function List({
 }) {
   const builtList = JSON.parse(startingList) as ListModel;
   const builtSections: ListState['list']['sections'] = new Map();
-  const builtRoles: Map<string, MemberRole> = new Map(
+  const builtRoles = new Map(
     (JSON.parse(startingRoles) as MemberRole[]).map(role => [role.id, role])
   );
 
