@@ -95,8 +95,8 @@ export default function TagSettings({
         {tagsAvailable.map(tag => (
           <span key={tag.id} className='flex gap-2 items-center'>
             <ConfirmedTextInput
-              aria-label={`rename tag: ${tag.name}`}
               showUnderline
+              aria-label={`rename tag: ${tag.name}`}
               updateValue={updateTagName.bind(null, tag)}
               value={tag.name}
             />
