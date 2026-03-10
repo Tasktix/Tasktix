@@ -23,14 +23,9 @@ import { fireEvent, render } from '@testing-library/react';
 
 import '@testing-library/jest-dom';
 import SignIn from '@/app/signIn/components/SignIn';
-import { useAuth } from '@/components/AuthProvider';
+import AuthProvider from '@/components/AuthProvider';
 
 import { handleOAuth } from '../oauth';
-
-vi.mock('@/components/AuthProvider', async importOriginal => ({
-  ...(await importOriginal()),
-  useAuth: vi.fn()
-}));
 
 vi.mock(import('next/navigation'), async importOriginal => ({
   ...(await importOriginal()),
@@ -40,14 +35,14 @@ vi.mock(import('next/navigation'), async importOriginal => ({
 vi.mock('../oauth');
 
 test('Pressing Github Button attempts OAuth Login', () => {
-  vi.mocked(useAuth).mockReturnValue({
-    loggedInUser: false,
-    setLoggedInUser: vi.fn(),
-    oauthConfig: { githubEnabled: true, customEnabled: false }
-  });
   const { getByLabelText } = render(
     <HeroUIProvider disableRipple>
-      <SignIn />
+      <AuthProvider
+        loggedInUserAtStart={false}
+        oauthConfig={{ githubEnabled: true, customEnabled: false }}
+      >
+        <SignIn />
+      </AuthProvider>
     </HeroUIProvider>
   );
 
@@ -60,15 +55,15 @@ test('Pressing Github Button attempts OAuth Login', () => {
   expect(handleOAuth).toHaveBeenCalled();
 });
 
-test('Pressing Github Button attempts OAuth Login', () => {
-  vi.mocked(useAuth).mockReturnValue({
-    loggedInUser: false,
-    setLoggedInUser: vi.fn(),
-    oauthConfig: { githubEnabled: false, customEnabled: true }
-  });
+test('Pressing custom SSO Button attempts OAuth Login', () => {
   const { getByLabelText } = render(
     <HeroUIProvider disableRipple>
-      <SignIn />
+      <AuthProvider
+        loggedInUserAtStart={false}
+        oauthConfig={{ githubEnabled: false, customEnabled: true }}
+      >
+        <SignIn />
+      </AuthProvider>
     </HeroUIProvider>
   );
 
@@ -82,14 +77,14 @@ test('Pressing Github Button attempts OAuth Login', () => {
 });
 
 test('GitHub login not rendered if not configured on server ', () => {
-  vi.mocked(useAuth).mockReturnValue({
-    loggedInUser: false,
-    setLoggedInUser: vi.fn(),
-    oauthConfig: { githubEnabled: false, customEnabled: true }
-  });
   const { queryByLabelText } = render(
     <HeroUIProvider disableRipple>
-      <SignIn />
+      <AuthProvider
+        loggedInUserAtStart={false}
+        oauthConfig={{ githubEnabled: false, customEnabled: true }}
+      >
+        <SignIn />
+      </AuthProvider>
     </HeroUIProvider>
   );
 
@@ -99,14 +94,14 @@ test('GitHub login not rendered if not configured on server ', () => {
 });
 
 test('Custom SSO login not rendered if not configured on server ', () => {
-  vi.mocked(useAuth).mockReturnValue({
-    loggedInUser: false,
-    setLoggedInUser: vi.fn(),
-    oauthConfig: { githubEnabled: true, customEnabled: false }
-  });
   const { queryByLabelText } = render(
     <HeroUIProvider disableRipple>
-      <SignIn />
+      <AuthProvider
+        loggedInUserAtStart={false}
+        oauthConfig={{ githubEnabled: true, customEnabled: false }}
+      >
+        <SignIn />
+      </AuthProvider>
     </HeroUIProvider>
   );
 

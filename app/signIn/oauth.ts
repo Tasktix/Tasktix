@@ -17,7 +17,7 @@
  */
 
 import { addToast } from '@heroui/react';
-import { SuccessContext } from 'better-auth/react';
+import { ErrorContext, SuccessContext } from 'better-auth/react';
 
 import { authClient } from '@/lib/auth-client';
 import User from '@/lib/model/user';
@@ -53,28 +53,31 @@ export async function handleOAuth(
   provider: supportedProvider,
   controllers: OAuthControllers
 ) {
+  const handleSuccess = (ctx: SuccessContext<{ User: User }>) => {
+    controllers.setLoggedInUser(ctx.data.User);
+  };
+  const handleError = (ctx: ErrorContext) => {
+    addToast({ title: ctx.error.message, color: 'danger' });
+  };
+
   if (provider === 'custom') {
-    await authClient.signIn.oauth2({
-      providerId: process.env.NEXT_PUBLIC_OAUTH_PROVIDER_ID as string,
-      callbackURL: '/list',
-      scopes: process.env.NEXT_PUBLIC_OAUTH_SCOPES
-        ? (JSON.parse(process.env.NEXT_PUBLIC_OAUTH_SCOPES) as string[])
-        : undefined
-    });
+    await authClient.signIn.oauth2(
+      {
+        providerId: process.env.NEXT_PUBLIC_OAUTH_PROVIDER_ID as string,
+        callbackURL: '/list',
+        scopes: process.env.NEXT_PUBLIC_OAUTH_SCOPES
+          ? (JSON.parse(process.env.NEXT_PUBLIC_OAUTH_SCOPES) as string[])
+          : undefined
+      },
+      { onSuccess: handleSuccess, onError: handleError }
+    );
   } else {
     await authClient.signIn.social(
       {
         provider,
         callbackURL: '/list'
       },
-      {
-        onSuccess: (ctx: SuccessContext<{ User: User }>) => {
-          controllers.setLoggedInUser(ctx.data.User);
-        },
-        onError: ctx => {
-          addToast({ title: ctx.error.message, color: 'danger' });
-        }
-      }
+      { onSuccess: handleSuccess, onError: handleError }
     );
   }
 }
