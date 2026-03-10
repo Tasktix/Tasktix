@@ -44,7 +44,7 @@ export default async function Page({
   if (!isMember) redirect('/list');
 
   return (
-    <main className='p-8 w-full flex grow flex-col gap-8 overflow-y-scroll'>
+    <main className='w-full min-w-0 grow overflow-x-hidden overflow-y-scroll p-4 md:p-8 flex flex-col gap-8'>
       {list && (
         <List
           startingList={JSON.stringify(list)}

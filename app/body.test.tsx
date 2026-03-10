@@ -56,6 +56,27 @@ beforeEach(() => {
 });
 
 describe('Body', () => {
+  it('uses a full-height document flow layout with a non-sticky footer', () => {
+    vi.mocked(useAuth).mockReturnValue({
+      loggedInUser: false,
+      setLoggedInUser: vi.fn()
+    });
+
+    const { container } = render(
+      <HeroUIProvider disableRipple>
+        <Body>
+          <div>child</div>
+        </Body>
+      </HeroUIProvider>
+    );
+
+    expect(container.firstChild).toHaveClass('min-h-dvh');
+    expect(screen.getByRole('main')).toHaveClass('flex-1');
+    expect(
+      screen.getByText(/Tasktix is licensed under the GNU AGPL v3/i)
+    ).toHaveClass('mt-auto');
+  });
+
   it('links logo to /list when logged in', () => {
     vi.mocked(useAuth).mockReturnValue({
       loggedInUser: new User(
