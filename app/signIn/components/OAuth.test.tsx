@@ -60,7 +60,7 @@ test('Pressing Github Button attempts Oauth Login', () => {
   expect(handleOAuth).toHaveBeenCalled();
 });
 
-test('Outh login not rendered if not configured on server ', () => {
+test('OAuth login not rendered if not configured on server ', () => {
   vi.mocked(useAuth).mockReturnValue({
     loggedInUser: false,
     setLoggedInUser: vi.fn(),
