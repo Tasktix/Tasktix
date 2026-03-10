@@ -103,7 +103,7 @@ export default function ListSettings({
       >
         <GearWideConnected aria-label='Settings' size={20} />
       </Button>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal isOpen={isOpen} size='2xl' onOpenChange={onOpenChange}>
         <ModalContent className='h-1/2'>
           <ModalHeader className='justify-center pb-0'>
             List Settings

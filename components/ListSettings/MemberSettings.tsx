@@ -123,7 +123,7 @@ export default function MemberSettings({
         />
         <Select
           aria-label='New member role'
-          selectedKeys={newRole}
+          selectedKeys={[newRole]}
           variant='underlined'
           onSelectionChange={handleUpdateNewRole}
         >
