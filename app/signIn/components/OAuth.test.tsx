@@ -39,11 +39,11 @@ vi.mock(import('next/navigation'), async importOriginal => ({
 
 vi.mock('../oauth');
 
-test('Pressing Github Button attempts Oauth Login', () => {
+test('Pressing Github Button attempts OAuth Login', () => {
   vi.mocked(useAuth).mockReturnValue({
     loggedInUser: false,
     setLoggedInUser: vi.fn(),
-    oauthConfig: { githubEnabled: true }
+    oauthConfig: { githubEnabled: true, customEnabled: false }
   });
   const { getByLabelText } = render(
     <HeroUIProvider disableRipple>
@@ -60,11 +60,32 @@ test('Pressing Github Button attempts Oauth Login', () => {
   expect(handleOAuth).toHaveBeenCalled();
 });
 
-test('OAuth login not rendered if not configured on server ', () => {
+test('Pressing Github Button attempts OAuth Login', () => {
   vi.mocked(useAuth).mockReturnValue({
     loggedInUser: false,
     setLoggedInUser: vi.fn(),
-    oauthConfig: { githubEnabled: false }
+    oauthConfig: { githubEnabled: false, customEnabled: true }
+  });
+  const { getByLabelText } = render(
+    <HeroUIProvider disableRipple>
+      <SignIn />
+    </HeroUIProvider>
+  );
+
+  const ssoButton = getByLabelText('sign in with SSO');
+
+  expect(ssoButton).toBeVisible();
+
+  fireEvent.click(ssoButton);
+
+  expect(handleOAuth).toHaveBeenCalled();
+});
+
+test('GitHub login not rendered if not configured on server ', () => {
+  vi.mocked(useAuth).mockReturnValue({
+    loggedInUser: false,
+    setLoggedInUser: vi.fn(),
+    oauthConfig: { githubEnabled: false, customEnabled: true }
   });
   const { queryByLabelText } = render(
     <HeroUIProvider disableRipple>
@@ -73,6 +94,23 @@ test('OAuth login not rendered if not configured on server ', () => {
   );
 
   const githubButton = queryByLabelText('sign in with github');
+
+  expect(githubButton).not.toBeInTheDocument();
+});
+
+test('Custom SSO login not rendered if not configured on server ', () => {
+  vi.mocked(useAuth).mockReturnValue({
+    loggedInUser: false,
+    setLoggedInUser: vi.fn(),
+    oauthConfig: { githubEnabled: true, customEnabled: false }
+  });
+  const { queryByLabelText } = render(
+    <HeroUIProvider disableRipple>
+      <SignIn />
+    </HeroUIProvider>
+  );
+
+  const githubButton = queryByLabelText('sign in with SSO');
 
   expect(githubButton).not.toBeInTheDocument();
 });
