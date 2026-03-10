@@ -54,13 +54,28 @@ export default function MemberSettings({
   setMembers: (members: ListMember[]) => unknown;
 }>) {
   const [newUsername, setNewUsername] = useState('');
+  const [newRole, setNewRole] = useState(roles.keys().next().value as string);
+
+  function handleUpdateNewRole(roleId: Selection) {
+    // roleId is always `Set<string>`: can't be `"all"` because the `<Select>` is
+    // single-select; can't be `Set<number>` because all keys are role IDs, which are
+    // strings
+    const trueRoleId = (roleId as Set<string>).keys().next().value;
+
+    if (!trueRoleId) return; // User tried to clear selection
+
+    setNewRole(trueRoleId);
+  }
 
   function handleAddMember(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setNewUsername('');
 
     api
-      .post(`/list/${listId}/member`, { username: newUsername })
+      .post(`/list/${listId}/member`, {
+        username: newUsername,
+        roleId: newRole
+      })
       .then(res => {
         if (!res.content) throw new Error('User added, but unable to display');
 
@@ -106,6 +121,20 @@ export default function MemberSettings({
           value={newUsername}
           onValueChange={setNewUsername}
         />
+        <Select
+          aria-label='New member role'
+          selectedKeys={newRole}
+          variant='underlined'
+          onSelectionChange={handleUpdateNewRole}
+        >
+          {Array.from(roles.values())
+            .sort(sortRolesByPermissions)
+            .map(role => (
+              <SelectItem key={role.id} description={role.description}>
+                {role.name}
+              </SelectItem>
+            ))}
+        </Select>
         <Button
           className='shrink-0'
           color='primary'
