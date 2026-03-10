@@ -19,7 +19,7 @@
 'use client';
 
 import { Button, Divider } from '@heroui/react';
-import { Github, PersonCircle } from 'react-bootstrap-icons';
+import { Github, ShieldLock } from 'react-bootstrap-icons';
 import { startTransition } from 'react';
 
 import { handleOAuth, OAuthControllers } from '../oauth';
@@ -68,7 +68,7 @@ export default function OAuth({
         {oauthConfig.customEnabled && (
           <Button
             aria-label={`sign in with ${process.env?.NEXT_PUBLIC_OAUTH_PROVIDER_ID ?? 'SSO'}`}
-            startContent={<PersonCircle />}
+            startContent={<ShieldLock />}
             variant='bordered'
             onPress={() =>
               startTransition(() => handleOAuth('custom', { setLoggedInUser }))
