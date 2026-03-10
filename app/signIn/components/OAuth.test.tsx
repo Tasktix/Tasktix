@@ -77,7 +77,7 @@ test('Pressing custom SSO Button attempts OAuth Login', () => {
 });
 
 test('GitHub login not rendered if not configured on server ', () => {
-  const { queryByLabelText } = render(
+  const { getByText, queryByLabelText } = render(
     <HeroUIProvider disableRipple>
       <AuthProvider
         loggedInUserAtStart={false}
@@ -88,13 +88,15 @@ test('GitHub login not rendered if not configured on server ', () => {
     </HeroUIProvider>
   );
 
+  const divider = getByText('OR');
   const githubButton = queryByLabelText('sign in with github');
 
+  expect(divider).toBeInTheDocument();
   expect(githubButton).not.toBeInTheDocument();
 });
 
 test('Custom SSO login not rendered if not configured on server ', () => {
-  const { queryByLabelText } = render(
+  const { getByText, queryByLabelText } = render(
     <HeroUIProvider disableRipple>
       <AuthProvider
         loggedInUserAtStart={false}
@@ -105,7 +107,30 @@ test('Custom SSO login not rendered if not configured on server ', () => {
     </HeroUIProvider>
   );
 
-  const githubButton = queryByLabelText('sign in with SSO');
+  const divider = getByText('OR');
+  const ssoButton = queryByLabelText('sign in with SSO');
 
+  expect(divider).toBeInTheDocument();
+  expect(ssoButton).not.toBeInTheDocument();
+});
+
+test('Nothing rendered if all not configured on server ', () => {
+  const { queryByText, queryByLabelText } = render(
+    <HeroUIProvider disableRipple>
+      <AuthProvider
+        loggedInUserAtStart={false}
+        oauthConfig={{ githubEnabled: false, customEnabled: false }}
+      >
+        <SignIn />
+      </AuthProvider>
+    </HeroUIProvider>
+  );
+
+  const divider = queryByText('OR');
+  const githubButton = queryByLabelText('sign in with github');
+  const ssoButton = queryByLabelText('sign in with SSO');
+
+  expect(divider).not.toBeInTheDocument();
   expect(githubButton).not.toBeInTheDocument();
+  expect(ssoButton).not.toBeInTheDocument();
 });

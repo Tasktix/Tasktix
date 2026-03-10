@@ -59,12 +59,13 @@ test('Properly handles failed GitHub authentication', async () => {
     }
   };
 
-  vi.mocked(authClient.signIn.social).mockImplementation((_, fetchOptions) => {
-    if (fetchOptions?.onError) {
-      // void required to suppres eslint complaint - skipcq: JS-0098
-      void fetchOptions.onError(exampleError as unknown as ErrorContext);
+  vi.mocked(authClient.signIn.social).mockImplementation(
+    async (_, fetchOptions) => {
+      if (fetchOptions?.onError) {
+        await fetchOptions.onError(exampleError as unknown as ErrorContext);
+      }
     }
-  });
+  );
 
   await handleOAuth('github', {
     setLoggedInUser: setLoggedInUserMock
@@ -89,12 +90,13 @@ test('Properly handles failed custom SSO authentication', async () => {
     }
   };
 
-  vi.mocked(authClient.signIn.oauth2).mockImplementation((_, fetchOptions) => {
-    if (fetchOptions?.onError) {
-      // void required to suppress eslint complaint - skipcq: JS-0098
-      void fetchOptions.onError(exampleError as unknown as ErrorContext);
+  vi.mocked(authClient.signIn.oauth2).mockImplementation(
+    async (_, fetchOptions) => {
+      if (fetchOptions?.onError) {
+        await fetchOptions.onError(exampleError as unknown as ErrorContext);
+      }
     }
-  });
+  );
 
   await handleOAuth('custom', {
     setLoggedInUser: setLoggedInUserMock
@@ -129,12 +131,15 @@ test('Properly redirects and sets logged in user on successful github authentica
   const setLoggedInUserMock = vi.fn();
   const exampleSuccess = { data: { User: MOCK_USER } };
 
-  vi.mocked(authClient.signIn.social).mockImplementation((_, fetchOptions) => {
-    if (fetchOptions?.onSuccess) {
-      // void required to suppress eslint complaint - skipcq: JS-0098
-      void fetchOptions.onSuccess(exampleSuccess as unknown as SuccessContext);
+  vi.mocked(authClient.signIn.social).mockImplementation(
+    async (_, fetchOptions) => {
+      if (fetchOptions?.onSuccess) {
+        await fetchOptions.onSuccess(
+          exampleSuccess as unknown as SuccessContext
+        );
+      }
     }
-  });
+  );
 
   await handleOAuth('github', {
     setLoggedInUser: setLoggedInUserMock
