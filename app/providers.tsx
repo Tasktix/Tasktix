@@ -24,13 +24,16 @@ import dynamic from 'next/dynamic';
 
 import AuthProvider from '@/components/AuthProvider';
 import User from '@/lib/model/user';
+import { OAuthConfig } from '@/lib/auth';
 
 export function Providers({
   children,
-  loggedInUserAtStart
+  loggedInUserAtStart,
+  oauthConfig
 }: {
   children: React.ReactNode;
   loggedInUserAtStart: User | false;
+  oauthConfig: OAuthConfig;
 }) {
   const router = useRouter();
 
@@ -47,7 +50,10 @@ export function Providers({
       navigate={(href, routerOptions) => router.push(href, routerOptions)}
     >
       <ThemeProvider attribute='class' defaultTheme='system'>
-        <AuthProvider loggedInUserAtStart={loggedInUserAtStart}>
+        <AuthProvider
+          loggedInUserAtStart={loggedInUserAtStart}
+          oauthConfig={oauthConfig}
+        >
           {children}
         </AuthProvider>
       </ThemeProvider>
