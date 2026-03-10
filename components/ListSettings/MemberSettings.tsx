@@ -125,10 +125,10 @@ export default function MemberSettings({
               },
               size: 'sm'
             }}
-            name={member.user.username}
+            name={member.user.username ?? member.user.name}
           />
           <Select
-            aria-label={`${member.user.username} Role`}
+            aria-label={`${member.user.username ?? member.user.name} Role`}
             selectedKeys={[member.role.id]}
             variant='underlined'
             onSelectionChange={handleUpdatePermissions.bind(

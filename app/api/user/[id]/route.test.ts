@@ -36,6 +36,9 @@ const USER_PATH = `http://localhost/api/user/${MOCK_USER.id}` as const;
 
 vi.mock('@/lib/session');
 vi.mock('@/lib/database/user');
+vi.mock('server-only', () => ({
+  // Server Only Breaks test environemnt
+}));
 
 vi.mock('@/lib/auth', () => ({
   auth: {
@@ -73,7 +76,7 @@ describe('PATCH', () => {
     expect(auth.api.updateUser).toHaveBeenCalledTimes(1);
     expect(auth.api.updateUser).toHaveBeenCalledWith(
       expect.objectContaining({
-        body: { name: 'new_name', username: 'new_name' }
+        body: { username: 'new_name' }
       })
     );
 
@@ -175,7 +178,7 @@ describe('PATCH', () => {
     expect(auth.api.updateUser).toHaveBeenCalledTimes(1);
     expect(auth.api.updateUser).toHaveBeenCalledWith(
       expect.objectContaining({
-        body: { name: 'new_name', username: 'new_name' }
+        body: { username: 'new_name' }
       })
     );
     expect(auth.api.changeEmail).toHaveBeenCalledTimes(1);

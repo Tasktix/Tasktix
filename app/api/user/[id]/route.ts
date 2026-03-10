@@ -81,7 +81,6 @@ export async function PATCH(
 
       const result = await auth.api.updateUser({
         body: {
-          name: requestBody.username,
           username: requestBody.username
         },
         headers: request.headers
