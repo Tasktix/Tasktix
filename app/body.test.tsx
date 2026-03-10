@@ -55,9 +55,13 @@ beforeEach(() => {
   vi.resetAllMocks();
 });
 
+const MOCK_OAUTH_CONFIG = {
+  githubEnabled: true
+}
 describe('Body', () => {
   it('links logo to /list when logged in', () => {
     vi.mocked(useAuth).mockReturnValue({
+      oauthConfig: MOCK_OAUTH_CONFIG,
       loggedInUser: new User(
         'userid',
         'username',
@@ -88,6 +92,7 @@ describe('Body', () => {
 
   it('links logo to /about when logged out', () => {
     vi.mocked(useAuth).mockReturnValue({
+      oauthConfig: MOCK_OAUTH_CONFIG,
       loggedInUser: false,
       setLoggedInUser: vi.fn()
     });
@@ -120,13 +125,14 @@ describe('Body', () => {
     );
 
     vi.mocked(useAuth).mockReturnValue({
+      oauthConfig: MOCK_OAUTH_CONFIG,
       loggedInUser: oldUser,
       setLoggedInUser: vi.fn()
     });
 
     const { getByLabelText } = render(
       <HeroUIProvider disableRipple>
-        <AuthProvider loggedInUserAtStart={oldUser}>
+        <AuthProvider oauthConfig={MOCK_OAUTH_CONFIG} loggedInUserAtStart={oldUser}>
           <Body>contents...</Body>
         </AuthProvider>
       </HeroUIProvider>
@@ -152,6 +158,7 @@ describe('Sign Out Process', () => {
     const setLoggedInUserMock = vi.fn();
 
     vi.mocked(useAuth).mockReturnValue({
+      oauthConfig: MOCK_OAUTH_CONFIG,
       loggedInUser: mock_user,
       setLoggedInUser: setLoggedInUserMock
     });
@@ -172,7 +179,7 @@ describe('Sign Out Process', () => {
     /* eslint-enable */
     const { getByLabelText } = render(
       <HeroUIProvider disableRipple>
-        <AuthProvider loggedInUserAtStart={mock_user}>
+        <AuthProvider oauthConfig={MOCK_OAUTH_CONFIG} loggedInUserAtStart={mock_user}>
           <Body>contents...</Body>
         </AuthProvider>
       </HeroUIProvider>

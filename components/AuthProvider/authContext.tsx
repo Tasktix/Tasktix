@@ -27,6 +27,7 @@ interface AuthContextType {
   oauthConfig: OAuthConfig;
 }
 
+// Typescript compiler requires default value skipcq: JS-W1042
 export const AuthContext = createContext<AuthContextType | undefined>(
   undefined
 );
