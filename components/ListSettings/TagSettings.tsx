@@ -95,16 +95,19 @@ export default function TagSettings({
         {tagsAvailable.map(tag => (
           <span key={tag.id} className='flex gap-2 items-center'>
             <ConfirmedTextInput
+              aria-label={`rename tag: ${tag.name}`}
               showUnderline
               updateValue={updateTagName.bind(null, tag)}
               value={tag.name}
             />
             <ColorPicker
+              label={`edit color: ${tag.name}`}
               value={tag.color}
               onValueChange={updateTagColor.bind(null, tag)}
             />
             <Button
               isIconOnly
+              aria-label={`delete tag: ${tag.name}`}
               color='danger'
               size='sm'
               variant='ghost'
