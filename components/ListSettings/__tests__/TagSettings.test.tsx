@@ -64,7 +64,10 @@ describe('Edit Tags', () => {
 
     await user.click(greenButton);
 
-    expect(api.patch).toHaveBeenCalled();
+    expect(api.patch).toHaveBeenCalledWith('/list/list-id/tag/id-tag1', {
+      color: 'Green'
+    });
+
     expect(setTagsAvailableMock).toHaveBeenCalledWith(
       expect.arrayContaining([
         expect.objectContaining({ id: 'id-tag1', color: 'Green' })
@@ -126,6 +129,10 @@ describe('Edit Tags', () => {
 
     await user.type(editTextTag1, '-renamed');
     await user.keyboard('{enter}');
+
+    expect(api.patch).toHaveBeenCalledWith('/list/list-id/tag/id-tag1', {
+      name: 'tag1-renamed'
+    });
     expect(setTagsAvailableMock).toHaveBeenCalledWith(
       expect.arrayContaining([
         expect.objectContaining({ id: 'id-tag1', name: 'tag1-renamed' })
@@ -165,6 +172,7 @@ describe('Removing Tags', () => {
     await user.click(deleteTag1);
     expect(confirmSpy).toHaveBeenCalled();
 
+    expect(api.delete).toHaveBeenCalledWith('/list/list-id/tag/id-tag1');
     expect(setTagsAvailableMock).toHaveBeenCalledWith([
       expect.objectContaining({ id: 'id-tag2' })
     ]);
@@ -201,6 +209,7 @@ describe('Removing Tags', () => {
     await user.click(deleteTag1);
     expect(confirmSpy).toHaveBeenCalled();
 
+    expect(api.delete).not.toHaveBeenCalled();
     expect(setTagsAvailableMock).not.toHaveBeenCalled();
   });
 });
