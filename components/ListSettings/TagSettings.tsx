@@ -48,7 +48,7 @@ export default function TagSettings({
 }>) {
   function updateTagName(tag: Tag, name: string) {
     api
-      .patch(`/list/${listId}/tag/${tag.id}`, { ...tag, name })
+      .patch(`/list/${listId}/tag/${tag.id}`, { name })
       .then(() => {
         setTagsAvailable(
           tagsAvailable.map(t =>
@@ -62,7 +62,7 @@ export default function TagSettings({
   function updateTagColor(tag: Tag, color: NamedColor | null) {
     if (color)
       api
-        .patch(`/list/${listId}/tag/${tag.id}`, { ...tag, color })
+        .patch(`/list/${listId}/tag/${tag.id}`, { color })
         .then(() => {
           setTagsAvailable(
             tagsAvailable.map(t =>
@@ -96,15 +96,18 @@ export default function TagSettings({
           <span key={tag.id} className='flex gap-2 items-center'>
             <ConfirmedTextInput
               showUnderline
+              aria-label={`rename tag: ${tag.name}`}
               updateValue={updateTagName.bind(null, tag)}
               value={tag.name}
             />
             <ColorPicker
+              label={`edit color: ${tag.name}`}
               value={tag.color}
               onValueChange={updateTagColor.bind(null, tag)}
             />
             <Button
               isIconOnly
+              aria-label={`delete tag: ${tag.name}`}
               color='danger'
               size='sm'
               variant='ghost'
