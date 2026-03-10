@@ -16,16 +16,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import 'dotenv/config';
 import path from 'node:path';
 
-import { defineConfig, env } from 'prisma/config';
+import { defineConfig } from 'prisma/config';
 
 export default defineConfig({
   migrations: {
     seed: `tsx ${path.join('prisma', 'seed.ts')}`
-  },
-  datasource: {
-    url: env('DATABASE_URL')
   }
 });

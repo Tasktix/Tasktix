@@ -109,7 +109,6 @@ model Account {
   User                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
-  @@map("Account")
 }
 
 model Session {
@@ -124,7 +123,6 @@ model Session {
   User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
-  @@map("Session")
 }
 
 model User {
@@ -142,9 +140,7 @@ model User {
   Account         Account[]
   assignedItems   ItemAssignee[]
   memberships     ListMember[]
-  sessions        Session[]
-
-  @@map("User")
+  Session         Session[]
 }
 
 model Verification {
@@ -156,7 +152,6 @@ model Verification {
   updatedAt  DateTime
 
   @@index([identifier(length: 191)])
-  @@map("Verification")
 }
 
 enum Color {
