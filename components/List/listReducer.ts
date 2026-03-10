@@ -25,17 +25,17 @@ import { ItemAction, ListAction, ListState, SectionAction } from './types';
  *
  * @param state The current state (passed in by React)
  * @param action The action to take for mutating state
+ *
+ * Default case intentionally omitted to surface TS error if not all cases are explicitly
+ * handled (e.g. because the Color type was expanded). All VALID code paths (based on the
+ * Color type) do return. Also, cyclomatic complexity of this function is high, but each
+ * individual case is simple and there have to be this many cases for the `switch`
+ * statement
  */
-export default function listReducer(
+export default function listReducer( // skipcq: JS-0045, JS-R1005
   state: ListState,
   action: ListAction | SectionAction | ItemAction
 ): ListState {
-  // Default case intentionally omitted to surface TS error if not all cases are explicitly
-  // handled (e.g. because the Color type was expanded). All VALID code paths (based on the
-  // Color type) do return. Also, cyclomatic complexity of this function is high, but each
-  // individual case is simple and there have to be this many cases for the `switch`
-  // statement - skipcq: JS-0045, JS-R1005
-
   const newState = structuredClone(state);
 
   switch (action.type) {
