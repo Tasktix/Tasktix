@@ -39,7 +39,6 @@
     "react": "19.2.3",
     "react-bootstrap-icons": "^1.11.6",
     "react-dom": "19.2.3",
-    "server-only": "^0.0.1",
     "sharp": "^0.34.3",
     "zod": "^4.1.5"
   },
