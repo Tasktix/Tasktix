@@ -21,7 +21,7 @@ import 'server-only';
 import { betterAuth, DBFieldType } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { PrismaClient } from '@prisma/client';
-import { haveIBeenPwned, username } from 'better-auth/plugins';
+import { genericOAuth, haveIBeenPwned, username } from 'better-auth/plugins';
 
 import { namedColors } from './model/color';
 
@@ -29,19 +29,23 @@ const prisma = new PrismaClient();
 
 export type OAuthConfig = {
   githubEnabled: boolean;
+  customEnabled: boolean;
 };
 
 /**
  * Server function that allows client to access state of OAuth configuration, available from the useAuth hook.
  * Should not be called from client
  *
- * @returns Object contianing all supported oauth providers and whether they have been configured
+ * @returns Object containing all supported oauth providers and whether they have been configured
  */
 export const getOAuthConfig = () => {
   const config: OAuthConfig = {
     githubEnabled:
       Boolean(process.env.GITHUB_CLIENT_ID) &&
-      Boolean(process.env.GITHUB_CLIENT_SECRET)
+      Boolean(process.env.GITHUB_CLIENT_SECRET),
+    customEnabled:
+      Boolean(process.env.NEXT_PUBLIC_OAUTH_PROVIDER_ID) &&
+      Boolean(process.env.OAUTH_CLIENT_ID)
   };
 
   return config;
@@ -111,6 +115,21 @@ export const auth = betterAuth({
           haveIBeenPwned({
             customPasswordCompromisedMessage:
               'Please choose a more secure password'
+          })
+        ]
+      : []),
+    ...(getOAuthConfig().customEnabled
+      ? [
+          genericOAuth({
+            config: [
+              {
+                providerId: process.env.NEXT_PUBLIC_OAUTH_PROVIDER_ID as string,
+                authorizationUrl: process.env.OAUTH_AUTHORIZATION_URL,
+                clientId: process.env.OAUTH_CLIENT_ID as string,
+                clientSecret: process.env.OAUTH_CLIENT_SECRET,
+                discoveryUrl: process.env.OAUTH_DISCOVERY_URL
+              }
+            ]
           })
         ]
       : [])
