@@ -35,7 +35,7 @@ beforeEach(() => {
 });
 
 describe('Edit Tags', () => {
-  it('Edits tag color on tag color change submit', async () => {
+  it('Propagates color change on tag color change submit', async () => {
     const user = userEvent.setup();
     const setTagsAvailableMock = vi.fn();
 
@@ -72,7 +72,7 @@ describe('Edit Tags', () => {
     );
   });
 
-  it('Does not edit tag color if new color not submitted', async () => {
+  it('Does not propagate color changes if color is cleared', async () => {
     const user = userEvent.setup();
     const setTagsAvailableMock = vi.fn();
     const { getByLabelText } = render(
@@ -99,7 +99,7 @@ describe('Edit Tags', () => {
     expect(setTagsAvailableMock).not.toHaveBeenCalled();
   });
 
-  it('Edits tag name on tag name change submit', async () => {
+  it('Propagates name changes on tag name change submit', async () => {
     const user = userEvent.setup();
     const setTagsAvailableMock = vi.fn();
 
