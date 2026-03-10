@@ -28,7 +28,7 @@ export interface OAuthControllers {
   oauthConfig?: OAuthConfig;
 }
 
-type supportedProvider = 'github';
+type supportedProvider = 'github' | 'custom';
 /**
  * Handles OAuth social sign-in authentication flow.
  *
@@ -53,18 +53,28 @@ export async function handleOAuth(
   provider: supportedProvider,
   controllers: OAuthControllers
 ) {
-  await authClient.signIn.social(
-    {
-      provider,
-      callbackURL: '/list'
-    },
-    {
-      onSuccess: (ctx: SuccessContext<{ User: User }>) => {
-        controllers.setLoggedInUser(ctx.data.User);
+  if (provider === 'custom') {
+    await authClient.signIn.oauth2({
+      providerId: process.env.NEXT_PUBLIC_OAUTH_PROVIDER_ID as string,
+      callbackURL: '/list',
+      scopes: process.env.NEXT_PUBLIC_OAUTH_SCOPES
+        ? (JSON.parse(process.env.NEXT_PUBLIC_OAUTH_SCOPES) as string[])
+        : undefined
+    });
+  } else {
+    await authClient.signIn.social(
+      {
+        provider,
+        callbackURL: '/list'
       },
-      onError: ctx => {
-        addToast({ title: ctx.error.message, color: 'danger' });
+      {
+        onSuccess: (ctx: SuccessContext<{ User: User }>) => {
+          controllers.setLoggedInUser(ctx.data.User);
+        },
+        onError: ctx => {
+          addToast({ title: ctx.error.message, color: 'danger' });
+        }
       }
-    }
-  );
+    );
+  }
 }

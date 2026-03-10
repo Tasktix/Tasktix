@@ -19,7 +19,7 @@
 'use client';
 
 import { Button, Divider } from '@heroui/react';
-import { Github } from 'react-bootstrap-icons';
+import { Github, PersonCircle } from 'react-bootstrap-icons';
 import { startTransition } from 'react';
 
 import { handleOAuth, OAuthControllers } from '../oauth';
@@ -41,7 +41,7 @@ export default function OAuth({
   setLoggedInUser,
   oauthConfig
 }: Readonly<OAuthControllers>) {
-  if (!oauthConfig?.githubEnabled) {
+  if (!oauthConfig?.githubEnabled && !oauthConfig?.customEnabled) {
     return null;
   }
 
@@ -52,17 +52,31 @@ export default function OAuth({
         <p className='text-tiny text-default-500 shrink-0'>OR</p>
         <Divider className='flex-1' />
       </div>
-      <div className='flex justify-center'>
-        <Button
-          aria-label='sign in with github'
-          startContent={<Github />}
-          variant='bordered'
-          onPress={() =>
-            startTransition(() => handleOAuth('github', { setLoggedInUser }))
-          }
-        >
-          Continue with Github
-        </Button>
+      <div className='flex flex-col items-center gap-4'>
+        {oauthConfig.githubEnabled && (
+          <Button
+            aria-label='sign in with github'
+            startContent={<Github />}
+            variant='bordered'
+            onPress={() =>
+              startTransition(() => handleOAuth('github', { setLoggedInUser }))
+            }
+          >
+            Continue with Github
+          </Button>
+        )}
+        {oauthConfig.customEnabled && (
+          <Button
+            aria-label={`sign in with ${process.env?.NEXT_PUBLIC_OAUTH_PROVIDER_ID ?? 'SSO'}`}
+            startContent={<PersonCircle />}
+            variant='bordered'
+            onPress={() =>
+              startTransition(() => handleOAuth('custom', { setLoggedInUser }))
+            }
+          >
+            Continue with {process.env?.NEXT_PUBLIC_OAUTH_PROVIDER_ID ?? 'SSO'}
+          </Button>
+        )}
       </div>
     </div>
   );
