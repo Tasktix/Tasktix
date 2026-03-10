@@ -16,6 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import 'server-only';
+
 import { betterAuth, DBFieldType } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { PrismaClient } from '@prisma/client';
@@ -24,6 +26,26 @@ import { haveIBeenPwned, username } from 'better-auth/plugins';
 import { namedColors } from './model/color';
 
 const prisma = new PrismaClient();
+
+export type OAuthConfig = {
+  githubEnabled: boolean;
+};
+
+/**
+ * Server function that allows client to access state of OAuth configuration, available from the useAuth hook.
+ * Should not be called from client
+ *
+ * @returns Object contianing all supported oauth providers and whether they have been configured
+ */
+export const getOAuthConfig = () => {
+  const config: OAuthConfig = {
+    githubEnabled:
+      Boolean(process.env.GITHUB_CLIENT_ID) &&
+      Boolean(process.env.GITHUB_CLIENT_SECRET)
+  };
+
+  return config;
+};
 
 // auth functionality is tested where used - skipcq: TCV-001
 export const auth = betterAuth({
@@ -46,7 +68,8 @@ export const auth = betterAuth({
     additionalFields: {
       color: {
         type: namedColors as unknown as DBFieldType,
-        required: true
+        required: true,
+        defaultValue: 'Blue'
       },
       legacyPassword: {
         type: 'string',
@@ -71,8 +94,16 @@ export const auth = betterAuth({
     enabled: true,
     minPasswordLength: 10
   },
-
-  socialProviders: {},
+  socialProviders: {
+    ...(getOAuthConfig().githubEnabled
+      ? {
+          github: {
+            clientId: process.env.GITHUB_CLIENT_ID as string,
+            clientSecret: process.env.GITHUB_CLIENT_SECRET as string
+          }
+        }
+      : {})
+  },
   plugins: [
     username(),
     ...(process.env.ENABLE_PASSWORD_STRENGTH_CHECK === 'true'

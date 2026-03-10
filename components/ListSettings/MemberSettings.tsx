@@ -131,7 +131,7 @@ export default function MemberSettings({
                     },
                     size: 'sm'
                   }}
-                  name={member.user.username}
+                  name={member.user.username ?? member.user.name}
                 />
               </td>
               <td className='text-center py-2'>
