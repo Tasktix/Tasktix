@@ -28,13 +28,16 @@ import { Check } from 'react-bootstrap-icons';
  * propagate state updates.
  *
  * @param value The text that should automatically fill the field. Will also be used as an input for the function.
- * @param showLabel Shows a "Name" label within the input
- * @param showUnderline Shows an underline within the input
- * @param disabled Whether the input is disabled
+ * @param ariaLabel The accessibility label for the textarea
+ * @param label A visible label to display with the textarea, if provided
+ * @param labelPlacement Where to position `label` around the textarea
+ * @param maxRows The maximum height for the textarea before scrolling starts
+ * @param minRows The minimum height for the textarea, even if not fully filled
+ * @param disabled Whether the textarea is disabled
  * @param className Classname for applying Tailwind CSS
  * @param classNames Classname for applying Tailwind CSS to individual HTML components
- * @param variant Dictates the style of the input field
- * @param onValueChange The function that executes when the user confirms. Must take in a string param.
+ * @param variant Dictates the style of the textarea field
+ * @param onValueChange The function that executes when the user confirms
  */
 export default function ConfirmedTextarea({
   value,
@@ -48,7 +51,7 @@ export default function ConfirmedTextarea({
   classNames,
   variant = 'underlined',
   onValueChange
-}: {
+}: Readonly<{
   value: string;
   'aria-label'?: string;
   label?: string;
@@ -60,7 +63,7 @@ export default function ConfirmedTextarea({
   classNames?: { input?: string; button?: string };
   variant?: InputProps['variant'];
   onValueChange: (value: string) => unknown;
-}) {
+}>) {
   const [newValue, setNewValue] = useState(value);
 
   return (
