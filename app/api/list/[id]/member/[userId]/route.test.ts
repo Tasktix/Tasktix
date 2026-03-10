@@ -47,7 +47,7 @@ const MEMBER_PATH =
 
 vi.mock('@/lib/session');
 vi.mock('@/lib/database/list');
-vi.mock("server-only", () => ({
+vi.mock('server-only', () => ({
   // Server Only Breaks test environemnt
 }));
 beforeEach(() => {

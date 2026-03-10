@@ -49,7 +49,7 @@ const LIST_PATH = `http://localhost/api/list/${MOCK_LIST.id}` as const;
 vi.mock('@/lib/session');
 vi.mock('@/lib/database/list');
 vi.mock('@/lib/sse/server');
-vi.mock("server-only", () => ({
+vi.mock('server-only', () => ({
   // Server Only Breaks test environemnt
 }));
 

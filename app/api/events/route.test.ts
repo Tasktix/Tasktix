@@ -40,7 +40,7 @@ const PATH = 'http://localhost/api/events?' as const;
 vi.mock('@/lib/database/list');
 vi.mock('@/lib/session');
 vi.mock('@/lib/sse/server');
-vi.mock("server-only", () => ({
+vi.mock('server-only', () => ({
   // Server Only Breaks test environemnt
 }));
 

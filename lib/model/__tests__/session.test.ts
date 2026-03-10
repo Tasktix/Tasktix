@@ -42,7 +42,7 @@ const MOCK_SESSION = {
   token: 'token'
 };
 
-vi.mock("server-only", () => ({
+vi.mock('server-only', () => ({
   // Server Only Breaks test environemnt
 }));
 
