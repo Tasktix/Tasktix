@@ -134,7 +134,7 @@ export default function More({
                   disabled={isComplete}
                   label='Description'
                   maxRows={3}
-                  minRows={2}
+                  minRows={1}
                   value={item.description}
                   variant='underlined'
                   onValueChange={itemHandlers.setDescription}
