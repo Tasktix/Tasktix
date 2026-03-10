@@ -154,12 +154,15 @@ test('Properly redirects and sets logged in user on successful custom SSO authen
   const setLoggedInUserMock = vi.fn();
   const exampleSuccess = { data: { User: MOCK_USER } };
 
-  vi.mocked(authClient.signIn.oauth2).mockImplementation((_, fetchOptions) => {
-    if (fetchOptions?.onSuccess) {
-      // void required to suppress eslint complaint - skipcq: JS-0098
-      void fetchOptions.onSuccess(exampleSuccess as unknown as SuccessContext);
+  vi.mocked(authClient.signIn.oauth2).mockImplementation(
+    async (_, fetchOptions) => {
+      if (fetchOptions?.onSuccess) {
+        await fetchOptions.onSuccess(
+          exampleSuccess as unknown as SuccessContext
+        );
+      }
     }
-  });
+  );
 
   await handleOAuth('custom', {
     setLoggedInUser: setLoggedInUserMock
