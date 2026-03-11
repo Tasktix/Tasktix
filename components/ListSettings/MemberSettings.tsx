@@ -24,6 +24,7 @@ import { getBackgroundColor } from '@/lib/color';
 import ListMember from '@/lib/model/listMember';
 import api from '@/lib/api';
 import { addToastForError } from '@/lib/error';
+import { tanstackStartCookies } from 'better-auth/tanstack-start';
 
 /**
  * Displays all list members and their permissions. Allows adding new members and updating
@@ -42,22 +43,22 @@ export default function MemberSettings({
   members: ListMember[];
   setMembers: (members: ListMember[]) => unknown;
 }>) {
-  const [newUsername, setNewUsername] = useState('');
+  const [newMemberEmail, setNewMemberEmail] = useState('');
 
   function handleAddMember(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setNewUsername('');
-
+    
     api
-      .post(`/list/${listId}/member`, { username: newUsername })
-      .then(res => {
-        if (!res.content) throw new Error('User added, but unable to display');
-
-        const listMember = JSON.parse(res.content) as ListMember;
-
-        listMember.user.createdAt = new Date(listMember.user.createdAt);
-        listMember.user.updatedAt = new Date(listMember.user.updatedAt);
-
+    .post(`/list/${listId}/member`, { email: newMemberEmail })
+    .then(res => {
+      if (!res.content) throw new Error('User added, but unable to display');
+      
+      const listMember = JSON.parse(res.content) as ListMember;
+      
+      listMember.user.createdAt = new Date(listMember.user.createdAt);
+      listMember.user.updatedAt = new Date(listMember.user.updatedAt);
+      
+        setNewMemberEmail('');
         setMembers([...members, listMember]);
       })
       .catch(addToastForError);
@@ -91,14 +92,13 @@ export default function MemberSettings({
       })
       .catch(addToastForError);
   }
-
   return (
     <span className='flex flex-col gap-4 shrink overflow-y-auto'>
       <form className='flex gap-2' onSubmit={handleAddMember}>
         <Input
-          placeholder='Username...'
-          value={newUsername}
-          onValueChange={setNewUsername}
+          placeholder='Email...'
+          value={newMemberEmail}
+          onValueChange={setNewMemberEmail}
         />
         <Button
           className='shrink-0'

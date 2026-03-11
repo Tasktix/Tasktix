@@ -18,12 +18,12 @@
 
 import { ClientError, ServerError, Success } from '@/lib/Response';
 import { createListMember, getIsListMember } from '@/lib/database/list';
-import { getUserByUsername } from '@/lib/database/user';
+import { getUserByEmail } from '@/lib/database/user';
 import ListMember from '@/lib/model/listMember';
 import { getUser } from '@/lib/session';
 import { ZodUser } from '@/lib/model/user';
 
-const PostBody = ZodUser.pick({ username: true });
+const PostBody = ZodUser.pick({ email: true });
 
 /**
  * Add a user as a member of the list so they can view it and be assigned items to
@@ -31,7 +31,7 @@ const PostBody = ZodUser.pick({ username: true });
  * after
  *
  * @param params.id The list to add the member to
- * @param request.username The username of the member to add to the list
+ * @param request.email The email of the member to add to the list
  */
 export async function POST(
   request: Request,
@@ -55,7 +55,7 @@ export async function POST(
 
   const requestBody = parseResult.data;
 
-  const newUser = await getUserByUsername(requestBody.username);
+  const newUser = await getUserByEmail(requestBody.email);
 
   if (!newUser) return ClientError.NotFound('User not found');
 
