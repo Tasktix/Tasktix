@@ -60,6 +60,9 @@ export const auth = betterAuth({
   user: {
     modelName: 'User',
     tableName: 'User',
+    deleteUser: {
+      enabled: true
+    },
     changeEmail: {
       enabled: true,
       // Necessary unless we have an email server

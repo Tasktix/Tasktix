@@ -20,7 +20,7 @@
 
 import { Button, Card, CardBody, Divider } from '@heroui/react';
 import { startTransition, useEffect, useState } from 'react';
-import { Github } from 'react-bootstrap-icons';
+import { Github, Trash } from 'react-bootstrap-icons';
 
 import { addToastForError } from '@/lib/error';
 import { authClient } from '@/lib/auth-client';
@@ -62,11 +62,30 @@ export default function AuthSettings({ user }: { user: User }) {
       );
     });
   }
+  
   function handleUnlinkGithub() {
     startTransition(async () => {
       await authClient.unlinkAccount(
         {
           providerId: 'github'
+        },
+        {
+          onError: ctx => {
+            addToastForError(ctx.error);
+          }
+        }
+      );
+    });
+  }
+
+  function handleDeleteAccount() {
+    // TODO: Create Modla for inputting password, get confirmation
+    const password = 'wrong';
+
+    startTransition(async () => {
+      await authClient.deleteUser(
+        {
+          password
         },
         {
           onError: ctx => {
@@ -87,6 +106,14 @@ export default function AuthSettings({ user }: { user: User }) {
       actionLabel: isGithubLinked ? 'Disconnect' : 'Connect',
       handler: isGithubLinked ? handleUnlinkGithub : handleLinkGithub,
       isCriticalAction: false
+    },
+    {
+      title: 'Delete Account',
+      description: 'This action is irreversible',
+      icon: <Trash />,
+      actionLabel: 'Delete Account',
+      handler: handleDeleteAccount,
+      isCriticalAction: true
     }
   ];
 
@@ -112,9 +139,9 @@ export default function AuthSettings({ user }: { user: User }) {
                 </div>
 
                 <Button
-                  className={
-                    'font-medium border border-white/10 text-white bg-[#27272a]'
-                  }
+                  className={`font-medium border border-white/10 text-white ${
+                    method.isCriticalAction ? ' bg-red-600 ' : 'bg-[#27272a]'
+                  }`}
                   size='sm'
                   variant='flat'
                   onPress={method.handler}
