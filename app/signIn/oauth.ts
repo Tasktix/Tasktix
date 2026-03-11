@@ -51,9 +51,20 @@ export async function handleOAuth(
   setLoggedInUser: (user: User) => void,
   oauthConfig: OAuthConfig
 ) {
+  /**
+   * Handles successful login via OAuth
+   *
+   * @param ctx The BetterAuth context for the signin
+   */
   const handleSuccess = (ctx: SuccessContext<{ User: User }>) => {
     setLoggedInUser(ctx.data.User);
   };
+
+  /**
+   * Handles errors from BetterAuth for failed login via OAuth
+   *
+   * @param ctx The BetterAuth context for the error
+   */
   const handleError = (ctx: ErrorContext) => {
     addToast({ title: ctx.error.message, color: 'danger' });
   };

@@ -46,7 +46,7 @@ describe('getOAuthConfig', () => {
 
   test('Marks GitHub disabled if client ID or secret environment variables are not set', () => {
     vi.stubEnv('GITHUB_CLIENT_ID', 'github-id');
-    vi.stubEnv('GITHUB_CLIENT_SECRET', undefined);
+    vi.stubEnv('GITHUB_CLIENT_SECRET', undefined); // TS requires 2 args - skipcq: JS-W1042
 
     let config = getOAuthConfig();
 
@@ -54,7 +54,7 @@ describe('getOAuthConfig', () => {
       githubEnabled: false
     });
 
-    vi.stubEnv('GITHUB_CLIENT_ID', undefined);
+    vi.stubEnv('GITHUB_CLIENT_ID', undefined); // TS requires 2 args - skipcq: JS-W1042
     vi.stubEnv('GITHUB_CLIENT_SECRET', 'github-secret');
 
     config = getOAuthConfig();
@@ -66,7 +66,7 @@ describe('getOAuthConfig', () => {
 
   test('Marks custom SSO enabled if provider ID or client ID environment variables are not set', () => {
     vi.stubEnv('OAUTH_PROVIDER_ID', 'OAuth Provider');
-    vi.stubEnv('OAUTH_CLIENT_ID', undefined);
+    vi.stubEnv('OAUTH_CLIENT_ID', undefined); // TS requires 2 args - skipcq: JS-W1042
 
     let config = getOAuthConfig();
 
@@ -74,7 +74,7 @@ describe('getOAuthConfig', () => {
       customEnabled: false
     });
 
-    vi.stubEnv('OAUTH_PROVIDER_ID', undefined);
+    vi.stubEnv('OAUTH_PROVIDER_ID', undefined); // TS requires 2 args - skipcq: JS-W1042
     vi.stubEnv('OAUTH_CLIENT_ID', 'client-id');
 
     config = getOAuthConfig();
@@ -95,7 +95,7 @@ describe('getOAuthConfig', () => {
   });
 
   test('Leaves custom SSO scopes undefined if no environment variable', () => {
-    vi.stubEnv('OAUTH_SCOPES', undefined);
+    vi.stubEnv('OAUTH_SCOPES', undefined); // TS requires 2 args - skipcq: JS-W1042
 
     const config = getOAuthConfig();
 
