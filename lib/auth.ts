@@ -143,6 +143,8 @@ export const auth = betterAuth({
               {
                 providerId: process.env.OAUTH_PROVIDER_ID as string,
                 authorizationUrl: process.env.OAUTH_AUTHORIZATION_URL,
+                tokenUrl: process.env.OAUTH_TOKEN_URL,
+                userInfoUrl: process.env.OAUTH_USERINFO_URL,
                 clientId: process.env.OAUTH_CLIENT_ID as string,
                 clientSecret: process.env.OAUTH_CLIENT_SECRET,
                 discoveryUrl: process.env.OAUTH_DISCOVERY_URL
