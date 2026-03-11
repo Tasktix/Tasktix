@@ -22,7 +22,10 @@ import { Button, Divider } from '@heroui/react';
 import { Github, ShieldLockFill } from 'react-bootstrap-icons';
 import { startTransition } from 'react';
 
-import { handleOAuth, OAuthControllers } from '../oauth';
+import { OAuthConfig } from '@/lib/auth';
+import User from '@/lib/model/user';
+
+import { handleOAuth } from '../oauth';
 /**
  * OAuth component that provides GitHub authentication options for user sign-in.
  *
@@ -40,7 +43,10 @@ import { handleOAuth, OAuthControllers } from '../oauth';
 export default function OAuth({
   setLoggedInUser,
   oauthConfig
-}: Readonly<OAuthControllers>) {
+}: Readonly<{
+  setLoggedInUser: (user: User) => void;
+  oauthConfig: OAuthConfig;
+}>) {
   if (!oauthConfig?.githubEnabled && !oauthConfig?.customEnabled) {
     return null;
   }
@@ -59,7 +65,9 @@ export default function OAuth({
             startContent={<Github />}
             variant='bordered'
             onPress={() =>
-              startTransition(() => handleOAuth('github', { setLoggedInUser }))
+              startTransition(() =>
+                handleOAuth('github', setLoggedInUser, oauthConfig)
+              )
             }
           >
             Continue with Github
@@ -67,14 +75,16 @@ export default function OAuth({
         )}
         {oauthConfig.customEnabled && (
           <Button
-            aria-label={`sign in with ${process.env?.NEXT_PUBLIC_OAUTH_PROVIDER_ID ?? 'SSO'}`}
+            aria-label={`sign in with ${oauthConfig.customProviderId}`}
             startContent={<ShieldLockFill />}
             variant='bordered'
             onPress={() =>
-              startTransition(() => handleOAuth('custom', { setLoggedInUser }))
+              startTransition(() =>
+                handleOAuth('custom', setLoggedInUser, oauthConfig)
+              )
             }
           >
-            Continue with {process.env?.NEXT_PUBLIC_OAUTH_PROVIDER_ID ?? 'SSO'}
+            Continue with {oauthConfig.customProviderId}
           </Button>
         )}
       </div>

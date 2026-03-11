@@ -16,17 +16,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+'use client';
+
 import { addToast } from '@heroui/react';
 import { ErrorContext, SuccessContext } from 'better-auth/react';
 
 import { authClient } from '@/lib/auth-client';
 import User from '@/lib/model/user';
 import { OAuthConfig } from '@/lib/auth';
-
-export interface OAuthControllers {
-  setLoggedInUser: (user: User) => void;
-  oauthConfig?: OAuthConfig;
-}
 
 type supportedProvider = 'github' | 'custom';
 /**
@@ -51,10 +48,11 @@ type supportedProvider = 'github' | 'custom';
 
 export async function handleOAuth(
   provider: supportedProvider,
-  controllers: OAuthControllers
+  setLoggedInUser: (user: User) => void,
+  oauthConfig: OAuthConfig
 ) {
   const handleSuccess = (ctx: SuccessContext<{ User: User }>) => {
-    controllers.setLoggedInUser(ctx.data.User);
+    setLoggedInUser(ctx.data.User);
   };
   const handleError = (ctx: ErrorContext) => {
     addToast({ title: ctx.error.message, color: 'danger' });
@@ -63,10 +61,10 @@ export async function handleOAuth(
   if (provider === 'custom') {
     await authClient.signIn.oauth2(
       {
-        providerId: process.env.NEXT_PUBLIC_OAUTH_PROVIDER_ID as string,
+        providerId: oauthConfig.customProviderId,
         callbackURL: '/list',
-        scopes: process.env.NEXT_PUBLIC_OAUTH_SCOPES
-          ? (JSON.parse(process.env.NEXT_PUBLIC_OAUTH_SCOPES) as string[])
+        scopes: oauthConfig.customProviderScope
+          ? (JSON.parse(oauthConfig.customProviderScope) as string[])
           : undefined
       },
       { onSuccess: handleSuccess, onError: handleError }

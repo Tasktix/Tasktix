@@ -30,6 +30,8 @@ const prisma = new PrismaClient();
 export type OAuthConfig = {
   githubEnabled: boolean;
   customEnabled: boolean;
+  customProviderId: string;
+  customProviderScope?: string;
 };
 
 /**
@@ -44,8 +46,10 @@ export const getOAuthConfig = () => {
       Boolean(process.env.GITHUB_CLIENT_ID) &&
       Boolean(process.env.GITHUB_CLIENT_SECRET),
     customEnabled:
-      Boolean(process.env.NEXT_PUBLIC_OAUTH_PROVIDER_ID) &&
-      Boolean(process.env.OAUTH_CLIENT_ID)
+      Boolean(process.env.OAUTH_PROVIDER_ID) &&
+      Boolean(process.env.OAUTH_CLIENT_ID),
+    customProviderId: process.env.OAUTH_PROVIDER_ID ?? 'SSO',
+    customProviderScope: process.env.OAUTH_SCOPES
   };
 
   return config;
@@ -123,7 +127,7 @@ export const auth = betterAuth({
           genericOAuth({
             config: [
               {
-                providerId: process.env.NEXT_PUBLIC_OAUTH_PROVIDER_ID as string,
+                providerId: process.env.OAUTH_PROVIDER_ID as string,
                 authorizationUrl: process.env.OAUTH_AUTHORIZATION_URL,
                 clientId: process.env.OAUTH_CLIENT_ID as string,
                 clientSecret: process.env.OAUTH_CLIENT_SECRET,

@@ -113,7 +113,7 @@ test('Properly handles failed custom SSO authentication', async () => {
 test('Properly parses scopes for custom SSO authentication', async () => {
   const setLoggedInUserMock = vi.fn();
 
-  vi.stubEnv('NEXT_PUBLIC_OAUTH_SCOPES', '["oauth", "password"]');
+  vi.stubEnv('OAUTH_SCOPES', '["oauth", "password"]');
 
   await handleOAuth('custom', {
     setLoggedInUser: setLoggedInUserMock
