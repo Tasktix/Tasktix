@@ -118,6 +118,34 @@ export async function getRoleByItem(
 }
 
 /**
+ * Gets the given user's role (permissions) for the list that the given tag belongs to
+ *
+ * @param userId The user to retrieve the role for
+ * @param tagId The tag to find the list to retrieve the role for
+ */
+export async function getRoleByTag(
+  userId: string,
+  tagId: string
+): Promise<MemberRole | false> {
+  const result = await prisma.memberRole.findFirst({
+    where: {
+      listMembers: {
+        some: {
+          userId,
+          list: {
+            sections: {
+              some: { items: { some: { tags: { some: { id: tagId } } } } }
+            }
+          }
+        }
+      }
+    }
+  });
+
+  return result ?? false;
+}
+
+/**
  * Gets the given user's role (permissions) for the given list
  *
  * @param userId The user to retrieve the role for

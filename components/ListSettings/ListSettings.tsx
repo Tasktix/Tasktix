@@ -143,7 +143,6 @@ export default function ListSettings({
               >
                 <TagSettings
                   addNewTag={addNewTag}
-                  listId={listId}
                   setTagsAvailable={tags =>
                     dispatchList({ type: 'SetTagsAvailable', tags })
                   }

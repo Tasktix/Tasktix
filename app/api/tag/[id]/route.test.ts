@@ -17,7 +17,7 @@
  */
 
 import { deleteTag, getTagById, updateTag } from '@/lib/database/list';
-import { getRoleByList } from '@/lib/database/user';
+import { getRoleByTag } from '@/lib/database/user';
 import MemberRole from '@/lib/model/memberRole';
 import User from '@/lib/model/user';
 import { getUser } from '@/lib/session';
@@ -35,7 +35,7 @@ const MOCK_USER = new User(
   { color: 'Amber' }
 );
 const MOCK_TAG = new Tag('Tag name', 'Cyan', 'tag-id');
-const TAG_PATH = 'http://localhost/api/list/list-id/tag/tag-id' as const;
+const TAG_PATH = 'http://localhost/api/tag/tag-id' as const;
 
 vi.mock('@/lib/session');
 vi.mock('@/lib/database/list');
@@ -48,7 +48,7 @@ beforeEach(() => {
 describe('PATCH', () => {
   test('Updates the tag name and nothing else when requestor has permissions', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
-    vi.mocked(getRoleByList).mockResolvedValue(
+    vi.mocked(getRoleByTag).mockResolvedValue(
       new MemberRole(
         'TagManager',
         'Manages tags and nothing else',
@@ -70,7 +70,7 @@ describe('PATCH', () => {
         method: 'PATCH',
         body: JSON.stringify({ name: 'New tag name' })
       }),
-      { params: Promise.resolve({ id: 'list-id', tagId: 'tag-id' }) }
+      { params: Promise.resolve({ id: 'tag-id' }) }
     );
 
     expect(response.status).toBe(200);
@@ -90,7 +90,7 @@ describe('PATCH', () => {
           method: 'PATCH',
           body: JSON.stringify({ name: 'New tag name' })
         }),
-        { params: Promise.resolve({ id: 'list-id', tagId: 'tag-id' }) }
+        { params: Promise.resolve({ id: 'tag-id' }) }
       );
 
       expect(response.status).toBe(401);
@@ -99,14 +99,14 @@ describe('PATCH', () => {
 
     test('Indicates no resource exists if requestor is not a member of the list specified in the path', async () => {
       vi.mocked(getUser).mockResolvedValue(MOCK_USER);
-      vi.mocked(getRoleByList).mockResolvedValue(false);
+      vi.mocked(getRoleByTag).mockResolvedValue(false);
 
       const response = await PATCH(
         new Request(TAG_PATH, {
           method: 'PATCH',
           body: JSON.stringify({ name: 'New tag name' })
         }),
-        { params: Promise.resolve({ id: 'list-id', tagId: 'tag-id' }) }
+        { params: Promise.resolve({ id: 'tag-id' }) }
       );
 
       expect(response.status).toBe(404);
@@ -115,7 +115,7 @@ describe('PATCH', () => {
 
     test('Rejects request if requestor has insufficient permissions to update tags', async () => {
       vi.mocked(getUser).mockResolvedValue(MOCK_USER);
-      vi.mocked(getRoleByList).mockResolvedValue(
+      vi.mocked(getRoleByTag).mockResolvedValue(
         new MemberRole(
           'NotTagManager',
           'Does everything but manage tags',
@@ -135,7 +135,7 @@ describe('PATCH', () => {
           method: 'PATCH',
           body: JSON.stringify({ name: 'New tag name' })
         }),
-        { params: Promise.resolve({ id: 'list-id', tagId: 'tag-id' }) }
+        { params: Promise.resolve({ id: 'tag-id' }) }
       );
 
       expect(response.status).toBe(403);
@@ -147,7 +147,7 @@ describe('PATCH', () => {
 describe('DELETE', () => {
   test('Deletes the tag when requestor has permissions', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
-    vi.mocked(getRoleByList).mockResolvedValue(
+    vi.mocked(getRoleByTag).mockResolvedValue(
       new MemberRole(
         'TagManager',
         'Manages tags and nothing else',
@@ -167,7 +167,7 @@ describe('DELETE', () => {
       new Request(TAG_PATH, {
         method: 'DELETE'
       }),
-      { params: Promise.resolve({ id: 'list-id', tagId: 'tag-id' }) }
+      { params: Promise.resolve({ id: 'tag-id' }) }
     );
 
     expect(response.status).toBe(200);
@@ -182,7 +182,7 @@ describe('DELETE', () => {
         new Request(TAG_PATH, {
           method: 'DELETE'
         }),
-        { params: Promise.resolve({ id: 'list-id', tagId: 'tag-id' }) }
+        { params: Promise.resolve({ id: 'tag-id' }) }
       );
 
       expect(response.status).toBe(401);
@@ -191,13 +191,13 @@ describe('DELETE', () => {
 
     test('Indicates no resource exists if requestor is not a member of the list the deleted tag belongs to', async () => {
       vi.mocked(getUser).mockResolvedValue(MOCK_USER);
-      vi.mocked(getRoleByList).mockResolvedValue(false);
+      vi.mocked(getRoleByTag).mockResolvedValue(false);
 
       const response = await DELETE(
         new Request(TAG_PATH, {
           method: 'DELETE'
         }),
-        { params: Promise.resolve({ id: 'list-id', tagId: 'tag-id' }) }
+        { params: Promise.resolve({ id: 'tag-id' }) }
       );
 
       expect(response.status).toBe(404);
@@ -206,7 +206,7 @@ describe('DELETE', () => {
 
     test('Rejects request if requestor has insufficient permissions to delete tags', async () => {
       vi.mocked(getUser).mockResolvedValue(MOCK_USER);
-      vi.mocked(getRoleByList).mockResolvedValue(
+      vi.mocked(getRoleByTag).mockResolvedValue(
         new MemberRole(
           'NotTagManager',
           'Does everything but manage tags',
@@ -225,7 +225,7 @@ describe('DELETE', () => {
         new Request(TAG_PATH, {
           method: 'DELETE'
         }),
-        { params: Promise.resolve({ id: 'list-id', tagId: 'tag-id' }) }
+        { params: Promise.resolve({ id: 'tag-id' }) }
       );
 
       expect(response.status).toBe(403);
