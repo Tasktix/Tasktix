@@ -15,103 +15,118 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 'use client';
 
-import { authClient } from "@/lib/auth-client";
-import { addToastForError } from "@/lib/error";
-import { addToast, Button, Card, CardBody, Divider } from "@heroui/react";
-import { startTransition, useEffect, useState } from "react";
-import { Github, Lock, Trash } from "react-bootstrap-icons";
+import { Button, Card, CardBody, Divider } from '@heroui/react';
+import { startTransition, useEffect, useState } from 'react';
+import { Github } from 'react-bootstrap-icons';
 
-import User from "@/lib/model/user";
+import { addToastForError } from '@/lib/error';
+import { authClient } from '@/lib/auth-client';
+import User from '@/lib/model/user';
 
-export default function AuthSettings({ user }: { user: User }){
-  const [accounts, setAccounts] = useState<any[]>([]);
+interface FilteredAccount {
+  providerId: string;
+}
 
-    useEffect(() => {
-        const fetchAccounts = async () => {
-            const { data, error } = await authClient.listAccounts();
-            if (data) {
-              console.log(data)
-              setAccounts(data);
-            }
-        };
-        fetchAccounts();
-    }, []);
+export default function AuthSettings({ user }: { user: User }) {
+  const [accounts, setAccounts] = useState<FilteredAccount[]>([]);
 
-  const isGithubLinked = accounts.some(acc => acc.providerId === "github");
-  
-  function handleLinkGithub(){
+  useEffect(() => {
+    const fetchAccounts = async () => {
+      const { data } = await authClient.listAccounts();
+
+      if (data) {
+        setAccounts(data);
+      }
+    };
+
+    void fetchAccounts();
+  }, []);
+
+  const isGithubLinked = accounts.some(acc => acc.providerId === 'github');
+
+  function handleLinkGithub() {
     startTransition(async () => {
-      await authClient.linkSocial({
-        provider: 'github',
-        callbackURL: '/profile'
-      }, {
-        onError: (ctx) => {
-          addToastForError(ctx.error);
+      await authClient.linkSocial(
+        {
+          provider: 'github',
+          callbackURL: '/profile'
+        },
+        {
+          onError: ctx => {
+            addToastForError(ctx.error);
+          }
         }
-      })
-    })
+      );
+    });
   }
-  function handleUnlinkGithub(){
+  function handleUnlinkGithub() {
     startTransition(async () => {
-      await authClient.unlinkAccount({
-        providerId: 'github',
-      }, {
-        onError: (ctx) => {
-          addToastForError(ctx.error);
+      await authClient.unlinkAccount(
+        {
+          providerId: 'github'
+        },
+        {
+          onError: ctx => {
+            addToastForError(ctx.error);
+          }
         }
-      })
-    })
+      );
+    });
   }
 
   const methods = [
     {
-      title: "Github",
-      description: isGithubLinked ? `Linked to ${user.name}`: "Link to your Github account",
+      title: 'Github',
+      description: isGithubLinked
+        ? `Linked to ${user.name}`
+        : 'Link to your Github account',
       icon: <Github />,
-      actionLabel: isGithubLinked ? "Disconnect": "Connect",
+      actionLabel: isGithubLinked ? 'Disconnect' : 'Connect',
       handler: isGithubLinked ? handleUnlinkGithub : handleLinkGithub,
       isCriticalAction: false
-    },
-  ]
+    }
+  ];
+
   return (
-    <div className="max-w-4xl p-6 min-h-screen">
-      <h2 className="text-2xl font-semibold mb-6">Sign in methods</h2>
-      
-      <Card className=" border border-white/10 rounded-lg">
-        <CardBody className="p-0">
+    <div className='max-w-4xl p-6 min-h-screen'>
+      <h2 className='text-2xl font-semibold mb-6'>Sign in methods</h2>
+
+      <Card className=' border border-white/10 rounded-lg'>
+        <CardBody className='p-0'>
           {methods.map((method, index) => (
             <div key={method.title}>
-              <div className="flex items-center justify-between p-5 hover:bg-white/[0.02] transition-colors group">
-                <div className="flex items-start gap-4">
-                  <div className="mt-1">{method.icon}</div>
-                  <div className="flex flex-col">
-                    <span className="text-base font-medium">
+              <div className='flex items-center justify-between p-5 hover:bg-white/[0.02] transition-colors group'>
+                <div className='flex items-start gap-4'>
+                  <div className='mt-1'>{method.icon}</div>
+                  <div className='flex flex-col'>
+                    <span className='text-base font-medium'>
                       {method.title}
                     </span>
-                    <span className="text-sm text-gray-500">
+                    <span className='text-sm text-gray-500'>
                       {method.description}
                     </span>
                   </div>
                 </div>
-                
-                <Button 
-                  variant="flat" 
-                  size="sm"
-                  className={"font-medium border border-white/10 text-white bg-[#27272a]"}
+
+                <Button
+                  className={
+                    'font-medium border border-white/10 text-white bg-[#27272a]'
+                  }
+                  size='sm'
+                  variant='flat'
                   onPress={method.handler}
                 >
                   {method.actionLabel}
                 </Button>
               </div>
-              {index !== methods.length - 1 && (
-                <Divider />
-              )}
+              {index !== methods.length - 1 && <Divider />}
             </div>
           ))}
         </CardBody>
       </Card>
     </div>
-  )
+  );
 }
