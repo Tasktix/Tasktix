@@ -72,22 +72,19 @@ export default function FeatureBlock({
         md:flex-row ${align === 'flipped' ? 'md:flex-row-reverse' : ''}`}
     >
       <div className='w-full md:w-1/2'>
-        <div className='rounded-xl border shadow-md overflow-hidden border-default'>
-          <HeroImage
-            alt={`${title} screenshot`}
-            className='w-full h-auto object-contain'
-            height={600}
-            src={themedSrc}
-            width={900}
-          />
-        </div>
+        <HeroImage
+          isBlurred
+          alt={`${title} screenshot`}
+          className='object-contain'
+          src={themedSrc}
+        />
       </div>
 
       <div className='w-full md:w-1/2 text-center md:text-left'>
-        <h2 className='text-2xl md:text-3xl font-semibold text-foreground'>
+        <h2 className='text-2xl md:text-3xl font-light text-foreground'>
           {title}
         </h2>
-        <p className='mt-3 text-default text-base md:text-lg leading-relaxed'>
+        <p className='mt-3 text-content4-foreground text-base md:text-lg leading-relaxed'>
           {description}
         </p>
       </div>
