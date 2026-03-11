@@ -1,0 +1,117 @@
+/**
+ * Tasktix: A powerful and flexible task-tracking tool for all.
+ * Copyright (C) 2025 Nate Baird & other Tasktix contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+'use client';
+
+import { authClient } from "@/lib/auth-client";
+import { addToastForError } from "@/lib/error";
+import { addToast, Button, Card, CardBody, Divider } from "@heroui/react";
+import { startTransition, useEffect, useState } from "react";
+import { Github, Lock, Trash } from "react-bootstrap-icons";
+
+import User from "@/lib/model/user";
+
+export default function AuthSettings({ user }: { user: User }){
+  const [accounts, setAccounts] = useState<any[]>([]);
+
+    useEffect(() => {
+        const fetchAccounts = async () => {
+            const { data, error } = await authClient.listAccounts();
+            if (data) {
+              console.log(data)
+              setAccounts(data);
+            }
+        };
+        fetchAccounts();
+    }, []);
+
+  const isGithubLinked = accounts.some(acc => acc.providerId === "github");
+  
+  function handleLinkGithub(){
+    startTransition(async () => {
+      await authClient.linkSocial({
+        provider: 'github',
+        callbackURL: '/profile'
+      }, {
+        onError: (ctx) => {
+          addToastForError(ctx.error);
+        }
+      })
+    })
+  }
+  function handleUnlinkGithub(){
+    startTransition(async () => {
+      await authClient.unlinkAccount({
+        providerId: 'github',
+      }, {
+        onError: (ctx) => {
+          addToastForError(ctx.error);
+        }
+      })
+    })
+  }
+
+  const methods = [
+    {
+      title: "Github",
+      description: isGithubLinked ? `Linked to ${user.name}`: "Link to your Github account",
+      icon: <Github />,
+      actionLabel: isGithubLinked ? "Disconnect": "Connect",
+      handler: isGithubLinked ? handleUnlinkGithub : handleLinkGithub,
+      isCriticalAction: false
+    },
+  ]
+  return (
+    <div className="max-w-4xl p-6 min-h-screen">
+      <h2 className="text-2xl font-semibold mb-6">Sign in methods</h2>
+      
+      <Card className=" border border-white/10 rounded-lg">
+        <CardBody className="p-0">
+          {methods.map((method, index) => (
+            <div key={method.title}>
+              <div className="flex items-center justify-between p-5 hover:bg-white/[0.02] transition-colors group">
+                <div className="flex items-start gap-4">
+                  <div className="mt-1">{method.icon}</div>
+                  <div className="flex flex-col">
+                    <span className="text-base font-medium">
+                      {method.title}
+                    </span>
+                    <span className="text-sm text-gray-500">
+                      {method.description}
+                    </span>
+                  </div>
+                </div>
+                
+                <Button 
+                  variant="flat" 
+                  size="sm"
+                  className={"font-medium border border-white/10 text-white bg-[#27272a]"}
+                  onPress={method.handler}
+                >
+                  {method.actionLabel}
+                </Button>
+              </div>
+              {index !== methods.length - 1 && (
+                <Divider />
+              )}
+            </div>
+          ))}
+        </CardBody>
+      </Card>
+    </div>
+  )
+}
