@@ -39,7 +39,11 @@ test('Pressing Github Button attempts OAuth Login', () => {
     <HeroUIProvider disableRipple>
       <AuthProvider
         loggedInUserAtStart={false}
-        oauthConfig={{ githubEnabled: true, customEnabled: false }}
+        oauthConfig={{
+          githubEnabled: true,
+          customEnabled: false,
+          customProviderId: 'SSO'
+        }}
       >
         <SignIn />
       </AuthProvider>
@@ -60,7 +64,11 @@ test('Pressing custom SSO Button attempts OAuth Login', () => {
     <HeroUIProvider disableRipple>
       <AuthProvider
         loggedInUserAtStart={false}
-        oauthConfig={{ githubEnabled: false, customEnabled: true }}
+        oauthConfig={{
+          githubEnabled: false,
+          customEnabled: true,
+          customProviderId: 'SSO'
+        }}
       >
         <SignIn />
       </AuthProvider>
@@ -81,7 +89,11 @@ test('GitHub login not rendered if not configured on server ', () => {
     <HeroUIProvider disableRipple>
       <AuthProvider
         loggedInUserAtStart={false}
-        oauthConfig={{ githubEnabled: false, customEnabled: true }}
+        oauthConfig={{
+          githubEnabled: false,
+          customEnabled: true,
+          customProviderId: 'SSO'
+        }}
       >
         <SignIn />
       </AuthProvider>
@@ -100,7 +112,11 @@ test('Custom SSO login not rendered if not configured on server ', () => {
     <HeroUIProvider disableRipple>
       <AuthProvider
         loggedInUserAtStart={false}
-        oauthConfig={{ githubEnabled: true, customEnabled: false }}
+        oauthConfig={{
+          githubEnabled: true,
+          customEnabled: false,
+          customProviderId: 'SSO'
+        }}
       >
         <SignIn />
       </AuthProvider>
@@ -119,7 +135,11 @@ test('Nothing rendered if all not configured on server ', () => {
     <HeroUIProvider disableRipple>
       <AuthProvider
         loggedInUserAtStart={false}
-        oauthConfig={{ githubEnabled: false, customEnabled: false }}
+        oauthConfig={{
+          githubEnabled: false,
+          customEnabled: false,
+          customProviderId: 'SSO'
+        }}
       >
         <SignIn />
       </AuthProvider>

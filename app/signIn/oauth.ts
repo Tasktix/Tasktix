@@ -64,8 +64,6 @@ export async function handleOAuth(
         providerId: oauthConfig.customProviderId,
         callbackURL: '/list',
         scopes: oauthConfig.customProviderScope
-          ? (JSON.parse(oauthConfig.customProviderScope) as string[])
-          : undefined
       },
       { onSuccess: handleSuccess, onError: handleError }
     );

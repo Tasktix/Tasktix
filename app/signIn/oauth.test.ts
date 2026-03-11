@@ -36,7 +36,6 @@ vi.mock('@/lib/auth-client', () => ({
 }));
 
 beforeEach(vi.resetAllMocks);
-afterEach(vi.unstubAllEnvs);
 
 const MOCK_USER = new User(
   'userid',
@@ -47,6 +46,11 @@ const MOCK_USER = new User(
   new Date(),
   { color: 'Amber' }
 );
+const MOCK_OAUTH_CONFIG = {
+  githubEnabled: true,
+  customEnabled: true,
+  customProviderId: 'SSO'
+};
 
 test('Properly handles failed GitHub authentication', async () => {
   const setLoggedInUserMock = vi.fn();
@@ -67,9 +71,7 @@ test('Properly handles failed GitHub authentication', async () => {
     }
   );
 
-  await handleOAuth('github', {
-    setLoggedInUser: setLoggedInUserMock
-  });
+  await handleOAuth('github', setLoggedInUserMock, MOCK_OAUTH_CONFIG);
 
   expect(authClient.signIn.social).toHaveBeenCalled();
   expect(setLoggedInUserMock).not.toHaveBeenCalled();
@@ -98,9 +100,7 @@ test('Properly handles failed custom SSO authentication', async () => {
     }
   );
 
-  await handleOAuth('custom', {
-    setLoggedInUser: setLoggedInUserMock
-  });
+  await handleOAuth('custom', setLoggedInUserMock, MOCK_OAUTH_CONFIG);
 
   expect(authClient.signIn.oauth2).toHaveBeenCalled();
   expect(setLoggedInUserMock).not.toHaveBeenCalled();
@@ -108,23 +108,6 @@ test('Properly handles failed custom SSO authentication', async () => {
     title: 'Provider not found',
     color: 'danger'
   });
-});
-
-test('Properly parses scopes for custom SSO authentication', async () => {
-  const setLoggedInUserMock = vi.fn();
-
-  vi.stubEnv('OAUTH_SCOPES', '["oauth", "password"]');
-
-  await handleOAuth('custom', {
-    setLoggedInUser: setLoggedInUserMock
-  });
-
-  expect(authClient.signIn.oauth2).toHaveBeenCalledWith(
-    expect.objectContaining({
-      scopes: ['oauth', 'password']
-    }),
-    expect.anything()
-  );
 });
 
 test('Properly redirects and sets logged in user on successful github authentication', async () => {
@@ -141,9 +124,7 @@ test('Properly redirects and sets logged in user on successful github authentica
     }
   );
 
-  await handleOAuth('github', {
-    setLoggedInUser: setLoggedInUserMock
-  });
+  await handleOAuth('github', setLoggedInUserMock, MOCK_OAUTH_CONFIG);
 
   expect(authClient.signIn.social).toHaveBeenCalled();
   expect(setLoggedInUserMock).toHaveBeenCalledWith(MOCK_USER);
@@ -164,9 +145,7 @@ test('Properly redirects and sets logged in user on successful custom SSO authen
     }
   );
 
-  await handleOAuth('custom', {
-    setLoggedInUser: setLoggedInUserMock
-  });
+  await handleOAuth('custom', setLoggedInUserMock, MOCK_OAUTH_CONFIG);
 
   expect(authClient.signIn.oauth2).toHaveBeenCalled();
   expect(setLoggedInUserMock).toHaveBeenCalledWith(MOCK_USER);

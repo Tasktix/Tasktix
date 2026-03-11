@@ -16,6 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/* eslint-disable no-console */
+
 import 'server-only';
 
 import { betterAuth, DBFieldType } from 'better-auth';
@@ -31,7 +33,7 @@ export type OAuthConfig = {
   githubEnabled: boolean;
   customEnabled: boolean;
   customProviderId: string;
-  customProviderScope?: string;
+  customProviderScope?: string[];
 };
 
 /**
@@ -41,6 +43,18 @@ export type OAuthConfig = {
  * @returns Object containing all supported oauth providers and whether they have been configured
  */
 export const getOAuthConfig = () => {
+  let scopes;
+
+  try {
+    scopes = process.env.OAUTH_SCOPES
+      ? (JSON.parse(process.env.OAUTH_SCOPES) as string[])
+      : undefined;
+  } catch {
+    console.error(
+      'Failed to parse OAUTH_SCOPES environment variable. Should be a JSON array of strings'
+    );
+  }
+
   const config: OAuthConfig = {
     githubEnabled:
       Boolean(process.env.GITHUB_CLIENT_ID) &&
@@ -49,7 +63,7 @@ export const getOAuthConfig = () => {
       Boolean(process.env.OAUTH_PROVIDER_ID) &&
       Boolean(process.env.OAUTH_CLIENT_ID),
     customProviderId: process.env.OAUTH_PROVIDER_ID ?? 'SSO',
-    customProviderScope: process.env.OAUTH_SCOPES
+    customProviderScope: scopes
   };
 
   return config;
