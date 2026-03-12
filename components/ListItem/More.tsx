@@ -154,10 +154,10 @@ export default function More({
                   addNewTag={addNewTag}
                   className='py-2'
                   isComplete={item.status === 'Completed'}
-                  linkTag={itemHandlers.linkTag}
                   tags={tags}
                   tagsAvailable={tagsAvailable}
-                  unlinkTag={itemHandlers.unlinkTag}
+                  onTagLink={itemHandlers.linkTag}
+                  onTagUnlink={itemHandlers.unlinkTag}
                 />
 
                 {members.length > 1 ? (

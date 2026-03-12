@@ -70,7 +70,7 @@ describe('Adding members', () => {
       message: 'Success',
       content: JSON.stringify(newMember)
     });
-    const setMembers = vi.fn();
+    const onMemberEvent = vi.fn();
     const user = userEvent.setup();
 
     const { getByLabelText, getByRole, getByText } = render(
@@ -78,8 +78,8 @@ describe('Adding members', () => {
       <HeroUIProvider disableRipple>
         <MemberSettings
           listId='list-id'
-          members={[oldMember]}
-          setMembers={setMembers}
+          members={new Map([[oldMember.user.id, oldMember]])}
+          onMemberEvent={onMemberEvent}
         />
       </HeroUIProvider>
     );
@@ -91,10 +91,11 @@ describe('Adding members', () => {
     await user.click(getByText('Send Invite'));
 
     expect(getByLabelText('Username...')).toHaveValue('');
-    expect(setMembers).toHaveBeenCalledTimes(1);
-    expect(setMembers).toHaveBeenCalledWith(
-      expect.arrayContaining([oldMember, newMember])
-    );
+    expect(onMemberEvent).toHaveBeenCalledTimes(1);
+    expect(onMemberEvent).toHaveBeenCalledWith({
+      type: 'AddMember',
+      member: newMember
+    });
   });
 
   it('Displays an error message after adding a member if saving the new member fails', async () => {
@@ -103,7 +104,7 @@ describe('Adding members', () => {
     vi.mocked(api.post).mockRejectedValue(
       new Error('Server message about failure')
     );
-    const setMembers = vi.fn();
+    const onMemberEvent = vi.fn();
     const user = userEvent.setup();
 
     const { getByLabelText, getByRole, getByText } = render(
@@ -111,8 +112,8 @@ describe('Adding members', () => {
       <HeroUIProvider disableRipple>
         <MemberSettings
           listId='list-id'
-          members={[oldMember]}
-          setMembers={setMembers}
+          members={new Map([[oldMember.user.id, oldMember]])}
+          onMemberEvent={onMemberEvent}
         />
       </HeroUIProvider>
     );
@@ -129,7 +130,7 @@ describe('Adding members', () => {
       color: 'danger',
       title: 'Server message about failure'
     });
-    expect(setMembers).not.toHaveBeenCalled();
+    expect(onMemberEvent).not.toHaveBeenCalled();
   });
 
   it("Displays an error message after adding a member if the server doesn't return the new member", async () => {
@@ -140,7 +141,7 @@ describe('Adding members', () => {
       message: 'Success',
       content: undefined
     });
-    const setMembers = vi.fn();
+    const onMemberEvent = vi.fn();
     const user = userEvent.setup();
 
     const { getByLabelText, getByRole, getByText } = render(
@@ -148,8 +149,8 @@ describe('Adding members', () => {
       <HeroUIProvider disableRipple>
         <MemberSettings
           listId='list-id'
-          members={[oldMember]}
-          setMembers={setMembers}
+          members={new Map([[oldMember.user.id, oldMember]])}
+          onMemberEvent={onMemberEvent}
         />
       </HeroUIProvider>
     );
@@ -166,7 +167,7 @@ describe('Adding members', () => {
       color: 'danger',
       title: 'User added, but unable to display'
     });
-    expect(setMembers).not.toHaveBeenCalled();
+    expect(onMemberEvent).not.toHaveBeenCalled();
   });
 });
 
@@ -175,11 +176,13 @@ describe('Updating permissions', () => {
     const { getByText } = render(
       <MemberSettings
         listId='list-id'
-        members={[
-          new ListMember(users[0], true, true, true, true),
-          new ListMember(users[1], false, false, false, false)
-        ]}
-        setMembers={vi.fn()}
+        members={
+          new Map([
+            [users[0].id, new ListMember(users[0], true, true, true, true)],
+            [users[1].id, new ListMember(users[1], false, false, false, false)]
+          ])
+        }
+        onMemberEvent={vi.fn()}
       />
     );
 
@@ -191,11 +194,13 @@ describe('Updating permissions', () => {
     const { getByText } = render(
       <MemberSettings
         listId='list-id'
-        members={[
-          new ListMember(users[0], true, true, true, true),
-          new ListMember(users[1], false, false, false, false)
-        ]}
-        setMembers={vi.fn()}
+        members={
+          new Map([
+            [users[0].id, new ListMember(users[0], true, true, true, true)],
+            [users[1].id, new ListMember(users[1], false, false, false, false)]
+          ])
+        }
+        onMemberEvent={vi.fn()}
       />
     );
 
@@ -224,17 +229,19 @@ describe('Updating permissions', () => {
       message: 'Success',
       content: undefined
     });
-    const setMembers = vi.fn();
+    const onMemberEvent = vi.fn();
     const user = userEvent.setup();
 
     const { getByText } = render(
       <MemberSettings
         listId='list-id'
-        members={[
-          new ListMember(users[0], true, true, true, true),
-          new ListMember(users[1], false, false, false, false)
-        ]}
-        setMembers={setMembers}
+        members={
+          new Map([
+            [users[0].id, new ListMember(users[0], true, true, true, true)],
+            [users[1].id, new ListMember(users[1], false, false, false, false)]
+          ])
+        }
+        onMemberEvent={onMemberEvent}
       />
     );
 
@@ -244,11 +251,12 @@ describe('Updating permissions', () => {
 
     await user.click(user1Checkboxes[0]);
 
-    expect(setMembers).toHaveBeenCalledTimes(1);
-    expect(setMembers).toHaveBeenCalledWith(
-      expect.arrayContaining([
-        new ListMember(users[0], false, true, true, true)
-      ])
+    expect(onMemberEvent).toHaveBeenCalledTimes(1);
+    expect(onMemberEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: 'UpdateMemberPermissions',
+        canAdd: false
+      })
     );
   });
 
@@ -258,17 +266,19 @@ describe('Updating permissions', () => {
       message: 'Success',
       content: undefined
     });
-    const setMembers = vi.fn();
+    const onMemberEvent = vi.fn();
     const user = userEvent.setup();
 
     const { getByText } = render(
       <MemberSettings
         listId='list-id'
-        members={[
-          new ListMember(users[0], true, true, true, true),
-          new ListMember(users[1], false, false, false, false)
-        ]}
-        setMembers={setMembers}
+        members={
+          new Map([
+            [users[0].id, new ListMember(users[0], true, true, true, true)],
+            [users[1].id, new ListMember(users[1], false, false, false, false)]
+          ])
+        }
+        onMemberEvent={onMemberEvent}
       />
     );
 
@@ -278,11 +288,12 @@ describe('Updating permissions', () => {
 
     await user.click(user1Checkboxes[3]);
 
-    expect(setMembers).toHaveBeenCalledTimes(1);
-    expect(setMembers).toHaveBeenCalledWith(
-      expect.arrayContaining([
-        new ListMember(users[0], true, false, true, true)
-      ])
+    expect(onMemberEvent).toHaveBeenCalledTimes(1);
+    expect(onMemberEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: 'UpdateMemberPermissions',
+        canRemove: false
+      })
     );
   });
 
@@ -292,17 +303,19 @@ describe('Updating permissions', () => {
       message: 'Success',
       content: undefined
     });
-    const setMembers = vi.fn();
+    const onMemberEvent = vi.fn();
     const user = userEvent.setup();
 
     const { getByText } = render(
       <MemberSettings
         listId='list-id'
-        members={[
-          new ListMember(users[0], true, true, true, true),
-          new ListMember(users[1], false, false, false, false)
-        ]}
-        setMembers={setMembers}
+        members={
+          new Map([
+            [users[0].id, new ListMember(users[0], true, true, true, true)],
+            [users[1].id, new ListMember(users[1], false, false, false, false)]
+          ])
+        }
+        onMemberEvent={onMemberEvent}
       />
     );
 
@@ -312,11 +325,12 @@ describe('Updating permissions', () => {
 
     await user.click(user1Checkboxes[2]);
 
-    expect(setMembers).toHaveBeenCalledTimes(1);
-    expect(setMembers).toHaveBeenCalledWith(
-      expect.arrayContaining([
-        new ListMember(users[0], true, true, false, true)
-      ])
+    expect(onMemberEvent).toHaveBeenCalledTimes(1);
+    expect(onMemberEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: 'UpdateMemberPermissions',
+        canComplete: false
+      })
     );
   });
 
@@ -326,17 +340,19 @@ describe('Updating permissions', () => {
       message: 'Success',
       content: undefined
     });
-    const setMembers = vi.fn();
+    const onMemberEvent = vi.fn();
     const user = userEvent.setup();
 
     const { getByText } = render(
       <MemberSettings
         listId='list-id'
-        members={[
-          new ListMember(users[0], true, true, true, true),
-          new ListMember(users[1], false, false, false, false)
-        ]}
-        setMembers={setMembers}
+        members={
+          new Map([
+            [users[0].id, new ListMember(users[0], true, true, true, true)],
+            [users[1].id, new ListMember(users[1], false, false, false, false)]
+          ])
+        }
+        onMemberEvent={onMemberEvent}
       />
     );
 
@@ -346,11 +362,12 @@ describe('Updating permissions', () => {
 
     await user.click(user1Checkboxes[1]);
 
-    expect(setMembers).toHaveBeenCalledTimes(1);
-    expect(setMembers).toHaveBeenCalledWith(
-      expect.arrayContaining([
-        new ListMember(users[0], true, true, true, false)
-      ])
+    expect(onMemberEvent).toHaveBeenCalledTimes(1);
+    expect(onMemberEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: 'UpdateMemberPermissions',
+        canAssign: false
+      })
     );
   });
 });

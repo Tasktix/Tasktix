@@ -16,8 +16,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { NamedColor } from '@/lib/model/color';
 import List from '@/lib/model/list';
 import ListItem from '@/lib/model/listItem';
+import ListMember from '@/lib/model/listMember';
 import ListSection from '@/lib/model/listSection';
 import Tag from '@/lib/model/tag';
 
@@ -26,22 +28,40 @@ import Tag from '@/lib/model/tag';
  * reducer.
  */
 export type ListAction =
-  | { type: 'SetHasDueDates'; hasDueDates: List['hasDueDates'] }
-  | { type: 'SetHasTimeTracking'; hasTimeTracking: List['hasTimeTracking'] }
-  | { type: 'SetIsAutoOrdered'; isAutoOrdered: List['isAutoOrdered'] }
-  | { type: 'SetListColor'; color: List['color'] }
-  | { type: 'SetListName'; name: List['name'] }
-  | { type: 'SetMembers'; members: List['members'] }
+  | { type: 'SetHasDueDates'; hasDueDates: ListState['hasDueDates'] }
+  | {
+      type: 'SetHasTimeTracking';
+      hasTimeTracking: ListState['hasTimeTracking'];
+    }
+  | { type: 'SetIsAutoOrdered'; isAutoOrdered: ListState['isAutoOrdered'] }
+  | { type: 'SetListColor'; color: ListState['color'] }
+  | { type: 'SetListName'; name: ListState['name'] }
+  | { type: 'SetMembers'; members: ListState['members'] }
   | { type: 'AddTag'; tag: Tag }
-  | { type: 'SetTagsAvailable'; tags: Tag[] }
   | { type: 'AddSection'; section: ListSection };
+
+export type MemberAction =
+  | { type: 'AddMember'; member: ListMember }
+  | {
+      type: 'UpdateMemberPermissions';
+      id: string;
+      canAdd?: boolean;
+      canRemove?: boolean;
+      canComplete?: boolean;
+      canAssign?: boolean;
+    };
+
+export type TagAction =
+  | { type: 'UpdateTagColor'; id: string; color: NamedColor }
+  | { type: 'UpdateTagName'; id: string; name: string }
+  | { type: 'DeleteTag'; id: string };
 
 /**
  * Possible actions and the required data needed for updating a list section with the the
  * list reducer.
  */
 export type SectionAction =
-  | { type: 'AddItemToSection'; sectionId: string; item: ListItem }
+  | { type: 'AddItemToSection'; id: string; item: ListItem }
   | {
       type: 'ReorderItem';
       sectionId: string;
@@ -55,69 +75,47 @@ export type SectionAction =
  * list reducer.
  */
 export type ItemAction =
-  | {
-      type: 'SetItemName';
-      sectionId: string;
-      id: string;
-      name: ListItem['name'];
-    }
-  | {
-      type: 'SetItemDueDate';
-      sectionId: string;
-      id: string;
-      date: ListItem['dateDue'];
-    }
-  | {
-      type: 'SetItemPriority';
-      sectionId: string;
-      id: string;
-      priority: ListItem['priority'];
-    }
-  | { type: 'SetItemIncomplete'; sectionId: string; id: string }
+  | { type: 'SetItemName'; id: string; name: ListItem['name'] }
+  | { type: 'SetItemDueDate'; id: string; date: ListItem['dateDue'] }
+  | { type: 'SetItemPriority'; id: string; priority: ListItem['priority'] }
+  | { type: 'SetItemIncomplete'; id: string }
   | {
       type: 'SetItemComplete';
-      sectionId: string;
       id: string;
       dateCompleted: ListItem['dateCompleted'];
     }
   | {
       type: 'SetItemExpectedMs';
-      sectionId: string;
       id: string;
       expectedMs: ListItem['expectedMs'];
     }
-  | { type: 'StartItemTime'; sectionId: string; id: string }
-  | { type: 'PauseItemTime'; sectionId: string; id: string }
-  | { type: 'ResetItemTime'; sectionId: string; id: string }
+  | { type: 'StartItemTime'; id: string }
+  | { type: 'PauseItemTime'; id: string }
+  | { type: 'ResetItemTime'; id: string }
   | {
       type: 'LinkTagToItem';
-      sectionId: string;
-      itemId: string;
-      tagId: string;
-      tagsAvailable: Tag[];
-    }
-  | { type: 'LinkNewTagToItem'; sectionId: string; itemId: string; tag: Tag }
-  | {
-      type: 'UnlinkTagFromItem';
-      sectionId: string;
       itemId: string;
       tagId: string;
     }
+  | { type: 'UnlinkTagFromItem'; itemId: string; tagId: string }
   | { type: 'DeleteItem'; sectionId: string; id: string };
+
+export type ListItemState = Omit<ListItem, 'assignees' | 'tags'> & {
+  assignees: [string, string][];
+  tags: string[];
+};
 
 /**
  * The state of a list section, as defined and modified by the list reducer.
  */
-export type ListSectionState = Omit<ListSection, 'items'> & {
-  items: Map<string, ListItem>;
-};
+export type ListSectionState = Omit<ListSection, 'items'> & { items: string[] };
 
 /**
  * The list state, as defined and modified by the list reducer.
  */
-export type ListState = {
-  list: Omit<List, 'sections'> & {
-    sections: Map<string, ListSectionState>;
-  };
-  tagsAvailable: Tag[];
+export type ListState = Omit<List, 'members' | 'sections' | 'tags'> & {
+  members: Map<string, ListMember>;
+  tags: Map<string, Tag>;
+  sections: Map<string, ListSectionState>;
+  items: Map<string, ListItemState>;
 };

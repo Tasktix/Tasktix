@@ -19,9 +19,8 @@
 import { Reorder } from 'framer-motion';
 import { ActionDispatch, useState } from 'react';
 
+import ItemAssignee from '@/lib/model/assignee';
 import ListItemModel from '@/lib/model/listItem';
-import ListMember from '@/lib/model/listMember';
-import Tag from '@/lib/model/tag';
 import {
   ListItem,
   ReorderableListItem,
@@ -36,6 +35,7 @@ import {
 } from '@/lib/sortItems';
 
 import { ItemAction } from '../List';
+import { ListItemState, ListState } from '../List/types';
 
 /**
  * A component that provides the body of the list section - i.e. just the items in it,
@@ -52,36 +52,36 @@ import { ItemAction } from '../List';
  * @param hasTimeTracking Whether time tracking is enabled in the list's settings
  * @param hasDueDates Whether due dates are enabled in the list's settings
  * @param isAutoOrdered Whether auto-ordering is enabled in the list's settings
- * @param dispatchItemChange Callback for updating an item's state
- * @param reorderItem Callback for finalizing the new order of items and updating React
- *  state
  * @param addNewTag Callback to propagate state changes when a new tag is created from the
  *  "add tag" menu
+ * @param onItemEvent Callback for updating an item's state
+ * @param onItemReorder Callback for finalizing the new order of items and updating React
+ *  state
  */
 export default function SectionBody({
   sectionId,
   items,
   filters,
   members,
-  tagsAvailable,
+  tags,
   hasTimeTracking,
   hasDueDates,
   isAutoOrdered,
-  dispatchItemChange,
-  reorderItem,
-  addNewTag
+  addNewTag,
+  onItemEvent,
+  onItemReorder
 }: {
   sectionId: string;
-  items: Map<string, ListItemModel>;
+  items: ListItemState[];
   filters: Filters;
-  members: ListMember[];
-  tagsAvailable: Tag[];
+  members: ListState['members'];
+  tags: ListState['tags'];
   hasTimeTracking: boolean;
   hasDueDates: boolean;
   isAutoOrdered: boolean;
-  dispatchItemChange: ActionDispatch<[action: ItemAction]>;
-  reorderItem: (item: ListItemModel, newIndex: number) => unknown;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
+  onItemEvent: ActionDispatch<[action: ItemAction]>;
+  onItemReorder: (item: ListItemModel, newIndex: number) => unknown;
 }) {
   /**
    * Provides a visual index for each list item for use with dragging. This number
@@ -126,11 +126,20 @@ export default function SectionBody({
     addNewTag,
     hasDueDates,
     hasTimeTracking,
-    item,
-    members,
+    item: {
+      ...item,
+      assignees: item.assignees
+        .map(([id, role]) => ({
+          user: members.get(id)?.user,
+          role
+        }))
+        .filter(e => e.user !== undefined) as ItemAssignee[],
+      tags: item.tags.map(id => tags.get(id)).filter(e => e !== undefined)
+    },
+    members: members.values().toArray(),
     sectionId,
-    tagsAvailable,
-    dispatchItemChange
+    tagsAvailable: tags.values().toArray(),
+    onItemEvent
   }));
 
   return isAutoOrdered ? (
@@ -160,7 +169,7 @@ export default function SectionBody({
               throw new Error(
                 `Unable to find index for item with ID ${params.item.id}`
               );
-            reorderItem(params.item, index);
+            onItemReorder(params.item, index);
           }}
         />
       ))}
@@ -175,7 +184,7 @@ export default function SectionBody({
  * @param filters The filters to apply
  * @returns Whether the item should be rendered
  */
-function checkItemFilter(item: ListItemModel, filters: Filters): boolean {
+function checkItemFilter(item: ListItemState, filters: Filters): boolean {
   for (const key in filters)
     if (!compareFilter(item, key, filters[key])) return false;
 
@@ -191,7 +200,7 @@ function checkItemFilter(item: ListItemModel, filters: Filters): boolean {
  * @returns True if the filter allows the item to be rendered; false if not
  */
 function compareFilter(
-  item: ListItemModel,
+  item: ListItemState,
   key: string,
   value: unknown
 ): boolean {
@@ -207,17 +216,19 @@ function compareFilter(
     case 'tag':
       return (
         value instanceof Set &&
-        item.tags
-          .map(curr => value.has(curr.name))
-          .reduce((prev: boolean, curr: boolean) => prev || curr, false)
+        item.tags.reduce(
+          (prev: boolean, id: string) => prev || value.has(id),
+          false
+        )
       );
 
     case 'user':
       return (
         value instanceof Set &&
-        item.assignees
-          .map(curr => value.has(curr.user.username))
-          .reduce((prev: boolean, curr: boolean) => prev || curr, false)
+        item.assignees.reduce(
+          (prev: boolean, [id, _]) => prev || value.has(id),
+          false
+        )
       );
 
     case 'status':

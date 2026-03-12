@@ -62,11 +62,11 @@ it('Shows everything faded and shows the completion date instead of due date whe
         hasDueDates
         hasTimeTracking
         addNewTag={vi.fn()}
-        dispatchItemChange={vi.fn()}
         item={item}
         members={[]}
         sectionId='section-id'
         tagsAvailable={[]}
+        onItemEvent={vi.fn()}
       />
     </HeroUIProvider>
   );
@@ -86,16 +86,26 @@ it('Displays the associated list when one is provided', () => {
     <HeroUIProvider disableRipple>
       <ListItem
         addNewTag={vi.fn()}
-        dispatchItemChange={vi.fn()}
         hasDueDates={false}
         hasTimeTracking={false}
         item={new ListItemModel('Test item', {})}
         list={
-          new List('List Name', 'Cyan', [], [], false, false, false, 'list-id')
+          new List(
+            'List Name',
+            'Cyan',
+            [],
+            [],
+            [],
+            false,
+            false,
+            false,
+            'list-id'
+          )
         }
         members={[]}
         sectionId='section-id'
         tagsAvailable={[]}
+        onItemEvent={vi.fn()}
       />
     </HeroUIProvider>
   );
@@ -138,13 +148,13 @@ it('Displays all members assigned to the item', () => {
     <HeroUIProvider disableRipple>
       <ListItem
         addNewTag={vi.fn()}
-        dispatchItemChange={vi.fn()}
         hasDueDates={false}
         hasTimeTracking={false}
         item={item}
         members={members.map(m => new ListMember(m, true, true, true, true))}
         sectionId='section-id'
         tagsAvailable={[]}
+        onItemEvent={vi.fn()}
       />
     </HeroUIProvider>
   );

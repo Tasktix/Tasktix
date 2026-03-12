@@ -77,13 +77,13 @@ describe('ListItem state propagation', () => {
                   new ListItem('List item name', { id: 'item-id' })
                 ])
               ],
+              [],
               true,
               true,
               true,
               'list-id'
             )
           )}
-          startingTagsAvailable='[]'
         />
       </HeroUIProvider>
     );
@@ -134,13 +134,13 @@ describe('ListItem state propagation', () => {
                   })
                 ])
               ],
+              [],
               true,
               true,
               true,
               'list-id'
             )
           )}
-          startingTagsAvailable='[]'
         />
       </HeroUIProvider>
     );
@@ -184,13 +184,13 @@ describe('ListItem state propagation', () => {
                   })
                 ])
               ],
+              [],
               true,
               true,
               true,
               'list-id'
             )
           )}
-          startingTagsAvailable='[]'
         />
       </HeroUIProvider>
     );
@@ -238,13 +238,13 @@ describe('ListItem state propagation', () => {
                   })
                 ])
               ],
+              [],
               true,
               true,
               true,
               'list-id'
             )
           )}
-          startingTagsAvailable='[]'
         />
       </HeroUIProvider>
     );
@@ -295,13 +295,13 @@ describe('ListItem state propagation', () => {
                   })
                 ])
               ],
+              [],
               true,
               true,
               true,
               'list-id'
             )
           )}
-          startingTagsAvailable='[]'
         />
       </HeroUIProvider>
     );
@@ -352,13 +352,13 @@ describe('ListItem state propagation', () => {
                   })
                 ])
               ],
+              [],
               true,
               true,
               true,
               'list-id'
             )
           )}
-          startingTagsAvailable='[]'
         />
       </HeroUIProvider>
     );
@@ -414,13 +414,13 @@ describe('ListItem state propagation', () => {
                   })
                 ])
               ],
+              [],
               true,
               true,
               true,
               'list-id'
             )
           )}
-          startingTagsAvailable='[]'
         />
       </HeroUIProvider>
     );
@@ -479,15 +479,13 @@ describe('ListItem state propagation', () => {
                   })
                 ])
               ],
+              [new Tag('Tag name', 'Emerald', 'tag-id')],
               true,
               true,
               true,
               'list-id'
             )
           )}
-          startingTagsAvailable={JSON.stringify([
-            new Tag('Tag name', 'Emerald', 'tag-id')
-          ])}
         />
       </HeroUIProvider>
     );
@@ -533,15 +531,13 @@ describe('ListItem state propagation', () => {
                   })
                 ])
               ],
+              [new Tag('Tag name', 'Emerald', 'tag-id')],
               true,
               true,
               true,
               'list-id'
             )
           )}
-          startingTagsAvailable={JSON.stringify([
-            new Tag('Tag name', 'Emerald', 'tag-id')
-          ])}
         />
       </HeroUIProvider>
     );
@@ -582,13 +578,13 @@ describe('ListItem state propagation', () => {
                   })
                 ])
               ],
+              [],
               true,
               true,
               true,
               'list-id'
             )
           )}
-          startingTagsAvailable='[]'
         />
       </HeroUIProvider>
     );
@@ -639,13 +635,13 @@ describe('ListItem state propagation', () => {
                     })
                   ])
                 ],
+                [],
                 true,
                 true,
                 true,
                 'list-id'
               )
             )}
-            startingTagsAvailable='[]'
           />
         </HeroUIProvider>
       );
@@ -694,13 +690,13 @@ describe('ListItem state propagation', () => {
                     })
                   ])
                 ],
+                [],
                 true,
                 true,
                 true,
                 'list-id'
               )
             )}
-            startingTagsAvailable='[]'
           />
         </HeroUIProvider>
       );
@@ -754,13 +750,13 @@ describe('ListItem state propagation', () => {
                   })
                 ])
               ],
+              [],
               true,
               true,
               true,
               'list-id'
             )
           )}
-          startingTagsAvailable='[]'
         />
       </HeroUIProvider>
     );
@@ -807,13 +803,13 @@ describe('ListItem state propagation', () => {
                   })
                 ])
               ],
+              [],
               true,
               true,
               true,
               'list-id'
             )
           )}
-          startingTagsAvailable='[]'
         />
       </HeroUIProvider>
     );

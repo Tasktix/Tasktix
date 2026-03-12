@@ -16,9 +16,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Tag from '@/lib/model/tag';
-
-import { ItemAction, ListAction, ListState, SectionAction } from './types';
+import {
+  ItemAction,
+  ListAction,
+  ListState,
+  MemberAction,
+  SectionAction,
+  TagAction
+} from './types';
 
 /**
  * The reducer for managing <List />'s state
@@ -32,66 +37,106 @@ import { ItemAction, ListAction, ListState, SectionAction } from './types';
  */
 export default function listReducer(
   state: ListState,
-  action: ListAction | SectionAction | ItemAction
+  action: ListAction | MemberAction | TagAction | SectionAction | ItemAction
 ): ListState {
   const newState = structuredClone(state);
 
   switch (action.type) {
     case 'SetHasDueDates':
-      newState.list.hasDueDates = action.hasDueDates;
+      newState.hasDueDates = action.hasDueDates;
       break;
 
     case 'SetHasTimeTracking':
-      newState.list.hasTimeTracking = action.hasTimeTracking;
+      newState.hasTimeTracking = action.hasTimeTracking;
       break;
 
     case 'SetIsAutoOrdered':
-      newState.list.isAutoOrdered = action.isAutoOrdered;
+      newState.isAutoOrdered = action.isAutoOrdered;
       break;
 
     case 'SetListColor':
-      newState.list.color = action.color;
+      newState.color = action.color;
       break;
 
     case 'SetListName':
-      newState.list.name = action.name;
+      newState.name = action.name;
       break;
 
     case 'SetMembers':
-      newState.list.members = action.members;
+      newState.members = action.members;
       break;
 
-    case 'SetTagsAvailable':
-      newState.tagsAvailable = action.tags;
+    case 'AddMember':
+      newState.members.set(action.member.user.id, action.member);
       break;
+
+    case 'UpdateMemberPermissions': {
+      const member = newState.members.get(action.id);
+
+      if (!member)
+        throw new Error(`Cannot find member with user ID ${action.id}`);
+
+      member.canAdd = action.canAdd ?? member.canAdd;
+      member.canComplete = action.canComplete ?? member.canComplete;
+      member.canRemove = action.canRemove ?? member.canRemove;
+      member.canAssign = action.canAssign ?? member.canAssign;
+      break;
+    }
 
     case 'AddTag':
-      newState.tagsAvailable.push(action.tag);
+      newState.tags.set(action.tag.id, action.tag);
+      break;
+
+    case 'UpdateTagName': {
+      const tag = newState.tags.get(action.id);
+
+      if (!tag) throw new Error(`Unable to find tag with ID ${action.id}`);
+
+      tag.name = action.name;
+      break;
+    }
+
+    case 'UpdateTagColor': {
+      const tag = newState.tags.get(action.id);
+
+      if (!tag) throw new Error(`Unable to find tag with ID ${action.id}`);
+
+      tag.color = action.color;
+      break;
+    }
+
+    case 'DeleteTag':
+      newState.tags.delete(action.id);
       break;
 
     case 'AddSection':
-      newState.list.sections.set(action.section.id, {
+      newState.sections.set(action.section.id, {
         ...action.section,
-        items: new Map()
+        items: []
       });
       break;
 
     case 'DeleteSection':
-      newState.list.sections.delete(action.id);
+      newState.sections.delete(action.id);
       break;
 
     case 'AddItemToSection': {
-      const section = newState.list.sections.get(action.sectionId);
+      const section = newState.sections.get(action.id);
 
       if (!section)
-        throw new Error(`Unable to find section with ID ${action.sectionId}`);
+        throw new Error(`Unable to find section with ID ${action.id}`);
 
-      section.items.set(action.item.id, action.item);
+      section.items.push(action.item.id);
+      newState.items.set(action.item.id, {
+        ...action.item,
+        assignees: [],
+        tags: []
+      });
       break;
     }
 
     case 'ReorderItem': {
-      const section = newState.list.sections.get(action.sectionId);
+      const section = newState.sections.get(action.sectionId);
 
       if (!section)
         throw new Error(`Unable to find section with ID ${action.sectionId}`);
@@ -100,7 +145,9 @@ export default function listReducer(
       const lowIndex = Math.min(action.newIndex, action.oldIndex);
       const highIndex = Math.max(action.newIndex, action.oldIndex);
 
-      for (const item of section.items.values()) {
+      for (const itemId of section.items) {
+        const item = getItem(newState, itemId);
+
         if (item.sectionIndex === action.oldIndex)
           item.sectionIndex = action.newIndex;
         else {
@@ -113,19 +160,19 @@ export default function listReducer(
     }
 
     case 'SetItemName':
-      getItem(newState, action.sectionId, action.id).name = action.name;
+      getItem(newState, action.id).name = action.name;
       break;
 
     case 'SetItemDueDate':
-      getItem(newState, action.sectionId, action.id).dateDue = action.date;
+      getItem(newState, action.id).dateDue = action.date;
       break;
 
     case 'SetItemPriority':
-      getItem(newState, action.sectionId, action.id).priority = action.priority;
+      getItem(newState, action.id).priority = action.priority;
       break;
 
     case 'SetItemIncomplete': {
-      const item = getItem(newState, action.sectionId, action.id);
+      const item = getItem(newState, action.id);
 
       item.status = 'Paused';
       item.dateCompleted = null;
@@ -133,7 +180,7 @@ export default function listReducer(
     }
 
     case 'SetItemComplete': {
-      const item = getItem(newState, action.sectionId, action.id);
+      const item = getItem(newState, action.id);
 
       item.status = 'Completed';
       item.dateCompleted = action.dateCompleted;
@@ -141,49 +188,42 @@ export default function listReducer(
     }
 
     case 'SetItemExpectedMs':
-      getItem(newState, action.sectionId, action.id).expectedMs =
-        action.expectedMs;
+      getItem(newState, action.id).expectedMs = action.expectedMs;
       break;
 
     case 'StartItemTime':
-      getItem(newState, action.sectionId, action.id).status = 'In_Progress';
+      getItem(newState, action.id).status = 'In_Progress';
       break;
 
     case 'PauseItemTime':
-      getItem(newState, action.sectionId, action.id).status = 'Paused';
+      getItem(newState, action.id).status = 'Paused';
       break;
 
     case 'ResetItemTime':
-      getItem(newState, action.sectionId, action.id).status = 'Unstarted';
+      getItem(newState, action.id).status = 'Unstarted';
       break;
 
-    case 'LinkTagToItem': {
-      const tag = action.tagsAvailable?.find(tag => tag.id === action.tagId);
-
-      if (!tag) throw new Error(`Could not find tag with id ${action.tagId}`);
-
-      newState.list.sections
-        .get(action.sectionId)
-        ?.items.get(action.itemId)
-        ?.tags.push(new Tag(tag.name, tag.color, action.tagId));
-      break;
-    }
-
-    case 'LinkNewTagToItem':
-      getItem(newState, action.sectionId, action.itemId).tags.push(action.tag);
+    case 'LinkTagToItem':
+      newState.items.get(action.itemId)?.tags.push(action.tagId);
       break;
 
     case 'UnlinkTagFromItem': {
-      const item = getItem(newState, action.sectionId, action.itemId);
+      const item = getItem(newState, action.itemId);
 
-      for (let i = 0; i < item.tags.length; i++)
-        if (item.tags[i].id === action.tagId) item.tags.splice(i, 1);
+      item.tags = item.tags.filter(tag => tag !== action.tagId);
       break;
     }
 
-    case 'DeleteItem':
-      newState.list.sections.get(action.sectionId)?.items.delete(action.id);
+    case 'DeleteItem': {
+      const section = newState.sections.get(action.sectionId);
+
+      if (!section)
+        throw new Error(`Unable to find section with ID ${action.sectionId}`);
+
+      section.items = section.items.filter(item => item === action.id);
+      newState.items.delete(action.id);
       break;
+    }
   }
 
   return newState;
@@ -194,18 +234,14 @@ export default function listReducer(
  * found
  *
  * @param state The state to look for the item in
- * @param sectionId The ID of the section the item to look for belongs to
  * @param itemId The ID of the item to look for
  *
  * @returns The item that was looked for
  */
-function getItem(state: ListState, sectionId: string, itemId: string) {
-  const item = state.list.sections.get(sectionId)?.items.get(itemId);
+function getItem(state: ListState, itemId: string) {
+  const item = state.items.get(itemId);
 
-  if (!item)
-    throw new Error(
-      `Unable to find item with ID ${itemId} in section ${sectionId}`
-    );
+  if (!item) throw new Error(`Unable to find item with ID ${itemId}`);
 
   return item;
 }

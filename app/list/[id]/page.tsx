@@ -18,11 +18,7 @@
 
 import { redirect } from 'next/navigation';
 
-import {
-  getIsListMember,
-  getListById,
-  getTagsByListId
-} from '@/lib/database/list';
+import { getIsListMember, getListById } from '@/lib/database/list';
 import List from '@/components/List';
 import { getUser } from '@/lib/session';
 
@@ -33,7 +29,6 @@ export default async function Page({
 }) {
   const { id } = await params;
   const list = await getListById(id);
-  const tagsAvailable = await getTagsByListId(id);
 
   const user = await getUser();
 
@@ -45,12 +40,7 @@ export default async function Page({
 
   return (
     <main className='p-8 w-full flex grow flex-col gap-8 overflow-y-scroll'>
-      {list && (
-        <List
-          startingList={JSON.stringify(list)}
-          startingTagsAvailable={JSON.stringify(tagsAvailable || [])}
-        />
-      )}
+      {list && <List startingList={JSON.stringify(list)} />}
     </main>
   );
 }

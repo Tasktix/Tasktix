@@ -40,7 +40,7 @@ export async function POST(request: Request) {
   const color = requestBody.color;
 
   const listMember = new ListMember(session, true, true, true, true);
-  const list = new List(name, color, [listMember], [], true, true, true);
+  const list = new List(name, color, [listMember], [], [], true, true, true);
 
   const result = await createList(list);
 

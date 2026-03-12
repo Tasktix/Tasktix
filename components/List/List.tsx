@@ -25,8 +25,6 @@ import SearchBar from '@/components/SearchBar';
 import { Filters } from '@/components/SearchBar/types';
 import ListSettings from '@/components/ListSettings';
 import ListModel from '@/lib/model/list';
-import Tag from '@/lib/model/tag';
-import ListItem from '@/lib/model/listItem';
 import { subscribe } from '@/lib/sse/client';
 
 import ListSection from '../ListSection/ListSection';
@@ -46,44 +44,58 @@ import { ListState } from './types';
  *  loaded (type List). Must be manually JSON stringified to cross the server/client
  *  component boundary because Next.js doesn't automatically convert Date objects or
  *  classes
- * @param startingTagsAvailable A JSON-stringified version of the list's tags when the
- *  page is first loaded (type Tag[]). Must be manually JSON stringified to cross the
- *  server/client component boundary because Next.js doesn't automatically convert classes
  */
-export default function List({
-  startingList,
-  startingTagsAvailable
-}: {
-  startingList: string;
-  startingTagsAvailable: string;
-}) {
+export default function List({ startingList }: { startingList: string }) {
   const builtList = JSON.parse(startingList) as ListModel;
-  const builtSections: ListState['list']['sections'] = new Map();
 
   // Rebuild Date objects turned to JSON strings & convert arrays to Maps
-  for (const section of builtList.sections) {
-    const builtItems: Map<string, ListItem> = new Map();
+  const builtMembers: ListState['members'] = new Map(
+    builtList.members.map(member => [member.user.id, member])
+  );
+  const builtSections: ListState['sections'] = new Map(
+    builtList.sections.map(section => [
+      section.id,
+      {
+        ...section,
+        items: section.items.map(item => item.id)
+      }
+    ])
+  );
+  const builtItems: ListState['items'] = new Map(
+    builtList.sections.flatMap(section =>
+      section.items.map(item => [
+        item.id,
+        {
+          ...item,
+          dateCreated: new Date(item.dateCreated),
+          dateDue: item.dateDue ? new Date(item.dateDue) : null,
+          dateStarted: item.dateStarted ? new Date(item.dateStarted) : null,
+          dateCompleted: item.dateCompleted
+            ? new Date(item.dateCompleted)
+            : null,
+          tags: item.tags.map(tag => tag.id),
+          assignees: item.assignees.map(assignee => [
+            assignee.user.id,
+            assignee.role
+          ])
+        }
+      ])
+    )
+  );
+  const builtTags: ListState['tags'] = new Map(
+    builtList.tags.map(tag => [tag.id, tag])
+  );
 
-    for (const item of section.items) {
-      item.dateCreated = new Date(item.dateCreated);
-      item.dateDue = item.dateDue ? new Date(item.dateDue) : null;
-      item.dateStarted = item.dateStarted ? new Date(item.dateStarted) : null;
-      item.dateCompleted = item.dateCompleted
-        ? new Date(item.dateCompleted)
-        : null;
-
-      builtItems.set(item.id, item);
-    }
-    builtSections.set(section.id, { ...section, items: builtItems });
-  }
-
-  const [{ list, tagsAvailable }, dispatchList] = useReducer(listReducer, {
-    list: { ...builtList, sections: builtSections },
-    tagsAvailable: JSON.parse(startingTagsAvailable) as Tag[]
+  const [list, dispatchList] = useReducer(listReducer, {
+    ...builtList,
+    items: builtItems,
+    members: builtMembers,
+    sections: builtSections,
+    tags: builtTags
   });
 
   const [filters, setFilters] = useState<Filters>({});
-  const filterOptions = getFilterOptions(list, tagsAvailable);
+  const filterOptions = getFilterOptions(list);
 
   const listHandlers = listHandlerFactory(list.id, dispatchList);
 
@@ -95,32 +107,28 @@ export default function List({
         <SearchBar inputOptions={filterOptions} onValueChange={setFilters} />
         <ListSettings
           addNewTag={listHandlers.addNewTag}
-          dispatchList={dispatchList}
-          hasDueDates={list.hasDueDates}
-          hasTimeTracking={list.hasTimeTracking}
-          isAutoOrdered={list.isAutoOrdered}
-          listColor={list.color}
-          listId={list.id}
-          listName={list.name}
-          members={list.members}
-          setListName={listHandlers.setName}
-          tagsAvailable={tagsAvailable}
+          list={list}
+          onListEvent={dispatchList}
+          onListNameChange={listHandlers.setName}
         />
       </span>
 
       {Array.from(list.sections.values()).map(section => (
         <ListSection
           key={section.id}
-          dispatchItemChange={dispatchList}
-          dispatchSectionChange={dispatchList}
           filters={filters}
           hasDueDates={list.hasDueDates}
           hasTimeTracking={list.hasTimeTracking}
           isAutoOrdered={list.isAutoOrdered}
+          items={section.items
+            .map(id => list.items.get(id))
+            .filter(e => e !== undefined)}
           listId={list.id}
           members={list.members}
           section={section}
-          tagsAvailable={tagsAvailable}
+          tags={list.tags}
+          onItemChange={dispatchList}
+          onSectionChange={dispatchList}
           onTagCreate={listHandlers.addNewTag}
         />
       ))}

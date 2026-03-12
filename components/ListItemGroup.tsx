@@ -110,7 +110,6 @@ export default function ListItemGroup({
             <ListItem
               key={item.id}
               addNewTag={addNewTag.bind(null, item.listId)}
-              dispatchItemChange={() => null}
               hasDueDates={
                 builtLists.find(list => list.id === item.listId)?.hasDueDates ||
                 false
@@ -124,6 +123,7 @@ export default function ListItemGroup({
               members={item.listId ? parsedMembers[item.listId] : []}
               sectionId='unknown'
               tagsAvailable={item.listId ? tags[item.listId] : []}
+              onItemEvent={() => null}
             />
           ))
       ) : (

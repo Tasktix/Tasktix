@@ -25,22 +25,24 @@ import ListMember from '@/lib/model/listMember';
 import api from '@/lib/api';
 import { addToastForError } from '@/lib/error';
 
+import { ListState, MemberAction } from '../List/types';
+
 /**
  * Displays all list members and their permissions. Allows adding new members and updating
  * current members' permissions
  *
  * @param listId The list the members are for
  * @param members All members of the list
- * @param setMembers A callback for updating React state with changes to the members
+ * @param onMemberEvent A callback for updating React state with changes to the members
  */
 export default function MemberSettings({
   listId,
   members,
-  setMembers
+  onMemberEvent
 }: Readonly<{
   listId: string;
-  members: ListMember[];
-  setMembers: (members: ListMember[]) => unknown;
+  members: ListState['members'];
+  onMemberEvent: (event: MemberAction) => unknown;
 }>) {
   const [newUsername, setNewUsername] = useState('');
 
@@ -53,12 +55,12 @@ export default function MemberSettings({
       .then(res => {
         if (!res.content) throw new Error('User added, but unable to display');
 
-        const listMember = JSON.parse(res.content) as ListMember;
+        const member = JSON.parse(res.content) as ListMember;
 
-        listMember.user.createdAt = new Date(listMember.user.createdAt);
-        listMember.user.updatedAt = new Date(listMember.user.updatedAt);
+        member.user.createdAt = new Date(member.user.createdAt);
+        member.user.updatedAt = new Date(member.user.updatedAt);
 
-        setMembers([...members, listMember]);
+        onMemberEvent({ type: 'AddMember', member });
       })
       .catch(addToastForError);
   }
@@ -75,19 +77,14 @@ export default function MemberSettings({
     api
       .patch(`/list/${listId}/member/${userId}`, values)
       .then(() => {
-        setMembers(
-          members.map(m =>
-            m.user.id === userId
-              ? new ListMember(
-                  m.user,
-                  values.canAdd ?? m.canAdd,
-                  values.canRemove ?? m.canRemove,
-                  values.canComplete ?? m.canComplete,
-                  values.canAssign ?? m.canAssign
-                )
-              : m
-          )
-        );
+        onMemberEvent({
+          type: 'UpdateMemberPermissions',
+          id: userId,
+          canAdd: values.canAdd,
+          canRemove: values.canRemove,
+          canComplete: values.canComplete,
+          canAssign: values.canAssign
+        });
       })
       .catch(addToastForError);
   }
@@ -121,7 +118,7 @@ export default function MemberSettings({
           </tr>
         </thead>
         <tbody>
-          {members.map(member => (
+          {members.values().map(member => (
             <tr key={member.user.id}>
               <td className='py-2'>
                 <User

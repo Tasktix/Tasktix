@@ -62,9 +62,9 @@ today.setHours(0, 0, 0, 0);
  * @param hasDueDates Whether the list settings enable due dates for items
  * @param reorderControls Controller for Framer Motion's reordering feature. Used to
  *  trigger reordering when the user grabs the drag icon in the list item
- * @param dispatchItemChange Callback to propagate state changes for the item
  * @param addNewTag Callback to propagate state changes when a new tag is created from the
  *  "add tag" menu
+ * @param onItemEvent Callback to propagate state changes for the item
  */
 export default function ListItem({
   sectionId,
@@ -75,8 +75,8 @@ export default function ListItem({
   hasTimeTracking,
   hasDueDates,
   reorderControls,
-  dispatchItemChange,
-  addNewTag
+  addNewTag,
+  onItemEvent
 }: ListItemParams) {
   const timer = useRef<NodeJS.Timeout>(undefined);
   const updateTime = useRef(() => {});
@@ -95,8 +95,7 @@ export default function ListItem({
       setElapsedLive,
       stopRunning: _stopRunning
     },
-    tagsAvailable,
-    dispatchItemChange
+    onItemEvent
   );
 
   /**
@@ -121,7 +120,7 @@ export default function ListItem({
           );
 
           // Update the internal state
-          dispatchItemChange({ type: 'StartItemTime', sectionId, id: item.id });
+          onItemEvent({ type: 'StartItemTime', id: item.id });
         })
         .catch(addToastForError);
     },
@@ -143,7 +142,7 @@ export default function ListItem({
           setElapsedLive(newElapsed);
 
           // Update the internal state
-          dispatchItemChange({ type: 'PauseItemTime', sectionId, id: item.id });
+          onItemEvent({ type: 'PauseItemTime', id: item.id });
         })
         .catch(addToastForError);
     },
@@ -162,9 +161,8 @@ export default function ListItem({
           setElapsedLive(0);
 
           // Update the internal state
-          dispatchItemChange({
+          onItemEvent({
             type: 'ResetItemTime',
-            sectionId,
             id: item.id
           });
         })
@@ -293,11 +291,10 @@ export default function ListItem({
           addNewTag={addNewTag}
           className='hidden lg:flex'
           isComplete={item.status === 'Completed'}
-          linkNewTag={itemHandlers.linkNewTag}
-          linkTag={itemHandlers.linkTag}
           tags={item.tags}
           tagsAvailable={tagsAvailable}
-          unlinkTag={itemHandlers.unlinkTag}
+          onTagLink={itemHandlers.linkTag}
+          onTagUnlink={itemHandlers.unlinkTag}
         />
 
         {members.length > 1 ? (

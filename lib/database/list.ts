@@ -25,7 +25,7 @@ import Tag from '@/lib/model/tag';
 import { prisma } from './db_connect';
 
 export async function createList(
-  list: Omit<List, 'sections'>
+  list: Omit<List, 'sections' | 'tags'>
 ): Promise<boolean> {
   try {
     await prisma.list.create({
@@ -121,7 +121,7 @@ export async function getListBySectionId(id: string): Promise<List | false> {
 
 export async function getListsByUser(
   id: string
-): Promise<Omit<List, 'members' | 'sections'>[]> {
+): Promise<Omit<List, 'members' | 'sections' | 'tags'>[]> {
   const result = await prisma.list.findMany({
     where: { members: { some: { userId: id } } }
   });

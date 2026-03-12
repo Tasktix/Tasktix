@@ -40,22 +40,16 @@ export default function Tags({
   tagsAvailable,
   className,
   addNewTag,
-  linkTag,
-  linkNewTag,
-  unlinkTag
+  onTagLink,
+  onTagUnlink
 }: {
   tags: TagModel[];
   isComplete: boolean;
   tagsAvailable?: TagModel[];
   className?: string;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
-  linkTag: (id: string) => unknown;
-  linkNewTag?: (
-    id: string,
-    name: string,
-    color: NamedColor
-  ) => Promise<unknown>;
-  unlinkTag: (id: string) => unknown;
+  onTagLink: (id: string) => unknown;
+  onTagUnlink: (id: string) => unknown;
 }) {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
@@ -116,7 +110,7 @@ export default function Tags({
                 className='rounded-lg w-8 h-8 min-w-8 min-h-8'
                 color='danger'
                 variant='flat'
-                onPress={unlinkTag.bind(null, tag.id)}
+                onPress={onTagUnlink.bind(null, tag.id)}
               >
                 <X />
               </Button>
@@ -140,7 +134,7 @@ export default function Tags({
                         className='rounded-lg w-8 h-8 min-w-8 min-h-8'
                         color='primary'
                         variant='flat'
-                        onPress={linkTag.bind(null, tag.id)}
+                        onPress={onTagLink.bind(null, tag.id)}
                       >
                         <Plus />
                       </Button>
@@ -154,7 +148,7 @@ export default function Tags({
           onTagCreated={async (name, color) => {
             const id = await addNewTag(name, color);
 
-            if (linkNewTag) await linkNewTag(id, name, color);
+            await onTagLink(id);
           }}
         />
       </PopoverContent>
