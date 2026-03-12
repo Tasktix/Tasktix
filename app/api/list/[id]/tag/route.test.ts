@@ -47,18 +47,9 @@ describe('POST', () => {
   test('Creates a new tag when requestor has permissions', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
     vi.mocked(getRoleByList).mockResolvedValue(
-      new MemberRole(
-        'TagManager',
-        'Manages tags and nothing else',
-        false,
-        false,
-        false,
-        true,
-        false,
-        false,
-        false,
-        false
-      )
+      new MemberRole('TagManager', 'Manages tags and nothing else', {
+        canManageTags: true
+      })
     );
     vi.mocked(createTag).mockResolvedValue(true);
 
@@ -112,18 +103,15 @@ describe('POST', () => {
     test('Rejects request if requestor has insufficient permissions to create a tag', async () => {
       vi.mocked(getUser).mockResolvedValue(MOCK_USER);
       vi.mocked(getRoleByList).mockResolvedValue(
-        new MemberRole(
-          'NotTagManager',
-          'Does everything but manage tags',
-          true,
-          true,
-          true,
-          false,
-          true,
-          true,
-          true,
-          true
-        )
+        new MemberRole('NotTagManager', 'Does everything but manage tags', {
+          canAddItems: true,
+          canUpdateItems: true,
+          canDeleteItems: true,
+          canManageAssignees: true,
+          canManageMembers: true,
+          canUpdateList: true,
+          canDeleteList: true
+        })
       );
 
       const response = await POST(

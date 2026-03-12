@@ -55,15 +55,27 @@ export default class MemberRole {
   constructor(
     name: string,
     description: string,
-    canAddItems: boolean,
-    canUpdateItems: boolean,
-    canDeleteItems: boolean,
-    canManageTags: boolean,
-    canManageAssignees: boolean,
-    canManageMembers: boolean,
-    canUpdateList: boolean,
-    canDeleteList: boolean,
-    id?: string
+    {
+      id,
+      canAddItems = false,
+      canUpdateItems = false,
+      canDeleteItems = false,
+      canManageTags = false,
+      canManageAssignees = false,
+      canManageMembers = false,
+      canUpdateList = false,
+      canDeleteList = false
+    }: {
+      id?: string;
+      canAddItems?: boolean;
+      canUpdateItems?: boolean;
+      canDeleteItems?: boolean;
+      canManageTags?: boolean;
+      canManageAssignees?: boolean;
+      canManageMembers?: boolean;
+      canUpdateList?: boolean;
+      canDeleteList?: boolean;
+    }
   ) {
     if (!id) id = generateId();
 

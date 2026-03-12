@@ -39,26 +39,20 @@ const MOCK_USER = new User(
 const MOCK_ROLE_CAN_ADD_ITEM = new MemberRole(
   'ItemAdder',
   'Adds items and nothing else',
-  true,
-  false,
-  false,
-  false,
-  false,
-  false,
-  false,
-  false
+  { canAddItems: true }
 );
 const MOCK_ROLE_CANNOT_ADD_ITEM = new MemberRole(
   'NotItemAdder',
   'Does everything but add items',
-  false,
-  true,
-  true,
-  true,
-  true,
-  true,
-  true,
-  true
+  {
+    canUpdateItems: true,
+    canDeleteItems: true,
+    canManageTags: true,
+    canManageAssignees: true,
+    canManageMembers: true,
+    canUpdateList: true,
+    canDeleteList: true
+  }
 );
 const MOCK_SECTION = new ListSection('Section name', [], 'section-id-16-ch');
 
@@ -68,7 +62,7 @@ vi.mock('@/lib/session');
 vi.mock('@/lib/database/list');
 vi.mock('@/lib/database/listItem');
 vi.mock('server-only', () => ({
-  // Server Only Breaks test environemnt
+  // Server Only Breaks test environment
 }));
 
 beforeEach(vi.resetAllMocks);

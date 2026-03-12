@@ -38,26 +38,20 @@ const MOCK_USER = new User(
 const MOCK_ROLE_CAN_UPDATE_LIST = new MemberRole(
   'ListUpdater',
   'Updates the list and nothing else',
-  false,
-  false,
-  false,
-  false,
-  false,
-  false,
-  true,
-  false
+  { canUpdateList: true }
 );
 const MOCK_ROLE_CANNOT_UPDATE_LIST = new MemberRole(
   'NotListUpdater',
   'Does everything but update the list',
-  true,
-  true,
-  true,
-  true,
-  true,
-  true,
-  false,
-  true
+  {
+    canAddItems: true,
+    canUpdateItems: true,
+    canDeleteItems: true,
+    canManageTags: true,
+    canManageAssignees: true,
+    canManageMembers: true,
+    canDeleteList: true
+  }
 );
 const MOCK_LIST = new List(
   'List name',
@@ -352,18 +346,9 @@ describe('DELETE', () => {
   test('Deletes list when requestor has permissions', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
     vi.mocked(getRoleByList).mockResolvedValue(
-      new MemberRole(
-        'ListDeleter',
-        'Deletes the list and nothing else',
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        true
-      )
+      new MemberRole('ListDeleter', 'Deletes the list and nothing else', {
+        canDeleteList: true
+      })
     );
     vi.mocked(deleteList).mockResolvedValue(true);
 
@@ -414,14 +399,15 @@ describe('DELETE', () => {
         new MemberRole(
           'NotListDeleter',
           'Does everything but delete the list',
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          false
+          {
+            canAddItems: true,
+            canUpdateItems: true,
+            canDeleteItems: true,
+            canManageTags: true,
+            canManageAssignees: true,
+            canManageMembers: true,
+            canUpdateList: true
+          }
         )
       );
 

@@ -49,18 +49,9 @@ describe('PATCH', () => {
   test('Updates the tag name and nothing else when requestor has permissions', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
     vi.mocked(getRoleByTag).mockResolvedValue(
-      new MemberRole(
-        'TagManager',
-        'Manages tags and nothing else',
-        false,
-        false,
-        false,
-        true,
-        false,
-        false,
-        false,
-        false
-      )
+      new MemberRole('TagManager', 'Manages tags and nothing else', {
+        canManageTags: true
+      })
     );
     vi.mocked(getTagById).mockResolvedValue(MOCK_TAG);
     vi.mocked(updateTag).mockResolvedValue(true);
@@ -116,18 +107,15 @@ describe('PATCH', () => {
     test('Rejects request if requestor has insufficient permissions to update tags', async () => {
       vi.mocked(getUser).mockResolvedValue(MOCK_USER);
       vi.mocked(getRoleByTag).mockResolvedValue(
-        new MemberRole(
-          'NotTagManager',
-          'Does everything but manage tags',
-          true,
-          true,
-          true,
-          false,
-          true,
-          true,
-          true,
-          true
-        )
+        new MemberRole('NotTagManager', 'Does everything but manage tags', {
+          canAddItems: true,
+          canUpdateItems: true,
+          canDeleteItems: true,
+          canManageAssignees: true,
+          canManageMembers: true,
+          canUpdateList: true,
+          canDeleteList: true
+        })
       );
 
       const response = await PATCH(
@@ -148,18 +136,9 @@ describe('DELETE', () => {
   test('Deletes the tag when requestor has permissions', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
     vi.mocked(getRoleByTag).mockResolvedValue(
-      new MemberRole(
-        'TagManager',
-        'Manages tags and nothing else',
-        false,
-        false,
-        false,
-        true,
-        false,
-        false,
-        false,
-        false
-      )
+      new MemberRole('TagManager', 'Manages tags and nothing else', {
+        canManageTags: true
+      })
     );
     vi.mocked(deleteTag).mockResolvedValue(true);
 
@@ -207,18 +186,15 @@ describe('DELETE', () => {
     test('Rejects request if requestor has insufficient permissions to delete tags', async () => {
       vi.mocked(getUser).mockResolvedValue(MOCK_USER);
       vi.mocked(getRoleByTag).mockResolvedValue(
-        new MemberRole(
-          'NotTagManager',
-          'Does everything but manage tags',
-          true,
-          true,
-          true,
-          false,
-          true,
-          true,
-          true,
-          true
-        )
+        new MemberRole('NotTagManager', 'Does everything but manage tags', {
+          canAddItems: true,
+          canUpdateItems: true,
+          canDeleteItems: true,
+          canManageAssignees: true,
+          canManageMembers: true,
+          canUpdateList: true,
+          canDeleteList: true
+        })
       );
 
       const response = await DELETE(

@@ -51,18 +51,9 @@ describe('PATCH', () => {
   test('Updates section name when requestor has permissions', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
     vi.mocked(getRoleByList).mockResolvedValue(
-      new MemberRole(
-        'ListUpdater',
-        'Updates the list and nothing else',
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        true,
-        false
-      )
+      new MemberRole('ListUpdater', 'Updates the list and nothing else', {
+        canUpdateList: true
+      })
     );
     vi.mocked(updateListSection).mockResolvedValue(true);
 
@@ -117,14 +108,15 @@ describe('PATCH', () => {
         new MemberRole(
           'NotListUpdater',
           'Does everything but update the list',
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          false,
-          true
+          {
+            canAddItems: true,
+            canUpdateItems: true,
+            canDeleteItems: true,
+            canManageTags: true,
+            canManageAssignees: true,
+            canManageMembers: true,
+            canDeleteList: true
+          }
         )
       );
 
@@ -145,18 +137,9 @@ describe('DELETE', () => {
   test('Deletes the section when requestor has permissions', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
     vi.mocked(getRoleByList).mockResolvedValue(
-      new MemberRole(
-        'ListUpdater',
-        'Updates the list and nothing else',
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        true,
-        false
-      )
+      new MemberRole('ListUpdater', 'Updates the list and nothing else', {
+        canUpdateList: true
+      })
     );
     vi.mocked(deleteListSection).mockResolvedValue(true);
 
@@ -207,14 +190,15 @@ describe('DELETE', () => {
         new MemberRole(
           'NotListUpdater',
           'Does everything but update the list',
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          false,
-          true
+          {
+            canAddItems: true,
+            canUpdateItems: true,
+            canDeleteItems: true,
+            canManageTags: true,
+            canManageAssignees: true,
+            canManageMembers: true,
+            canDeleteList: true
+          }
         )
       );
 

@@ -65,7 +65,7 @@ export async function getUserByEmail(email: string): Promise<User | false> {
 /**
  * Gets all roles a member can have
  */
-export async function getMemberRoles(): Promise<MemberRole[] | false> {
+export async function getAvailableRoles(): Promise<MemberRole[] | false> {
   const result = await prisma.memberRole.findMany();
 
   return result ?? false;

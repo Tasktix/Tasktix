@@ -51,14 +51,7 @@ describe('POST', () => {
       new MemberRole(
         'AssigneeManager',
         'Manages assignees and does nothing else',
-        false,
-        false,
-        false,
-        false,
-        true,
-        false,
-        false,
-        false
+        { canManageAssignees: true }
       )
     );
     vi.mocked(linkAssignee).mockResolvedValue(true);
@@ -129,14 +122,15 @@ describe('POST', () => {
         new MemberRole(
           'NotAssigneeManager',
           'Does everything but manage assignees',
-          true,
-          true,
-          true,
-          true,
-          false,
-          true,
-          true,
-          true
+          {
+            canAddItems: true,
+            canUpdateItems: true,
+            canDeleteItems: true,
+            canManageTags: true,
+            canManageMembers: true,
+            canUpdateList: true,
+            canDeleteList: true
+          }
         )
       );
 
@@ -162,14 +156,7 @@ describe('POST', () => {
         new MemberRole(
           'AssigneeManager',
           'Manages assignees and does nothing else',
-          false,
-          false,
-          false,
-          false,
-          true,
-          false,
-          false,
-          false
+          { canManageAssignees: true }
         )
       );
       vi.mocked(linkAssignee).mockResolvedValue(false);
@@ -198,14 +185,7 @@ describe('DELETE', () => {
       new MemberRole(
         'AssigneeManager',
         'Manages assignees and does nothing else',
-        false,
-        false,
-        false,
-        false,
-        true,
-        false,
-        false,
-        false
+        { canManageAssignees: true }
       )
     );
     vi.mocked(unlinkAssignee).mockResolvedValue(true);
@@ -260,14 +240,15 @@ describe('DELETE', () => {
         new MemberRole(
           'NotAssigneeManager',
           'Does everything but manage assignees',
-          true,
-          true,
-          true,
-          true,
-          false,
-          true,
-          true,
-          true
+          {
+            canAddItems: true,
+            canUpdateItems: true,
+            canDeleteItems: true,
+            canManageTags: true,
+            canManageMembers: true,
+            canUpdateList: true,
+            canDeleteList: true
+          }
         )
       );
 
@@ -288,14 +269,7 @@ describe('DELETE', () => {
         new MemberRole(
           'AssigneeManager',
           'Manages assignees and does nothing else',
-          false,
-          false,
-          false,
-          false,
-          true,
-          false,
-          false,
-          false
+          { canManageAssignees: true }
         )
       );
       vi.mocked(unlinkAssignee).mockResolvedValue(false);

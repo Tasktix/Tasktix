@@ -45,26 +45,12 @@ const MOCK_NEW_USER = new User(
 const MOCK_ROLE_CAN_VIEW = new MemberRole(
   'Viewer',
   'No explicit permissions',
-  false,
-  false,
-  false,
-  false,
-  false,
-  false,
-  false,
-  false
+  {}
 );
 const MOCK_ROLE_CAN_MANAGE_MEMBERS = new MemberRole(
-  'ItemAdder',
-  'Adds items and nothing else',
-  false,
-  false,
-  false,
-  false,
-  false,
-  true,
-  false,
-  false
+  'MemberManager',
+  'Manages members and nothing else',
+  { canManageMembers: true }
 );
 
 const MEMBER_PATH = 'http://localhost/api/list/some-list-id/member' as const;

@@ -63,27 +63,18 @@ const users = [
 const MOCK_ROLE_CAN_VIEW = new MemberRole(
   'Viewer',
   'No explicit permissions',
-  false,
-  false,
-  false,
-  false,
-  false,
-  false,
-  false,
-  false
+  {}
 );
-const MOCK_ROLE_CAN_ADMIN = new MemberRole(
-  'Admin',
-  'All permissions',
-  true,
-  true,
-  true,
-  true,
-  true,
-  true,
-  true,
-  true
-);
+const MOCK_ROLE_CAN_ADMIN = new MemberRole('Admin', 'All permissions', {
+  canAddItems: true,
+  canUpdateItems: true,
+  canDeleteItems: true,
+  canManageTags: true,
+  canManageAssignees: true,
+  canManageMembers: true,
+  canUpdateList: true,
+  canDeleteList: true
+});
 
 describe('Adding members', () => {
   it('Allows adding new members by entering their username', async () => {

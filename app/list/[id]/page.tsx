@@ -25,7 +25,7 @@ import {
 } from '@/lib/database/list';
 import List from '@/components/List';
 import { getUser } from '@/lib/session';
-import { getMemberRoles } from '@/lib/database/user';
+import { getAvailableRoles } from '@/lib/database/user';
 
 export default async function Page({
   params
@@ -35,7 +35,7 @@ export default async function Page({
   const { id } = await params;
   const list = await getListById(id);
   const tagsAvailable = await getTagsByListId(id);
-  const roles = await getMemberRoles();
+  const roles = await getAvailableRoles();
 
   const user = await getUser();
 

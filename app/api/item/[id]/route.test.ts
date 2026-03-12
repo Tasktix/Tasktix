@@ -54,18 +54,9 @@ describe('PATCH', () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
     vi.mocked(getListItemById).mockResolvedValue(MOCK_ITEM);
     vi.mocked(getRoleByItem).mockResolvedValue(
-      new MemberRole(
-        'ItemUpdater',
-        'Updates items and does nothing else',
-        false,
-        true,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      )
+      new MemberRole('ItemUpdater', 'Updates items and does nothing else', {
+        canUpdateItems: true
+      })
     );
     vi.mocked(updateListItem).mockResolvedValue(true);
 
@@ -126,18 +117,15 @@ describe('PATCH', () => {
       vi.mocked(getUser).mockResolvedValue(MOCK_USER);
       vi.mocked(getListItemById).mockResolvedValue(MOCK_ITEM);
       vi.mocked(getRoleByItem).mockResolvedValue(
-        new MemberRole(
-          'NotItemUpdater',
-          'Does everything but update items',
-          true,
-          false,
-          true,
-          true,
-          true,
-          true,
-          true,
-          true
-        )
+        new MemberRole('NotItemUpdater', 'Does everything but update items', {
+          canAddItems: true,
+          canDeleteItems: true,
+          canManageTags: true,
+          canManageAssignees: true,
+          canManageMembers: true,
+          canUpdateList: true,
+          canDeleteList: true
+        })
       );
 
       const response = await PATCH(
@@ -160,18 +148,9 @@ describe('DELETE', () => {
   test('Deletes item when requestor has permissions', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
     vi.mocked(getRoleByItem).mockResolvedValue(
-      new MemberRole(
-        'ItemRemover',
-        'Deletes items and does nothing else',
-        false,
-        false,
-        true,
-        false,
-        false,
-        false,
-        false,
-        false
-      )
+      new MemberRole('ItemRemover', 'Deletes items and does nothing else', {
+        canDeleteItems: true
+      })
     );
     vi.mocked(deleteListItem).mockResolvedValue(true);
 
@@ -225,18 +204,15 @@ describe('DELETE', () => {
     test('Rejects request if requestor has insufficient permissions to delete item', async () => {
       vi.mocked(getUser).mockResolvedValue(MOCK_USER);
       vi.mocked(getRoleByItem).mockResolvedValue(
-        new MemberRole(
-          'NotItemRemover',
-          'Does everything but delete items',
-          true,
-          true,
-          false,
-          true,
-          true,
-          true,
-          true,
-          true
-        )
+        new MemberRole('NotItemRemover', 'Does everything but delete items', {
+          canAddItems: true,
+          canUpdateItems: true,
+          canManageTags: true,
+          canManageAssignees: true,
+          canManageMembers: true,
+          canUpdateList: true,
+          canDeleteList: true
+        })
       );
 
       const response = await DELETE(

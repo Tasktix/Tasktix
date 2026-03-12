@@ -24,6 +24,12 @@ import { getUser } from '@/lib/session';
 
 const PostBody = ZodListSection.omit({ id: true });
 
+/**
+ * Creates a new list section in the given list
+ *
+ * @param request.name The new section's name
+ * @param params.id The list to create the section in
+ */
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ id: string }> }

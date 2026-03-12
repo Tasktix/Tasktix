@@ -35,14 +35,7 @@ import ListItem from '../ListItem';
 const MOCK_ROLE_CAN_VIEW = new MemberRole(
   'Viewer',
   'No explicit permissions',
-  false,
-  false,
-  false,
-  false,
-  false,
-  false,
-  false,
-  false
+  {}
 );
 
 vi.mock(import('framer-motion'), async importOriginal => {

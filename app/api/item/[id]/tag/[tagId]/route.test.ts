@@ -50,18 +50,9 @@ describe('POST', () => {
   test('Assigns a tag to an item when requestor has permissions', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
     vi.mocked(getRoleByItem).mockResolvedValue(
-      new MemberRole(
-        'ItemUpdater',
-        'Updates items and does nothing else',
-        false,
-        true,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      )
+      new MemberRole('ItemUpdater', 'Updates items and does nothing else', {
+        canUpdateItems: true
+      })
     );
     vi.mocked(linkTag).mockResolvedValue(true);
 
@@ -124,18 +115,15 @@ describe('POST', () => {
     test('Rejects request if requestor has insufficient permissions to update item', async () => {
       vi.mocked(getUser).mockResolvedValue(MOCK_USER);
       vi.mocked(getRoleByItem).mockResolvedValue(
-        new MemberRole(
-          'NotItemUpdater',
-          'Does everything but update items',
-          true,
-          false,
-          true,
-          true,
-          true,
-          true,
-          true,
-          true
-        )
+        new MemberRole('NotItemUpdater', 'Does everything but update items', {
+          canAddItems: true,
+          canDeleteItems: true,
+          canManageTags: true,
+          canManageAssignees: true,
+          canManageMembers: true,
+          canUpdateList: true,
+          canDeleteList: true
+        })
       );
 
       const response = await POST(
@@ -157,18 +145,9 @@ describe('POST', () => {
     test('Informs the requestor if database update fails', async () => {
       vi.mocked(getUser).mockResolvedValue(MOCK_USER);
       vi.mocked(getRoleByItem).mockResolvedValue(
-        new MemberRole(
-          'ItemUpdater',
-          'Updates items and does nothing else',
-          false,
-          true,
-          false,
-          false,
-          false,
-          false,
-          false,
-          false
-        )
+        new MemberRole('ItemUpdater', 'Updates items and does nothing else', {
+          canUpdateItems: true
+        })
       );
       vi.mocked(linkTag).mockResolvedValue(false);
 
@@ -193,18 +172,9 @@ describe('DELETE', () => {
   test('Assigns a tag to an item when requestor has permissions', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
     vi.mocked(getRoleByItem).mockResolvedValue(
-      new MemberRole(
-        'ItemUpdater',
-        'Updates items and does nothing else',
-        false,
-        true,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      )
+      new MemberRole('ItemUpdater', 'Updates items and does nothing else', {
+        canUpdateItems: true
+      })
     );
     vi.mocked(unlinkTag).mockResolvedValue(true);
 
@@ -267,18 +237,15 @@ describe('DELETE', () => {
     test('Rejects request if requestor has insufficient permissions to update item', async () => {
       vi.mocked(getUser).mockResolvedValue(MOCK_USER);
       vi.mocked(getRoleByItem).mockResolvedValue(
-        new MemberRole(
-          'ItemUpdater',
-          'Does everything but manage assignees',
-          true,
-          false,
-          true,
-          true,
-          true,
-          true,
-          true,
-          true
-        )
+        new MemberRole('ItemUpdater', 'Does everything but update items', {
+          canAddItems: true,
+          canDeleteItems: true,
+          canManageTags: true,
+          canManageAssignees: true,
+          canManageMembers: true,
+          canUpdateList: true,
+          canDeleteList: true
+        })
       );
 
       const response = await DELETE(
@@ -300,18 +267,9 @@ describe('DELETE', () => {
     test('Informs the requestor if database update fails', async () => {
       vi.mocked(getUser).mockResolvedValue(MOCK_USER);
       vi.mocked(getRoleByItem).mockResolvedValue(
-        new MemberRole(
-          'ItemUpdater',
-          'Updates items and does nothing else',
-          false,
-          true,
-          false,
-          false,
-          false,
-          false,
-          false,
-          false
-        )
+        new MemberRole('ItemUpdater', 'Updates items and does nothing else', {
+          canUpdateItems: true
+        })
       );
       vi.mocked(linkTag).mockResolvedValue(false);
 

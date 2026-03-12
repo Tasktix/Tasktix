@@ -30,18 +30,7 @@ test('Assigns all properties correctly', () => {
     new Date(),
     {}
   );
-  const role = new MemberRole(
-    'Viewer',
-    'No explicit permissions',
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false
-  );
+  const role = new MemberRole('Viewer', 'No explicit permissions', {});
 
   const listMember = new ListMember(user, role);
 

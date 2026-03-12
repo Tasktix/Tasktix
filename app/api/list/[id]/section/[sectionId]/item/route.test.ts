@@ -48,18 +48,9 @@ describe('PATCH', () => {
   test('Reorders when requestor has permissions', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
     vi.mocked(getRoleByList).mockResolvedValue(
-      new MemberRole(
-        'ListUpdater',
-        'Updates lists and nothing else',
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        true,
-        false
-      )
+      new MemberRole('ListUpdater', 'Updates lists and nothing else', {
+        canUpdateList: true
+      })
     );
     vi.mocked(updateSectionIndices).mockResolvedValue(true);
 
@@ -127,18 +118,15 @@ describe('PATCH', () => {
     test('Rejects request if requestor has insufficient permissions to reorder', async () => {
       vi.mocked(getUser).mockResolvedValue(MOCK_USER);
       vi.mocked(getRoleByList).mockResolvedValue(
-        new MemberRole(
-          'NotListUpdater',
-          'Does everything but update lists',
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          false,
-          true
-        )
+        new MemberRole('NotListUpdater', 'Does everything but update lists', {
+          canAddItems: true,
+          canUpdateItems: true,
+          canDeleteItems: true,
+          canManageTags: true,
+          canManageAssignees: true,
+          canManageMembers: true,
+          canDeleteList: true
+        })
       );
 
       const response = await PATCH(

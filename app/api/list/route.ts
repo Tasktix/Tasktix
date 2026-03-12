@@ -26,9 +26,9 @@ import { getUser } from '@/lib/session';
 const PostBody = ZodList.pick({ name: true, color: true });
 
 export async function POST(request: Request) {
-  const session = await getUser();
+  const user = await getUser();
 
-  if (!session) return ClientError.Unauthenticated('Not logged in');
+  if (!user) return ClientError.Unauthenticated('Not logged in');
 
   const parseResult = PostBody.safeParse(await request.json());
 
@@ -41,7 +41,7 @@ export async function POST(request: Request) {
   const color = requestBody.color;
   const role = await getAdminRole();
 
-  const listMember = new ListMember(session, role);
+  const listMember = new ListMember(user, role);
   const list = new List(name, color, [listMember], [], true, true, true);
 
   const result = await createList(list);

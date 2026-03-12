@@ -31,14 +31,7 @@ import MemberRole from '../memberRole';
 const MOCK_ROLE_CAN_VIEW = new MemberRole(
   'Viewer',
   'No explicit permissions',
-  false,
-  false,
-  false,
-  false,
-  false,
-  false,
-  false,
-  false
+  {}
 );
 
 beforeEach(() => {

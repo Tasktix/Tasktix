@@ -30,6 +30,15 @@ const PatchBody = z.strictObject({
   oldIndex: ZodListItem.shape.sectionIndex
 });
 
+/**
+ * Reorders a list item within its section
+ *
+ * @param request.itemId The item to move
+ * @param request.index The new index to move the item to (within the section)
+ * @param request.oldIndex The index to move the item from (within the section)
+ * @param params.id The list that the section and item belong to
+ * @param params.sectionId The section that item belongs to
+ */
 export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string; sectionId: string }> }

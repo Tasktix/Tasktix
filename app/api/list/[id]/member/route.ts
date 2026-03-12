@@ -35,6 +35,7 @@ const PostBody = ZodUser.pick({ username: true }).extend({
  *
  * @param params.id The list to add the member to
  * @param request.username The username of the member to add to the list
+ * @param request.roleId The role to give the member when adding them to the list
  */
 export async function POST(
   request: Request,

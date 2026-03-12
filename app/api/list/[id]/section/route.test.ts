@@ -47,18 +47,9 @@ describe('POST', () => {
   test('Creates a list section when requestor has permissions', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
     vi.mocked(getRoleByList).mockResolvedValue(
-      new MemberRole(
-        'ListUpdater',
-        'Updates the list and nothing else',
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        true,
-        false
-      )
+      new MemberRole('ListUpdater', 'Updates the list and nothing else', {
+        canUpdateList: true
+      })
     );
     vi.mocked(createListSection).mockResolvedValue(true);
 
@@ -115,14 +106,15 @@ describe('POST', () => {
         new MemberRole(
           'NotListUpdater',
           'Does everything but update the list',
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          false,
-          true
+          {
+            canAddItems: true,
+            canUpdateItems: true,
+            canDeleteItems: true,
+            canManageTags: true,
+            canManageAssignees: true,
+            canManageMembers: true,
+            canDeleteList: true
+          }
         )
       );
 
