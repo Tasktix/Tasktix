@@ -18,13 +18,27 @@
 
 'use client';
 
-import { Button, Card, CardBody, Divider } from '@heroui/react';
-import { startTransition, useEffect, useState } from 'react';
+import {
+  Button,
+  Card,
+  CardBody,
+  Divider,
+  Input,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  Form,
+  useDisclosure
+} from '@heroui/react';
+import { FormEvent, startTransition, useEffect, useState } from 'react';
 import { Github, Trash } from 'react-bootstrap-icons';
+import { useRouter } from 'next/navigation';
 
 import { addToastForError } from '@/lib/error';
 import { authClient } from '@/lib/auth-client';
 import User from '@/lib/model/user';
+import { useAuth } from '@/components/AuthProvider';
 
 interface FilteredAccount {
   providerId: string;
@@ -32,6 +46,9 @@ interface FilteredAccount {
 
 export default function AuthSettings({ user }: { user: User }) {
   const [accounts, setAccounts] = useState<FilteredAccount[]>([]);
+  const router = useRouter();
+  const { setLoggedInUser } = useAuth();
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   useEffect(() => {
     const fetchAccounts = async () => {
@@ -62,7 +79,7 @@ export default function AuthSettings({ user }: { user: User }) {
       );
     });
   }
-  
+
   function handleUnlinkGithub() {
     startTransition(async () => {
       await authClient.unlinkAccount(
@@ -78,16 +95,20 @@ export default function AuthSettings({ user }: { user: User }) {
     });
   }
 
-  function handleDeleteAccount() {
-    // TODO: Create Modla for inputting password, get confirmation
-    const password = 'wrong';
+  function handleDeleteAccount(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const formData = Object.fromEntries(new FormData(e.currentTarget));
 
     startTransition(async () => {
       await authClient.deleteUser(
         {
-          password
+          password: formData.password as string
         },
         {
+          onSuccess: () => {
+            setLoggedInUser(false);
+            router.push('/');
+          },
           onError: ctx => {
             addToastForError(ctx.error);
           }
@@ -112,7 +133,7 @@ export default function AuthSettings({ user }: { user: User }) {
       description: 'This action is irreversible',
       icon: <Trash />,
       actionLabel: 'Delete Account',
-      handler: handleDeleteAccount,
+      handler: onOpen,
       isCriticalAction: true
     }
   ];
@@ -140,7 +161,7 @@ export default function AuthSettings({ user }: { user: User }) {
 
                 <Button
                   className={`font-medium border border-white/10 text-white ${
-                    method.isCriticalAction ? ' bg-red-600 ' : 'bg-[#27272a]'
+                    method.isCriticalAction ? 'bg-danger' : 'bg-[#27272a]'
                   }`}
                   size='sm'
                   variant='flat'
@@ -154,6 +175,30 @@ export default function AuthSettings({ user }: { user: User }) {
           ))}
         </CardBody>
       </Card>
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+        <ModalContent className='p-2'>
+          <ModalHeader className='justify-center'>
+            Confirm Account Deletion
+          </ModalHeader>
+          <ModalBody>
+            <Form className='w-full gap-4' onSubmit={handleDeleteAccount}>
+              <Input
+                isRequired
+                errorMessage='Password is required to delete account'
+                label='Password'
+                name='password'
+                type='password'
+              />
+
+              <div className='flex gap-2 w-full justify-end'>
+                <Button color='danger' type='submit'>
+                  Delete Account
+                </Button>
+              </div>
+            </Form>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </div>
   );
 }
