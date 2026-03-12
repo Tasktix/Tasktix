@@ -87,7 +87,7 @@ export default function SectionBody({
   dispatchSection: ActionDispatch<[action: SectionAction]>;
   reorderItem: (item: ListItemModel) => unknown;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
-  updateSection: (e: any) => unknown;
+  updateSection: (pastSectionString: string, targetItemString: string) => (e: any) => unknown;
 }) {
   const filteredItems = [
     ...items.values().filter(item => checkItemFilter(item, filters))

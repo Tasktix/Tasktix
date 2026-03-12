@@ -97,7 +97,7 @@ export default function ListSection({
   totalSections: string[];
   onDelete: () => unknown;
   onTagCreate: (name: string, color: NamedColor) => Promise<string>;
-  updateSection: (e: any) => unknown;
+  updateSection: (pastSectionString: string, targetItemString: string) => (e: any) => unknown;
 }) {
   const [{ items, isCollapsed }, dispatchSection] = useReducer(sectionReducer, {
     items: itemsToMap(
