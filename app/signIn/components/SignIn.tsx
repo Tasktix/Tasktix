@@ -19,15 +19,18 @@
 'use client';
 
 import { addToast, Button, Input } from '@heroui/react';
-import { FormEvent, useState } from 'react';
+import { FormEvent, startTransition, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { SuccessContext } from 'better-auth/react';
 
-import { default as api } from '@/lib/api';
 import { useAuth } from '@/components/AuthProvider';
+import { authClient } from '@/lib/auth-client';
 import User from '@/lib/model/user';
 
+import OAuth from './OAuth';
+
 export default function SignIn() {
-  const { setLoggedInUser } = useAuth();
+  const { setLoggedInUser, oauthConfig } = useAuth();
   const [inputs, setInputs] = useState({ username: '', password: '' });
   const router = useRouter();
 
@@ -38,27 +41,25 @@ export default function SignIn() {
   function handlePasswordInput(input: string) {
     setInputs({ ...inputs, password: input });
   }
-
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    api
-      .post('/session', inputs)
-      .then(res => {
-        const content =
-          res.content &&
-          (JSON.parse(res.content) as { location: string; user: User });
-
-        if (!content) throw new Error('User not provided in response');
-
-        setLoggedInUser(content.user);
-        router.replace('/list');
-      })
-      .catch(err =>
-        addToast({
-          title: err.message,
-          color: 'danger'
-        })
+    startTransition(async () => {
+      await authClient.signIn.username(
+        {
+          username: inputs.username,
+          password: inputs.password
+        },
+        {
+          onError: ctx => {
+            addToast({ title: ctx.error.message, color: 'danger' });
+          },
+          onSuccess: (ctx: SuccessContext<{ User: User }>) => {
+            setLoggedInUser(ctx.data.User);
+            router.push('/list');
+          }
+        }
       );
+    });
   }
 
   return (
@@ -78,11 +79,13 @@ export default function SignIn() {
         variant='bordered'
         onValueChange={handlePasswordInput}
       />
-      <div className='flex justify-center mt-6'>
+
+      <div className='flex justify-center mt-4'>
         <Button color='primary' type='submit'>
           Sign In
         </Button>
       </div>
+      <OAuth oauthConfig={oauthConfig} setLoggedInUser={setLoggedInUser} />
     </form>
   );
 }

@@ -20,6 +20,14 @@ import List from '@/lib/model/list';
 
 import { Action } from './types';
 
+/**
+ * A state reducer for updating the lists the current user has access to
+ *
+ * @param lists The current state of lists the user has access to
+ * @param action The action for modifying the current state:
+ *  - Add: The user should have access to another list
+ *  - Remove: The user has lost access to a list
+ */
 export default function listReducer(lists: List[], action: Action) {
   switch (action.type) {
     case 'add':

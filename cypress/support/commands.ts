@@ -77,8 +77,8 @@ Cypress.Commands.add('login', (username: string, password: string) => {
     {
       cacheAcrossSpecs: true,
       validate() {
-        cy.getCookie('user').should('exist');
-        cy.request('/api/session').its('status').should('eq', 200);
+        cy.getCookie('better-auth.session_token').should('exist');
+        cy.request('/api/auth/get-session').its('status').should('eq', 200);
       }
     }
   );

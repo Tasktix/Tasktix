@@ -20,12 +20,14 @@
 
 import '@testing-library/jest-dom';
 
-import { render, within } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { HeroUIProvider } from '@heroui/react';
-import userEvent from '@testing-library/user-event';
 
 import ListItemModel from '@/lib/model/listItem';
-import api from '@/lib/api';
+import Assignee from '@/lib/model/assignee';
+import User from '@/lib/model/user';
+import ListMember from '@/lib/model/listMember';
+import List from '@/lib/model/list';
 
 import ListItem from '../ListItem';
 
@@ -40,59 +42,116 @@ vi.mock(import('framer-motion'), async importOriginal => {
 
 vi.mock('@/lib/api');
 
-beforeEach(() => {
-  vi.resetAllMocks();
-});
+beforeAll(() => vi.stubEnv('TZ', 'UTC'));
+beforeEach(vi.resetAllMocks);
+afterAll(vi.unstubAllEnvs);
 
-it('Allows new tags to be created and linked to the item', async () => {
-  const item = new ListItemModel('Test item', {});
-
-  vi.mocked(api.post).mockResolvedValue({
-    code: 200,
-    message: 'Success',
-    content: undefined
+it('Shows everything faded and shows the completion date instead of due date when the item is marked completed', () => {
+  const item = new ListItemModel('Test item', {
+    priority: 'High',
+    status: 'Completed',
+    expectedMs: 5000 * 60,
+    elapsedMs: 2000 * 60,
+    dateDue: new Date('2026-01-02'),
+    dateCompleted: new Date('2026-01-01')
   });
-  const addNewTag = vi.fn(() => Promise.resolve('test-id'));
 
-  const user = userEvent.setup();
-
-  const { getByLabelText } = render(
+  const { getAllByLabelText, getByLabelText, getByText, getByRole } = render(
     <HeroUIProvider disableRipple>
       <ListItem
-        addNewTag={addNewTag}
-        deleteItem={vi.fn()}
-        hasDueDates={false}
-        hasTimeTracking={false}
+        hasDueDates
+        hasTimeTracking
+        addNewTag={vi.fn()}
+        dispatchItemChange={vi.fn()}
         item={item}
         members={[]}
-        resetTime={vi.fn()}
-        setCompleted={vi.fn()}
-        setPaused={vi.fn()}
-        setRunning={vi.fn()}
+        sectionId='section-id'
         tagsAvailable={[]}
-        updateDueDate={vi.fn()}
-        updateExpectedMs={vi.fn()}
-        updatePriority={vi.fn()}
       />
     </HeroUIProvider>
   );
 
-  await user.click(getByLabelText('Update tags'));
-  await user.type(getByLabelText('Add tag...'), 'Test tag');
-  await user.click(getByLabelText('Pick color'));
-  await user.click(getByLabelText('Cyan'));
-  await user.click(getByLabelText('Submit'));
+  expect(getByText('Test item')).toHaveClass('text-foreground/50');
+  expect(getByText('Test item')).toHaveClass('line-through');
+  expect(getByText('Completed 01/01/2026')).toHaveClass('text-secondary/75');
+  expect(getAllByLabelText('Priority', {})[0]).toBeDisabled();
+  expect(getByLabelText('Update tags')).toBeDisabled();
+  expect(getByRole('button', { name: 'Expected 00:05' })).toBeDisabled();
+  expect(getByRole('button', { name: 'Elapsed 00:02' })).toBeDisabled();
+  expect(getByText('Resume')).toBeDisabled();
+});
 
-  expect(addNewTag).toHaveBeenCalledTimes(1);
-  expect(addNewTag).toHaveBeenCalledWith('Test tag', 'Cyan');
-
-  expect(api.post).toHaveBeenCalledTimes(1);
-  expect(api.post).toHaveBeenCalledWith(
-    `/item/${item.id}/tag/test-id`,
-    expect.any(Object)
+it('Displays the associated list when one is provided', () => {
+  const { getByText, getByRole } = render(
+    <HeroUIProvider disableRipple>
+      <ListItem
+        addNewTag={vi.fn()}
+        dispatchItemChange={vi.fn()}
+        hasDueDates={false}
+        hasTimeTracking={false}
+        item={new ListItemModel('Test item', {})}
+        list={
+          new List('List Name', 'Cyan', [], [], false, false, false, 'list-id')
+        }
+        members={[]}
+        sectionId='section-id'
+        tagsAvailable={[]}
+      />
+    </HeroUIProvider>
   );
 
-  expect(
-    await within(getByLabelText('Update tags')).findByText('Test tag')
-  ).toBeVisible();
+  expect(getByText('List Name')).toBeVisible();
+  expect(getByText('List Name').parentElement).toHaveClass('bg-cyan-500/20');
+  expect(getByText('List Name').parentElement).toHaveClass('text-cyan-500');
+  expect(getByRole('link', { name: 'List Name' })).toHaveAttribute(
+    'href',
+    '/list/list-id'
+  );
+});
+
+it('Displays all members assigned to the item', () => {
+  const members = [
+    new User(
+      'user1Id',
+      'user one',
+      'user1@example.com',
+      true,
+      new Date(),
+      new Date(),
+      { color: 'Amber' }
+    ),
+    new User(
+      'user2Id',
+      'user two',
+      'user2@example.com',
+      true,
+      new Date(),
+      new Date(),
+      { color: 'Blue' }
+    )
+  ];
+  const item = new ListItemModel('Test item', {
+    assignees: [new Assignee(members[0], ''), new Assignee(members[1], '')]
+  });
+
+  const { getByText } = render(
+    <HeroUIProvider disableRipple>
+      <ListItem
+        addNewTag={vi.fn()}
+        dispatchItemChange={vi.fn()}
+        hasDueDates={false}
+        hasTimeTracking={false}
+        item={item}
+        members={members.map(m => new ListMember(m, true, true, true, true))}
+        sectionId='section-id'
+        tagsAvailable={[]}
+      />
+    </HeroUIProvider>
+  );
+
+  expect(getByText('UO')).toBeVisible();
+  expect(getByText('UO').parentElement).toHaveClass('bg-amber-500');
+
+  expect(getByText('UT')).toBeVisible();
+  expect(getByText('UT').parentElement).toHaveClass('bg-blue-500');
 });

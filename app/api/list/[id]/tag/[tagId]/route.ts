@@ -19,7 +19,7 @@
 import { ClientError, ServerError, Success } from '@/lib/Response';
 import {
   deleteTag,
-  getIsListAssignee,
+  getIsListMember,
   getTagById,
   updateTag
 } from '@/lib/database/list';
@@ -37,7 +37,7 @@ export async function PATCH(
 
   if (!user) return ClientError.Unauthenticated('Not logged in');
 
-  const isMember = await getIsListAssignee(user.id, id);
+  const isMember = await getIsListMember(user.id, id);
 
   if (!isMember) return ClientError.BadRequest('List not found');
 
@@ -72,7 +72,7 @@ export async function DELETE(
 
   if (!user) return ClientError.Unauthenticated('Not logged in');
 
-  const isMember = await getIsListAssignee(user.id, id);
+  const isMember = await getIsListMember(user.id, id);
 
   if (!isMember) return ClientError.BadRequest('List not found');
 

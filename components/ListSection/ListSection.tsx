@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { useReducer } from 'react';
+import { ActionDispatch, useState } from 'react';
 import {
   ChevronContract,
   ChevronExpand,
@@ -33,28 +33,22 @@ import {
 import { AnimatePresence, motion } from 'framer-motion';
 
 import AddItem from '@/components/ListSection/AddItem';
-import ListItemModel from '@/lib/model/listItem';
 import { NamedColor } from '@/lib/model/color';
 import Tag from '@/lib/model/tag';
 import ListMember from '@/lib/model/listMember';
-import { sortItemsByCompleted, sortItemsByIndex } from '@/lib/sortItems';
 
+import { ItemAction, ListSectionState, SectionAction } from '../List';
 import { Filters } from '../SearchBar/types';
 import ConfirmedTextInput from '../ConfirmedTextInput';
 
 import SectionBody from './SectionBody';
-import { Item } from './types';
-import sectionReducer from './sectionReducer';
 import sectionHandlerFactory from './handlerFactory';
 
 /**
  * Provides the container for a section of the list, grouping items & allowing items to be
  * added specifically to this section
  *
- * @param id This section's ID
  * @param listId The ID of the list this section belongs to
- * @param name The section's name
- * @param startingItems The items that belong to this section when the page first loads
  * @param filters The filters currently active on the list that should limit which items
  *  are rendered
  * @param members The users who have access to the list
@@ -63,16 +57,16 @@ import sectionHandlerFactory from './handlerFactory';
  * @param hasDueDates Whether due dates are enabled in the list's settings
  * @param isAutoOrdered Whether auto-ordering is enabled in the list's settings
  * @param totalSections A total list of sections in the larger list
- * @param onDelete Callback to delete a section and remove it from React's state
+ * @param section All data for the section to render
+ * @param dispatchSectionChange Callback to propagate state changes for the list section
+ * @param dispatchItemChange Callback to propagate state changes for an item in the list
+ *  section
  * @param onTagCreate Callback to propagate state changes when a new tag is created from
  *  the "add tag" menu
  * @param updateSection The passed function that changes an item's section
  */
 export default function ListSection({
-  id,
   listId,
-  name,
-  startingItems,
   filters,
   members,
   tagsAvailable,
@@ -80,14 +74,13 @@ export default function ListSection({
   hasDueDates,
   isAutoOrdered,
   totalSections,
-  onDelete,
-  onTagCreate,
-  updateSection
+  updateSection,
+  section,
+  dispatchSectionChange,
+  dispatchItemChange,
+  onTagCreate
 }: {
-  id: string;
   listId: string;
-  name: string;
-  startingItems: ListItemModel[];
   filters: Filters;
   members: ListMember[];
   tagsAvailable: Tag[];
@@ -95,25 +88,22 @@ export default function ListSection({
   hasDueDates: boolean;
   isAutoOrdered: boolean;
   totalSections: string[];
-  onDelete: () => unknown;
+  section: ListSectionState;
+  dispatchSectionChange: ActionDispatch<[action: SectionAction]>;
+  dispatchItemChange: ActionDispatch<[action: ItemAction]>;
   onTagCreate: (name: string, color: NamedColor) => Promise<string>;
   updateSection: (pastSectionString: string, targetItemString: string) => (e: any) => unknown;
 }) {
-  const [{ items, isCollapsed }, dispatchSection] = useReducer(sectionReducer, {
-    items: itemsToMap(
-      startingItems.sort(sortItemsByIndex).sort(sortItemsByCompleted)
-    ),
-    isCollapsed: !startingItems.reduce(
-      (prev, curr) => prev || curr.status !== 'Completed',
-      false
-    )
-  });
+  const [isCollapsed, setIsCollapsed] = useState(
+    !section.items
+      .values()
+      .reduce((prev, curr) => prev || curr.status !== 'Completed', false)
+  );
 
   const sectionHandlers = sectionHandlerFactory(
     listId,
-    id,
-    items,
-    dispatchSection
+    section.id,
+    dispatchSectionChange
   );
 
   return (
@@ -124,12 +114,7 @@ export default function ListSection({
             isIconOnly
             aria-label={isCollapsed ? 'Expand section' : 'Collapse section'}
             className='hover:bg-foreground/10 -ml-2 mr-2'
-            onPress={() =>
-              dispatchSection({
-                type: 'SetIsCollapsed',
-                isCollapsed: !isCollapsed
-              })
-            }
+            onPress={() => setIsCollapsed(!isCollapsed)}
           >
             {isCollapsed ? <ChevronExpand /> : <ChevronContract />}
           </Button>
@@ -137,17 +122,24 @@ export default function ListSection({
             className='mt-0.5'
             classNames={{ input: 'text-md' }}
             updateValue={() => null}
-            value={name}
+            value={section.name}
             variant='underlined'
           />
         </span>
         <span className='flex gap-4'>
           <AddItem
-            addItem={item => dispatchSection({ type: 'AddItem', item })}
+            addItem={item => {
+              setIsCollapsed(false);
+              dispatchSectionChange({
+                type: 'AddItemToSection',
+                sectionId: section.id,
+                item
+              });
+            }}
             hasDueDates={hasDueDates}
             hasTimeTracking={hasTimeTracking}
-            nextIndex={items.size}
-            sectionId={id}
+            nextIndex={section.items.size}
+            sectionId={section.id}
           />
           <Dropdown placement='bottom'>
             <DropdownTrigger>
@@ -160,7 +152,11 @@ export default function ListSection({
                 <ThreeDots />
               </Button>
             </DropdownTrigger>
-            <DropdownMenu onAction={onDelete}>
+            <DropdownMenu
+              onAction={() =>
+                dispatchSectionChange({ type: 'DeleteSection', id: section.id })
+              }
+            >
               <DropdownItem
                 key='delete'
                 aria-label='Delete section'
@@ -189,37 +185,23 @@ export default function ListSection({
           >
             <SectionBody
               addNewTag={onTagCreate}
-              currentSection={name}
-              dispatchSection={dispatchSection}
+              currentSection={section.name}
+              dispatchItemChange={dispatchItemChange}
               filters={filters}
               hasDueDates={hasDueDates}
               hasTimeTracking={hasTimeTracking}
               isAutoOrdered={isAutoOrdered}
-              items={items}
+              items={section.items}
               members={members}
               reorderItem={sectionHandlers.reorderItem}
-              setItems={items => dispatchSection({ type: 'SetItems', items: itemsToMap(items) })}
-              tagsAvailable={tagsAvailable}         
               totalSections={totalSections}   
-              updateSection={updateSection}/>
+              updateSection={updateSection}
+              sectionId={section.id}
+              tagsAvailable={tagsAvailable}
+            />
           </motion.section>
         )}
       </AnimatePresence>
     </div>
-  );
-}
-
-/**
- * Converts a list of items to a map of items for easy access via the item's ID. Also adds
- * the `visualIndex` property as documented on `interface Item`
- *
- * @param items The list of items to convert to a map
- */
-function itemsToMap(items: ListItemModel[]): Map<string, Item> {
-  return new Map(
-    items.map((item, i) => [
-      item.id,
-      { ...structuredClone(item), visualIndex: i }
-    ])
   );
 }

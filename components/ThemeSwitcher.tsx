@@ -30,6 +30,11 @@ import { useTheme } from 'next-themes';
 import { useRef, useState } from 'react';
 import { Display, MoonFill, SunFill } from 'react-bootstrap-icons';
 
+/**
+ * Input for switching between light, dark, and system themes. Provides a button for
+ * toggling between light/dark mode. When the toggle is hovered over, opens a menu that
+ * allows system theme to be selected in addition to light/dark.
+ */
 export default function ThemeSwitcher() {
   const timer = useRef<NodeJS.Timeout>(undefined);
   const { theme, setTheme } = useTheme();

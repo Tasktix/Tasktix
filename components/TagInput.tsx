@@ -24,20 +24,22 @@ import { NamedColor } from '@/lib/model/color';
 
 import ColorPicker from './ColorPicker';
 
+/**
+ * Input for creating a new tag (and optionally linking it to a list item once created).
+ *
+ * @param className Classes to apply to the `<form>` input that wraps the input
+ * @param classNames.name Classes to apply to the new tag name input
+ * @param onCreateTag Callback to create the new tag. Should handle any API requests and
+ *  client state updates needed to create the tag
+ */
 export default function TagInput({
   className,
   classNames,
-  addNewTag,
-  linkNewTag
+  onTagCreated
 }: {
   className?: string;
   classNames?: { name: string };
-  addNewTag: (name: string, color: NamedColor) => Promise<string>;
-  linkNewTag?: (
-    id: string,
-    name: string,
-    color: NamedColor
-  ) => Promise<unknown>;
+  onTagCreated: (name: string, color: NamedColor) => Promise<unknown>;
 }) {
   const [newTagName, setNewTagName] = useState('');
   const [newTagColor, setNewTagColor] = useState<NamedColor | null>(null);
@@ -61,9 +63,8 @@ export default function TagInput({
       return;
     }
 
-    const id = await addNewTag(newTagName, newTagColor);
+    await onTagCreated(newTagName, newTagColor);
 
-    if (linkNewTag) await linkNewTag(id, newTagName, newTagColor);
     setNewTagName('');
     setNewTagColor(null);
   }

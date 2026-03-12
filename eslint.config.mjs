@@ -104,11 +104,6 @@ export default defineConfig([
           next: ['const', 'let', 'var']
         }
       ],
-      '@typescript-eslint/no-unsafe-assignment': 'warn', // Creating problems for Jest mocks
-      '@typescript-eslint/no-unsafe-member-access': 'warn', // Creating problems for Jest mocks
-      '@typescript-eslint/no-unsafe-argument': 'warn', // Creating problems for Jest mocks
-      '@typescript-eslint/no-unsafe-return': 'warn', // Creating problems for Jest mocks
-      '@typescript-eslint/no-unsafe-call': 'warn', // Creating problems for Jest mocks
       '@typescript-eslint/no-unused-vars': [
         'error',
         {
@@ -118,6 +113,12 @@ export default defineConfig([
         }
       ],
       '@typescript-eslint/switch-exhaustiveness-check': 'error'
+    }
+  },
+  {
+    files: ['app/api/**/*.ts', 'lib/database/**/*.ts'],
+    rules: {
+      'no-console': 'off' // Allow  console.log statements when running on server only
     }
   },
   {

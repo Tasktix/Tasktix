@@ -16,18 +16,24 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { generateId } from '@/lib/generateId';
+import { addToast } from '@heroui/react';
 
-export default class Session {
-  id: string;
-  userId: string;
-  dateExpire: Date;
+/**
+ * Adds a toast message to the user with the error message received by the application
+ *
+ * @param error The error to add a toast for. `unknown` type because `.catch()` blocks'
+ *  callback argument is `any` type
+ */
+export function addToastForError(error: unknown) {
+  let title = 'An unknown error occurred';
 
-  constructor(userId: string, dateExpire: Date, id?: string) {
-    if (!id) id = generateId(128);
+  if (
+    typeof error === 'object' &&
+    error !== null &&
+    'message' in error &&
+    typeof error.message === 'string'
+  )
+    title = error.message;
 
-    this.id = id;
-    this.userId = userId;
-    this.dateExpire = dateExpire;
-  }
+  addToast({ title, color: 'danger' });
 }

@@ -66,9 +66,10 @@ describe('ListItem constructor', () => {
     const assignees = [
       new Assignee(
         new User(
+          'user1Id',
           'user1',
           'test@example.com',
-          'secret',
+          true,
           new Date(),
           new Date(),
           {}

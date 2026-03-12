@@ -19,49 +19,66 @@
 import z from 'zod';
 
 import { randomNamedColor } from '../color';
-import { generateId } from '../generateId';
 
 import { NamedColor, namedColors } from './color';
 
+const userFormat = z
+  .string()
+  .min(3)
+  .max(32)
+  .regex(/^[a-zA-Z0-9_]*$/);
+
 export const ZodUser = z.strictObject({
-  id: z.string().length(16),
-  username: z
-    .string()
-    .min(3)
-    .max(32)
-    .regex(/^[a-zA-Z0-9_]*$/),
+  id: z.string().length(191),
+  username: userFormat,
   email: z.email().max(128),
-  password: z.string().min(10).max(128),
   color: z.enum(namedColors)
 });
 
 export default class User {
   id: string;
-  username: string;
+  name: string;
+  username: string | null;
+  displayUsername: string | null;
   email: string;
-  password: string;
+  emailVerified: boolean;
+  image: string | null;
   color: NamedColor;
-  dateCreated: Date;
-  dateSignedIn: Date;
+  createdAt: Date;
+  updatedAt: Date;
 
   constructor(
-    username: string,
+    id: string,
+    name: string,
     email: string,
-    password: string,
-    dateCreated: Date,
-    dateSignedIn: Date,
-    { id, color }: { id?: string; color?: NamedColor }
+    emailVerfied: boolean,
+    createdAt: Date,
+    updatedAt: Date,
+    {
+      color,
+      username,
+      image,
+      displayUsername
+    }: {
+      color?: NamedColor;
+      username?: string;
+      image?: string;
+      displayUsername?: string;
+    } = {}
   ) {
-    if (!id) id = generateId();
-
     if (!color) color = randomNamedColor();
+    if (!username) username = name;
+    if (!displayUsername) displayUsername = name;
 
     this.id = id;
+    this.name = name;
     this.username = username;
+    this.displayUsername = displayUsername;
     this.email = email;
-    this.password = password;
+    this.emailVerified = emailVerfied;
+    this.image = image ?? null;
     this.color = color;
-    this.dateCreated = dateCreated;
-    this.dateSignedIn = dateSignedIn;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
   }
 }

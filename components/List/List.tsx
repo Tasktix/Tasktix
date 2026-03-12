@@ -18,7 +18,7 @@
 
 'use client';
 
-import { useReducer, useState } from 'react';
+import { useEffect, useReducer, useState } from 'react';
 
 import AddListSection from '@/components/AddListSection';
 import SearchBar from '@/components/SearchBar';
@@ -26,6 +26,8 @@ import { Filters } from '@/components/SearchBar/types';
 import ListSettings from '@/components/ListSettings';
 import ListModel from '@/lib/model/list';
 import Tag from '@/lib/model/tag';
+import ListItem from '@/lib/model/listItem';
+import { subscribe } from '@/lib/sse/client';
 
 import ListSection from '../ListSection/ListSection';
 
@@ -33,6 +35,7 @@ import { getFilterOptions } from './filters';
 import listReducer from './listReducer';
 import { listHandlerFactory } from './handlerFactory';
 import { addToast } from '@heroui/react';
+import { ListState } from './types';
 
 /**
  * This component provides the full list GUI: filters, settings, each section and its
@@ -56,9 +59,12 @@ export default function List({
   startingTagsAvailable: string;
 }) {
   const builtList = JSON.parse(startingList) as ListModel;
+  const builtSections: ListState['list']['sections'] = new Map();
 
-  // Rebuild Date objects turned to JSON strings
+  // Rebuild Date objects turned to JSON strings & convert arrays to Maps
   for (const section of builtList.sections) {
+    const builtItems: Map<string, ListItem> = new Map();
+
     for (const item of section.items) {
       item.dateCreated = new Date(item.dateCreated);
       item.dateDue = item.dateDue ? new Date(item.dateDue) : null;
@@ -66,11 +72,14 @@ export default function List({
       item.dateCompleted = item.dateCompleted
         ? new Date(item.dateCompleted)
         : null;
+
+      builtItems.set(item.id, item);
     }
+    builtSections.set(section.id, { ...section, items: builtItems });
   }
 
   const [{ list, tagsAvailable }, dispatchList] = useReducer(listReducer, {
-    list: builtList,
+    list: { ...builtList, sections: builtSections },
     tagsAvailable: JSON.parse(startingTagsAvailable) as Tag[]
   });
 
@@ -80,21 +89,23 @@ export default function List({
   const listHandlers = listHandlerFactory(list.id, dispatchList);
 
   const changeItemSection = (pastSectionString: string, targetItemString: string) => (e: React.ChangeEvent<HTMLSelectElement>) => {
-    let targetSection = list.sections.find(section => section.name == e.target.value);
-    let pastSection = list.sections.find(section => section.name == pastSectionString);
-    let targetItem = pastSection?.items.find(item => item.name == targetItemString);
+    // let targetSection = list.sections.find(section => section.name == e.target.value);
+    // let pastSection = list.sections.find(section => section.name == pastSectionString);
+    // let targetItem = pastSection?.items.find(item => item.name == targetItemString);
 
-    if(targetSection && pastSection && targetItem){
-      addToast({ title: targetSection.name + ", " + pastSection.name + ", " + targetItem.name, color: 'success' });
+    // if(targetSection && pastSection && targetItem){
+    //   addToast({ title: targetSection.name + ", " + pastSection.name + ", " + targetItem.name, color: 'success' });
 
-      targetSection.items.push(targetItem);
-      pastSection.items = pastSection.items.filter(item => item !== targetItem);
-      location.reload();
-    }
-    else{
-      addToast({ title: "Section not found", color: 'danger' });
-    }
+    //   targetSection.items.push(targetItem);
+    //   pastSection.items = pastSection.items.filter(item => item !== targetItem);
+    //   location.reload();
+    // }
+    // else{
+    //   addToast({ title: "Section not found", color: 'danger' });
+    // }
   };
+  
+  useEffect(() => subscribe([list.id], dispatchList), [list.id]);
 
   return (
     <>
@@ -115,31 +126,31 @@ export default function List({
         />
       </span>
 
-      {list.sections.map(section => (
+      {Array.from(list.sections.values()).map(section => (
         <ListSection
           key={section.id}
+          dispatchItemChange={dispatchList}
+          dispatchSectionChange={dispatchList}
           filters={filters}
           hasDueDates={list.hasDueDates}
           hasTimeTracking={list.hasTimeTracking}
-          id={section.id}
           isAutoOrdered={list.isAutoOrdered}
           listId={list.id}
           members={list.members}
-          name={section.name}
-          startingItems={section.items}
+          section={section}
           tagsAvailable={tagsAvailable}
-          totalSections={list.sections.map(section => section.name)}
-          onDelete={listHandlers.deleteListSection.bind(null, section.id)}
+          // totalSections={list.sections.map(section => section.name)}
+          totalSections={['Example section', 'Section example', 'Sectample']}
           onTagCreate={listHandlers.addNewTag}
           updateSection={changeItemSection}
         />
       ))}
 
       <AddListSection
-        addListSection={section =>
+        listId={list.id}
+        onSectionAdded={section =>
           dispatchList({ type: 'AddSection', section })
         }
-        listId={list.id}
       />
     </>
   );

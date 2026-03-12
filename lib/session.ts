@@ -18,49 +18,19 @@
 
 'use server';
 
-import { cookies } from 'next/headers';
+import { headers } from 'next/headers';
 
-import { createSession, deleteSession } from '@/lib/database/session';
-import { getUserBySessionId } from '@/lib/database/user';
-import Session from '@/lib/model/session';
+import { getUserById } from '@/lib/database/user';
 import User from '@/lib/model/user';
 
-export async function setUser(userId: string): Promise<string | false> {
-  const date = new Date();
-
-  date.setDate(date.getDate() + 1);
-
-  const session = new Session(userId, date);
-
-  const result = await createSession(session);
-
-  if (!result) return false;
-
-  (await cookies()).set('user', session.id, { expires: session.dateExpire });
-
-  return session.id;
-}
+import { auth } from './auth';
 
 export async function getUser(): Promise<User | false> {
-  const sessionId = (await cookies()).get('user')?.value;
+  const session = await auth.api.getSession({ headers: await headers() });
 
-  if (!sessionId) return false;
+  if (!session) return false;
 
-  const user = await getUserBySessionId(sessionId);
+  const user = await getUserById(session.user.id);
 
   return user;
-}
-
-export async function clearUser(): Promise<boolean> {
-  const sessionId = (await cookies()).get('user')?.value;
-
-  if (!sessionId) return false;
-
-  const result = await deleteSession(sessionId);
-
-  if (!result) return false;
-
-  (await cookies()).delete('user');
-
-  return true;
 }

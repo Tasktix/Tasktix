@@ -38,6 +38,7 @@ import { Check } from 'react-bootstrap-icons';
  */
 export default function ConfirmedTextInput({
   value,
+  'aria-label': ariaLabel,
   label,
   labelPlacement,
   showUnderline,
@@ -48,6 +49,7 @@ export default function ConfirmedTextInput({
   updateValue
 }: {
   value: string;
+  'aria-label'?: string;
   label?: string;
   labelPlacement?: InputProps['labelPlacement'];
   showUnderline?: boolean;
@@ -62,13 +64,14 @@ export default function ConfirmedTextInput({
   return (
     <form
       className='flex grow shrink w-full items-end'
-      data-testid={`confirmed-input-${label ?? 'value'}`}
+      data-testid={`confirmed-input-${label ?? ariaLabel ?? 'value'}`}
       onSubmit={e => {
         e.preventDefault();
         updateValue(newValue);
       }}
     >
       <Input
+        aria-label={ariaLabel}
         className={`${disabled && 'opacity-50'} ${className}`}
         classNames={{
           inputWrapper: `${label !== undefined || showUnderline || 'border-transparent'}`,

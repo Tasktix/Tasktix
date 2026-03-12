@@ -33,14 +33,19 @@ import {
   Avatar
 } from '@heroui/react';
 import { useRouter } from 'next/navigation';
-import { ReactNode } from 'react';
+import { ReactNode, startTransition } from 'react';
 import Image from 'next/image';
+import { DoorClosedFill, PersonFill } from 'react-bootstrap-icons';
 
-import { default as api } from '@/lib/api';
 import ThemeSwitcher from '@/components/ThemeSwitcher';
 import { useAuth } from '@/components/AuthProvider';
 import { getBackgroundColor } from '@/lib/color';
+import { authClient } from '@/lib/auth-client';
 
+/**
+ * Main Layout of Tasktix Application
+ * @param children - main page content to be rendered
+ */
 export default function Body({ children }: Readonly<{ children: ReactNode }>) {
   const { loggedInUser } = useAuth();
   const logoHref = loggedInUser ? '/list' : '/about';
@@ -103,21 +108,32 @@ export default function Body({ children }: Readonly<{ children: ReactNode }>) {
   );
 }
 
+/**
+ * Renders Account Icon in Tasktix Navbar
+ */
 function AccountButton() {
   const { loggedInUser, setLoggedInUser } = useAuth();
 
   const router = useRouter();
 
+  /**
+   * Handles clicking of Logout button on Profile Icon dropdown
+   * Sings out user, redirects to Home/About page and suppreses errors
+   */
   function handleClick() {
-    api
-      .delete('/session')
-      .catch(_ => {
-        /* Suppress errors on logout */
-      })
-      .finally(() => {
-        setLoggedInUser(false);
-        router.replace('/');
+    startTransition(async () => {
+      await authClient.signOut({
+        fetchOptions: {
+          onSuccess: () => {
+            setLoggedInUser(false);
+            router.push('/');
+          },
+          onError: () => {
+            /* suppress errors on logout */
+          }
+        }
       });
+    });
   }
 
   if (!loggedInUser)
@@ -142,14 +158,25 @@ function AccountButton() {
           aria-label='Profile Actions Dropdown'
           as={Button}
           className={getBackgroundColor(loggedInUser.color)}
-          name={loggedInUser.username ?? ''}
+          name={loggedInUser.username ?? loggedInUser.name}
+          src={loggedInUser.image ?? undefined}
         />
       </DropdownTrigger>
       <DropdownMenu aria-label='User Actions'>
-        <DropdownItem key='settings' href='/profile'>
+        <DropdownItem
+          key='settings'
+          href='/profile'
+          startContent={<PersonFill />}
+        >
           Profile
         </DropdownItem>
-        <DropdownItem key='signOut' onPress={handleClick}>
+        <DropdownItem
+          key='signOut'
+          className='text-danger'
+          color='danger'
+          startContent={<DoorClosedFill />}
+          onPress={handleClick}
+        >
           Log Out
         </DropdownItem>
       </DropdownMenu>
