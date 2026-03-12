@@ -29,14 +29,13 @@ vi.mock('@heroui/react');
 vi.mock('@/lib/auth-client', () => ({
   authClient: {
     signIn: {
-      social: vi.fn()
+      social: vi.fn(),
+      oauth2: vi.fn()
     }
   }
 }));
 
-beforeEach(() => {
-  vi.resetAllMocks();
-});
+beforeEach(vi.resetAllMocks);
 
 const MOCK_USER = new User(
   'userid',
@@ -47,8 +46,13 @@ const MOCK_USER = new User(
   new Date(),
   { color: 'Amber' }
 );
+const MOCK_OAUTH_CONFIG = {
+  githubEnabled: true,
+  customEnabled: true,
+  customProviderId: 'SSO'
+};
 
-test('Properly handles failed github authentication', async () => {
+test('Properly handles failed GitHub authentication', async () => {
   const setLoggedInUserMock = vi.fn();
   const exampleError = {
     error: {
@@ -60,17 +64,14 @@ test('Properly handles failed github authentication', async () => {
   };
 
   vi.mocked(authClient.signIn.social).mockImplementation(
-    (options, fetchOptions) => {
+    async (_, fetchOptions) => {
       if (fetchOptions?.onError) {
-        // void required to suppres eslint complaint - skipcq: JS-0098
-        void fetchOptions.onError(exampleError as unknown as ErrorContext);
+        await fetchOptions.onError(exampleError as unknown as ErrorContext);
       }
     }
   );
 
-  await handleOAuth('github', {
-    setLoggedInUser: setLoggedInUserMock
-  });
+  await handleOAuth('github', setLoggedInUserMock, MOCK_OAUTH_CONFIG);
 
   expect(authClient.signIn.social).toHaveBeenCalled();
   expect(setLoggedInUserMock).not.toHaveBeenCalled();
@@ -80,26 +81,73 @@ test('Properly handles failed github authentication', async () => {
   });
 });
 
-test('Properly redirects and sets logged in user on succesful github authentication', async () => {
+test('Properly handles failed custom SSO authentication', async () => {
+  const setLoggedInUserMock = vi.fn();
+  const exampleError = {
+    error: {
+      code: 'PROVIDER_NOT_FOUND',
+      message: 'Provider not found',
+      status: 404,
+      statusText: 'NOT_FOUND'
+    }
+  };
+
+  vi.mocked(authClient.signIn.oauth2).mockImplementation(
+    async (_, fetchOptions) => {
+      if (fetchOptions?.onError) {
+        await fetchOptions.onError(exampleError as unknown as ErrorContext);
+      }
+    }
+  );
+
+  await handleOAuth('custom', setLoggedInUserMock, MOCK_OAUTH_CONFIG);
+
+  expect(authClient.signIn.oauth2).toHaveBeenCalled();
+  expect(setLoggedInUserMock).not.toHaveBeenCalled();
+  expect(addToast).toHaveBeenCalledWith({
+    title: 'Provider not found',
+    color: 'danger'
+  });
+});
+
+test('Properly redirects and sets logged in user on successful github authentication', async () => {
   const setLoggedInUserMock = vi.fn();
   const exampleSuccess = { data: { User: MOCK_USER } };
 
   vi.mocked(authClient.signIn.social).mockImplementation(
-    (options, fetchOptions) => {
+    async (_, fetchOptions) => {
       if (fetchOptions?.onSuccess) {
-        // void required to suppres eslint complaint - skipcq: JS-0098
-        void fetchOptions.onSuccess(
+        await fetchOptions.onSuccess(
           exampleSuccess as unknown as SuccessContext
         );
       }
     }
   );
 
-  await handleOAuth('github', {
-    setLoggedInUser: setLoggedInUserMock
-  });
+  await handleOAuth('github', setLoggedInUserMock, MOCK_OAUTH_CONFIG);
 
   expect(authClient.signIn.social).toHaveBeenCalled();
+  expect(setLoggedInUserMock).toHaveBeenCalledWith(MOCK_USER);
+  expect(addToast).not.toHaveBeenCalled();
+});
+
+test('Properly redirects and sets logged in user on successful custom SSO authentication', async () => {
+  const setLoggedInUserMock = vi.fn();
+  const exampleSuccess = { data: { User: MOCK_USER } };
+
+  vi.mocked(authClient.signIn.oauth2).mockImplementation(
+    async (_, fetchOptions) => {
+      if (fetchOptions?.onSuccess) {
+        await fetchOptions.onSuccess(
+          exampleSuccess as unknown as SuccessContext
+        );
+      }
+    }
+  );
+
+  await handleOAuth('custom', setLoggedInUserMock, MOCK_OAUTH_CONFIG);
+
+  expect(authClient.signIn.oauth2).toHaveBeenCalled();
   expect(setLoggedInUserMock).toHaveBeenCalledWith(MOCK_USER);
   expect(addToast).not.toHaveBeenCalled();
 });

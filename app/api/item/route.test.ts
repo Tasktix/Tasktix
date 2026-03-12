@@ -61,9 +61,6 @@ const ITEM_PATH = 'http://localhost/api/item' as const;
 vi.mock('@/lib/session');
 vi.mock('@/lib/database/list');
 vi.mock('@/lib/database/listItem');
-vi.mock('server-only', () => ({
-  // Server Only Breaks test environment
-}));
 
 beforeEach(vi.resetAllMocks);
 
