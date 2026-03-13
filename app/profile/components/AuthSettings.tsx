@@ -73,14 +73,18 @@ export default function AuthSettings({ user }: { user: User }) {
      * and "credential" representing email and password config
      */
     const fetchAccounts = async () => {
-      const { data } = await authClient.listAccounts();
+      const { data, error } = await authClient.listAccounts();
 
       if (data) {
         setAccounts(data);
+      } else {
+        addToastForError(error);
       }
     };
 
-    void fetchAccounts();
+    fetchAccounts().catch( () => {
+      throw new Error('Failed to fetch user accounts');
+    });
   }, []);
 
   useEffect(() => {
@@ -119,6 +123,9 @@ export default function AuthSettings({ user }: { user: User }) {
           providerId: 'github'
         },
         {
+          onSuccess: () => {
+            setAccounts(accounts.filter(acc => acc.providerId !== 'github'));
+          },
           onError: ctx => {
             addToastForError(ctx.error);
           }
@@ -219,6 +226,7 @@ function AuthSettingRow({
   method: AccountMethod;
   isLast: boolean;
 }) {
+  // Already refactored to reasonable JSX depth skipcq: JS-0415
   return (
     <div data-testid={method.testId}>
       <div className='flex items-center justify-between p-5 hover:bg-white/[0.02] transition-colors group'>
@@ -261,6 +269,7 @@ function DeleteAccountModal({
   onOpenChange: () => void;
   handleDeleteAccount: (e: FormEvent<HTMLFormElement>) => void;
 }) {
+  // Already refactored to reasonable JSX depth skipcq: JS-0415
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
       <ModalContent className='p-2'>
