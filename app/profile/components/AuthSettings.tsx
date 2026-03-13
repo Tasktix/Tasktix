@@ -77,6 +77,7 @@ export default function AuthSettings({ user }: { user: User }) {
     const error = queryParams.get('error');
 
     if (error) {
+      // Error details are not given to minimize potential XSS risks
       addToastForError(null);
     }
   }, [queryParams]);
@@ -85,7 +86,8 @@ export default function AuthSettings({ user }: { user: User }) {
 
   /**
    * Attempts to a link a users Tasktix account to their Github account,
-   * redirects back to this page on success, Errors from this are handled in the useAffect above.
+   * redirects back to this page on success, Errors from this are handled in
+   * the useAffect above by adding toasts.
    */
   function handleLinkGithub() {
     startTransition(async () => {
@@ -208,35 +210,53 @@ export default function AuthSettings({ user }: { user: User }) {
           ))}
         </CardBody>
       </Card>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
-        <ModalContent className='p-2'>
-          <ModalHeader className='justify-center'>
-            Confirm Account Deletion
-          </ModalHeader>
-          <ModalBody>
-            <Form className='w-full gap-4' onSubmit={handleDeleteAccount}>
-              <Input
-                isRequired
-                aria-label='Password Input'
-                errorMessage='Password is required to delete account'
-                label='Password'
-                name='password'
-                type='password'
-              />
-
-              <div className='flex gap-2 w-full justify-end'>
-                <Button
-                  aria-label='Confirm Delete Account'
-                  color='danger'
-                  type='submit'
-                >
-                  Confirm
-                </Button>
-              </div>
-            </Form>
-          </ModalBody>
-        </ModalContent>
-      </Modal>
+      <DeleteAccountModal
+        handleDeleteAccount={handleDeleteAccount}
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+      />
     </div>
+  );
+}
+
+function DeleteAccountModal({
+  isOpen,
+  onOpenChange,
+  handleDeleteAccount
+}: {
+  isOpen: boolean;
+  onOpenChange: () => void;
+  handleDeleteAccount: (e: FormEvent<HTMLFormElement>) => void;
+}) {
+  return (
+    <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <ModalContent className='p-2'>
+        <ModalHeader className='justify-center'>
+          Confirm Account Deletion
+        </ModalHeader>
+        <ModalBody>
+          <Form className='w-full gap-4' onSubmit={handleDeleteAccount}>
+            <Input
+              isRequired
+              aria-label='Password Input'
+              errorMessage='Password is required to delete account'
+              label='Password'
+              name='password'
+              type='password'
+            />
+
+            <div className='flex gap-2 w-full justify-end'>
+              <Button
+                aria-label='Confirm Delete Account'
+                color='danger'
+                type='submit'
+              >
+                Confirm
+              </Button>
+            </div>
+          </Form>
+        </ModalBody>
+      </ModalContent>
+    </Modal>
   );
 }
