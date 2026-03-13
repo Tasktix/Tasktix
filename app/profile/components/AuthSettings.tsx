@@ -44,6 +44,16 @@ interface FilteredAccount {
   providerId: string;
 }
 
+type AccountMethod = {
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+  testId: string;
+  actionLabel: string;
+  isCriticalAction?: boolean;
+  handler: () => void;
+};
+
 /**
  * Provides UI component for configuring authentication related settings on the
  * profile page (e.g. Linking To Github, Deleting Accounts, Changing Passwords)
@@ -175,38 +185,14 @@ export default function AuthSettings({ user }: { user: User }) {
   return (
     <div className='max-w-4xl p-6'>
       <h2 className='text-2xl font-semibold mb-6'>Account Settings</h2>
-
       <Card className=' border border-white/10 rounded-lg'>
         <CardBody className='p-0'>
           {methods.map((method, index) => (
-            <div key={method.title} data-testid={method.testId}>
-              <div className='flex items-center justify-between p-5 hover:bg-white/[0.02] transition-colors group'>
-                <div className='flex items-start gap-4'>
-                  <div className='mt-1'>{method.icon}</div>
-                  <div className='flex flex-col'>
-                    <span className='text-base font-medium'>
-                      {method.title}
-                    </span>
-                    <span className='text-sm text-gray-500'>
-                      {method.description}
-                    </span>
-                  </div>
-                </div>
-
-                <Button
-                  aria-label={method.actionLabel}
-                  className={`font-medium border border-white/10 text-white ${
-                    method.isCriticalAction ? 'bg-danger' : 'bg-[#27272a]'
-                  }`}
-                  size='sm'
-                  variant='flat'
-                  onPress={method.handler}
-                >
-                  {method.actionLabel}
-                </Button>
-              </div>
-              {index !== methods.length - 1 && <Divider />}
-            </div>
+            <AuthSettingRow
+              key={method.title}
+              isLast={index === methods.length - 1}
+              method={method}
+            />
           ))}
         </CardBody>
       </Card>
@@ -219,6 +205,53 @@ export default function AuthSettings({ user }: { user: User }) {
   );
 }
 
+/**
+ * Represents a single row in the AuthSettings Component
+ * @param method Object used to represent the data to be constructed in this row (e.g. Title, Description, Handlers, )
+ * @param isLast Boolean representing if the element is the last element in the
+ *  list, used for rendering the borders
+ * @returns
+ */
+function AuthSettingRow({
+  method,
+  isLast
+}: {
+  method: AccountMethod;
+  isLast: boolean;
+}) {
+  return (
+    <div data-testid={method.testId}>
+      <div className='flex items-center justify-between p-5 hover:bg-white/[0.02] transition-colors group'>
+        <div className='flex items-start gap-4'>
+          <div className='mt-1'>{method.icon}</div>
+          <div className='flex flex-col'>
+            <span className='text-base font-medium'>{method.title}</span>
+            <span className='text-sm text-gray-500'>{method.description}</span>
+          </div>
+        </div>
+        <Button
+          aria-label={method.actionLabel}
+          className={`font-medium border border-white/10 text-white ${
+            method.isCriticalAction ? 'bg-danger' : 'bg-[#27272a]'
+          }`}
+          size='sm'
+          variant='flat'
+          onPress={method.handler}
+        >
+          {method.actionLabel}
+        </Button>
+      </div>
+      {!isLast && <Divider />}
+    </div>
+  );
+}
+/**
+ * Renderes Modal prompting user to input their password to confirm account deletion
+ * @param isOpen is the modal open (from useDisclosure)
+ * @param onOpenChange how to handle changing the modals openness (from useDisclosure)
+ * @param handleDeleteAccount Handler function to attempt account deletion
+ * @returns
+ */
 function DeleteAccountModal({
   isOpen,
   onOpenChange,
