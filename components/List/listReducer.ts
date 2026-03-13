@@ -211,6 +211,7 @@ export default function listReducer(
       const section = newState.sections.get(action.sectionId);
 
       if (!section)
+        // Should be impossible to trigger this, hence the runtime error - skipcq: TCV-001
         throw new Error(`Unable to find section with ID ${action.sectionId}`);
 
       section.items = section.items.filter(item => item === action.id);

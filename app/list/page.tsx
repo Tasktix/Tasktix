@@ -17,6 +17,8 @@
  */
 
 export default function Page() {
+  // No logic to test - skipcq: TCV-001
+
   return (
     <main className='p-8 w-full flex grow flex-col gap-8 overflow-y-scroll'>
       <div className='h-16 flex items-center justify-center bg-content2'>
