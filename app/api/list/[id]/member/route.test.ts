@@ -19,7 +19,8 @@
 import { getIsListMember, createListMember } from '@/lib/database/list';
 import User from '@/lib/model/user';
 import { getUser } from '@/lib/session';
-import { getUserByUsername } from '@/lib/database/user';
+import { getRole, getRoleByList, getUserByEmail } from '@/lib/database/user';
+import MemberRole from '@/lib/model/memberRole';
 
 import { POST } from './route';
 
@@ -41,6 +42,16 @@ const MOCK_NEW_USER = new User(
   new Date(),
   { color: 'Amber' }
 );
+const MOCK_ROLE_CAN_VIEW = new MemberRole(
+  'Viewer',
+  'No explicit permissions',
+  {}
+);
+const MOCK_ROLE_CAN_MANAGE_MEMBERS = new MemberRole(
+  'MemberManager',
+  'Manages members and nothing else',
+  { canManageMembers: true }
+);
 
 const MEMBER_PATH = 'http://localhost/api/list/some-list-id/member' as const;
 
@@ -53,33 +64,30 @@ beforeEach(() => {
 });
 
 describe('POST', () => {
-  test('Allows adding new members by username with no permissions', async () => {
+  test('Allows adding new members by email with some role', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
-    vi.mocked(getIsListMember).mockResolvedValueOnce(true);
-    vi.mocked(getUserByUsername).mockResolvedValue(MOCK_NEW_USER);
-    vi.mocked(getIsListMember).mockResolvedValueOnce(false);
+    vi.mocked(getRoleByList).mockResolvedValue(MOCK_ROLE_CAN_MANAGE_MEMBERS);
+    vi.mocked(getUserByEmail).mockResolvedValue(MOCK_NEW_USER);
+    vi.mocked(getIsListMember).mockResolvedValue(false);
+    vi.mocked(getRole).mockResolvedValue(MOCK_ROLE_CAN_VIEW);
     vi.mocked(createListMember).mockResolvedValue(true);
 
     const response = await POST(
       new Request(MEMBER_PATH, {
         method: 'post',
-        body: JSON.stringify({ username: MOCK_NEW_USER.username })
+        body: JSON.stringify({
+          email: MOCK_NEW_USER.email,
+          roleId: MOCK_ROLE_CAN_VIEW.id
+        })
       }),
       { params: Promise.resolve({ id: 'some-list-id' }) }
     );
 
     expect(response.status).toBe(200);
-    expect(createListMember).toHaveBeenCalledTimes(1);
-    expect(createListMember).toHaveBeenCalledWith(
-      'some-list-id',
-      expect.objectContaining({
-        user: expect.objectContaining({ id: MOCK_NEW_USER.id }) as unknown,
-        canAdd: false,
-        canRemove: false,
-        canComplete: false,
-        canAssign: false
-      })
-    );
+    expect(createListMember).toHaveBeenCalledExactlyOnceWith('some-list-id', {
+      user: MOCK_NEW_USER,
+      role: MOCK_ROLE_CAN_VIEW
+    });
   });
 
   test('Rejects unauthenticated users', async () => {
@@ -88,7 +96,7 @@ describe('POST', () => {
     const response = await POST(
       new Request(MEMBER_PATH, {
         method: 'post',
-        body: JSON.stringify({ username: MOCK_NEW_USER.username })
+        body: JSON.stringify({ email: MOCK_NEW_USER.email })
       }),
       { params: Promise.resolve({ id: 'some-list-id' }) }
     );
@@ -99,12 +107,12 @@ describe('POST', () => {
 
   test('Rejects requests to modify lists not a member of', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
-    vi.mocked(getIsListMember).mockResolvedValue(false);
+    vi.mocked(getRoleByList).mockResolvedValue(false);
 
     const response = await POST(
       new Request(MEMBER_PATH, {
         method: 'post',
-        body: JSON.stringify({ username: MOCK_NEW_USER.username })
+        body: JSON.stringify({ email: MOCK_NEW_USER.email })
       }),
       { params: Promise.resolve({ id: 'some-list-id' }) }
     );
@@ -115,13 +123,16 @@ describe('POST', () => {
 
   test("Rejects requests to add members that don't exist", async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
-    vi.mocked(getIsListMember).mockResolvedValue(true);
-    vi.mocked(getUserByUsername).mockResolvedValue(false);
+    vi.mocked(getRoleByList).mockResolvedValue(MOCK_ROLE_CAN_MANAGE_MEMBERS);
+    vi.mocked(getUserByEmail).mockResolvedValue(false);
 
     const response = await POST(
       new Request(MEMBER_PATH, {
         method: 'post',
-        body: JSON.stringify({ username: MOCK_NEW_USER.username })
+        body: JSON.stringify({
+          email: MOCK_NEW_USER.email,
+          roleId: MOCK_ROLE_CAN_VIEW.id
+        })
       }),
       { params: Promise.resolve({ id: 'some-list-id' }) }
     );
@@ -132,13 +143,17 @@ describe('POST', () => {
 
   test('Rejects requests to add members already part of the list', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
+    vi.mocked(getRoleByList).mockResolvedValue(MOCK_ROLE_CAN_MANAGE_MEMBERS);
+    vi.mocked(getUserByEmail).mockResolvedValue(MOCK_NEW_USER);
     vi.mocked(getIsListMember).mockResolvedValue(true);
-    vi.mocked(getUserByUsername).mockResolvedValue(MOCK_NEW_USER);
 
     const response = await POST(
       new Request(MEMBER_PATH, {
         method: 'post',
-        body: JSON.stringify({ username: MOCK_NEW_USER.username })
+        body: JSON.stringify({
+          email: MOCK_NEW_USER.email,
+          roleId: MOCK_ROLE_CAN_VIEW.id
+        })
       }),
       { params: Promise.resolve({ id: 'some-list-id' }) }
     );
@@ -149,8 +164,8 @@ describe('POST', () => {
 
   test('Rejects requests with malformed bodies', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
-    vi.mocked(getIsListMember).mockResolvedValue(true);
-    vi.mocked(getUserByUsername).mockResolvedValue(MOCK_NEW_USER);
+    vi.mocked(getRoleByList).mockResolvedValue(MOCK_ROLE_CAN_MANAGE_MEMBERS);
+    vi.mocked(getUserByEmail).mockResolvedValue(MOCK_NEW_USER);
 
     const response = await POST(
       new Request(MEMBER_PATH, {
@@ -166,15 +181,19 @@ describe('POST', () => {
 
   test('Warns the user if updating the member failed', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
-    vi.mocked(getIsListMember).mockResolvedValueOnce(true);
-    vi.mocked(getUserByUsername).mockResolvedValue(MOCK_NEW_USER);
-    vi.mocked(getIsListMember).mockResolvedValueOnce(false);
+    vi.mocked(getRoleByList).mockResolvedValue(MOCK_ROLE_CAN_MANAGE_MEMBERS);
+    vi.mocked(getUserByEmail).mockResolvedValue(MOCK_NEW_USER);
+    vi.mocked(getIsListMember).mockResolvedValue(false);
+    vi.mocked(getRole).mockResolvedValue(MOCK_ROLE_CAN_VIEW);
     vi.mocked(createListMember).mockResolvedValue(false);
 
     const response = await POST(
       new Request(MEMBER_PATH, {
         method: 'post',
-        body: JSON.stringify({ username: MOCK_NEW_USER.username })
+        body: JSON.stringify({
+          email: MOCK_NEW_USER.email,
+          roleId: MOCK_ROLE_CAN_VIEW.id
+        })
       }),
       { params: Promise.resolve({ id: 'some-list-id' }) }
     );

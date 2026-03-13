@@ -21,6 +21,7 @@ import { redirect } from 'next/navigation';
 import { getIsListMember, getListById } from '@/lib/database/list';
 import List from '@/components/List';
 import { getUser } from '@/lib/session';
+import { getAvailableRoles } from '@/lib/database/user';
 
 export default async function Page({
   params
@@ -29,6 +30,7 @@ export default async function Page({
 }) {
   const { id } = await params;
   const list = await getListById(id);
+  const roles = await getAvailableRoles();
 
   const user = await getUser();
 
@@ -40,7 +42,12 @@ export default async function Page({
 
   return (
     <main className='p-8 w-full flex grow flex-col gap-8 overflow-y-scroll'>
-      {list && <List startingList={JSON.stringify(list)} />}
+      {list && (
+        <List
+          startingList={JSON.stringify(list)}
+          startingRoles={JSON.stringify(roles || [])}
+        />
+      )}
     </main>
   );
 }

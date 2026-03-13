@@ -30,9 +30,10 @@ import { PeopleFill, Plus, X } from 'react-bootstrap-icons';
 
 import Assignee from '@/lib/model/assignee';
 import { getBackgroundColor, getTextColor } from '@/lib/color';
-import ListMember from '@/lib/model/listMember';
 import { default as api } from '@/lib/api';
 import { addToastForError } from '@/lib/error';
+
+import { ListMemberState } from '../List/types';
 
 export default function Users({
   itemId,
@@ -43,7 +44,7 @@ export default function Users({
 }: {
   itemId: string;
   assignees: Assignee[];
-  members: ListMember[];
+  members: ListMemberState[];
   isComplete: boolean;
   className?: string;
 }) {

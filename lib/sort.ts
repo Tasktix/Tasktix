@@ -17,7 +17,49 @@
  */
 
 import ListItem from '@/lib/model/listItem';
+import MemberRole from '@/lib/model/memberRole';
 
+/**
+ * Compares roles to enable sorting by permission level with `Array.prototype.sort()`
+ *
+ * @param a The first role to compare
+ * @param b The second role to compare
+ * @returns A positive number if `a` should be before `b`; a negative number if `b` should
+ *  be before `a`; 0 if `a` == `b`
+ */
+export function sortRolesByPermissions(a: MemberRole, b: MemberRole): number {
+  /**
+   * Generates a unique number for every possible set of permissions, where
+   * higher-permissioned sets always get a higher number than lower-permissioned sets
+   *
+   * @param perms The role to generate a permission number for
+   */
+  function sumPerms(perms: MemberRole): number {
+    let sum = 0;
+
+    if (perms.canAddItems) sum += 0b1;
+    if (perms.canUpdateItems) sum += 0b10;
+    if (perms.canDeleteItems) sum += 0b100;
+    if (perms.canManageTags) sum += 0b1000;
+    if (perms.canManageAssignees) sum += 0b10000;
+    if (perms.canManageMembers) sum += 0b100000;
+    if (perms.canUpdateList) sum += 0b1000000;
+    if (perms.canDeleteList) sum += 0b10000000;
+
+    return sum;
+  }
+
+  return sumPerms(b) - sumPerms(a);
+}
+
+/**
+ * Compares items to enable sorting by completion date with `Array.prototype.sort()`
+ *
+ * @param a The first item to compare
+ * @param b The second item to compare
+ * @returns A positive number if `a` should be before `b`; a negative number if `b` should
+ *  be before `a`; 0 if `a` == `b`
+ */
 export function sortItemsByCompleted(
   a: Pick<ListItem, 'dateCompleted' | 'status'>,
   b: Pick<ListItem, 'dateCompleted' | 'status'>
@@ -34,6 +76,16 @@ export function sortItemsByCompleted(
   return 0;
 }
 
+/**
+ * Compares items to enable sorting by index within a section using
+ * `Array.prototype.sort()`. Intended **only** for sorting `ListItem`s that are *all in
+ * the same section*.
+ *
+ * @param a The first item to compare
+ * @param b The second item to compare
+ * @returns A positive number if `a` should be before `b`; a negative number if `b` should
+ *  be before `a`; 0 if `a` == `b`
+ */
 export function sortItemsByIndex(
   a: Pick<ListItem, 'sectionIndex'>,
   b: Pick<ListItem, 'sectionIndex'>
@@ -70,6 +122,17 @@ export function sortItemsByOrder(
   return indexA - indexB;
 }
 
+/**
+ * Compares items to enable smart sorting based on several aspects of each item, such as
+ * when each item is due and what priority it is.
+ *
+ * @param hasTimeTracking Whether to consider expected/elapsed times when sorting
+ * @param hasDueDates Whether to consider due dates when sorting
+ * @param a The first item to compare
+ * @param b The second item to compare
+ * @returns A positive number if `a` should be before `b`; a negative number if `b` should
+ *  be before `a`; 0 if `a` == `b`
+ */
 export function sortItems(
   hasTimeTracking: boolean,
   hasDueDates: boolean,

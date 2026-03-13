@@ -30,10 +30,10 @@ import { ThreeDots, TrashFill } from 'react-bootstrap-icons';
 import { NamedColor } from '@/lib/model/color';
 import ListItem from '@/lib/model/listItem';
 import Tag from '@/lib/model/tag';
-import ListMember from '@/lib/model/listMember';
 
 import DateInput2 from '../DateInput2';
 import ConfirmedTextInput from '../ConfirmedTextInput';
+import { ListMemberState } from '../List/types';
 
 import Priority from './Priority';
 import Tags from './Tags';
@@ -80,7 +80,7 @@ export default function More({
   item: ListItem;
   tags: Tag[];
   tagsAvailable: Tag[];
-  members: ListMember[];
+  members: ListMemberState[];
   hasDueDates: boolean;
   hasTimeTracking: boolean;
   elapsedLive: number;

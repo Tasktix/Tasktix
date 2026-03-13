@@ -84,6 +84,7 @@ describe('ListItem state propagation', () => {
               'list-id'
             )
           )}
+          startingRoles='[]'
         />
       </HeroUIProvider>
     );
@@ -141,6 +142,7 @@ describe('ListItem state propagation', () => {
               'list-id'
             )
           )}
+          startingRoles='[]'
         />
       </HeroUIProvider>
     );
@@ -191,6 +193,7 @@ describe('ListItem state propagation', () => {
               'list-id'
             )
           )}
+          startingRoles='[]'
         />
       </HeroUIProvider>
     );
@@ -245,6 +248,7 @@ describe('ListItem state propagation', () => {
               'list-id'
             )
           )}
+          startingRoles='[]'
         />
       </HeroUIProvider>
     );
@@ -302,6 +306,7 @@ describe('ListItem state propagation', () => {
               'list-id'
             )
           )}
+          startingRoles='[]'
         />
       </HeroUIProvider>
     );
@@ -359,6 +364,7 @@ describe('ListItem state propagation', () => {
               'list-id'
             )
           )}
+          startingRoles='[]'
         />
       </HeroUIProvider>
     );
@@ -421,6 +427,7 @@ describe('ListItem state propagation', () => {
               'list-id'
             )
           )}
+          startingRoles='[]'
         />
       </HeroUIProvider>
     );
@@ -486,6 +493,7 @@ describe('ListItem state propagation', () => {
               'list-id'
             )
           )}
+          startingRoles='[]'
         />
       </HeroUIProvider>
     );
@@ -538,6 +546,7 @@ describe('ListItem state propagation', () => {
               'list-id'
             )
           )}
+          startingRoles='[]'
         />
       </HeroUIProvider>
     );
@@ -585,6 +594,7 @@ describe('ListItem state propagation', () => {
               'list-id'
             )
           )}
+          startingRoles='[]'
         />
       </HeroUIProvider>
     );
@@ -642,6 +652,7 @@ describe('ListItem state propagation', () => {
                 'list-id'
               )
             )}
+            startingRoles='[]'
           />
         </HeroUIProvider>
       );
@@ -697,6 +708,7 @@ describe('ListItem state propagation', () => {
                 'list-id'
               )
             )}
+            startingRoles='[]'
           />
         </HeroUIProvider>
       );
@@ -757,6 +769,7 @@ describe('ListItem state propagation', () => {
               'list-id'
             )
           )}
+          startingRoles='[]'
         />
       </HeroUIProvider>
     );
@@ -810,6 +823,7 @@ describe('ListItem state propagation', () => {
               'list-id'
             )
           )}
+          startingRoles='[]'
         />
       </HeroUIProvider>
     );

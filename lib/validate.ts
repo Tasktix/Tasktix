@@ -18,8 +18,6 @@
 
 import { regexes as zodRegexes } from 'zod';
 
-import { namedColorSet } from './model/color';
-
 interface InputResult {
   valid: boolean;
   color: 'success' | 'warning' | 'danger' | 'default';
@@ -68,17 +66,4 @@ export function validatePassword(password: string): InputResult {
 
 export function validateListName(name: string): [boolean, string] {
   return [name.length <= 64, name.substring(0, 64)];
-}
-
-export function validateListSectionName(name: string): [boolean, string] {
-  return [name.length <= 64, name.substring(0, 64)];
-}
-
-export function validateListItemName(name: string): [boolean, string] {
-  return [name.length <= 128, name.substring(0, 128)];
-}
-
-export function validateColor(color: string): boolean {
-  // @ts-expect-error: `.has()` can take unknown string and will return whether it is a named color
-  return namedColorSet.has(color);
 }

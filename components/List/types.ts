@@ -41,14 +41,11 @@ export type ListAction =
   | { type: 'AddSection'; section: ListSection };
 
 export type MemberAction =
-  | { type: 'AddMember'; member: ListMember }
+  | { type: 'AddMember'; member: ListMemberState }
   | {
       type: 'UpdateMemberPermissions';
       id: string;
-      canAdd?: boolean;
-      canRemove?: boolean;
-      canComplete?: boolean;
-      canAssign?: boolean;
+      role: string;
     };
 
 export type TagAction =
@@ -100,6 +97,8 @@ export type ItemAction =
   | { type: 'UnlinkTagFromItem'; itemId: string; tagId: string }
   | { type: 'DeleteItem'; sectionId: string; id: string };
 
+export type ListMemberState = Omit<ListMember, 'role'> & { role: string };
+
 export type ListItemState = Omit<ListItem, 'assignees' | 'tags'> & {
   assignees: [string, string][];
   tags: string[];
@@ -114,7 +113,7 @@ export type ListSectionState = Omit<ListSection, 'items'> & { items: string[] };
  * The list state, as defined and modified by the list reducer.
  */
 export type ListState = Omit<List, 'members' | 'sections' | 'tags'> & {
-  members: Map<string, ListMember>;
+  members: Map<string, ListMemberState>;
   tags: Map<string, Tag>;
   sections: Map<string, ListSectionState>;
   items: Map<string, ListItemState>;

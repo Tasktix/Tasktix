@@ -36,6 +36,7 @@ import {
   MemberAction,
   TagAction
 } from '@/components/List/types';
+import MemberRole from '@/lib/model/memberRole';
 
 import GeneralSettings from './GeneralSettings';
 import MemberSettings from './MemberSettings';
@@ -54,11 +55,13 @@ import TagSettings from './TagSettings';
  */
 export default function ListSettings({
   list,
+  roles,
   addNewTag,
   onListEvent,
   onListNameChange
 }: Readonly<{
   list: Omit<ListState, 'items' | 'sections'>;
+  roles: Map<string, MemberRole>;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
   onListEvent: ActionDispatch<[action: ListAction | MemberAction | TagAction]>;
   onListNameChange: (name: string) => unknown;
@@ -76,7 +79,7 @@ export default function ListSettings({
       >
         <GearWideConnected aria-label='Settings' size={20} />
       </Button>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal isOpen={isOpen} size='2xl' onOpenChange={onOpenChange}>
         <ModalContent className='h-1/2'>
           <ModalHeader className='justify-center pb-0'>
             List Settings
@@ -104,6 +107,7 @@ export default function ListSettings({
                 <MemberSettings
                   listId={list.id}
                   members={list.members}
+                  roles={roles}
                   onMemberEvent={onListEvent}
                 />
               </Tab>
@@ -113,7 +117,6 @@ export default function ListSettings({
               >
                 <TagSettings
                   addNewTag={addNewTag}
-                  listId={list.id}
                   tags={list.tags}
                   onTagEvent={onListEvent}
                 />

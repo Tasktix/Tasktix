@@ -19,9 +19,11 @@
 import User from '@/lib/model/user';
 import { getUser } from '@/lib/session';
 import { createListItem } from '@/lib/database/listItem';
-import { getListBySectionId, getListMember } from '@/lib/database/list';
+import { getListBySectionId } from '@/lib/database/list';
 import List from '@/lib/model/list';
 import ListSection from '@/lib/model/listSection';
+import ListMember from '@/lib/model/listMember';
+import MemberRole from '@/lib/model/memberRole';
 
 import { POST } from './route';
 
@@ -33,6 +35,24 @@ const MOCK_USER = new User(
   new Date(),
   new Date(),
   { color: 'Amber' }
+);
+const MOCK_ROLE_CAN_ADD_ITEM = new MemberRole(
+  'ItemAdder',
+  'Adds items and nothing else',
+  { canAddItems: true }
+);
+const MOCK_ROLE_CANNOT_ADD_ITEM = new MemberRole(
+  'NotItemAdder',
+  'Does everything but add items',
+  {
+    canUpdateItems: true,
+    canDeleteItems: true,
+    canManageTags: true,
+    canManageAssignees: true,
+    canManageMembers: true,
+    canUpdateList: true,
+    canDeleteList: true
+  }
 );
 const MOCK_SECTION = new ListSection('Section name', [], 'section-id-16-ch');
 
@@ -51,7 +71,7 @@ describe('POST', () => {
       new List(
         'List name',
         'Amber',
-        [],
+        [new ListMember(MOCK_USER, MOCK_ROLE_CAN_ADD_ITEM)],
         [MOCK_SECTION],
         [],
         false,
@@ -60,12 +80,6 @@ describe('POST', () => {
         'list-id'
       )
     );
-    vi.mocked(getListMember).mockResolvedValue({
-      canAdd: true,
-      canAssign: true,
-      canComplete: true,
-      canRemove: true
-    });
     vi.mocked(createListItem).mockResolvedValue(true);
 
     const response = await POST(
@@ -101,7 +115,7 @@ describe('POST', () => {
       new List(
         'List name',
         'Amber',
-        [],
+        [new ListMember(MOCK_USER, MOCK_ROLE_CAN_ADD_ITEM)],
         [MOCK_SECTION],
         [],
         true,
@@ -110,12 +124,6 @@ describe('POST', () => {
         'list-id'
       )
     );
-    vi.mocked(getListMember).mockResolvedValue({
-      canAdd: true,
-      canAssign: true,
-      canComplete: true,
-      canRemove: true
-    });
     vi.mocked(createListItem).mockResolvedValue(true);
 
     const response = await POST(
@@ -222,7 +230,6 @@ describe('POST', () => {
           'list-id'
         )
       );
-      vi.mocked(getListMember).mockResolvedValue(false);
 
       const response = await POST(
         new Request(ITEM_PATH, {
@@ -247,7 +254,7 @@ describe('POST', () => {
         new List(
           'List name',
           'Amber',
-          [],
+          [new ListMember(MOCK_USER, MOCK_ROLE_CANNOT_ADD_ITEM)],
           [MOCK_SECTION],
           [],
           true,
@@ -256,12 +263,6 @@ describe('POST', () => {
           'list-id'
         )
       );
-      vi.mocked(getListMember).mockResolvedValue({
-        canAdd: false,
-        canAssign: true,
-        canComplete: true,
-        canRemove: true
-      });
 
       const response = await POST(
         new Request(ITEM_PATH, {
@@ -276,7 +277,7 @@ describe('POST', () => {
         })
       );
 
-      expect(response.status).toBe(400);
+      expect(response.status).toBe(403);
       expect(createListItem).not.toHaveBeenCalled();
     });
 
@@ -286,7 +287,7 @@ describe('POST', () => {
         new List(
           'List name',
           'Amber',
-          [],
+          [new ListMember(MOCK_USER, MOCK_ROLE_CAN_ADD_ITEM)],
           [MOCK_SECTION],
           [],
           true,
@@ -295,12 +296,6 @@ describe('POST', () => {
           'list-id'
         )
       );
-      vi.mocked(getListMember).mockResolvedValue({
-        canAdd: true,
-        canAssign: true,
-        canComplete: true,
-        canRemove: true
-      });
 
       const response = await POST(
         new Request(ITEM_PATH, {
@@ -325,7 +320,7 @@ describe('POST', () => {
         new List(
           'List name',
           'Amber',
-          [],
+          [new ListMember(MOCK_USER, MOCK_ROLE_CAN_ADD_ITEM)],
           [MOCK_SECTION],
           [],
           true,
@@ -334,12 +329,6 @@ describe('POST', () => {
           'list-id'
         )
       );
-      vi.mocked(getListMember).mockResolvedValue({
-        canAdd: true,
-        canAssign: true,
-        canComplete: true,
-        canRemove: true
-      });
 
       const response = await POST(
         new Request(ITEM_PATH, {
@@ -364,7 +353,7 @@ describe('POST', () => {
         new List(
           'List name',
           'Amber',
-          [],
+          [new ListMember(MOCK_USER, MOCK_ROLE_CAN_ADD_ITEM)],
           [MOCK_SECTION],
           [],
           true,
@@ -373,12 +362,6 @@ describe('POST', () => {
           'list-id'
         )
       );
-      vi.mocked(getListMember).mockResolvedValue({
-        canAdd: true,
-        canAssign: true,
-        canComplete: true,
-        canRemove: true
-      });
       vi.mocked(createListItem).mockResolvedValue(false);
 
       const response = await POST(

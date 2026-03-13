@@ -23,8 +23,9 @@ import { NamedColor } from '@/lib/model/color';
 import ListItem from '@/lib/model/listItem';
 import Tag from '@/lib/model/tag';
 import List from '@/lib/model/list';
-import ListMember from '@/lib/model/listMember';
 import { ItemAction } from '@/components/List';
+
+import { ListMemberState } from '../List/types';
 
 import { itemHandlerFactory } from './handlerFactory';
 
@@ -35,7 +36,7 @@ export interface ListItemParams {
   sectionId: string;
   item: ListItem;
   list?: List;
-  members: ListMember[];
+  members: ListMemberState[];
   tagsAvailable: Tag[];
   hasTimeTracking: boolean;
   hasDueDates: boolean;

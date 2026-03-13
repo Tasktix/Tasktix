@@ -76,10 +76,7 @@ export default function listReducer(
       if (!member)
         throw new Error(`Cannot find member with user ID ${action.id}`);
 
-      member.canAdd = action.canAdd ?? member.canAdd;
-      member.canComplete = action.canComplete ?? member.canComplete;
-      member.canRemove = action.canRemove ?? member.canRemove;
-      member.canAssign = action.canAssign ?? member.canAssign;
+      member.role = action.role;
       break;
     }
 

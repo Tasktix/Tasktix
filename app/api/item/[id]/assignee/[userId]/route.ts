@@ -17,7 +17,7 @@
  */
 
 import { ClientError, ServerError, Success } from '@/lib/Response';
-import { getListMemberByItem } from '@/lib/database/list';
+import { getRoleByItem } from '@/lib/database/user';
 import { linkAssignee, unlinkAssignee } from '@/lib/database/listItem';
 import { getUser } from '@/lib/session';
 
@@ -30,11 +30,11 @@ export async function POST(
 
   if (!user) return ClientError.Unauthenticated('Not logged in');
 
-  const member = await getListMemberByItem(user.id, id);
+  const role = await getRoleByItem(user.id, id);
 
-  if (!member) return ClientError.BadRequest('List item not found');
-  if (!member.canAssign)
-    return ClientError.BadRequest('Insufficient permissions to assign');
+  if (!role) return ClientError.NotFound('List item not found');
+  if (!role.canManageAssignees)
+    return ClientError.Forbidden('Insufficient permissions to assign');
 
   const result = await linkAssignee(id, userId, '');
 
@@ -52,11 +52,11 @@ export async function DELETE(
 
   if (!user) return ClientError.Unauthenticated('Not logged in');
 
-  const member = await getListMemberByItem(user.id, id);
+  const role = await getRoleByItem(user.id, id);
 
-  if (!member) return ClientError.BadRequest('List not found');
-  if (!member.canAssign)
-    return ClientError.BadRequest('Insufficient permissions to unassign');
+  if (!role) return ClientError.NotFound('List not found');
+  if (!role.canManageAssignees)
+    return ClientError.Forbidden('Insufficient permissions to unassign');
 
   const result = await unlinkAssignee(id, userId);
 

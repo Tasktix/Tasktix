@@ -19,6 +19,7 @@
 'use client';
 
 import { useEffect, useReducer, useState } from 'react';
+import { MemberRole } from '@prisma/client';
 
 import AddListSection from '@/components/AddListSection';
 import SearchBar from '@/components/SearchBar';
@@ -45,12 +46,24 @@ import { ListState } from './types';
  *  component boundary because Next.js doesn't automatically convert Date objects or
  *  classes
  */
-export default function List({ startingList }: { startingList: string }) {
+export default function List({
+  startingList,
+  startingRoles
+}: {
+  startingList: string;
+  startingRoles: string;
+}) {
   const builtList = JSON.parse(startingList) as ListModel;
+  const builtRoles = new Map(
+    (JSON.parse(startingRoles) as MemberRole[]).map(role => [role.id, role])
+  );
 
   // Rebuild Date objects turned to JSON strings & convert arrays to Maps
   const builtMembers: ListState['members'] = new Map(
-    builtList.members.map(member => [member.user.id, member])
+    builtList.members.map(member => [
+      member.user.id,
+      { ...member, role: member.role.id }
+    ])
   );
   const builtSections: ListState['sections'] = new Map(
     builtList.sections.map(section => [
@@ -108,6 +121,7 @@ export default function List({ startingList }: { startingList: string }) {
         <ListSettings
           addNewTag={listHandlers.addNewTag}
           list={list}
+          roles={builtRoles}
           onListEvent={dispatchList}
           onListNameChange={listHandlers.setName}
         />

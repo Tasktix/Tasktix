@@ -38,19 +38,17 @@ import { ListState, TagAction } from '../List/types';
  * @param onTagEvent A callback for updating React state with changes to a tag
  */
 export default function TagSettings({
-  listId,
   tags,
   addNewTag,
   onTagEvent
 }: Readonly<{
-  listId: string;
   tags: ListState['tags'];
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
   onTagEvent: (event: TagAction) => unknown;
 }>) {
   function updateTagName(tag: Tag, name: string) {
     api
-      .patch(`/list/${listId}/tag/${tag.id}`, { name })
+      .patch(`/tag/${tag.id}`, { name })
       .then(() => onTagEvent({ type: 'UpdateTagName', id: tag.id, name }))
       .catch(addToastForError);
   }
@@ -58,7 +56,7 @@ export default function TagSettings({
   function updateTagColor(tag: Tag, color: NamedColor | null) {
     if (color)
       api
-        .patch(`/list/${listId}/tag/${tag.id}`, { color })
+        .patch(`/tag/${tag.id}`, { color })
         .then(() => onTagEvent({ type: 'UpdateTagColor', id: tag.id, color }))
         .catch(addToastForError);
   }
@@ -72,7 +70,7 @@ export default function TagSettings({
       return;
 
     api
-      .delete(`/list/${listId}/tag/${id}`)
+      .delete(`/tag/${id}`)
       .then(() => onTagEvent({ type: 'DeleteTag', id }))
       .catch(addToastForError);
   }
