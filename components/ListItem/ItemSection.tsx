@@ -28,16 +28,14 @@ import ListItem from '@/lib/model/listItem';
  */
 export default function ItemSection({
   currentSection,
-  targetItem,
   totalSections,
   updateSection
 }: {
-  currentSection: string;
-  targetItem: ListItem;
-  totalSections: string[];
-  updateSection: (pastSectionString: string, targetItemString: string) => (e: any) => unknown;
+  currentSection: [string, string];
+  totalSections: [string, string][];
+  updateSection: (e: any) => unknown;
 }) {
-  const selectItems = totalSections.map(item => ({ id: item, label: item }))
+  const selectItems = totalSections.map(([id, label]) => ({ id: id, label: label }))
 
   return (
     <div className={`-mt-2 -mb-2`}>
@@ -45,9 +43,9 @@ export default function ItemSection({
         className={`w-28 grow-0 shrink-0`}
         items={selectItems}
         label={<span className='ml-2 text-foreground'>Section</span>}
-        placeholder={currentSection} 
-        onChange={updateSection(currentSection, targetItem.name)}>
-          {(selectItems) => <SelectItem>{selectItems.label}</SelectItem>}
+        placeholder={currentSection[1]} 
+        onChange={updateSection}>
+          {(selectItems) => <SelectItem key={selectItems.id}>{selectItems.label}</SelectItem>}
       </Select>
     </div>
   );

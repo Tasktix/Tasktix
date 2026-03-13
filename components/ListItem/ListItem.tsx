@@ -67,7 +67,6 @@ today.setHours(0, 0, 0, 0);
  * @param dispatchItemChange Callback to propagate state changes for the item
  * @param addNewTag Callback to propagate state changes when a new tag is created from the
  *  "add tag" menu
- * @param updateSection The passed function that changes an item's section
  */
 export default function ListItem({
   sectionId,
@@ -80,7 +79,6 @@ export default function ListItem({
   currentSection,
   totalSections,
   reorderControls,
-  updateSection,
   dispatchItemChange,
   addNewTag
 }: ListItemParams) {
@@ -205,6 +203,23 @@ export default function ListItem({
       timer.current = undefined;
     }
   }
+
+    const changeItemSection = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    // let targetSection = list.sections.find(section => section.name == e.target.value);
+    // let pastSection = list.sections.find(section => section.name == pastSectionString);
+    // let targetItem = pastSection?.items.find(item => item.name == targetItemString);
+
+    // if(targetSection && pastSection && targetItem){
+    //   addToast({ title: targetSection.name + ", " + pastSection.name + ", " + targetItem.name, color: 'success' });
+
+    //   targetSection.items.push(targetItem);
+    //   pastSection.items = pastSection.items.filter(item => item !== targetItem);
+    //   location.reload();
+    // }
+    // else{
+    //   addToast({ title: "Section not found", color: 'danger' });
+    // }
+  };
 
   return (
     <div
@@ -354,7 +369,7 @@ export default function ListItem({
             tags={item.tags}
             tagsAvailable={tagsAvailable}
             totalSections={totalSections}
-            updateSection={updateSection}
+            updateSection={changeItemSection}
           />
         </span>
       </span>

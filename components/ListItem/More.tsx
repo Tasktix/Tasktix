@@ -93,10 +93,10 @@ export default function More({
   elapsedLive: number;
   set: SetItem;
   itemHandlers: ItemHandlers;
-  currentSection?: string;
-  totalSections?: string[];
+  currentSection?: [string, string];
+  totalSections?: [string, string][];
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
-  updateSection: (pastSectionString: string, targetItemString: string) => (e: any) => unknown;
+  updateSection: (e: any) => unknown;
 }) {
   const isComplete = item.status === 'Completed';
 
@@ -159,10 +159,9 @@ export default function More({
                     />
                   ) : null}
                   <ItemSection
-                    currentSection={currentSection || 'No Section Info'}
-                    totalSections={totalSections || ['No Section Info']}
+                    currentSection={currentSection || ['NO ID AVAILABLE', 'NO SECTION INFO']}
+                    totalSections={totalSections || [['NO ID AVAILABLE', 'NO SECTION INFO']]}
                     updateSection={updateSection}
-                    targetItem={item}
                   />
                 </div>
 

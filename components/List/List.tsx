@@ -87,23 +87,6 @@ export default function List({
   const filterOptions = getFilterOptions(list, tagsAvailable);
 
   const listHandlers = listHandlerFactory(list.id, dispatchList);
-
-  const changeItemSection = (pastSectionString: string, targetItemString: string) => (e: React.ChangeEvent<HTMLSelectElement>) => {
-    // let targetSection = list.sections.find(section => section.name == e.target.value);
-    // let pastSection = list.sections.find(section => section.name == pastSectionString);
-    // let targetItem = pastSection?.items.find(item => item.name == targetItemString);
-
-    // if(targetSection && pastSection && targetItem){
-    //   addToast({ title: targetSection.name + ", " + pastSection.name + ", " + targetItem.name, color: 'success' });
-
-    //   targetSection.items.push(targetItem);
-    //   pastSection.items = pastSection.items.filter(item => item !== targetItem);
-    //   location.reload();
-    // }
-    // else{
-    //   addToast({ title: "Section not found", color: 'danger' });
-    // }
-  };
   
   useEffect(() => subscribe([list.id], dispatchList), [list.id]);
 
@@ -140,9 +123,8 @@ export default function List({
           section={section}
           tagsAvailable={tagsAvailable}
           // totalSections={list.sections.map(section => section.name)}
-          totalSections={['Example section', 'Section example', 'Sectample']}
+          totalSections={Array.from(list.sections.values()).map(section => [section.id, section.name])}
           onTagCreate={listHandlers.addNewTag}
-          updateSection={changeItemSection}
         />
       ))}
 

@@ -74,8 +74,7 @@ export default function SectionBody({
   totalSections,
   dispatchItemChange,
   reorderItem,
-  addNewTag,
-  updateSection
+  addNewTag
 }: {
   sectionId: string;
   items: Map<string, ListItemModel>;
@@ -85,12 +84,11 @@ export default function SectionBody({
   hasTimeTracking: boolean;
   hasDueDates: boolean;
   isAutoOrdered: boolean;
-  currentSection: string;
-  totalSections: string[];
+  currentSection: [string, string];
+  totalSections: [string, string][];
   dispatchItemChange: ActionDispatch<[action: ItemAction]>;
   reorderItem: (item: ListItemModel, newIndex: number) => unknown;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
-  updateSection: (pastSectionString: string, targetItemString: string) => (e: any) => unknown;
 }) {
   /**
    * Provides a visual index for each list item for use with dragging. This number
@@ -141,7 +139,6 @@ export default function SectionBody({
     tagsAvailable,
     currentSection,
     totalSections,
-    updateSection,
     dispatchItemChange
   }));
 

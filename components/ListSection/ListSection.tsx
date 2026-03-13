@@ -63,7 +63,6 @@ import sectionHandlerFactory from './handlerFactory';
  *  section
  * @param onTagCreate Callback to propagate state changes when a new tag is created from
  *  the "add tag" menu
- * @param updateSection The passed function that changes an item's section
  */
 export default function ListSection({
   listId,
@@ -74,7 +73,6 @@ export default function ListSection({
   hasDueDates,
   isAutoOrdered,
   totalSections,
-  updateSection,
   section,
   dispatchSectionChange,
   dispatchItemChange,
@@ -87,12 +85,11 @@ export default function ListSection({
   hasTimeTracking: boolean;
   hasDueDates: boolean;
   isAutoOrdered: boolean;
-  totalSections: string[];
+  totalSections: [string, string][];
   section: ListSectionState;
   dispatchSectionChange: ActionDispatch<[action: SectionAction]>;
   dispatchItemChange: ActionDispatch<[action: ItemAction]>;
   onTagCreate: (name: string, color: NamedColor) => Promise<string>;
-  updateSection: (pastSectionString: string, targetItemString: string) => (e: any) => unknown;
 }) {
   const [isCollapsed, setIsCollapsed] = useState(
     !section.items
@@ -185,7 +182,7 @@ export default function ListSection({
           >
             <SectionBody
               addNewTag={onTagCreate}
-              currentSection={section.name}
+              currentSection={[section.id, section.name]}
               dispatchItemChange={dispatchItemChange}
               filters={filters}
               hasDueDates={hasDueDates}
@@ -194,8 +191,7 @@ export default function ListSection({
               items={section.items}
               members={members}
               reorderItem={sectionHandlers.reorderItem}
-              totalSections={totalSections}   
-              updateSection={updateSection}
+              totalSections={totalSections}
               sectionId={section.id}
               tagsAvailable={tagsAvailable}
             />

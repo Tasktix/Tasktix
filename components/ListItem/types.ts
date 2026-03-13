@@ -39,12 +39,11 @@ export interface ListItemParams {
   tagsAvailable: Tag[];
   hasTimeTracking: boolean;
   hasDueDates: boolean;
-  currentSection?: string;
-  totalSections?: string[];
+  currentSection?: [string, string];
+  totalSections?: [string, string][];
   reorderControls?: DragControls;
   dispatchItemChange: ActionDispatch<[action: ItemAction]>;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
-  updateSection: (pastSectionString: string, targetItemString: string) => (e: any) => unknown;
 }
 
 export type ItemHandlers = ReturnType<typeof itemHandlerFactory>;
