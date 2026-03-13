@@ -17,14 +17,17 @@
  */
 
 import { getUser } from '@/lib/session';
+import User from '@/lib/model/user';
 
 import UserProperties from './components/UserProperties';
+import AuthSettings from './components/AuthSettings';
 
 /**
  * Gets current user information and sends it to UserProperties
  *
  */
 export default async function Page() {
+  //  pointless to test this skipcq: TCV-001
   const userDetails = await getUser();
 
   return (
@@ -32,6 +35,7 @@ export default async function Page() {
       <div className='border-2 border-content3 bg-content1 shadow-lg shadow-content2 w-130 m-4 rounded-lg px-4 h-full'>
         <h1 className='text-2xl p-4'>Profile</h1>
         <UserProperties user={JSON.stringify(userDetails)} />
+        <AuthSettings user={userDetails as User} />
       </div>
     </main>
   );
