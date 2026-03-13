@@ -41,8 +41,7 @@ test('Pressing Github Button attempts OAuth Login', () => {
         loggedInUserAtStart={false}
         oauthConfig={{
           githubEnabled: true,
-          customEnabled: false,
-          customProviderId: 'SSO'
+          customEnabled: false
         }}
       >
         <SignIn />
@@ -114,8 +113,7 @@ test('Custom SSO login not rendered if not configured on server ', () => {
         loggedInUserAtStart={false}
         oauthConfig={{
           githubEnabled: true,
-          customEnabled: false,
-          customProviderId: 'SSO'
+          customEnabled: false
         }}
       >
         <SignIn />
@@ -137,8 +135,7 @@ test('Nothing rendered if all not configured on server ', () => {
         loggedInUserAtStart={false}
         oauthConfig={{
           githubEnabled: false,
-          customEnabled: false,
-          customProviderId: 'SSO'
+          customEnabled: false
         }}
       >
         <SignIn />
