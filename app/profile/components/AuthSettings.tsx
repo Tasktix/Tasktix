@@ -47,7 +47,7 @@ interface FilteredAccount {
 export default function AuthSettings({ user }: { user: User }) {
   const [accounts, setAccounts] = useState<FilteredAccount[]>([]);
   const router = useRouter();
-  const { setLoggedInUser } = useAuth();
+  const { setLoggedInUser, oauthConfig } = useAuth();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   useEffect(() => {

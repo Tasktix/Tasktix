@@ -18,7 +18,7 @@
  */
 
 import { HeroUIProvider } from '@heroui/react';
-import { render } from '@testing-library/react';
+import { findByLabelText, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 
@@ -69,32 +69,28 @@ const MOCK_USER = new User(
 );
 
 describe('Linking/Unlinking Github', () => {
-  test('Github row not rendered Github OAuth not configured');
-  vi.mocked(useAuth).mockReturnValue({
-    loggedInUser: MOCK_USER,
-    setLoggedInUser: vi.fn(),
-    oauthConfig: { githubEnabled: false },
-    accountInfo: [],
-    setAccountInfo: vi.fn()
-  });
-  vi.mocked(authClient.listAccounts).mockReturnValue({});
-  const { queryByTestId } = render(
-    <HeroUIProvider disableRipple>
-      <AuthSettings user={MOCK_USER} />
-    </HeroUIProvider>
-  );
+  test('Github row not rendered Github OAuth not configured', () => {
+    vi.mocked(useAuth).mockReturnValue({
+      loggedInUser: MOCK_USER,
+      setLoggedInUser: vi.fn(),
+      oauthConfig: { githubEnabled: false }
+    });
+    vi.mocked(authClient.listAccounts).mockReturnValue({});
+    const { queryByTestId } = render(
+      <HeroUIProvider disableRipple>
+        <AuthSettings user={MOCK_USER} />
+      </HeroUIProvider>
+    );
+      const githubRow = queryByTestId('link-to-github');
 
-  const githubRow = queryByTestId('link-to-github');
-
-  expect(githubRow).not.toBeInTheDocument();
+      expect(githubRow).not.toBeInTheDocument();
+    });
 
   test('Github row rendered if Github OAuth is configured', () => {
     vi.mocked(useAuth).mockReturnValue({
       loggedInUser: MOCK_USER,
       setLoggedInUser: vi.fn(),
-      oauthConfig: { githubEnabled: true },
-      accountInfo: [],
-      setAccountInfo: vi.fn()
+      oauthConfig: { githubEnabled: true }
     });
     vi.mocked(authClient.listAccounts).mockReturnValue({});
     const { getByTestId } = render(
@@ -113,11 +109,15 @@ describe('Linking/Unlinking Github', () => {
     vi.mocked(useAuth).mockReturnValue({
       loggedInUser: MOCK_USER,
       setLoggedInUser: vi.fn(),
-      oauthConfig: { githubEnabled: true },
-      accountInfo: [{ providerId: 'credential', scopes: ['none'] }],
-      setAccountInfo: vi.fn()
+      oauthConfig: { githubEnabled: true }
     });
 
+    
+    vi.mocked(authClient.listAccounts).mockResolvedValue({
+      data: [{ accountId: 456, providerId: 'credential' }],
+      error: null,
+    });
+    
     const { getByLabelText } = render(
       <HeroUIProvider disableRipple>
         <AuthSettings user={MOCK_USER} />
@@ -138,23 +138,23 @@ describe('Linking/Unlinking Github', () => {
     );
     expect(authClient.unlinkAccount).not.toHaveBeenCalled();
   });
+
   test('Allows unlinking an account to Github if already linked', async () => {
     const user = userEvent.setup();
-    const setAccountInfoMock = vi.fn();
 
     vi.mocked(useAuth).mockReturnValue({
       loggedInUser: MOCK_USER,
       setLoggedInUser: vi.fn(),
       oauthConfig: { githubEnabled: true },
-      accountInfo: [],
-      setAccountInfo: setAccountInfoMock
     });
 
-    vi.mocked(authClient.listAccounts).mockReturnValue([
-      { accountId: 123, providerId: 'github' },
-      { accountId: 456, providerId: 'credential' }
-    ]);
-    const { getByLabelText } = render(
+    vi.mocked(authClient.listAccounts).mockResolvedValue({
+      data: [{ accountId: 456, providerId: 'credential' }, { accountId: 123, providerId: 'github'}
+      ],
+      error: null,
+    });
+
+    const { findByLabelText } = render(
       <HeroUIProvider disableRipple>
         <AuthSettings user={MOCK_USER} />
       </HeroUIProvider>
@@ -171,9 +171,7 @@ describe('Linking/Unlinking Github', () => {
       }
     );
 
-    vi.mocked(authClient.linkSocial).mockResolvedValue({});
-
-    const githubRowButton = getByLabelText('Disconnect');
+    const githubRowButton = await findByLabelText('Disconnect');
 
     expect(githubRowButton).toHaveTextContent('Disconnect');
 
@@ -184,24 +182,71 @@ describe('Linking/Unlinking Github', () => {
       { providerId: 'github' },
       expect.anything()
     );
-    expect(setAccountInfoMock).toHaveBeenCalledWith(
-      expect.not.arrayContaining([
-        expect.objectContaining({ providerId: 'github' })
-      ])
-    );
   });
-});
-
-describe('Account Deletion', () => {
-  test('Attempts to via password provided in modal', async () => {
+  test("Failed Github uninking creates error toast", async () => {
     const user = userEvent.setup();
 
     vi.mocked(useAuth).mockReturnValue({
       loggedInUser: MOCK_USER,
       setLoggedInUser: vi.fn(),
-      oauthConfig: { githubEnabled: true },
-      accountInfo: [],
-      setAccountInfo: vi.fn()
+      oauthConfig: { githubEnabled: true }
+    });
+    
+    const exampleError = {
+      data: {},
+      error: {
+        code: 'LAST_ACCOUNT',
+        message: 'Cannot Unlink Last Account',
+        status: 400,
+        statusText: 'BAD_REQUEST'
+      }
+    };
+    
+    vi.mocked(authClient.listAccounts).mockResolvedValue({
+      data: [{ accountId: 456, providerId: 'github' }],
+      error: null,
+    });
+    vi.mocked(authClient.unlinkAccount).mockImplementation(
+      async (_, fetchOptions) => {
+        if (fetchOptions?.onError) {
+          await fetchOptions.onError(
+            exampleError as unknown as ErrorContext
+          );
+        }
+      }
+    );
+    
+    const { findByLabelText } = render(
+      <HeroUIProvider disableRipple>
+        <AuthSettings user={MOCK_USER} />
+      </HeroUIProvider>
+    );
+
+    vi.mocked(authClient.linkSocial).mockResolvedValue({});
+
+    const githubRowButton = await findByLabelText('Disconnect');
+
+    expect(githubRowButton).toHaveTextContent('Disconnect');
+
+    await user.click(githubRowButton);
+
+    expect(authClient.unlinkAccount).toHaveBeenCalledWith(
+      { providerId: 'github' },
+      expect.anything()
+    );
+
+    expect(addToastForError).toHaveBeenCalledWith(exampleError.error)
+  })
+});
+
+describe('Account Deletion', () => {
+  test('Attempts to delete account via password provided in modal', async () => {
+    const user = userEvent.setup();
+
+    vi.mocked(useAuth).mockReturnValue({
+      loggedInUser: MOCK_USER,
+      setLoggedInUser: vi.fn(),
+      oauthConfig: { githubEnabled: true }
     });
     vi.mocked(authClient.listAccounts).mockReturnValue({});
     const { getByLabelText } = render(
@@ -237,9 +282,7 @@ describe('Account Deletion', () => {
     vi.mocked(useAuth).mockReturnValue({
       loggedInUser: MOCK_USER,
       setLoggedInUser: setLoggedInUserMock,
-      oauthConfig: { githubEnabled: true },
-      accountInfo: [],
-      setAccountInfo: vi.fn()
+      oauthConfig: { githubEnabled: true }
     });
 
     const routerMock = {
@@ -303,9 +346,7 @@ describe('Account Deletion', () => {
     vi.mocked(useAuth).mockReturnValue({
       loggedInUser: MOCK_USER,
       setLoggedInUser: setLoggedInUserMock,
-      oauthConfig: { githubEnabled: true },
-      accountInfo: [],
-      setAccountInfo: vi.fn()
+      oauthConfig: { githubEnabled: true }
     });
 
     vi.mocked(addToastForError);
