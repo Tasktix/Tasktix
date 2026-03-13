@@ -47,7 +47,6 @@ describe('Edit Tags', () => {
     const { getByLabelText } = render(
       <TagSettings
         addNewTag={vi.fn()}
-        listId='list-id'
         setTagsAvailable={setTagsAvailableMock}
         tagsAvailable={[
           new Tag('tag1', 'Red', 'id-tag1'),
@@ -64,7 +63,7 @@ describe('Edit Tags', () => {
 
     await user.click(greenButton);
 
-    expect(api.patch).toHaveBeenCalledWith('/list/list-id/tag/id-tag1', {
+    expect(api.patch).toHaveBeenCalledWith('/tag/id-tag1', {
       color: 'Green'
     });
 
@@ -81,7 +80,6 @@ describe('Edit Tags', () => {
     const { getByLabelText } = render(
       <TagSettings
         addNewTag={vi.fn()}
-        listId='list-id'
         setTagsAvailable={setTagsAvailableMock}
         tagsAvailable={[
           new Tag('tag1', 'Red', 'id-tag1'),
@@ -114,7 +112,6 @@ describe('Edit Tags', () => {
     const { getByLabelText } = render(
       <TagSettings
         addNewTag={vi.fn()}
-        listId='list-id'
         setTagsAvailable={setTagsAvailableMock}
         tagsAvailable={[
           new Tag('tag1', 'Red', 'id-tag1'),
@@ -130,7 +127,7 @@ describe('Edit Tags', () => {
     await user.type(editTextTag1, '-renamed');
     await user.keyboard('{enter}');
 
-    expect(api.patch).toHaveBeenCalledWith('/list/list-id/tag/id-tag1', {
+    expect(api.patch).toHaveBeenCalledWith('/tag/id-tag1', {
       name: 'tag1-renamed'
     });
     expect(setTagsAvailableMock).toHaveBeenCalledWith(
@@ -156,7 +153,6 @@ describe('Removing Tags', () => {
     const { getByLabelText } = render(
       <TagSettings
         addNewTag={vi.fn()}
-        listId='list-id'
         setTagsAvailable={setTagsAvailableMock}
         tagsAvailable={[
           new Tag('tag1', 'Red', 'id-tag1'),
@@ -172,7 +168,7 @@ describe('Removing Tags', () => {
     await user.click(deleteTag1);
     expect(confirmSpy).toHaveBeenCalled();
 
-    expect(api.delete).toHaveBeenCalledWith('/list/list-id/tag/id-tag1');
+    expect(api.delete).toHaveBeenCalledWith('/tag/id-tag1');
     expect(setTagsAvailableMock).toHaveBeenCalledWith([
       expect.objectContaining({ id: 'id-tag2' })
     ]);
@@ -193,7 +189,6 @@ describe('Removing Tags', () => {
     const { getByLabelText } = render(
       <TagSettings
         addNewTag={vi.fn()}
-        listId='list-id'
         setTagsAvailable={setTagsAvailableMock}
         tagsAvailable={[
           new Tag('tag1', 'Red', 'id-tag1'),

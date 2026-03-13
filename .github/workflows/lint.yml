@@ -20,12 +20,12 @@ jobs:
         uses: actions/cache@v3
         with:
           path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}-${{ hashFiles('prisma/schema.prisma') }}
           restore-keys: |
             ${{ runner.os }}-node-
       - name: Install dependencies if needed
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci
+        run: npm ci && npm run prisma:generate
       - name: Lint
         run: npm run lint
 
@@ -42,12 +42,12 @@ jobs:
         uses: actions/cache@v3
         with:
           path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}-${{ hashFiles('prisma/schema.prisma') }}
           restore-keys: |
             ${{ runner.os }}-node-
       - name: Install dependencies if needed
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci
+        run: npm ci && npm run prisma:generate
       - name: Cache Cypress binary
         id: cache-cypress
         uses: actions/cache@v3
