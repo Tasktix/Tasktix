@@ -74,32 +74,26 @@ export default function AuthSettings({ user }: { user: User }) {
   }, []);
 
   useEffect(() => {
-    const error = queryParams.get('error')
-    if(error){
-      addToastForError(undefined);
+    const error = queryParams.get('error');
+
+    if (error) {
+      addToastForError(null);
     }
-  }, [queryParams])
-  
+  }, [queryParams]);
+
   const isGithubLinked = accounts.some(acc => acc.providerId === 'github');
 
   /**
    * Attempts to a link a users Tasktix account to their Github account,
-   * redirects back to this page on success, adds toast on error.
+   * redirects back to this page on success, Errors from this are handled in the useAffect above.
    */
   function handleLinkGithub() {
     startTransition(async () => {
-      await authClient.linkSocial(
-        {
-          provider: 'github',
-          callbackURL: '/profile',
-          errorCallbackURL: '/profile'
-        },
-        {
-          onError: ctx => {
-            addToastForError(ctx.error);
-          }
-        }
-      );
+      await authClient.linkSocial({
+        provider: 'github',
+        callbackURL: '/profile',
+        errorCallbackURL: '/profile'
+      });
     });
   }
 

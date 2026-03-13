@@ -23,7 +23,11 @@ import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import { ErrorContext, SuccessContext } from 'better-auth/react';
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
-import { useRouter } from 'next/navigation';
+import {
+  ReadonlyURLSearchParams,
+  useRouter,
+  useSearchParams
+} from 'next/navigation';
 
 import { authClient } from '@/lib/auth-client';
 import User from '@/lib/model/user';
@@ -39,7 +43,8 @@ vi.mock('@/components/AuthProvider', async importOriginal => ({
 
 vi.mock(import('next/navigation'), async importOriginal => ({
   ...(await importOriginal()),
-  useRouter: vi.fn()
+  useRouter: vi.fn(),
+  useSearchParams: vi.fn()
 }));
 
 vi.mock('@/lib/error');
@@ -55,6 +60,11 @@ vi.mock('@/lib/auth-client', () => ({
 
 beforeEach(() => {
   vi.resetAllMocks();
+  const searchParamsMock = {
+    get: vi.fn()
+  } as unknown as ReadonlyURLSearchParams;
+
+  vi.mocked(useSearchParams).mockReturnValue(searchParamsMock);
 });
 
 const MOCK_USER = new User(
@@ -130,10 +140,11 @@ describe('Linking/Unlinking Github', () => {
 
     await user.click(githubRowButton);
 
-    expect(authClient.linkSocial).toHaveBeenCalledWith(
-      { provider: 'github', callbackURL: '/profile' },
-      expect.anything()
-    );
+    expect(authClient.linkSocial).toHaveBeenCalledWith({
+      provider: 'github',
+      callbackURL: '/profile',
+      errorCallbackURL: '/profile'
+    });
     expect(authClient.unlinkAccount).not.toHaveBeenCalled();
   });
 
@@ -235,6 +246,29 @@ describe('Linking/Unlinking Github', () => {
 
     expect(addToastForError).toHaveBeenCalledWith(exampleError.error);
   });
+
+  test('Failed Github Linking creates Toast via Query Params', () => {
+    const mockErrorQueryParam = () => 'this is an error';
+    const searchParamsMock = {
+      get: mockErrorQueryParam
+    } as unknown as ReadonlyURLSearchParams;
+
+    vi.mocked(useSearchParams).mockReturnValue(searchParamsMock);
+    vi.mocked(authClient.listAccounts).mockResolvedValue({});
+    vi.mocked(useAuth).mockReturnValue({
+      loggedInUser: MOCK_USER,
+      setLoggedInUser: vi.fn(),
+      oauthConfig: { githubEnabled: true, customEnabled: false }
+    });
+
+    const {} = render(
+      <HeroUIProvider disableRipple>
+        <AuthSettings user={MOCK_USER} />
+      </HeroUIProvider>
+    );
+
+    expect(addToastForError).toHaveBeenCalledWith(null);
+  });
 });
 
 describe('Account Deletion', () => {
@@ -325,6 +359,7 @@ describe('Account Deletion', () => {
       expect.anything()
     );
     expect(setLoggedInUserMock).toHaveBeenCalledWith(false);
+    // eslint-disable-next-line
     expect(routerMock.push).toHaveBeenCalledWith('/');
   });
 
@@ -389,6 +424,7 @@ describe('Account Deletion', () => {
     );
     expect(addToastForError).toHaveBeenCalledWith(exampleError.error);
     expect(setLoggedInUserMock).not.toHaveBeenCalled();
+    // eslint-disable-next-line
     expect(routerMock.push).not.toHaveBeenCalled();
   });
 });
