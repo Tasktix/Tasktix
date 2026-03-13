@@ -19,12 +19,14 @@
 import { createContext } from 'react';
 
 import User from '@/lib/model/user';
-import { OAuthConfig } from '@/lib/auth';
+import { FilteredAccountInfo, OAuthConfig } from '@/lib/auth';
 
 interface AuthContextType {
   loggedInUser: User | false;
   setLoggedInUser: (_: User | false) => void;
   oauthConfig: OAuthConfig;
+  accountInfo: FilteredAccountInfo[];
+  setAccountInfo: (accounts: FilteredAccountInfo[]) => void;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(

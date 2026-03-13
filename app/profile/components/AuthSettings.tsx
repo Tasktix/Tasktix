@@ -31,7 +31,7 @@ import {
   Form,
   useDisclosure
 } from '@heroui/react';
-import { FormEvent, startTransition, useEffect, useState } from 'react';
+import { FormEvent, startTransition } from 'react';
 import { Github, Trash } from 'react-bootstrap-icons';
 import { useRouter } from 'next/navigation';
 
@@ -40,29 +40,13 @@ import { authClient } from '@/lib/auth-client';
 import User from '@/lib/model/user';
 import { useAuth } from '@/components/AuthProvider';
 
-interface FilteredAccount {
-  providerId: string;
-}
-
 export default function AuthSettings({ user }: { user: User }) {
-  const [accounts, setAccounts] = useState<FilteredAccount[]>([]);
   const router = useRouter();
-  const { setLoggedInUser } = useAuth();
+  const { setLoggedInUser, oauthConfig, accountInfo, setAccountInfo } =
+    useAuth();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-  useEffect(() => {
-    const fetchAccounts = async () => {
-      const { data } = await authClient.listAccounts();
-
-      if (data) {
-        setAccounts(data);
-      }
-    };
-
-    void fetchAccounts();
-  }, []);
-
-  const isGithubLinked = accounts.some(acc => acc.providerId === 'github');
+const isGithubLinked = accountInfo.some(acc => acc.providerId === 'github');
 
   function handleLinkGithub() {
     startTransition(async () => {
@@ -87,6 +71,13 @@ export default function AuthSettings({ user }: { user: User }) {
           providerId: 'github'
         },
         {
+          onSuccess: () => {
+            const accounts = accountInfo.filter(
+              acc => acc.providerId !== 'github'
+            );
+
+            setAccountInfo(accounts);
+          },
           onError: ctx => {
             addToastForError(ctx.error);
           }
@@ -118,34 +109,40 @@ export default function AuthSettings({ user }: { user: User }) {
   }
 
   const methods = [
-    {
-      title: 'Github',
-      description: isGithubLinked
-        ? `Linked to ${user.name}`
-        : 'Link to your Github account',
-      icon: <Github />,
-      actionLabel: isGithubLinked ? 'Disconnect' : 'Connect',
-      handler: isGithubLinked ? handleUnlinkGithub : handleLinkGithub,
-      isCriticalAction: false
-    },
+    ...(oauthConfig.githubEnabled
+      ? [
+          {
+            title: 'Github',
+            description: isGithubLinked
+              ? `Linked to ${user.name}`
+              : 'Link to your Github account',
+            icon: <Github />,
+            actionLabel: isGithubLinked ? 'Disconnect' : 'Connect',
+            handler: isGithubLinked ? handleUnlinkGithub : handleLinkGithub,
+            isCriticalAction: false,
+            testId: 'link-to-github'
+          }
+        ]
+      : []),
     {
       title: 'Delete Account',
       description: 'This action is irreversible',
       icon: <Trash />,
       actionLabel: 'Delete Account',
       handler: onOpen,
-      isCriticalAction: true
+      isCriticalAction: true,
+      testId: 'delete-account'
     }
-  ];
+  ].filter(Boolean);
 
   return (
-    <div className='max-w-4xl p-6 min-h-screen'>
-      <h2 className='text-2xl font-semibold mb-6'>Sign in methods</h2>
+    <div className='max-w-4xl p-6'>
+      <h2 className='text-2xl font-semibold mb-6'>Account Settings</h2>
 
       <Card className=' border border-white/10 rounded-lg'>
         <CardBody className='p-0'>
           {methods.map((method, index) => (
-            <div key={method.title}>
+            <div key={method.title} data-testid={method.testId}>
               <div className='flex items-center justify-between p-5 hover:bg-white/[0.02] transition-colors group'>
                 <div className='flex items-start gap-4'>
                   <div className='mt-1'>{method.icon}</div>
@@ -160,6 +157,7 @@ export default function AuthSettings({ user }: { user: User }) {
                 </div>
 
                 <Button
+                  aria-label={method.actionLabel}
                   className={`font-medium border border-white/10 text-white ${
                     method.isCriticalAction ? 'bg-danger' : 'bg-[#27272a]'
                   }`}
@@ -184,6 +182,7 @@ export default function AuthSettings({ user }: { user: User }) {
             <Form className='w-full gap-4' onSubmit={handleDeleteAccount}>
               <Input
                 isRequired
+                aria-label='Password Input'
                 errorMessage='Password is required to delete account'
                 label='Password'
                 name='password'
@@ -191,8 +190,12 @@ export default function AuthSettings({ user }: { user: User }) {
               />
 
               <div className='flex gap-2 w-full justify-end'>
-                <Button color='danger' type='submit'>
-                  Delete Account
+                <Button
+                  aria-label='Confirm Delete Account'
+                  color='danger'
+                  type='submit'
+                >
+                  Confirm
                 </Button>
               </div>
             </Form>

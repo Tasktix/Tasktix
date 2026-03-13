@@ -31,6 +31,10 @@ export type OAuthConfig = {
   githubEnabled: boolean;
 };
 
+export type FilteredAccountInfo = {
+  providerId: string;
+  scopes: string[];
+};
 /**
  * Server function that allows client to access state of OAuth configuration, available from the useAuth hook.
  * Should not be called from client
