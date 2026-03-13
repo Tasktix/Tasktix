@@ -31,7 +31,7 @@ import {
   Form,
   useDisclosure
 } from '@heroui/react';
-import { FormEvent, startTransition } from 'react';
+import { FormEvent, startTransition, useEffect, useState } from 'react';
 import { Github, Trash } from 'react-bootstrap-icons';
 import { useRouter } from 'next/navigation';
 
@@ -40,13 +40,29 @@ import { authClient } from '@/lib/auth-client';
 import User from '@/lib/model/user';
 import { useAuth } from '@/components/AuthProvider';
 
+interface FilteredAccount {
+  providerId: string;
+}
+
 export default function AuthSettings({ user }: { user: User }) {
+  const [accounts, setAccounts] = useState<FilteredAccount[]>([]);
   const router = useRouter();
-  const { setLoggedInUser, oauthConfig, accountInfo, setAccountInfo } =
-    useAuth();
+  const { setLoggedInUser } = useAuth();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-const isGithubLinked = accountInfo.some(acc => acc.providerId === 'github');
+  useEffect(() => {
+    const fetchAccounts = async () => {
+      const { data } = await authClient.listAccounts();
+
+      if (data) {
+        setAccounts(data);
+      }
+    };
+
+    void fetchAccounts();
+  }, []);
+
+  const isGithubLinked = accounts.some(acc => acc.providerId === 'github');
 
   function handleLinkGithub() {
     startTransition(async () => {
@@ -71,13 +87,6 @@ const isGithubLinked = accountInfo.some(acc => acc.providerId === 'github');
           providerId: 'github'
         },
         {
-          onSuccess: () => {
-            const accounts = accountInfo.filter(
-              acc => acc.providerId !== 'github'
-            );
-
-            setAccountInfo(accounts);
-          },
           onError: ctx => {
             addToastForError(ctx.error);
           }

@@ -43,9 +43,7 @@ test('Pressing Github Button attempts Oauth Login', () => {
   vi.mocked(useAuth).mockReturnValue({
     loggedInUser: false,
     setLoggedInUser: vi.fn(),
-    oauthConfig: { githubEnabled: true },
-    accountInfo: [],
-    setAccountInfo: vi.fn()
+    oauthConfig: { githubEnabled: true }
   });
   const { getByLabelText } = render(
     <HeroUIProvider disableRipple>
@@ -66,9 +64,7 @@ test('OAuth login not rendered if not configured on server ', () => {
   vi.mocked(useAuth).mockReturnValue({
     loggedInUser: false,
     setLoggedInUser: vi.fn(),
-    oauthConfig: { githubEnabled: false },
-    accountInfo: [],
-    setAccountInfo: vi.fn()
+    oauthConfig: { githubEnabled: false }
   });
   const { queryByLabelText } = render(
     <HeroUIProvider disableRipple>
