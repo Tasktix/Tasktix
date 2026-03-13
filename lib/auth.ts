@@ -31,10 +31,14 @@ const prisma = new PrismaClient();
 
 export type OAuthConfig = {
   githubEnabled: boolean;
-  customEnabled: boolean;
-  customProviderId: string;
-  customProviderScope?: string[];
-};
+} & (
+  | { customEnabled: false }
+  | {
+      customEnabled: true;
+      customProviderId: string;
+      customProviderScope?: string[];
+    }
+);
 
 /**
  * Server function that allows client to access state of OAuth configuration, available from the useAuth hook.
@@ -55,16 +59,21 @@ export const getOAuthConfig = () => {
     );
   }
 
-  const config: OAuthConfig = {
-    githubEnabled:
-      Boolean(process.env.GITHUB_CLIENT_ID) &&
-      Boolean(process.env.GITHUB_CLIENT_SECRET),
-    customEnabled:
-      Boolean(process.env.OAUTH_PROVIDER_ID) &&
-      Boolean(process.env.OAUTH_CLIENT_ID),
-    customProviderId: process.env.OAUTH_PROVIDER_ID ?? 'SSO',
-    customProviderScope: scopes
-  };
+  const githubEnabled =
+    Boolean(process.env.GITHUB_CLIENT_ID) &&
+    Boolean(process.env.GITHUB_CLIENT_SECRET);
+  const customEnabled =
+    Boolean(process.env.OAUTH_PROVIDER_ID) &&
+    Boolean(process.env.OAUTH_CLIENT_ID);
+
+  const config: OAuthConfig = customEnabled
+    ? {
+        githubEnabled,
+        customEnabled,
+        customProviderId: process.env.OAUTH_PROVIDER_ID as string,
+        customProviderScope: scopes
+      }
+    : { githubEnabled, customEnabled };
 
   return config;
 };

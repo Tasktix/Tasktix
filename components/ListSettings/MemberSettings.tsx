@@ -53,7 +53,7 @@ export default function MemberSettings({
   roles: Map<string, MemberRole>;
   setMembers: (members: ListMember[]) => unknown;
 }>) {
-  const [newUsername, setNewUsername] = useState('');
+  const [newMemberEmail, setNewMemberEmail] = useState('');
   const [newRole, setNewRole] = useState(roles.keys().next().value as string);
 
   function handleUpdateNewRole(roleId: Selection) {
@@ -69,11 +69,10 @@ export default function MemberSettings({
 
   function handleAddMember(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setNewUsername('');
-
+    setNewMemberEmail('');
     api
       .post(`/list/${listId}/member`, {
-        username: newUsername,
+        email: newMemberEmail,
         roleId: newRole
       })
       .then(res => {
@@ -117,9 +116,9 @@ export default function MemberSettings({
     <span className='flex flex-col gap-4 shrink overflow-y-auto'>
       <form className='flex gap-2' onSubmit={handleAddMember}>
         <Input
-          placeholder='Username...'
-          value={newUsername}
-          onValueChange={setNewUsername}
+          placeholder='Email...'
+          value={newMemberEmail}
+          onValueChange={setNewMemberEmail}
         />
         <Select
           aria-label='New member role'

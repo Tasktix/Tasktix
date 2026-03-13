@@ -77,7 +77,7 @@ const MOCK_ROLE_CAN_ADMIN = new MemberRole('Admin', 'All permissions', {
 });
 
 describe('Adding members', () => {
-  it('Allows adding new members by entering their username', async () => {
+  it('Allows adding new members by entering their Email', async () => {
     const oldMember = new ListMember(users[0], MOCK_ROLE_CAN_VIEW);
     const newMember = new ListMember(users[1], MOCK_ROLE_CAN_VIEW);
 
@@ -101,13 +101,13 @@ describe('Adding members', () => {
       </HeroUIProvider>
     );
 
-    expect(getByLabelText('Username...')).toBeVisible();
+    expect(getByLabelText('Email...')).toBeVisible();
     expect(getByText('Send Invite')).toBeVisible();
 
-    await user.type(getByLabelText('Username...'), 'user2');
+    await user.type(getByLabelText('Email...'), 'user2');
     await user.click(getByText('Send Invite'));
 
-    expect(getByLabelText('Username...')).toHaveValue('');
+    expect(getByLabelText('Email...')).toHaveValue('');
     expect(setMembers).toHaveBeenCalledTimes(1);
     expect(setMembers).toHaveBeenCalledWith(
       expect.arrayContaining([oldMember, newMember])
@@ -135,13 +135,13 @@ describe('Adding members', () => {
       </HeroUIProvider>
     );
 
-    expect(getByLabelText('Username...')).toBeVisible();
+    expect(getByLabelText('Email...')).toBeVisible();
     expect(getByText('Send Invite')).toBeVisible();
 
-    await user.type(getByLabelText('Username...'), 'user2');
+    await user.type(getByLabelText('Email...'), 'user2');
     await user.click(getByText('Send Invite'));
 
-    expect(getByLabelText('Username...')).toHaveValue('');
+    expect(getByLabelText('Email...')).toHaveValue('');
     expect(addToast).toHaveBeenCalledTimes(1);
     expect(addToast).toHaveBeenCalledWith({
       color: 'danger',
@@ -173,13 +173,13 @@ describe('Adding members', () => {
       </HeroUIProvider>
     );
 
-    expect(getByLabelText('Username...')).toBeVisible();
+    expect(getByLabelText('Email...')).toBeVisible();
     expect(getByText('Send Invite')).toBeVisible();
 
-    await user.type(getByLabelText('Username...'), 'user2');
+    await user.type(getByLabelText('Email...'), 'user2');
     await user.click(getByText('Send Invite'));
 
-    expect(getByLabelText('Username...')).toHaveValue('');
+    expect(getByLabelText('Email...')).toHaveValue('');
     expect(addToast).toHaveBeenCalledTimes(1);
     expect(addToast).toHaveBeenCalledWith({
       color: 'danger',

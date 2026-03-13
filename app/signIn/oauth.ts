@@ -70,6 +70,9 @@ export async function handleOAuth(
   };
 
   if (provider === 'custom') {
+    if (!oauthConfig.customEnabled)
+      throw new Error('Received custom auth attempt when no provider set');
+
     await authClient.signIn.oauth2(
       {
         providerId: oauthConfig.customProviderId,
