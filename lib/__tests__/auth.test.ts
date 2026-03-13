@@ -89,7 +89,6 @@ describe('getOAuthConfig', () => {
     vi.stubEnv('OAUTH_PROVIDER_ID', 'customProvider');
     vi.stubEnv('OAUTH_CLIENT_ID', 'customProvider');
 
-
     const config = getOAuthConfig();
 
     expect(config).toMatchObject({
