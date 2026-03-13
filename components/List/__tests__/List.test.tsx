@@ -110,6 +110,68 @@ describe('ListItem state propagation', () => {
     );
   });
 
+  test('Item descriptions update when changed', async () => {
+    const user = userEvent.setup();
+
+    vi.mocked(api.patch).mockResolvedValue({
+      code: 200,
+      message: 'Success',
+      content: undefined
+    });
+
+    const { getByDisplayValue, getByLabelText, getByTestId } = render(
+      <HeroUIProvider disableRipple>
+        <List
+          startingList={JSON.stringify(
+            new ListModel(
+              'List name',
+              'Amber',
+              [],
+              [
+                new ListSection('List section name', [
+                  new ListItem('List item name', {
+                    description: 'Initial description',
+                    id: 'item-id'
+                  })
+                ])
+              ],
+              true,
+              true,
+              true,
+              'list-id'
+            )
+          )}
+          startingRoles='[]'
+          startingTagsAvailable='[]'
+        />
+      </HeroUIProvider>
+    );
+
+    await user.click(getByLabelText('More item info'));
+
+    const nameInput = getByDisplayValue('Initial description');
+
+    await user.clear(nameInput);
+    await user.type(nameInput, 'A better description');
+    await user.click(
+      within(getByTestId('confirmed-textarea-Description')).getByRole('button')
+    );
+
+    await waitFor(() =>
+      expect(api.patch).toHaveBeenCalledExactlyOnceWith('/item/item-id', {
+        description: 'A better description'
+      })
+    );
+
+    await waitFor(() =>
+      expect(
+        within(getByTestId('confirmed-textarea-Description')).getByRole(
+          'button'
+        )
+      ).toHaveClass('hidden')
+    );
+  });
+
   test('Item priority updates when changed', async () => {
     const user = userEvent.setup();
 

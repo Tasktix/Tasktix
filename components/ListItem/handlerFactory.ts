@@ -64,6 +64,23 @@ export function itemHandlerFactory(
   }
 
   /**
+   * @param description The item's new description
+   */
+  function setDescription(description: ListItem['description']) {
+    api
+      .patch(`/item/${itemId}`, { description })
+      .then(() =>
+        dispatchItemChange({
+          type: 'SetItemDescription',
+          sectionId,
+          id: itemId,
+          description
+        })
+      )
+      .catch(addToastForError);
+  }
+
+  /**
    * @param date The item's new due date
    */
   function setDueDate(date: ListItem['dateDue']) {
@@ -251,6 +268,7 @@ export function itemHandlerFactory(
 
   return {
     setName,
+    setDescription,
     setDueDate,
     setPriority,
     setIncomplete,
