@@ -33,7 +33,7 @@ test('Tags that can be added render in order alphabetically', async () => {
     <Tags
       addNewTag={vi.fn()}
       isComplete={false}
-      tags={[]}
+      tagsAdded={[]}
       tagsAvailable={[
         new Tag('Second tag', 'Blue'),
         new Tag('First tag', 'Cyan'),
@@ -63,7 +63,7 @@ test('Tags that are be added render in order alphabetically', async () => {
     <Tags
       addNewTag={vi.fn()}
       isComplete={false}
-      tags={[
+      tagsAdded={[
         new Tag('Second tag', 'Blue', 'tag2'),
         new Tag('First tag', 'Cyan', 'tag1'),
         new Tag('Third tag', 'Violet', 'tag3')
@@ -97,7 +97,7 @@ test('Tags that are added render above tags that can be added', async () => {
     <Tags
       addNewTag={vi.fn()}
       isComplete={false}
-      tags={[new Tag('Second tag', 'Blue', 'added-id')]}
+      tagsAdded={[new Tag('Second tag', 'Blue', 'added-id')]}
       tagsAvailable={[
         new Tag('Second tag', 'Blue', 'added-id'),
         new Tag('First tag', 'Cyan'),
@@ -127,7 +127,7 @@ test('Popover contains only the "new tag" input if currently no tags', async () 
     <Tags
       addNewTag={vi.fn()}
       isComplete={false}
-      tags={[]}
+      tagsAdded={[]}
       tagsAvailable={[]}
       onTagLink={vi.fn()}
       onTagUnlink={vi.fn()}

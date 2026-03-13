@@ -20,12 +20,10 @@ import { DragControls } from 'framer-motion';
 import { ActionDispatch } from 'react';
 
 import { NamedColor } from '@/lib/model/color';
-import ListItem from '@/lib/model/listItem';
-import Tag from '@/lib/model/tag';
 import List from '@/lib/model/list';
 import { ItemAction } from '@/components/List';
 
-import { ListMemberState } from '../List/types';
+import { ListItemState, ListState } from '../List/types';
 
 import { itemHandlerFactory } from './handlerFactory';
 
@@ -34,12 +32,12 @@ import { itemHandlerFactory } from './handlerFactory';
  */
 export interface ListItemParams {
   sectionId: string;
-  item: ListItem;
-  list?: List;
-  members: ListMemberState[];
-  tagsAvailable: Tag[];
-  hasTimeTracking: boolean;
-  hasDueDates: boolean;
+  item: ListItemState;
+  list?: Pick<List, 'id' | 'color' | 'name'>;
+  members: ListState['members'];
+  tags: ListState['tags'];
+  hasTimeTracking: ListState['hasTimeTracking'];
+  hasDueDates: ListState['hasDueDates'];
   reorderControls?: DragControls;
   onItemEvent: ActionDispatch<[action: ItemAction]>;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;

@@ -28,12 +28,11 @@ import {
 import { ThreeDots, TrashFill } from 'react-bootstrap-icons';
 
 import { NamedColor } from '@/lib/model/color';
-import ListItem from '@/lib/model/listItem';
-import Tag from '@/lib/model/tag';
+import Assignee from '@/lib/model/assignee';
 
 import DateInput2 from '../DateInput2';
 import ConfirmedTextInput from '../ConfirmedTextInput';
-import { ListMemberState } from '../List/types';
+import { ListItemState, ListState } from '../List/types';
 
 import Priority from './Priority';
 import Tags from './Tags';
@@ -68,7 +67,6 @@ import { ItemHandlers, SetItem } from './types';
 export default function More({
   item,
   tags,
-  tagsAvailable,
   members,
   hasDueDates,
   hasTimeTracking,
@@ -77,12 +75,11 @@ export default function More({
   itemHandlers,
   addNewTag
 }: {
-  item: ListItem;
-  tags: Tag[];
-  tagsAvailable: Tag[];
-  members: ListMemberState[];
-  hasDueDates: boolean;
-  hasTimeTracking: boolean;
+  item: ListItemState;
+  tags: ListState['tags'];
+  members: ListState['members'];
+  hasDueDates: ListState['hasDueDates'];
+  hasTimeTracking: ListState['hasTimeTracking'];
   elapsedLive: number;
   set: SetItem;
   itemHandlers: ItemHandlers;
@@ -153,20 +150,29 @@ export default function More({
                 <Tags
                   addNewTag={addNewTag}
                   className='py-2'
-                  isComplete={item.status === 'Completed'}
-                  tags={tags}
-                  tagsAvailable={tagsAvailable}
+                  isComplete={isComplete}
+                  tagsAdded={item.tags
+                    .map(id => tags.get(id))
+                    .filter(e => e !== undefined)}
+                  tagsAvailable={tags.values().toArray()}
                   onTagLink={itemHandlers.linkTag}
                   onTagUnlink={itemHandlers.unlinkTag}
                 />
 
-                {members.length > 1 ? (
+                {members.size > 1 ? (
                   <Users
-                    assignees={item.assignees}
+                    assignees={
+                      item.assignees
+                        .map(([id, role]) => ({
+                          user: members.get(id)?.user,
+                          role
+                        }))
+                        .filter(e => e.user !== undefined) as Assignee[]
+                    }
                     className='py-2'
                     isComplete={isComplete}
                     itemId={item.id}
-                    members={members}
+                    members={members.values().toArray()}
                   />
                 ) : null}
 

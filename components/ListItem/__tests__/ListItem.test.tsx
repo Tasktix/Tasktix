@@ -24,7 +24,6 @@ import { render } from '@testing-library/react';
 import { HeroUIProvider } from '@heroui/react';
 
 import ListItemModel from '@/lib/model/listItem';
-import Assignee from '@/lib/model/assignee';
 import User from '@/lib/model/user';
 import List from '@/lib/model/list';
 import MemberRole from '@/lib/model/memberRole';
@@ -68,10 +67,10 @@ it('Shows everything faded and shows the completion date instead of due date whe
         hasDueDates
         hasTimeTracking
         addNewTag={vi.fn()}
-        item={item}
-        members={[]}
+        item={{ ...item, assignees: [], tags: [] }}
+        members={new Map()}
         sectionId='section-id'
-        tagsAvailable={[]}
+        tags={new Map()}
         onItemEvent={vi.fn()}
       />
     </HeroUIProvider>
@@ -88,13 +87,15 @@ it('Shows everything faded and shows the completion date instead of due date whe
 });
 
 it('Displays the associated list when one is provided', () => {
+  const item = new ListItemModel('Test item', {});
+
   const { getByText, getByRole } = render(
     <HeroUIProvider disableRipple>
       <ListItem
         addNewTag={vi.fn()}
         hasDueDates={false}
         hasTimeTracking={false}
-        item={new ListItemModel('Test item', {})}
+        item={{ ...item, assignees: [], tags: [] }}
         list={
           new List(
             'List Name',
@@ -108,9 +109,9 @@ it('Displays the associated list when one is provided', () => {
             'list-id'
           )
         }
-        members={[]}
+        members={new Map()}
         sectionId='section-id'
-        tagsAvailable={[]}
+        tags={new Map()}
         onItemEvent={vi.fn()}
       />
     </HeroUIProvider>
@@ -146,9 +147,7 @@ it('Displays all members assigned to the item', () => {
       { color: 'Blue' }
     )
   ];
-  const item = new ListItemModel('Test item', {
-    assignees: [new Assignee(members[0], ''), new Assignee(members[1], '')]
-  });
+  const item = new ListItemModel('Test item', {});
 
   const { getByText } = render(
     <HeroUIProvider disableRipple>
@@ -156,10 +155,21 @@ it('Displays all members assigned to the item', () => {
         addNewTag={vi.fn()}
         hasDueDates={false}
         hasTimeTracking={false}
-        item={item}
-        members={members.map(m => ({ user: m, role: MOCK_ROLE_CAN_VIEW.id }))}
+        item={{
+          ...item,
+          assignees: [
+            [members[0].id, ''],
+            [members[1].id, '']
+          ],
+          tags: []
+        }}
+        members={
+          new Map(
+            members.map(m => [m.id, { user: m, role: MOCK_ROLE_CAN_VIEW.id }])
+          )
+        }
         sectionId='section-id'
-        tagsAvailable={[]}
+        tags={new Map()}
         onItemEvent={vi.fn()}
       />
     </HeroUIProvider>

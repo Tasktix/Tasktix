@@ -35,7 +35,7 @@ import { NamedColor } from '@/lib/model/color';
 import TagInput from '../TagInput';
 
 export default function Tags({
-  tags,
+  tagsAdded,
   isComplete,
   tagsAvailable,
   className,
@@ -43,7 +43,7 @@ export default function Tags({
   onTagLink,
   onTagUnlink
 }: {
-  tags: TagModel[];
+  tagsAdded: TagModel[];
   isComplete: boolean;
   tagsAvailable?: TagModel[];
   className?: string;
@@ -55,7 +55,7 @@ export default function Tags({
 
   const tagsMap = Object.fromEntries((tagsAvailable ?? []).map(t => [t.id, t]));
 
-  const displayTags = tags
+  const displayTags = tagsAdded
     .map(tag => tagsMap[tag.id])
     .filter(Boolean)
     .sort((a, b) => a.name.localeCompare(b.name));
@@ -96,7 +96,7 @@ export default function Tags({
         </Button>
       </PopoverTrigger>
       <PopoverContent>
-        {tags
+        {tagsAdded
           .sort((a, b) => (a.name > b.name ? 1 : -1))
           .map(tag => (
             <div
@@ -120,7 +120,8 @@ export default function Tags({
           ? tagsAvailable
               .sort((a, b) => (a.name > b.name ? 1 : -1))
               .map(tag => {
-                if (tags.some(usedTag => usedTag.id === tag.id)) return null;
+                if (tagsAdded.some(usedTag => usedTag.id === tag.id))
+                  return null;
                 else
                   return (
                     <div

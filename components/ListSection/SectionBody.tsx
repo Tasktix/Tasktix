@@ -19,8 +19,6 @@
 import { Reorder } from 'framer-motion';
 import { ActionDispatch, useState } from 'react';
 
-import ItemAssignee from '@/lib/model/assignee';
-import ListItemModel from '@/lib/model/listItem';
 import {
   ListItem,
   ReorderableListItem,
@@ -77,7 +75,7 @@ export default function SectionBody({
   isAutoOrdered: boolean;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
   onItemEvent: ActionDispatch<[action: ItemAction]>;
-  onItemReorder: (item: ListItemModel, newIndex: number) => unknown;
+  onItemReorder: (item: ListItemState, newIndex: number) => unknown;
 }) {
   /**
    * Provides a visual index for each list item for use with dragging. This number
@@ -122,19 +120,10 @@ export default function SectionBody({
     addNewTag,
     hasDueDates,
     hasTimeTracking,
-    item: {
-      ...item,
-      assignees: item.assignees
-        .map(([id, role]) => ({
-          user: members.get(id)?.user,
-          role
-        }))
-        .filter(e => e.user !== undefined) as ItemAssignee[],
-      tags: item.tags.map(id => tags.get(id)).filter(e => e !== undefined)
-    },
-    members: members.values().toArray(),
+    item,
+    members,
     sectionId,
-    tagsAvailable: tags.values().toArray(),
+    tags,
     onItemEvent
   }));
 

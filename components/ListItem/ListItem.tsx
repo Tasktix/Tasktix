@@ -25,6 +25,7 @@ import { default as api } from '@/lib/api';
 import { formatDate } from '@/lib/date';
 import { getBackgroundColor, getTextColor } from '@/lib/color';
 import { addToastForError } from '@/lib/error';
+import Assignee from '@/lib/model/assignee';
 
 import DateInput from '../DateInput';
 import ConfirmedTextInput from '../ConfirmedTextInput';
@@ -71,7 +72,7 @@ export default function ListItem({
   item,
   list,
   members,
-  tagsAvailable,
+  tags,
   hasTimeTracking,
   hasDueDates,
   reorderControls,
@@ -291,18 +292,27 @@ export default function ListItem({
           addNewTag={addNewTag}
           className='hidden lg:flex'
           isComplete={item.status === 'Completed'}
-          tags={item.tags}
-          tagsAvailable={tagsAvailable}
+          tagsAdded={item.tags
+            .map(id => tags.get(id))
+            .filter(e => e !== undefined)}
+          tagsAvailable={tags.values().toArray()}
           onTagLink={itemHandlers.linkTag}
           onTagUnlink={itemHandlers.unlinkTag}
         />
 
-        {members.length > 1 ? (
+        {members.size > 1 ? (
           <Users
-            assignees={item.assignees}
+            assignees={
+              item.assignees
+                .map(([id, role]) => ({
+                  user: members.get(id)?.user,
+                  role
+                }))
+                .filter(e => e.user !== undefined) as Assignee[]
+            }
             isComplete={item.status === 'Completed'}
             itemId={item.id}
-            members={members}
+            members={members.values().toArray()}
           />
         ) : null}
 
@@ -341,8 +351,7 @@ export default function ListItem({
             itemHandlers={itemHandlers}
             members={members}
             set={set}
-            tags={item.tags}
-            tagsAvailable={tagsAvailable}
+            tags={tags}
           />
         </span>
       </span>
