@@ -70,7 +70,7 @@ export default function MemberSettings({
 
   function handleAddMember(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    
+    setNewMemberEmail('');
     api
       .post(`/list/${listId}/member`, {
         email: newMemberEmail,
