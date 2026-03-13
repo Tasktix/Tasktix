@@ -81,7 +81,7 @@ Restart=always
 ```ini
 [Pod]
 PodName=tasktix
-PublishPort=127.0.0.1:3000:3000
+PublishPort=<your-port>:3000
 
 [Install]
 WantedBy=default.target
@@ -98,7 +98,7 @@ mysql://tasktix:<your-password-here>@tasktix/tasktix
 foo@bar:~$ echo "$REPLY" | podman secret create TASKTIX_DATABASE_URL -
 foo@bar:~$ read
 <your-root-password-here>
-foo@bar:~$ echo "$REPLY" | podman secret create TASKTIX_DB_PASSWORD -
+foo@bar:~$ echo "$REPLY" | podman secret create TASKTIX_DB_ROOT_PASSWORD -
 foo@bar:~$ unset $REPLY
 foo@bar:~$ openssl rand -base64 32 | podman secret create TASKTIX_BETTER_AUTH_SECRET -
 foo@bar:~$ systemctl --user daemon-reload
