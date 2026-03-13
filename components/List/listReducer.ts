@@ -62,10 +62,6 @@ export default function listReducer(
       newState.name = action.name;
       break;
 
-    case 'SetMembers':
-      newState.members = action.members;
-      break;
-
     case 'AddMember':
       newState.members.set(action.member.user.id, action.member);
       break;

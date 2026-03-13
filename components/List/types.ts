@@ -36,7 +36,6 @@ export type ListAction =
   | { type: 'SetIsAutoOrdered'; isAutoOrdered: ListState['isAutoOrdered'] }
   | { type: 'SetListColor'; color: ListState['color'] }
   | { type: 'SetListName'; name: ListState['name'] }
-  | { type: 'SetMembers'; members: ListState['members'] }
   | { type: 'AddTag'; tag: Tag }
   | { type: 'AddSection'; section: ListSection };
 
