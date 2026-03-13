@@ -86,6 +86,8 @@ describe('getOAuthConfig', () => {
 
   test('Properly parses custom SSO scopes environment variable', () => {
     vi.stubEnv('OAUTH_SCOPES', '["oauth", "password"]');
+    vi.stubEnv('OAUTH_PROVIDER_ID', 'customProvider');
+    vi.stubEnv('OAUTH_CLIENT_ID', 'customProvider');
 
     const config = getOAuthConfig();
 
@@ -99,9 +101,7 @@ describe('getOAuthConfig', () => {
 
     const config = getOAuthConfig();
 
-    expect(config).toMatchObject({
-      customProviderScope: undefined
-    });
+    expect(config).not.toHaveProperty('customProviderScope');
   });
 
   test('Logs an error if custom SSO scopes environment variable is unparsable', () => {

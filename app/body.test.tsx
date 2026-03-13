@@ -56,8 +56,9 @@ beforeEach(() => {
 });
 
 const MOCK_OAUTH_CONFIG = {
-  githubEnabled: true
-};
+  githubEnabled: true,
+  customEnabled: false
+} as const;
 
 describe('Body', () => {
   it('links logo to /list when logged in', () => {
