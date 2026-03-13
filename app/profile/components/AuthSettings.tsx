@@ -33,7 +33,7 @@ import {
 } from '@heroui/react';
 import { FormEvent, startTransition, useEffect, useState } from 'react';
 import { Github, Trash } from 'react-bootstrap-icons';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import { addToastForError } from '@/lib/error';
 import { authClient } from '@/lib/auth-client';
@@ -52,6 +52,7 @@ interface FilteredAccount {
 export default function AuthSettings({ user }: { user: User }) {
   const [accounts, setAccounts] = useState<FilteredAccount[]>([]);
   const router = useRouter();
+  const queryParams = useSearchParams();
   const { setLoggedInUser, oauthConfig } = useAuth();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
@@ -72,6 +73,13 @@ export default function AuthSettings({ user }: { user: User }) {
     void fetchAccounts();
   }, []);
 
+  useEffect(() => {
+    const error = queryParams.get('error')
+    if(error){
+      addToastForError(undefined);
+    }
+  }, [queryParams])
+  
   const isGithubLinked = accounts.some(acc => acc.providerId === 'github');
 
   /**
@@ -83,7 +91,8 @@ export default function AuthSettings({ user }: { user: User }) {
       await authClient.linkSocial(
         {
           provider: 'github',
-          callbackURL: '/profile'
+          callbackURL: '/profile',
+          errorCallbackURL: '/profile'
         },
         {
           onError: ctx => {
