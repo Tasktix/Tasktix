@@ -18,13 +18,13 @@
 
 import { ClientError, ServerError, Success } from '@/lib/Response';
 import { createListMember, getIsListMember } from '@/lib/database/list';
-import { getRole, getRoleByList, getUserByUsername } from '@/lib/database/user';
+import { getRole, getRoleByList, getUserByEmail } from '@/lib/database/user';
 import ListMember from '@/lib/model/listMember';
 import { getUser } from '@/lib/session';
 import { ZodUser } from '@/lib/model/user';
 import { ZodMemberRole } from '@/lib/model/memberRole';
 
-const PostBody = ZodUser.pick({ username: true }).extend({
+const PostBody = ZodUser.pick({ email: true }).extend({
   roleId: ZodMemberRole.shape.id
 });
 
@@ -34,7 +34,7 @@ const PostBody = ZodUser.pick({ username: true }).extend({
  * after
  *
  * @param params.id The list to add the member to
- * @param request.username The username of the member to add to the list
+ * @param request.email The email of the member to add to the list
  * @param request.roleId The role to give the member when adding them to the list
  */
 export async function POST(
@@ -59,7 +59,7 @@ export async function POST(
 
   const requestBody = parseResult.data;
 
-  const newUser = await getUserByUsername(requestBody.username);
+  const newUser = await getUserByEmail(requestBody.email);
 
   if (!newUser) return ClientError.NotFound('User not found');
 
