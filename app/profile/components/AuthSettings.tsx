@@ -82,7 +82,7 @@ export default function AuthSettings({ user }: { user: User }) {
       }
     };
 
-    fetchAccounts().catch( () => {
+    fetchAccounts().catch(() => {
       throw new Error('Failed to fetch user accounts');
     });
   }, []);
