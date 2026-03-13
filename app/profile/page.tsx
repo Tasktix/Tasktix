@@ -27,6 +27,7 @@ import AuthSettings from './components/AuthSettings';
  *
  */
 export default async function Page() {
+  //  pointless to test this skipcq: TCV-001
   const userDetails = await getUser();
 
   return (

@@ -261,7 +261,7 @@ describe('Linking/Unlinking Github', () => {
       oauthConfig: { githubEnabled: true, customEnabled: false }
     });
 
-    const {} = render(
+    render(
       <HeroUIProvider disableRipple>
         <AuthSettings user={MOCK_USER} />
       </HeroUIProvider>
