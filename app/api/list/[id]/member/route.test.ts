@@ -23,7 +23,6 @@ import { getRole, getRoleByList, getUserByEmail } from '@/lib/database/user';
 import MemberRole from '@/lib/model/memberRole';
 
 import { POST } from './route';
-import { email } from 'zod';
 
 const MOCK_USER = new User(
   'abcdefg',

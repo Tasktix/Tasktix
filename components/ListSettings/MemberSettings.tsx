@@ -33,7 +33,6 @@ import MemberRole from '@/lib/model/memberRole';
 import api from '@/lib/api';
 import { sortRolesByPermissions } from '@/lib/sort';
 import { addToastForError } from '@/lib/error';
-import { tanstackStartCookies } from 'better-auth/tanstack-start';
 
 /**
  * Displays all list members and their permissions. Allows adding new members and updating
@@ -112,6 +111,7 @@ export default function MemberSettings({
       })
       .catch(addToastForError);
   }
+
   return (
     <span className='flex flex-col gap-4 shrink overflow-y-auto'>
       <form className='flex gap-2' onSubmit={handleAddMember}>
