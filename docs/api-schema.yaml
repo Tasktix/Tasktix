@@ -231,7 +231,7 @@ paths:
           description: No logged in user
         '500':
           description: Internal server error
-  /list/{id}/tag/{tagid}:
+  /tag/{tagid}:
     patch:
       summary: Update the tag
       tags:

@@ -21,7 +21,7 @@
 import { useState } from 'react';
 
 import { ListItem } from '@/components/ListItem';
-import { sortItems } from '@/lib/sortItems';
+import { sortItems } from '@/lib/sort';
 import { default as api } from '@/lib/api';
 import ListItemModel from '@/lib/model/listItem';
 import Tag from '@/lib/model/tag';

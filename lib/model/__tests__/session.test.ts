@@ -42,10 +42,6 @@ const MOCK_SESSION = {
   token: 'token'
 };
 
-vi.mock('server-only', () => ({
-  // Server Only Breaks test environemnt
-}));
-
 vi.mock('next/headers', () => ({
   headers: vi.fn(() => Promise.resolve(new Headers()))
 }));
