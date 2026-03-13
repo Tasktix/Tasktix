@@ -21,7 +21,6 @@ import { HeroUIProvider } from '@heroui/react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
-
 import { ErrorContext, SuccessContext } from 'better-auth/react';
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 import { useRouter } from 'next/navigation';

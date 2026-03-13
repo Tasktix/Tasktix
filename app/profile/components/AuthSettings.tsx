@@ -44,6 +44,11 @@ interface FilteredAccount {
   providerId: string;
 }
 
+/**
+ * Provides UI component for configuring authentication related settings on the
+ * profile page (e.g. Linking To Github, Deleting Accounts, Changing Passwords)
+ * @param user The logged in User
+ */
 export default function AuthSettings({ user }: { user: User }) {
   const [accounts, setAccounts] = useState<FilteredAccount[]>([]);
   const router = useRouter();
@@ -51,6 +56,11 @@ export default function AuthSettings({ user }: { user: User }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   useEffect(() => {
+    /**
+     * Updates state of accounts that a user has configured. A user may have
+     * multiple accounts, e.g. "github" representing their OAuth configuration
+     * and "credential" representing email and password config
+     */
     const fetchAccounts = async () => {
       const { data } = await authClient.listAccounts();
 
@@ -64,6 +74,10 @@ export default function AuthSettings({ user }: { user: User }) {
 
   const isGithubLinked = accounts.some(acc => acc.providerId === 'github');
 
+  /**
+   * Attempts to a link a users Tasktix account to their Github account,
+   * redirects back to this page on success, adds toast on error.
+   */
   function handleLinkGithub() {
     startTransition(async () => {
       await authClient.linkSocial(
@@ -80,6 +94,9 @@ export default function AuthSettings({ user }: { user: User }) {
     });
   }
 
+  /**
+   * Attempts to unlink a users Tasktix account from Github
+   */
   function handleUnlinkGithub() {
     startTransition(async () => {
       await authClient.unlinkAccount(
@@ -95,6 +112,12 @@ export default function AuthSettings({ user }: { user: User }) {
     });
   }
 
+  /**
+   * Attempts to delete account with provided password. On success it logs out
+   * the user and redirects to the Tasktix Home Page. Failure is handled by
+   * adding toasts
+   * @param e Form Data, should include the users password as a string
+   */
   function handleDeleteAccount(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const formData = Object.fromEntries(new FormData(e.currentTarget));
