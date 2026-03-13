@@ -16,26 +16,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {
-  getIsListMember,
-  getListMember,
-  updateListMember
-} from '@/lib/database/list';
+import { getIsListMember, updateListMember } from '@/lib/database/list';
+import { getRoleByList } from '@/lib/database/user';
 import { ZodListMember } from '@/lib/model/listMember';
 import { ClientError, ServerError, Success } from '@/lib/Response';
 import { getUser } from '@/lib/session';
 
-const PatchBody = ZodListMember.omit({ listId: true, userId: true }).partial();
+const PatchBody = ZodListMember.omit({ listId: true, userId: true });
 
 /**
  * Update a member's permissions for a specific list
  *
  * @param params.id The list to modify the member for
  * @param params.userId The user to modify membership data for
- * @param request.canAdd [optional] Whether the user can add items to the list
- * @param request.canRemove [optional] Whether the user can delete items from the list
- * @param request.canComplete [optional] Whether the user can mark items as completed
- * @param request.canAssign [optional] Whether the user can assign items to other users
+ * @param request.roleId The new role to give the user
  */
 export async function PATCH(
   request: Request,
@@ -46,13 +40,15 @@ export async function PATCH(
 
   if (!user) return ClientError.Unauthenticated('Not logged in');
 
-  const isMember = await getIsListMember(user.id, id);
+  const role = await getRoleByList(user.id, id);
 
-  if (!isMember) return ClientError.NotFound('List not found');
+  if (!role) return ClientError.NotFound('List not found');
+  if (!role.canManageMembers)
+    return ClientError.Forbidden('Insufficient permissions to update member');
 
-  const member = await getListMember(userId, id);
+  const isMember = await getIsListMember(userId, id);
 
-  if (!member) return ClientError.NotFound('Member not found');
+  if (!isMember) return ClientError.NotFound('Member not found');
 
   const parseResult = PatchBody.safeParse(await request.json());
 
@@ -61,15 +57,7 @@ export async function PATCH(
 
   const requestBody = parseResult.data;
 
-  if (requestBody.canAdd !== undefined) member.canAdd = requestBody.canAdd;
-  if (requestBody.canAssign !== undefined)
-    member.canAssign = requestBody.canAssign;
-  if (requestBody.canComplete !== undefined)
-    member.canComplete = requestBody.canComplete;
-  if (requestBody.canRemove !== undefined)
-    member.canRemove = requestBody.canRemove;
-
-  const result = await updateListMember(id, userId, member);
+  const result = await updateListMember(id, userId, requestBody.roleId);
 
   if (!result) return ServerError.Internal('Could not update member');
 

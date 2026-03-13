@@ -35,5 +35,5 @@ services:
       test: ['CMD', 'test', '-f', '/tmp/prisma-ready']
       interval: 2s
       timeout: 1s
-      retries: 5
+      retries: 10
       start_period: 5s

@@ -17,14 +17,19 @@
  */
 
 import { ClientError, ServerError, Success } from '@/lib/Response';
-import { getIsListMember } from '@/lib/database/list';
+import { getRoleByList } from '@/lib/database/user';
 import { createListSection } from '@/lib/database/listSection';
 import ListSection, { ZodListSection } from '@/lib/model/listSection';
 import { getUser } from '@/lib/session';
-import { validateListSectionName } from '@/lib/validate';
 
 const PostBody = ZodListSection.omit({ id: true });
 
+/**
+ * Creates a new list section in the given list
+ *
+ * @param request.name The new section's name
+ * @param params.id The list to create the section in
+ */
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -34,9 +39,11 @@ export async function POST(
 
   if (!user) return ClientError.Unauthenticated('Not logged in');
 
-  const isMember = await getIsListMember(user.id, id);
+  const role = await getRoleByList(user.id, id);
 
-  if (!isMember) return ClientError.BadRequest('List not found');
+  if (!role) return ClientError.NotFound('List not found');
+  if (!role.canUpdateList)
+    return ClientError.Forbidden('Insufficient permissions to update list');
 
   const parseResult = PostBody.safeParse(await request.json());
 
@@ -46,10 +53,6 @@ export async function POST(
   const requestBody = parseResult.data;
 
   const name = requestBody.name;
-
-  if (!name) return ClientError.BadRequest('Section name is required');
-  if (!validateListSectionName(name))
-    return ClientError.BadRequest('Invalid section name');
 
   const listSection = new ListSection(name, []);
 

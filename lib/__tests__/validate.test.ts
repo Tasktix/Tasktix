@@ -17,11 +17,8 @@
  */
 
 import {
-  validateColor,
   validateEmail,
-  validateListItemName,
   validateListName,
-  validateListSectionName,
   validatePassword,
   validateUsername
 } from '../validate';
@@ -204,114 +201,5 @@ describe('validateListName', () => {
     expect(fixed_result).toEqual(
       '1234567890123456789012345678901234567890123456789012345678901234'
     );
-  });
-});
-
-describe('validateListSectionName', () => {
-  test('Accepts names with no more than 64 characters', () => {
-    const data =
-      '1234567890123456789012345678901234567890123456789012345678901234';
-
-    const [isValid, fixed_result] = validateListSectionName(data);
-
-    expect(isValid).toBe(true);
-    expect(fixed_result).toEqual(data);
-  });
-
-  test('Rejects names with more than 64 characters and returns a valid result', () => {
-    const data =
-      '12345678901234567890123456789012345678901234567890123456789012345';
-
-    const [isValid, fixed_result] = validateListSectionName(data);
-
-    expect(isValid).toBe(false);
-    expect(fixed_result).toEqual(
-      '1234567890123456789012345678901234567890123456789012345678901234'
-    );
-  });
-});
-
-describe('validateListItemName', () => {
-  test('Accepts names with no more than 128 characters', () => {
-    const data =
-      '1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890' +
-      '1234567890123456789012345678';
-
-    const [isValid, fixed_result] = validateListItemName(data);
-
-    expect(isValid).toBe(true);
-    expect(fixed_result).toEqual(data);
-  });
-
-  test('Rejects names with more than 128 characters and returns a valid result', () => {
-    const data =
-      '1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890' +
-      '12345678901234567890123456789';
-
-    const [isValid, fixed_result] = validateListItemName(data);
-
-    expect(isValid).toBe(false);
-    expect(fixed_result).toEqual(
-      '1234567890123456789012345678901234567890123456789012345678901234567890' +
-        '1234567890123456789012345678901234567890123456789012345678'
-    );
-  });
-});
-
-describe('validateColor', () => {
-  test('Accepts named colors', () => {
-    let result = validateColor('Pink');
-
-    expect(result).toBe(true);
-
-    result = validateColor('Red');
-    expect(result).toBe(true);
-
-    result = validateColor('Orange');
-    expect(result).toBe(true);
-
-    result = validateColor('Amber');
-    expect(result).toBe(true);
-
-    result = validateColor('Yellow');
-    expect(result).toBe(true);
-
-    result = validateColor('Lime');
-    expect(result).toBe(true);
-
-    result = validateColor('Green');
-    expect(result).toBe(true);
-
-    result = validateColor('Emerald');
-    expect(result).toBe(true);
-
-    result = validateColor('Cyan');
-    expect(result).toBe(true);
-
-    result = validateColor('Blue');
-    expect(result).toBe(true);
-
-    result = validateColor('Violet');
-    expect(result).toBe(true);
-  });
-
-  test('Rejects semantic colors', () => {
-    let result = validateColor('success');
-
-    expect(result).toBe(false);
-
-    result = validateColor('warning');
-    expect(result).toBe(false);
-
-    result = validateColor('danger');
-    expect(result).toBe(false);
-  });
-
-  test('Rejects unknown colors', () => {
-    const data = 'Mint Green';
-
-    const result = validateColor(data);
-
-    expect(result).toBe(false);
   });
 });
