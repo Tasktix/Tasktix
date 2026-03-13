@@ -18,7 +18,7 @@
  */
 
 import { HeroUIProvider } from '@heroui/react';
-import { findByLabelText, render } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 
@@ -73,7 +73,7 @@ describe('Linking/Unlinking Github', () => {
     vi.mocked(useAuth).mockReturnValue({
       loggedInUser: MOCK_USER,
       setLoggedInUser: vi.fn(),
-      oauthConfig: { githubEnabled: false }
+      oauthConfig: { githubEnabled: false, customEnabled: false }
     });
     vi.mocked(authClient.listAccounts).mockReturnValue({});
     const { queryByTestId } = render(
@@ -81,16 +81,16 @@ describe('Linking/Unlinking Github', () => {
         <AuthSettings user={MOCK_USER} />
       </HeroUIProvider>
     );
-      const githubRow = queryByTestId('link-to-github');
+    const githubRow = queryByTestId('link-to-github');
 
-      expect(githubRow).not.toBeInTheDocument();
-    });
+    expect(githubRow).not.toBeInTheDocument();
+  });
 
   test('Github row rendered if Github OAuth is configured', () => {
     vi.mocked(useAuth).mockReturnValue({
       loggedInUser: MOCK_USER,
       setLoggedInUser: vi.fn(),
-      oauthConfig: { githubEnabled: true }
+      oauthConfig: { githubEnabled: true, customEnabled: false }
     });
     vi.mocked(authClient.listAccounts).mockReturnValue({});
     const { getByTestId } = render(
@@ -109,15 +109,14 @@ describe('Linking/Unlinking Github', () => {
     vi.mocked(useAuth).mockReturnValue({
       loggedInUser: MOCK_USER,
       setLoggedInUser: vi.fn(),
-      oauthConfig: { githubEnabled: true }
+      oauthConfig: { githubEnabled: true, customEnabled: false }
     });
 
-    
     vi.mocked(authClient.listAccounts).mockResolvedValue({
       data: [{ accountId: 456, providerId: 'credential' }],
-      error: null,
+      error: null
     });
-    
+
     const { getByLabelText } = render(
       <HeroUIProvider disableRipple>
         <AuthSettings user={MOCK_USER} />
@@ -145,13 +144,15 @@ describe('Linking/Unlinking Github', () => {
     vi.mocked(useAuth).mockReturnValue({
       loggedInUser: MOCK_USER,
       setLoggedInUser: vi.fn(),
-      oauthConfig: { githubEnabled: true },
+      oauthConfig: { githubEnabled: true, customEnabled: false }
     });
 
     vi.mocked(authClient.listAccounts).mockResolvedValue({
-      data: [{ accountId: 456, providerId: 'credential' }, { accountId: 123, providerId: 'github'}
+      data: [
+        { accountId: 456, providerId: 'credential' },
+        { accountId: 123, providerId: 'github' }
       ],
-      error: null,
+      error: null
     });
 
     const { findByLabelText } = render(
@@ -183,15 +184,15 @@ describe('Linking/Unlinking Github', () => {
       expect.anything()
     );
   });
-  test("Failed Github uninking creates error toast", async () => {
+  test('Failed Github uninking creates error toast', async () => {
     const user = userEvent.setup();
 
     vi.mocked(useAuth).mockReturnValue({
       loggedInUser: MOCK_USER,
       setLoggedInUser: vi.fn(),
-      oauthConfig: { githubEnabled: true }
+      oauthConfig: { githubEnabled: true, customEnabled: false }
     });
-    
+
     const exampleError = {
       data: {},
       error: {
@@ -201,21 +202,19 @@ describe('Linking/Unlinking Github', () => {
         statusText: 'BAD_REQUEST'
       }
     };
-    
+
     vi.mocked(authClient.listAccounts).mockResolvedValue({
       data: [{ accountId: 456, providerId: 'github' }],
-      error: null,
+      error: null
     });
     vi.mocked(authClient.unlinkAccount).mockImplementation(
       async (_, fetchOptions) => {
         if (fetchOptions?.onError) {
-          await fetchOptions.onError(
-            exampleError as unknown as ErrorContext
-          );
+          await fetchOptions.onError(exampleError as unknown as ErrorContext);
         }
       }
     );
-    
+
     const { findByLabelText } = render(
       <HeroUIProvider disableRipple>
         <AuthSettings user={MOCK_USER} />
@@ -235,8 +234,8 @@ describe('Linking/Unlinking Github', () => {
       expect.anything()
     );
 
-    expect(addToastForError).toHaveBeenCalledWith(exampleError.error)
-  })
+    expect(addToastForError).toHaveBeenCalledWith(exampleError.error);
+  });
 });
 
 describe('Account Deletion', () => {
@@ -246,7 +245,7 @@ describe('Account Deletion', () => {
     vi.mocked(useAuth).mockReturnValue({
       loggedInUser: MOCK_USER,
       setLoggedInUser: vi.fn(),
-      oauthConfig: { githubEnabled: true }
+      oauthConfig: { githubEnabled: true, customEnabled: false }
     });
     vi.mocked(authClient.listAccounts).mockReturnValue({});
     const { getByLabelText } = render(
@@ -282,7 +281,7 @@ describe('Account Deletion', () => {
     vi.mocked(useAuth).mockReturnValue({
       loggedInUser: MOCK_USER,
       setLoggedInUser: setLoggedInUserMock,
-      oauthConfig: { githubEnabled: true }
+      oauthConfig: { githubEnabled: true, customEnabled: false }
     });
 
     const routerMock = {
@@ -346,7 +345,7 @@ describe('Account Deletion', () => {
     vi.mocked(useAuth).mockReturnValue({
       loggedInUser: MOCK_USER,
       setLoggedInUser: setLoggedInUserMock,
-      oauthConfig: { githubEnabled: true }
+      oauthConfig: { githubEnabled: true, customEnabled: false }
     });
 
     vi.mocked(addToastForError);
