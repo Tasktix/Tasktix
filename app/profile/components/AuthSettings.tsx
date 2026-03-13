@@ -83,7 +83,7 @@ export default function AuthSettings({ user }: { user: User }) {
     };
 
     fetchAccounts().catch(() => {
-      throw new Error('Failed to fetch user accounts');
+      // Fail Silently here, Errors will be toasted above
     });
   }, []);
 
@@ -226,8 +226,8 @@ function AuthSettingRow({
   method: AccountMethod;
   isLast: boolean;
 }) {
-  // Already refactored to reasonable JSX depth skipcq: JS-0415
   return (
+    // Already refactored to reasonable JSX depth skipcq: JS-0415
     <div data-testid={method.testId}>
       <div className='flex items-center justify-between p-5 hover:bg-white/[0.02] transition-colors group'>
         <div className='flex items-start gap-4'>
@@ -269,8 +269,8 @@ function DeleteAccountModal({
   onOpenChange: () => void;
   handleDeleteAccount: (e: FormEvent<HTMLFormElement>) => void;
 }) {
-  // Already refactored to reasonable JSX depth skipcq: JS-0415
   return (
+    // Already refactored to reasonable JSX depth skipcq: JS-0415
     <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
       <ModalContent className='p-2'>
         <ModalHeader className='justify-center'>
