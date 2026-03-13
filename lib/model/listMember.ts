@@ -18,35 +18,21 @@
 
 import z from 'zod';
 
+import MemberRole from './memberRole';
 import User from './user';
 
 export const ZodListMember = z.strictObject({
   userId: z.string().length(16),
   listId: z.string().length(16),
-  canAdd: z.boolean(),
-  canRemove: z.boolean(),
-  canComplete: z.boolean(),
-  canAssign: z.boolean()
+  roleId: z.string().length(16)
 });
 
 export default class ListMember {
   user: User;
-  canAdd: boolean;
-  canRemove: boolean;
-  canComplete: boolean;
-  canAssign: boolean;
+  role: MemberRole;
 
-  constructor(
-    user: User,
-    canAdd = false,
-    canRemove = false,
-    canComplete = false,
-    canAssign = false
-  ) {
+  constructor(user: User, role: MemberRole) {
     this.user = user;
-    this.canAdd = canAdd;
-    this.canRemove = canRemove;
-    this.canComplete = canComplete;
-    this.canAssign = canAssign;
+    this.role = role;
   }
 }

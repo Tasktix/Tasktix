@@ -19,10 +19,13 @@
 'use client';
 
 import { Button, Divider } from '@heroui/react';
-import { Github } from 'react-bootstrap-icons';
+import { Github, ShieldLockFill } from 'react-bootstrap-icons';
 import { startTransition } from 'react';
 
-import { handleOAuth, OAuthControllers } from '../oauth';
+import { OAuthConfig } from '@/lib/auth';
+import User from '@/lib/model/user';
+
+import { handleOAuth } from '../oauth';
 /**
  * OAuth component that provides GitHub authentication options for user sign-in.
  *
@@ -40,8 +43,11 @@ import { handleOAuth, OAuthControllers } from '../oauth';
 export default function OAuth({
   setLoggedInUser,
   oauthConfig
-}: Readonly<OAuthControllers>) {
-  if (!oauthConfig?.githubEnabled) {
+}: Readonly<{
+  setLoggedInUser: (user: User) => void;
+  oauthConfig: OAuthConfig;
+}>) {
+  if (!oauthConfig?.githubEnabled && !oauthConfig?.customEnabled) {
     return null;
   }
 
@@ -52,17 +58,35 @@ export default function OAuth({
         <p className='text-tiny text-default-500 shrink-0'>OR</p>
         <Divider className='flex-1' />
       </div>
-      <div className='flex justify-center'>
-        <Button
-          aria-label='sign in with github'
-          startContent={<Github />}
-          variant='bordered'
-          onPress={() =>
-            startTransition(() => handleOAuth('github', { setLoggedInUser }))
-          }
-        >
-          Continue with Github
-        </Button>
+      <div className='flex flex-col items-center gap-4'>
+        {oauthConfig.githubEnabled && (
+          <Button
+            aria-label='sign in with github'
+            startContent={<Github />}
+            variant='bordered'
+            onPress={() =>
+              startTransition(() =>
+                handleOAuth('github', setLoggedInUser, oauthConfig)
+              )
+            }
+          >
+            Continue with Github
+          </Button>
+        )}
+        {oauthConfig.customEnabled && (
+          <Button
+            aria-label={`sign in with ${oauthConfig.customProviderId}`}
+            startContent={<ShieldLockFill />}
+            variant='bordered'
+            onPress={() =>
+              startTransition(() =>
+                handleOAuth('custom', setLoggedInUser, oauthConfig)
+              )
+            }
+          >
+            Continue with {oauthConfig.customProviderId}
+          </Button>
+        )}
       </div>
     </div>
   );

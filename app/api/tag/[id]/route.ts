@@ -17,12 +17,8 @@
  */
 
 import { ClientError, ServerError, Success } from '@/lib/Response';
-import {
-  deleteTag,
-  getIsListMember,
-  getTagById,
-  updateTag
-} from '@/lib/database/list';
+import { deleteTag, getTagById, updateTag } from '@/lib/database/list';
+import { getRoleByTag } from '@/lib/database/user';
 import { ZodTag } from '@/lib/model/tag';
 import { getUser } from '@/lib/session';
 
@@ -30,21 +26,22 @@ const PatchBody = ZodTag.omit({ id: true }).partial();
 
 export async function PATCH(
   request: Request,
-  { params }: { params: Promise<{ id: string; tagId: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id, tagId } = await params;
+  const { id } = await params;
   const user = await getUser();
 
   if (!user) return ClientError.Unauthenticated('Not logged in');
 
-  const isMember = await getIsListMember(user.id, id);
+  const role = await getRoleByTag(user.id, id);
 
-  if (!isMember) return ClientError.BadRequest('List not found');
+  if (!role) return ClientError.NotFound('Tag not found');
+  if (!role.canManageTags)
+    return ClientError.Forbidden('Insufficient permissions to update tag');
 
-  const tag = await getTagById(tagId);
+  const tag = await getTagById(id);
 
-  // TODO: need to handle security gap: editing someone else's tag
-  if (!tag) return ClientError.BadRequest('Tag not found');
+  if (!tag) return ClientError.NotFound('Tag not found');
 
   const parseResult = PatchBody.safeParse(await request.json());
 
@@ -58,25 +55,27 @@ export async function PATCH(
 
   const result = await updateTag(tag);
 
-  if (!result) return ServerError.Internal('Could not add tag');
+  if (!result) return ServerError.Internal('Could not update tag');
 
-  return Success.OK('Tag added');
+  return Success.OK('Tag updated');
 }
 
 export async function DELETE(
   _: Request,
-  { params }: { params: Promise<{ id: string; tagId: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id, tagId } = await params;
+  const { id } = await params;
   const user = await getUser();
 
   if (!user) return ClientError.Unauthenticated('Not logged in');
 
-  const isMember = await getIsListMember(user.id, id);
+  const role = await getRoleByTag(user.id, id);
 
-  if (!isMember) return ClientError.BadRequest('List not found');
+  if (!role) return ClientError.NotFound('Tag not found');
+  if (!role.canManageTags)
+    return ClientError.Forbidden('Insufficient permissions to remove tag');
 
-  const result = await deleteTag(tagId);
+  const result = await deleteTag(id);
 
   if (!result) return ServerError.Internal('Could not remove tag');
 

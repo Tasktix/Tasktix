@@ -18,12 +18,15 @@
 
 import { ClientError, ServerError, Success } from '@/lib/Response';
 import { createListMember, getIsListMember } from '@/lib/database/list';
-import { getUserByUsername } from '@/lib/database/user';
+import { getRole, getRoleByList, getUserByEmail } from '@/lib/database/user';
 import ListMember from '@/lib/model/listMember';
 import { getUser } from '@/lib/session';
 import { ZodUser } from '@/lib/model/user';
+import { ZodMemberRole } from '@/lib/model/memberRole';
 
-const PostBody = ZodUser.pick({ username: true });
+const PostBody = ZodUser.pick({ email: true }).extend({
+  roleId: ZodMemberRole.shape.id
+});
 
 /**
  * Add a user as a member of the list so they can view it and be assigned items to
@@ -31,7 +34,8 @@ const PostBody = ZodUser.pick({ username: true });
  * after
  *
  * @param params.id The list to add the member to
- * @param request.username The username of the member to add to the list
+ * @param request.email The email of the member to add to the list
+ * @param request.roleId The role to give the member when adding them to the list
  */
 export async function POST(
   request: Request,
@@ -42,11 +46,11 @@ export async function POST(
 
   if (!user) return ClientError.Unauthenticated('Not logged in');
 
-  const isMember = await getIsListMember(user.id, id);
+  const role = await getRoleByList(user.id, id);
 
-  if (!isMember) return ClientError.NotFound('List not found');
-
-  // TODO: Should add permission & authorization for adding users
+  if (!role) return ClientError.NotFound('List not found');
+  if (!role.canManageMembers)
+    return ClientError.Forbidden('Insufficient permissions to add member');
 
   const parseResult = PostBody.safeParse(await request.json());
 
@@ -55,14 +59,18 @@ export async function POST(
 
   const requestBody = parseResult.data;
 
-  const newUser = await getUserByUsername(requestBody.username);
+  const newUser = await getUserByEmail(requestBody.email);
 
   if (!newUser) return ClientError.NotFound('User not found');
 
   if (await getIsListMember(newUser.id, id))
     return ClientError.Conflict('User is already a member');
 
-  const listMember = new ListMember(newUser);
+  const newRole = await getRole(requestBody.roleId);
+
+  if (!newRole) return ClientError.NotFound('Role not found');
+
+  const listMember = new ListMember(newUser, newRole);
 
   const result = await createListMember(id, listMember);
 

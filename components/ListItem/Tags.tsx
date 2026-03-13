@@ -59,6 +59,13 @@ export default function Tags({
 }) {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
+  const tagsMap = Object.fromEntries((tagsAvailable ?? []).map(t => [t.id, t]));
+
+  const displayTags = tags
+    .map(tag => tagsMap[tag.id])
+    .filter(Boolean)
+    .sort((a, b) => a.name.localeCompare(b.name));
+
   return (
     <Popover
       isOpen={isPopoverOpen}
@@ -77,22 +84,20 @@ export default function Tags({
         >
           <TagsIcon className='shrink-0' />
           <span className='ml-2 flex flex-row items-center justify-start overflow-hidden flex-nowrap'>
-            {tags
-              .sort((a, b) => (a.name > b.name ? 1 : -1))
-              .map(tag => (
-                <Chip
-                  key={tag.id}
-                  classNames={{
-                    dot: getBackgroundColor(tag.color),
-                    base: 'border-0',
-                    content: getTextColor(tag.color)
-                  }}
-                  size='sm'
-                  variant='dot'
-                >
-                  {tag.name}
-                </Chip>
-              ))}
+            {displayTags.map(tagDetail => (
+              <Chip
+                key={tagDetail.id}
+                classNames={{
+                  dot: getBackgroundColor(tagDetail.color),
+                  base: 'border-0',
+                  content: getTextColor(tagDetail.color)
+                }}
+                size='sm'
+                variant='dot'
+              >
+                {tagDetail.name}
+              </Chip>
+            ))}
           </span>
         </Button>
       </PopoverTrigger>

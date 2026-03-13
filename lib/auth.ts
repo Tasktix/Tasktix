@@ -16,12 +16,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/* eslint-disable no-console */
+
 import 'server-only';
 
 import { betterAuth, DBFieldType } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { PrismaClient } from '@prisma/client';
-import { haveIBeenPwned, username } from 'better-auth/plugins';
+import { genericOAuth, haveIBeenPwned, username } from 'better-auth/plugins';
 
 import { namedColors } from './model/color';
 
@@ -29,19 +31,39 @@ const prisma = new PrismaClient();
 
 export type OAuthConfig = {
   githubEnabled: boolean;
+  customEnabled: boolean;
+  customProviderId: string;
+  customProviderScope?: string[];
 };
 
 /**
  * Server function that allows client to access state of OAuth configuration, available from the useAuth hook.
  * Should not be called from client
  *
- * @returns Object contianing all supported oauth providers and whether they have been configured
+ * @returns Object containing all supported oauth providers and whether they have been configured
  */
 export const getOAuthConfig = () => {
+  let scopes;
+
+  try {
+    scopes = process.env.OAUTH_SCOPES
+      ? (JSON.parse(process.env.OAUTH_SCOPES) as string[])
+      : undefined;
+  } catch {
+    console.error(
+      'Failed to parse OAUTH_SCOPES environment variable. Should be a JSON array of strings'
+    );
+  }
+
   const config: OAuthConfig = {
     githubEnabled:
       Boolean(process.env.GITHUB_CLIENT_ID) &&
-      Boolean(process.env.GITHUB_CLIENT_SECRET)
+      Boolean(process.env.GITHUB_CLIENT_SECRET),
+    customEnabled:
+      Boolean(process.env.OAUTH_PROVIDER_ID) &&
+      Boolean(process.env.OAUTH_CLIENT_ID),
+    customProviderId: process.env.OAUTH_PROVIDER_ID ?? 'SSO',
+    customProviderScope: scopes
   };
 
   return config;
@@ -111,6 +133,23 @@ export const auth = betterAuth({
           haveIBeenPwned({
             customPasswordCompromisedMessage:
               'Please choose a more secure password'
+          })
+        ]
+      : []),
+    ...(getOAuthConfig().customEnabled
+      ? [
+          genericOAuth({
+            config: [
+              {
+                providerId: process.env.OAUTH_PROVIDER_ID as string,
+                authorizationUrl: process.env.OAUTH_AUTHORIZATION_URL,
+                tokenUrl: process.env.OAUTH_TOKEN_URL,
+                userInfoUrl: process.env.OAUTH_USERINFO_URL,
+                clientId: process.env.OAUTH_CLIENT_ID as string,
+                clientSecret: process.env.OAUTH_CLIENT_SECRET,
+                discoveryUrl: process.env.OAUTH_DISCOVERY_URL
+              }
+            ]
           })
         ]
       : [])

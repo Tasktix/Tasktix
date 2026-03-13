@@ -19,7 +19,7 @@
 import z from 'zod';
 
 import { ClientError, ServerError, Success } from '@/lib/Response';
-import { getIsListMember } from '@/lib/database/list';
+import { getRoleByList } from '@/lib/database/user';
 import { updateSectionIndices } from '@/lib/database/listItem';
 import { getUser } from '@/lib/session';
 import { ZodListItem } from '@/lib/model/listItem';
@@ -30,6 +30,15 @@ const PatchBody = z.strictObject({
   oldIndex: ZodListItem.shape.sectionIndex
 });
 
+/**
+ * Reorders a list item within its section
+ *
+ * @param request.itemId The item to move
+ * @param request.index The new index to move the item to (within the section)
+ * @param request.oldIndex The index to move the item from (within the section)
+ * @param params.id The list that the section and item belong to
+ * @param params.sectionId The section that item belongs to
+ */
 export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string; sectionId: string }> }
@@ -39,9 +48,11 @@ export async function PATCH(
 
   if (!user) return ClientError.Unauthenticated('Not logged in');
 
-  const isMember = await getIsListMember(user.id, id);
+  const role = await getRoleByList(user.id, id);
 
-  if (!isMember) return ClientError.BadRequest('List not found');
+  if (!role) return ClientError.NotFound('List not found');
+  if (!role.canUpdateList)
+    return ClientError.Forbidden('Insufficient permissions to reorder items');
 
   const parseResult = PatchBody.safeParse(await request.json());
 

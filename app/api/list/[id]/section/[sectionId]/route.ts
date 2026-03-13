@@ -17,7 +17,7 @@
  */
 
 import { ClientError, ServerError, Success } from '@/lib/Response';
-import { getIsListMember } from '@/lib/database/list';
+import { getRoleByList } from '@/lib/database/user';
 import {
   deleteListSection,
   updateListSection
@@ -36,9 +36,11 @@ export async function PATCH(
 
   if (!user) return ClientError.Unauthenticated('Not logged in');
 
-  const isMember = await getIsListMember(user.id, id);
+  const role = await getRoleByList(user.id, id);
 
-  if (!isMember) return ClientError.BadRequest('List not found');
+  if (!role) return ClientError.NotFound('List not found');
+  if (!role.canUpdateList)
+    return ClientError.Forbidden('Insufficient permissions to rename section');
 
   const parseResult = PatchBody.safeParse(await request.json());
 
@@ -65,9 +67,11 @@ export async function DELETE(
 
   if (!user) return ClientError.Unauthenticated('Not logged in');
 
-  const isMember = await getIsListMember(user.id, id);
+  const role = await getRoleByList(user.id, id);
 
-  if (!isMember) return ClientError.BadRequest('List not found');
+  if (!role) return ClientError.NotFound('List not found');
+  if (!role.canUpdateList)
+    return ClientError.Forbidden('Insufficient permissions to delete section');
 
   const result = await deleteListSection(sectionId);
 

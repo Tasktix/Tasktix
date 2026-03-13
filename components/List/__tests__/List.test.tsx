@@ -83,6 +83,7 @@ describe('ListItem state propagation', () => {
               'list-id'
             )
           )}
+          startingRoles='[]'
           startingTagsAvailable='[]'
         />
       </HeroUIProvider>
@@ -140,6 +141,7 @@ describe('ListItem state propagation', () => {
               'list-id'
             )
           )}
+          startingRoles='[]'
           startingTagsAvailable='[]'
         />
       </HeroUIProvider>
@@ -201,6 +203,7 @@ describe('ListItem state propagation', () => {
               'list-id'
             )
           )}
+          startingRoles='[]'
           startingTagsAvailable='[]'
         />
       </HeroUIProvider>
@@ -251,6 +254,7 @@ describe('ListItem state propagation', () => {
               'list-id'
             )
           )}
+          startingRoles='[]'
           startingTagsAvailable='[]'
         />
       </HeroUIProvider>
@@ -305,6 +309,7 @@ describe('ListItem state propagation', () => {
               'list-id'
             )
           )}
+          startingRoles='[]'
           startingTagsAvailable='[]'
         />
       </HeroUIProvider>
@@ -362,6 +367,7 @@ describe('ListItem state propagation', () => {
               'list-id'
             )
           )}
+          startingRoles='[]'
           startingTagsAvailable='[]'
         />
       </HeroUIProvider>
@@ -419,6 +425,7 @@ describe('ListItem state propagation', () => {
               'list-id'
             )
           )}
+          startingRoles='[]'
           startingTagsAvailable='[]'
         />
       </HeroUIProvider>
@@ -481,6 +488,7 @@ describe('ListItem state propagation', () => {
               'list-id'
             )
           )}
+          startingRoles='[]'
           startingTagsAvailable='[]'
         />
       </HeroUIProvider>
@@ -546,6 +554,7 @@ describe('ListItem state propagation', () => {
               'list-id'
             )
           )}
+          startingRoles='[]'
           startingTagsAvailable={JSON.stringify([
             new Tag('Tag name', 'Emerald', 'tag-id')
           ])}
@@ -600,6 +609,7 @@ describe('ListItem state propagation', () => {
               'list-id'
             )
           )}
+          startingRoles='[]'
           startingTagsAvailable={JSON.stringify([
             new Tag('Tag name', 'Emerald', 'tag-id')
           ])}
@@ -649,6 +659,7 @@ describe('ListItem state propagation', () => {
               'list-id'
             )
           )}
+          startingRoles='[]'
           startingTagsAvailable='[]'
         />
       </HeroUIProvider>
@@ -706,6 +717,7 @@ describe('ListItem state propagation', () => {
                 'list-id'
               )
             )}
+            startingRoles='[]'
             startingTagsAvailable='[]'
           />
         </HeroUIProvider>
@@ -761,6 +773,7 @@ describe('ListItem state propagation', () => {
                 'list-id'
               )
             )}
+            startingRoles='[]'
             startingTagsAvailable='[]'
           />
         </HeroUIProvider>
@@ -821,6 +834,7 @@ describe('ListItem state propagation', () => {
               'list-id'
             )
           )}
+          startingRoles='[]'
           startingTagsAvailable='[]'
         />
       </HeroUIProvider>
@@ -874,6 +888,7 @@ describe('ListItem state propagation', () => {
               'list-id'
             )
           )}
+          startingRoles='[]'
           startingTagsAvailable='[]'
         />
       </HeroUIProvider>
