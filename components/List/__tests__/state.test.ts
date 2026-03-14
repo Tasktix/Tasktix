@@ -41,7 +41,7 @@ import { ListMemberState } from '../types';
 const user1 = new User(
   'user-1-id-1234',
   'user1',
-  `user1@example.com`,
+  'user1@example.com',
   true,
   new Date('2024-01-01T00:00:00Z'),
   new Date('2024-01-01T00:00:00Z'),
@@ -50,7 +50,7 @@ const user1 = new User(
 const user2 = new User(
   'user-2-id-1234',
   'user2',
-  `user2@example.com`,
+  'user2@example.com',
   true,
   new Date('2024-01-01T00:00:00Z'),
   new Date('2024-01-01T00:00:00Z'),
