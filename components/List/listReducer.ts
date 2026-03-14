@@ -184,6 +184,19 @@ export default function listReducer(
     case 'DeleteItem':
       newState.list.sections.get(action.sectionId)?.items.delete(action.id);
       break;
+
+    case 'ChangeItemSection':
+      //Copied from 'AddItemToSection'
+      const section = newState.list.sections.get(action.pastSectionId);
+
+      if (!section)
+        throw new Error(`Unable to find section with ID ${action.pastSectionId}`);
+
+      section.items.set(action.targetItem.id, action.targetItem);
+      
+      //Copied from 'DeleteItem'
+      newState.list.sections.get(action.pastSectionId)?.items.delete(action.targetItem.id);
+      break;
   }
 
   return newState;

@@ -204,6 +204,7 @@ export default function ListItem({
     }
   }
 
+  
     const changeItemSection = (e: React.ChangeEvent<HTMLSelectElement>) => {
     // let targetSection = list.sections.find(section => section.name == e.target.value);
     // let pastSection = list.sections.find(section => section.name == pastSectionString);
@@ -219,6 +220,8 @@ export default function ListItem({
     // else{
     //   addToast({ title: "Section not found", color: 'danger' });
     // }
+
+    dispatchItemChange({ type: 'ChangeItemSection', pastSectionId: sectionId, targetSectionId: e.target.value, targetItem: item });
   };
 
   return (

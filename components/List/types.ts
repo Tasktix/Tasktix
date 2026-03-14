@@ -103,7 +103,8 @@ export type ItemAction =
       itemId: string;
       tagId: string;
     }
-  | { type: 'DeleteItem'; sectionId: string; id: string };
+  | { type: 'DeleteItem'; sectionId: string; id: string }
+  | { type: 'ChangeItemSection'; pastSectionId: string; targetSectionId: string; targetItem: ListItem };
 
 /**
  * The state of a list section, as defined and modified by the list reducer.
