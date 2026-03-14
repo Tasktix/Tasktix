@@ -26,12 +26,12 @@ export const ZodMemberRole = z.strictObject({
   description: z.string().min(1).max(64),
   canAddItems: z.boolean(),
   canUpdateItems: z.boolean(),
-  canManageItems: z.boolean(),
+  canDeleteItems: z.boolean(),
   canManageTags: z.boolean(),
   canManageAssignees: z.boolean(),
   canManageMembers: z.boolean(),
   canUpdateList: z.boolean(),
-  canManageList: z.boolean()
+  canDeleteList: z.boolean()
 });
 
 /**
