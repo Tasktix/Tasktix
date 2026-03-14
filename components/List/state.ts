@@ -24,6 +24,13 @@ import ListMember from '@/lib/model/listMember';
 
 import { FullState } from './types';
 
+/**
+ * Generates the normalized member state (map of member user IDs to member objects) from
+ * all List data. Represents the M:1 relationship of member:role by including the role ID
+ * but not other role data in the normalized member.
+ *
+ * @param list The list to extract member data from
+ */
 export function generateMembersState(list: ListModel): FullState['members'] {
   return new Map(
     list.members.map(member => [
@@ -33,16 +40,34 @@ export function generateMembersState(list: ListModel): FullState['members'] {
   );
 }
 
+/**
+ * Generates the normalized tag state (map of tag IDs to full tag objects) from all List
+ * data
+ *
+ * @param list The list to extract tag data from
+ */
 export function generateTagsState(list: ListModel): FullState['tags'] {
   return new Map(list.tags.map(tag => [tag.id, tag]));
 }
 
+/**
+ * Generates the normalized section state (map of section IDs to full section objects)
+ * from all List data
+ *
+ * @param list The list to extract section data from
+ */
 export function generateSectionsState(list: ListModel): FullState['sections'] {
   return new Map(
     list.sections.map(section => [section.id, { ...section, items: undefined }])
   );
 }
 
+/**
+ * Generates the 1:M normalized mapping of sections to the items they contain (map of
+ * section IDs to the item IDs of all items in each section) from all List data
+ *
+ * @param list The list to extract section:item mapping data from
+ */
 export function generateSectionItemsState(
   list: ListModel
 ): FullState['sectionItems'] {
@@ -54,6 +79,12 @@ export function generateSectionItemsState(
   );
 }
 
+/**
+ * Generates the normalized item state (map of item IDs to full item objects) from all
+ * List data
+ *
+ * @param list The list to extract item data from
+ */
 export function generateItemsState(list: ListModel): FullState['items'] {
   return new Map(
     list.sections.flatMap(section =>
@@ -75,6 +106,12 @@ export function generateItemsState(list: ListModel): FullState['items'] {
   );
 }
 
+/**
+ * Generates the 1:M normalized mapping of items to the assignees they contain (map of
+ * item IDs to the assignee IDs of all assignees in each item) from all List data
+ *
+ * @param list The list to extract item:assignee mapping data from
+ */
 export function generateItemAssigneesState(
   list: ListModel
 ): FullState['itemAssignees'] {
@@ -88,6 +125,12 @@ export function generateItemAssigneesState(
   );
 }
 
+/**
+ * Generates the 1:M normalized mapping of items to the tags they contain (map of item IDs
+ * to the tag IDs of all tags in each item) from all List data
+ *
+ * @param list The list to extract item:tag mapping data from
+ */
 export function generateItemTagsState(list: ListModel): FullState['itemTags'] {
   return new Map(
     list.sections.flatMap(section =>
@@ -96,6 +139,14 @@ export function generateItemTagsState(list: ListModel): FullState['itemTags'] {
   );
 }
 
+/**
+ * Generates a list of full ListMember objects from the normalized state data tracked for
+ * lists. That is, this function converts the M:1 relationship of members:roles back to
+ * each member's role nested within the member object.
+ *
+ * @param members The normalized members to convert to ListMember objects
+ * @param roles The roles available that `members` may be given
+ */
 export function stateToMembers(
   members: FullState['members'],
   roles: Map<string, MemberRole>
@@ -111,6 +162,20 @@ export function stateToMembers(
     .toArray();
 }
 
+/**
+ * Generates a list of full Item objects from the normalized state data tracked for lists.
+ * That is, this function converts the 1:M relationship of items:assignees and the 1:M
+ * relationship of items:tags back to each items's assignees and tags nested within the
+ * item object.
+ *
+ * @param items
+ * @param itemAssignees
+ * @param itemTags
+ * @param allItems
+ * @param allMembers
+ * @param allTags
+ * @returns
+ */
 export function stateToItems(
   items: string[] | undefined,
   itemAssignees: FullState['itemAssignees'],
