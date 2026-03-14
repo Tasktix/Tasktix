@@ -69,6 +69,7 @@ export default function listReducer(
     case 'UpdateMemberPermissions': {
       const member = newState.members.get(action.id);
 
+      // Should be impossible to trigger this, hence the runtime error - skipcq: TCV-001
       if (!member)
         throw new Error(`Cannot find member with user ID ${action.id}`);
 
@@ -83,6 +84,7 @@ export default function listReducer(
     case 'UpdateTagName': {
       const tag = newState.tags.get(action.id);
 
+      // Should be impossible to trigger this, hence the runtime error - skipcq: TCV-001
       if (!tag) throw new Error(`Unable to find tag with ID ${action.id}`);
 
       tag.name = action.name;
@@ -92,6 +94,7 @@ export default function listReducer(
     case 'UpdateTagColor': {
       const tag = newState.tags.get(action.id);
 
+      // Should be impossible to trigger this, hence the runtime error - skipcq: TCV-001
       if (!tag) throw new Error(`Unable to find tag with ID ${action.id}`);
 
       tag.color = action.color;
@@ -116,6 +119,7 @@ export default function listReducer(
     case 'AddItemToSection': {
       const section = newState.sections.get(action.id);
 
+      // Should be impossible to trigger this, hence the runtime error - skipcq: TCV-001
       if (!section)
         throw new Error(`Unable to find section with ID ${action.id}`);
 

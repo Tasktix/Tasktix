@@ -101,13 +101,13 @@ describe('Adding members', () => {
       </HeroUIProvider>
     );
 
-    expect(getByLabelText('Email...')).toBeVisible();
+    expect(getByLabelText('New member email')).toBeVisible();
     expect(getByText('Send Invite')).toBeVisible();
 
-    await user.type(getByLabelText('Email...'), 'user2');
+    await user.type(getByLabelText('New member email'), 'user2');
     await user.click(getByText('Send Invite'));
 
-    expect(getByLabelText('Email...')).toHaveValue('');
+    expect(getByLabelText('New member email')).toHaveValue('');
     expect(onMemberEvent).toHaveBeenCalledTimes(1);
     expect(onMemberEvent).toHaveBeenCalledWith({
       type: 'AddMember',
@@ -136,13 +136,13 @@ describe('Adding members', () => {
       </HeroUIProvider>
     );
 
-    expect(getByLabelText('Email...')).toBeVisible();
+    expect(getByLabelText('New member email')).toBeVisible();
     expect(getByText('Send Invite')).toBeVisible();
 
-    await user.type(getByLabelText('Email...'), 'user2');
+    await user.type(getByLabelText('New member email'), 'user2');
     await user.click(getByText('Send Invite'));
 
-    expect(getByLabelText('Email...')).toHaveValue('');
+    expect(getByLabelText('New member email')).toHaveValue('');
     expect(addToast).toHaveBeenCalledTimes(1);
     expect(addToast).toHaveBeenCalledWith({
       color: 'danger',
@@ -174,13 +174,13 @@ describe('Adding members', () => {
       </HeroUIProvider>
     );
 
-    expect(getByLabelText('Email...')).toBeVisible();
+    expect(getByLabelText('New member email')).toBeVisible();
     expect(getByText('Send Invite')).toBeVisible();
 
-    await user.type(getByLabelText('Email...'), 'user2');
+    await user.type(getByLabelText('New member email'), 'user2');
     await user.click(getByText('Send Invite'));
 
-    expect(getByLabelText('Email...')).toHaveValue('');
+    expect(getByLabelText('New member email')).toHaveValue('');
     expect(addToast).toHaveBeenCalledTimes(1);
     expect(addToast).toHaveBeenCalledWith({
       color: 'danger',

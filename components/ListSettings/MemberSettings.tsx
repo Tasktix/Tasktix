@@ -121,6 +121,7 @@ export default function MemberSettings({
     <span className='flex flex-col gap-4 shrink overflow-y-auto'>
       <form className='flex gap-2' onSubmit={handleAddMember}>
         <Input
+          aria-label='New member email'
           placeholder='Email...'
           value={newMemberEmail}
           onValueChange={setNewMemberEmail}
