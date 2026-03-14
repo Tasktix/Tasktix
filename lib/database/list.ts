@@ -26,14 +26,13 @@ import Tag from '@/lib/model/tag';
 
 import { prisma } from './db_connect';
 
-export async function createList(
-  list: Omit<List, 'sections' | 'tags'>
-): Promise<boolean> {
+export async function createList(list: List): Promise<boolean> {
   try {
     await prisma.list.create({
       data: {
         ...list,
         sections: undefined,
+        tags: undefined,
         members: {
           createMany: {
             data: list.members.map(m => ({
@@ -44,7 +43,9 @@ export async function createList(
         }
       }
     });
-  } catch {
+  } catch (error) {
+    console.log(error);
+
     return false;
   }
 

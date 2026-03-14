@@ -132,7 +132,9 @@ export default function MemberSettings({
           variant='underlined'
           onSelectionChange={handleUpdateNewRole}
         >
-          {Array.from(roles.values())
+          {roles
+            .values()
+            .toArray()
             .sort(sortRolesByPermissions)
             .map(role => (
               <SelectItem key={role.id} description={role.description}>
@@ -150,36 +152,41 @@ export default function MemberSettings({
           Send Invite
         </Button>
       </form>
-      {members.values().map(member => (
-        <div key={member.user.id} className='flex gap-4'>
-          <User
-            avatarProps={{
-              classNames: {
-                base: getBackgroundColor(member.user.color)
-              },
-              size: 'sm'
-            }}
-            name={member.user.username ?? member.user.name}
-          />
-          <Select
-            aria-label={`${member.user.username ?? member.user.name} Role`}
-            selectedKeys={[member.role]}
-            variant='underlined'
-            onSelectionChange={handleUpdatePermissions.bind(
-              null,
-              member.user.id
-            )}
-          >
-            {Array.from(roles.values())
-              .sort(sortRolesByPermissions)
-              .map(role => (
-                <SelectItem key={role.id} description={role.description}>
-                  {role.name}
-                </SelectItem>
-              ))}
-          </Select>
-        </div>
-      ))}
+      {members
+        .values()
+        .map(member => (
+          <div key={member.user.id} className='flex gap-4'>
+            <User
+              avatarProps={{
+                classNames: {
+                  base: getBackgroundColor(member.user.color)
+                },
+                size: 'sm'
+              }}
+              name={member.user.username ?? member.user.name}
+            />
+            <Select
+              aria-label={`${member.user.username ?? member.user.name} Role`}
+              selectedKeys={[member.role]}
+              variant='underlined'
+              onSelectionChange={handleUpdatePermissions.bind(
+                null,
+                member.user.id
+              )}
+            >
+              {roles
+                .values()
+                .toArray()
+                .sort(sortRolesByPermissions)
+                .map(role => (
+                  <SelectItem key={role.id} description={role.description}>
+                    {role.name}
+                  </SelectItem>
+                ))}
+            </Select>
+          </div>
+        ))
+        .toArray()}
     </span>
   );
 }

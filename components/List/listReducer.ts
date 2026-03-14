@@ -107,6 +107,7 @@ export default function listReducer(
 
     case 'AddSection':
       newState.sections.set(action.section.id, action.section);
+      newState.sectionItems.set(action.section.id, []);
       break;
 
     case 'DeleteSection':
@@ -122,6 +123,8 @@ export default function listReducer(
 
       sectionItems.push(action.item.id);
       newState.items.set(action.item.id, action.item);
+      newState.itemAssignees.set(action.item.id, []);
+      newState.itemTags.set(action.item.id, []);
       break;
     }
 
