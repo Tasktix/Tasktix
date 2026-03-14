@@ -34,11 +34,15 @@ import { AnimatePresence, motion } from 'framer-motion';
 
 import AddItem from '@/components/ListSection/AddItem';
 import { NamedColor } from '@/lib/model/color';
+import ListMember from '@/lib/model/listMember';
+import Tag from '@/lib/model/tag';
+import List from '@/lib/model/list';
+import ListSectionModel from '@/lib/model/listSection';
+import ListItem from '@/lib/model/listItem';
 
-import { ItemAction, ListSectionState, SectionAction } from '../List';
+import { ItemAction, SectionAction } from '../List';
 import { Filters } from '../SearchBar/types';
 import ConfirmedTextInput from '../ConfirmedTextInput';
-import { ListItemState, ListState } from '../List/types';
 
 import SectionBody from './SectionBody';
 import sectionHandlerFactory from './handlerFactory';
@@ -77,13 +81,13 @@ export default function ListSection({
 }: {
   listId: string;
   filters: Filters;
-  members: ListState['members'];
-  tags: ListState['tags'];
-  hasTimeTracking: boolean;
-  hasDueDates: boolean;
-  isAutoOrdered: boolean;
-  section: Omit<ListSectionState, 'items'>;
-  items: ListItemState[];
+  members: ListMember[];
+  tags: Tag[];
+  hasTimeTracking: List['hasTimeTracking'];
+  hasDueDates: List['hasDueDates'];
+  isAutoOrdered: List['isAutoOrdered'];
+  section: Omit<ListSectionModel, 'items'>;
+  items: ListItem[];
   onSectionChange: ActionDispatch<[action: SectionAction]>;
   onItemChange: ActionDispatch<[action: ItemAction]>;
   onTagCreate: (name: string, color: NamedColor) => Promise<string>;

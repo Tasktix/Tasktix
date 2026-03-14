@@ -25,7 +25,6 @@ import { default as api } from '@/lib/api';
 import { formatDate } from '@/lib/date';
 import { getBackgroundColor, getTextColor } from '@/lib/color';
 import { addToastForError } from '@/lib/error';
-import Assignee from '@/lib/model/assignee';
 
 import DateInput from '../DateInput';
 import ConfirmedTextInput from '../ConfirmedTextInput';
@@ -292,27 +291,18 @@ export default function ListItem({
           addNewTag={addNewTag}
           className='hidden lg:flex'
           isComplete={item.status === 'Completed'}
-          tagsAdded={item.tags
-            .map(id => tags.get(id))
-            .filter(e => e !== undefined)}
+          tagsAdded={item.tags}
           tagsAvailable={tags.values().toArray()}
           onTagLink={itemHandlers.linkTag}
           onTagUnlink={itemHandlers.unlinkTag}
         />
 
-        {members.size > 1 ? (
+        {members.length > 1 ? (
           <Users
-            assignees={
-              item.assignees
-                .map(([id, role]) => ({
-                  user: members.get(id)?.user,
-                  role
-                }))
-                .filter(e => e.user !== undefined) as Assignee[]
-            }
+            assignees={item.assignees}
             isComplete={item.status === 'Completed'}
             itemId={item.id}
-            members={members.values().toArray()}
+            members={members}
           />
         ) : null}
 

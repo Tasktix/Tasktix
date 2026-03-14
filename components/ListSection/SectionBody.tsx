@@ -27,9 +27,12 @@ import {
 import { Filters } from '@/components/SearchBar/types';
 import { NamedColor } from '@/lib/model/color';
 import { sortItems, sortItemsByCompleted, sortItemsByOrder } from '@/lib/sort';
+import ListItemModel from '@/lib/model/listItem';
+import ListMember from '@/lib/model/listMember';
+import Tag from '@/lib/model/tag';
 
+import { ListItemState } from '../List/types';
 import { ItemAction } from '../List';
-import { ListItemState, ListState } from '../List/types';
 
 /**
  * A component that provides the body of the list section - i.e. just the items in it,
@@ -66,10 +69,10 @@ export default function SectionBody({
   onItemReorder
 }: {
   sectionId: string;
-  items: ListItemState[];
+  items: ListItemModel[];
   filters: Filters;
-  members: ListState['members'];
-  tags: ListState['tags'];
+  members: ListMember[];
+  tags: Tag[];
   hasTimeTracking: boolean;
   hasDueDates: boolean;
   isAutoOrdered: boolean;
@@ -169,7 +172,7 @@ export default function SectionBody({
  * @param filters The filters to apply
  * @returns Whether the item should be rendered
  */
-function checkItemFilter(item: ListItemState, filters: Filters): boolean {
+function checkItemFilter(item: ListItemModel, filters: Filters): boolean {
   for (const key in filters)
     if (!compareFilter(item, key, filters[key])) return false;
 
@@ -185,7 +188,7 @@ function checkItemFilter(item: ListItemState, filters: Filters): boolean {
  * @returns True if the filter allows the item to be rendered; false if not
  */
 function compareFilter(
-  item: ListItemState,
+  item: ListItemModel,
   key: string,
   value: unknown
 ): boolean {
@@ -201,17 +204,14 @@ function compareFilter(
     case 'tag':
       return (
         value instanceof Set &&
-        item.tags.reduce(
-          (prev: boolean, id: string) => prev || value.has(id),
-          false
-        )
+        item.tags.reduce((prev, tag) => prev || value.has(tag.id), false)
       );
 
     case 'user':
       return (
         value instanceof Set &&
         item.assignees.reduce(
-          (prev: boolean, [id, _]) => prev || value.has(id),
+          (prev, assignee) => prev || value.has(assignee.user.id),
           false
         )
       );

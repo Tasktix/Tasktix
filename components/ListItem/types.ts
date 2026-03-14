@@ -22,8 +22,10 @@ import { ActionDispatch } from 'react';
 import { NamedColor } from '@/lib/model/color';
 import List from '@/lib/model/list';
 import { ItemAction } from '@/components/List';
-
-import { ListItemState, ListState } from '../List/types';
+import { FullState } from '@/components/List/types';
+import ListItem from '@/lib/model/listItem';
+import Tag from '@/lib/model/tag';
+import ListMember from '@/lib/model/listMember';
 
 import { itemHandlerFactory } from './handlerFactory';
 
@@ -32,12 +34,12 @@ import { itemHandlerFactory } from './handlerFactory';
  */
 export interface ListItemParams {
   sectionId: string;
-  item: ListItemState;
+  item: ListItem;
   list?: Pick<List, 'id' | 'color' | 'name'>;
-  members: ListState['members'];
-  tags: ListState['tags'];
-  hasTimeTracking: ListState['hasTimeTracking'];
-  hasDueDates: ListState['hasDueDates'];
+  members: Omit<ListMember, 'role'>[];
+  tags: Tag[];
+  hasTimeTracking: FullState['hasTimeTracking'];
+  hasDueDates: FullState['hasDueDates'];
   reorderControls?: DragControls;
   onItemEvent: ActionDispatch<[action: ItemAction]>;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;

@@ -19,7 +19,6 @@
 'use client';
 
 import { useEffect, useReducer, useState } from 'react';
-import { MemberRole } from '@prisma/client';
 
 import AddListSection from '@/components/AddListSection';
 import SearchBar from '@/components/SearchBar';
@@ -27,13 +26,23 @@ import { Filters } from '@/components/SearchBar/types';
 import ListSettings from '@/components/ListSettings';
 import ListModel from '@/lib/model/list';
 import { subscribe } from '@/lib/sse/client';
-
-import ListSection from '../ListSection/ListSection';
+import MemberRole from '@/lib/model/memberRole';
+import ListSection from '@/components/ListSection/ListSection';
 
 import { getFilterOptions } from './filters';
 import listReducer from './listReducer';
 import { listHandlerFactory } from './handlerFactory';
-import { ListState } from './types';
+import {
+  generateItemAssigneesState,
+  generateItemsState,
+  generateItemTagsState,
+  generateMembersState,
+  generateSectionItemsState,
+  generateSectionsState,
+  generateTagsState,
+  stateToItems,
+  stateToMembers
+} from './state';
 
 /**
  * This component provides the full list GUI: filters, settings, each section and its
@@ -58,53 +67,15 @@ export default function List({
     (JSON.parse(startingRoles) as MemberRole[]).map(role => [role.id, role])
   );
 
-  // Rebuild Date objects turned to JSON strings & convert arrays to Maps
-  const builtMembers: ListState['members'] = new Map(
-    builtList.members.map(member => [
-      member.user.id,
-      { ...member, role: member.role.id }
-    ])
-  );
-  const builtSections: ListState['sections'] = new Map(
-    builtList.sections.map(section => [
-      section.id,
-      {
-        ...section,
-        items: section.items.map(item => item.id)
-      }
-    ])
-  );
-  const builtItems: ListState['items'] = new Map(
-    builtList.sections.flatMap(section =>
-      section.items.map(item => [
-        item.id,
-        {
-          ...item,
-          dateCreated: new Date(item.dateCreated),
-          dateDue: item.dateDue ? new Date(item.dateDue) : null,
-          dateStarted: item.dateStarted ? new Date(item.dateStarted) : null,
-          dateCompleted: item.dateCompleted
-            ? new Date(item.dateCompleted)
-            : null,
-          tags: item.tags.map(tag => tag.id),
-          assignees: item.assignees.map(assignee => [
-            assignee.user.id,
-            assignee.role
-          ])
-        }
-      ])
-    )
-  );
-  const builtTags: ListState['tags'] = new Map(
-    builtList.tags.map(tag => [tag.id, tag])
-  );
-
   const [list, dispatchList] = useReducer(listReducer, {
     ...builtList,
-    items: builtItems,
-    members: builtMembers,
-    sections: builtSections,
-    tags: builtTags
+    members: generateMembersState(builtList),
+    tags: generateTagsState(builtList),
+    sections: generateSectionsState(builtList),
+    sectionItems: generateSectionItemsState(builtList),
+    items: generateItemsState(builtList),
+    itemAssignees: generateItemAssigneesState(builtList),
+    itemTags: generateItemTagsState(builtList)
   });
 
   const [filters, setFilters] = useState<Filters>({});
@@ -134,13 +105,18 @@ export default function List({
           hasDueDates={list.hasDueDates}
           hasTimeTracking={list.hasTimeTracking}
           isAutoOrdered={list.isAutoOrdered}
-          items={section.items
-            .map(id => list.items.get(id))
-            .filter(e => e !== undefined)}
+          items={stateToItems(
+            list.sectionItems.get(section.id),
+            list.itemAssignees,
+            list.itemTags,
+            list.items,
+            list.members,
+            list.tags
+          )}
           listId={list.id}
-          members={list.members}
+          members={stateToMembers(list.members, builtRoles)}
           section={section}
-          tags={list.tags}
+          tags={list.tags.values().toArray()}
           onItemChange={dispatchList}
           onSectionChange={dispatchList}
           onTagCreate={listHandlers.addNewTag}

@@ -27,6 +27,8 @@ import ListItemModel from '@/lib/model/listItem';
 import User from '@/lib/model/user';
 import List from '@/lib/model/list';
 import MemberRole from '@/lib/model/memberRole';
+import ListMember from '@/lib/model/listMember';
+import Assignee from '@/lib/model/assignee';
 
 import ListItem from '../ListItem';
 
@@ -68,9 +70,9 @@ it('Shows everything faded and shows the completion date instead of due date whe
         hasTimeTracking
         addNewTag={vi.fn()}
         item={{ ...item, assignees: [], tags: [] }}
-        members={new Map()}
+        members={[]}
         sectionId='section-id'
-        tags={new Map()}
+        tags={[]}
         onItemEvent={vi.fn()}
       />
     </HeroUIProvider>
@@ -109,9 +111,9 @@ it('Displays the associated list when one is provided', () => {
             'list-id'
           )
         }
-        members={new Map()}
+        members={[]}
         sectionId='section-id'
-        tags={new Map()}
+        tags={[]}
         onItemEvent={vi.fn()}
       />
     </HeroUIProvider>
@@ -147,7 +149,9 @@ it('Displays all members assigned to the item', () => {
       { color: 'Blue' }
     )
   ];
-  const item = new ListItemModel('Test item', {});
+  const item = new ListItemModel('Test item', {
+    assignees: [new Assignee(members[0], ''), new Assignee(members[1], '')]
+  });
 
   const { getByText } = render(
     <HeroUIProvider disableRipple>
@@ -155,21 +159,10 @@ it('Displays all members assigned to the item', () => {
         addNewTag={vi.fn()}
         hasDueDates={false}
         hasTimeTracking={false}
-        item={{
-          ...item,
-          assignees: [
-            [members[0].id, ''],
-            [members[1].id, '']
-          ],
-          tags: []
-        }}
-        members={
-          new Map(
-            members.map(m => [m.id, { user: m, role: MOCK_ROLE_CAN_VIEW.id }])
-          )
-        }
+        item={item}
+        members={members.map(m => new ListMember(m, MOCK_ROLE_CAN_VIEW))}
         sectionId='section-id'
-        tags={new Map()}
+        tags={[]}
         onItemEvent={vi.fn()}
       />
     </HeroUIProvider>

@@ -28,14 +28,14 @@ import Tag from '@/lib/model/tag';
  * reducer.
  */
 export type ListAction =
-  | { type: 'SetHasDueDates'; hasDueDates: ListState['hasDueDates'] }
+  | { type: 'SetHasDueDates'; hasDueDates: FullState['hasDueDates'] }
   | {
       type: 'SetHasTimeTracking';
-      hasTimeTracking: ListState['hasTimeTracking'];
+      hasTimeTracking: FullState['hasTimeTracking'];
     }
-  | { type: 'SetIsAutoOrdered'; isAutoOrdered: ListState['isAutoOrdered'] }
-  | { type: 'SetListColor'; color: ListState['color'] }
-  | { type: 'SetListName'; name: ListState['name'] }
+  | { type: 'SetIsAutoOrdered'; isAutoOrdered: FullState['isAutoOrdered'] }
+  | { type: 'SetListColor'; color: FullState['color'] }
+  | { type: 'SetListName'; name: FullState['name'] }
   | { type: 'AddTag'; tag: Tag }
   | { type: 'AddSection'; section: ListSection };
 
@@ -98,22 +98,25 @@ export type ItemAction =
 
 export type ListMemberState = Omit<ListMember, 'role'> & { role: string };
 
-export type ListItemState = Omit<ListItem, 'assignees' | 'tags'> & {
-  assignees: [string, string][];
-  tags: string[];
-};
+export type ListItemState = Omit<ListItem, 'assignees' | 'tags'>;
 
 /**
  * The state of a list section, as defined and modified by the list reducer.
  */
-export type ListSectionState = Omit<ListSection, 'items'> & { items: string[] };
+export type ListSectionState = Omit<ListSection, 'items'>;
 
 /**
  * The list state, as defined and modified by the list reducer.
  */
-export type ListState = Omit<List, 'members' | 'sections' | 'tags'> & {
+export type ListState = Omit<List, 'members' | 'sections' | 'tags'>;
+
+export type FullState = Omit<List, 'members' | 'sections' | 'tags'> & {
   members: Map<string, ListMemberState>;
   tags: Map<string, Tag>;
   sections: Map<string, ListSectionState>;
   items: Map<string, ListItemState>;
+
+  sectionItems: Map<string, string[]>;
+  itemAssignees: Map<string, [string, string][]>;
+  itemTags: Map<string, string[]>;
 };

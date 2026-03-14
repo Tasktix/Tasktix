@@ -19,7 +19,7 @@
 import {
   ItemAction,
   ListAction,
-  ListState,
+  FullState,
   MemberAction,
   SectionAction,
   TagAction
@@ -36,9 +36,9 @@ import {
  * Color type) do return - skipcq: JS-0045
  */
 export default function listReducer(
-  state: ListState,
+  state: FullState,
   action: ListAction | MemberAction | TagAction | SectionAction | ItemAction
-): ListState {
+): FullState {
   const newState = structuredClone(state);
 
   switch (action.type) {
@@ -106,10 +106,7 @@ export default function listReducer(
       break;
 
     case 'AddSection':
-      newState.sections.set(action.section.id, {
-        ...action.section,
-        items: []
-      });
+      newState.sections.set(action.section.id, action.section);
       break;
 
     case 'DeleteSection':
@@ -117,32 +114,28 @@ export default function listReducer(
       break;
 
     case 'AddItemToSection': {
-      const section = newState.sections.get(action.id);
+      const sectionItems = newState.sectionItems.get(action.id);
 
       // Should be impossible to trigger this, hence the runtime error - skipcq: TCV-001
-      if (!section)
-        throw new Error(`Unable to find section with ID ${action.id}`);
+      if (!sectionItems)
+        throw new Error(`Unable to find items for section ${action.id}`);
 
-      section.items.push(action.item.id);
-      newState.items.set(action.item.id, {
-        ...action.item,
-        assignees: [],
-        tags: []
-      });
+      sectionItems.push(action.item.id);
+      newState.items.set(action.item.id, action.item);
       break;
     }
 
     case 'ReorderItem': {
-      const section = newState.sections.get(action.sectionId);
+      const sectionItems = newState.sectionItems.get(action.sectionId);
 
-      if (!section)
-        throw new Error(`Unable to find section with ID ${action.sectionId}`);
+      if (!sectionItems)
+        throw new Error(`Unable to find items for section ${action.sectionId}`);
 
       const wasShiftedUp = action.oldIndex > action.newIndex;
       const lowIndex = Math.min(action.newIndex, action.oldIndex);
       const highIndex = Math.max(action.newIndex, action.oldIndex);
 
-      for (const itemId of section.items) {
+      for (const itemId of sectionItems) {
         const item = getItem(newState, itemId);
 
         if (item.sectionIndex === action.oldIndex)
@@ -201,24 +194,35 @@ export default function listReducer(
       break;
 
     case 'LinkTagToItem':
-      newState.items.get(action.itemId)?.tags.push(action.tagId);
+      newState.itemTags.get(action.itemId)?.push(action.tagId);
       break;
 
     case 'UnlinkTagFromItem': {
-      const item = getItem(newState, action.itemId);
+      const itemTags = newState.itemTags.get(action.itemId);
 
-      item.tags = item.tags.filter(tag => tag !== action.tagId);
+      // Should be impossible to trigger this, hence the runtime error - skipcq: TCV-001
+      if (!itemTags)
+        throw new Error(`Unable to find tags for item ${action.itemId}`);
+
+      newState.itemTags.set(
+        action.itemId,
+        itemTags.filter(tag => tag !== action.tagId)
+      );
       break;
     }
 
     case 'DeleteItem': {
-      const section = newState.sections.get(action.sectionId);
+      const sectionItems = newState.sectionItems.get(action.sectionId);
 
-      if (!section)
-        // Should be impossible to trigger this, hence the runtime error - skipcq: TCV-001
-        throw new Error(`Unable to find section with ID ${action.sectionId}`);
+      // Should be impossible to trigger this, hence the runtime error - skipcq: TCV-001
+      if (!sectionItems)
+        throw new Error(`Unable to find items for section ${action.sectionId}`);
 
-      section.items = section.items.filter(item => item === action.id);
+      newState.sectionItems.set(
+        action.sectionId,
+        sectionItems.filter(item => item === action.id)
+      );
+
       newState.items.delete(action.id);
       break;
     }
@@ -236,7 +240,7 @@ export default function listReducer(
  *
  * @returns The item that was looked for
  */
-function getItem(state: ListState, itemId: string) {
+function getItem(state: FullState, itemId: string) {
   const item = state.items.get(itemId);
 
   if (!item) throw new Error(`Unable to find item with ID ${itemId}`);

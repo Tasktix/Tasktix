@@ -28,11 +28,13 @@ import {
 import { ThreeDots, TrashFill } from 'react-bootstrap-icons';
 
 import { NamedColor } from '@/lib/model/color';
-import Assignee from '@/lib/model/assignee';
+import ListMember from '@/lib/model/listMember';
+import List from '@/lib/model/list';
+import Tag from '@/lib/model/tag';
+import ListItem from '@/lib/model/listItem';
 
 import DateInput2 from '../DateInput2';
 import ConfirmedTextInput from '../ConfirmedTextInput';
-import { ListItemState, ListState } from '../List/types';
 
 import Priority from './Priority';
 import Tags from './Tags';
@@ -75,11 +77,11 @@ export default function More({
   itemHandlers,
   addNewTag
 }: {
-  item: ListItemState;
-  tags: ListState['tags'];
-  members: ListState['members'];
-  hasDueDates: ListState['hasDueDates'];
-  hasTimeTracking: ListState['hasTimeTracking'];
+  item: ListItem;
+  tags: Tag[];
+  members: Omit<ListMember, 'role'>[];
+  hasDueDates: List['hasDueDates'];
+  hasTimeTracking: List['hasTimeTracking'];
   elapsedLive: number;
   set: SetItem;
   itemHandlers: ItemHandlers;
@@ -151,24 +153,15 @@ export default function More({
                   addNewTag={addNewTag}
                   className='py-2'
                   isComplete={isComplete}
-                  tagsAdded={item.tags
-                    .map(id => tags.get(id))
-                    .filter(e => e !== undefined)}
+                  tagsAdded={item.tags}
                   tagsAvailable={tags.values().toArray()}
                   onTagLink={itemHandlers.linkTag}
                   onTagUnlink={itemHandlers.unlinkTag}
                 />
 
-                {members.size > 1 ? (
+                {members.length > 1 ? (
                   <Users
-                    assignees={
-                      item.assignees
-                        .map(([id, role]) => ({
-                          user: members.get(id)?.user,
-                          role
-                        }))
-                        .filter(e => e.user !== undefined) as Assignee[]
-                    }
+                    assignees={item.assignees}
                     className='py-2'
                     isComplete={isComplete}
                     itemId={item.id}

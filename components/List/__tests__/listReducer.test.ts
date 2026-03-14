@@ -17,10 +17,10 @@
  */
 
 import listReducer from '../listReducer';
-import { ListState } from '../types';
+import { FullState } from '../types';
 
 test('Throws an error if an ItemAction is requested for a nonexistent list item', () => {
-  const list: ListState = {
+  const list: FullState = {
     id: 'list-id',
     name: 'List name',
     color: 'Amber',
@@ -30,9 +30,12 @@ test('Throws an error if an ItemAction is requested for a nonexistent list item'
     items: new Map(),
     members: new Map(),
     sections: new Map([
-      ['section-id', { name: 'Section name', items: [], id: 'section-id' }]
+      ['section-id', { name: 'Section name', id: 'section-id' }]
     ]),
-    tags: new Map()
+    tags: new Map(),
+    sectionItems: new Map(),
+    itemAssignees: new Map(),
+    itemTags: new Map()
   };
 
   expect(() =>

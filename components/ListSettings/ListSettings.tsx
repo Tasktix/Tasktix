@@ -32,7 +32,7 @@ import { ActionDispatch } from 'react';
 import { NamedColor } from '@/lib/model/color';
 import {
   ListAction,
-  ListState,
+  FullState,
   MemberAction,
   TagAction
 } from '@/components/List/types';
@@ -60,7 +60,7 @@ export default function ListSettings({
   onListEvent,
   onListNameChange
 }: Readonly<{
-  list: Omit<ListState, 'items' | 'sections'>;
+  list: Omit<FullState, 'items' | 'sections'>;
   roles: Map<string, MemberRole>;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
   onListEvent: ActionDispatch<[action: ListAction | MemberAction | TagAction]>;

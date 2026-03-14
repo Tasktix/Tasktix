@@ -27,7 +27,7 @@ import api from '@/lib/api';
 import { NamedColor } from '@/lib/model/color';
 import { addToastForError } from '@/lib/error';
 
-import { ListState, TagAction } from '../List/types';
+import { FullState, TagAction } from '../List/types';
 
 /**
  * Displays all tags in the List and allows tags to be added, edited, and deleted
@@ -42,7 +42,7 @@ export default function TagSettings({
   addNewTag,
   onTagEvent
 }: Readonly<{
-  tags: ListState['tags'];
+  tags: FullState['tags'];
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
   onTagEvent: (event: TagAction) => unknown;
 }>) {
