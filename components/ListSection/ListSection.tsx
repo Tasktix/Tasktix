@@ -34,10 +34,13 @@ import { AnimatePresence, motion } from 'framer-motion';
 
 import AddItem from '@/components/ListSection/AddItem';
 import { NamedColor } from '@/lib/model/color';
-import Tag from '@/lib/model/tag';
 import ListMember from '@/lib/model/listMember';
+import Tag from '@/lib/model/tag';
+import List from '@/lib/model/list';
+import ListSectionModel from '@/lib/model/listSection';
+import ListItem from '@/lib/model/listItem';
 
-import { ItemAction, ListSectionState, SectionAction } from '../List';
+import { ItemAction, SectionAction } from '../List';
 import { Filters } from '../SearchBar/types';
 import ConfirmedTextInput from '../ConfirmedTextInput';
 
@@ -57,9 +60,8 @@ import sectionHandlerFactory from './handlerFactory';
  * @param hasDueDates Whether due dates are enabled in the list's settings
  * @param isAutoOrdered Whether auto-ordering is enabled in the list's settings
  * @param section All data for the section to render
- * @param dispatchSectionChange Callback to propagate state changes for the list section
- * @param dispatchItemChange Callback to propagate state changes for an item in the list
- *  section
+ * @param onSectionChange Callback to propagate state changes for the list section
+ * @param onItemChange Callback to propagate state changes for an item in the list section
  * @param onTagCreate Callback to propagate state changes when a new tag is created from
  *  the "add tag" menu
  */
@@ -67,29 +69,31 @@ export default function ListSection({
   listId,
   filters,
   members,
-  tagsAvailable,
+  tags,
   hasTimeTracking,
   hasDueDates,
   isAutoOrdered,
   section,
-  dispatchSectionChange,
-  dispatchItemChange,
+  items,
+  onSectionChange,
+  onItemChange,
   onTagCreate
 }: {
   listId: string;
   filters: Filters;
   members: ListMember[];
-  tagsAvailable: Tag[];
-  hasTimeTracking: boolean;
-  hasDueDates: boolean;
-  isAutoOrdered: boolean;
-  section: ListSectionState;
-  dispatchSectionChange: ActionDispatch<[action: SectionAction]>;
-  dispatchItemChange: ActionDispatch<[action: ItemAction]>;
+  tags: Tag[];
+  hasTimeTracking: List['hasTimeTracking'];
+  hasDueDates: List['hasDueDates'];
+  isAutoOrdered: List['isAutoOrdered'];
+  section: Omit<ListSectionModel, 'items'>;
+  items: ListItem[];
+  onSectionChange: ActionDispatch<[action: SectionAction]>;
+  onItemChange: ActionDispatch<[action: ItemAction]>;
   onTagCreate: (name: string, color: NamedColor) => Promise<string>;
 }) {
   const [isCollapsed, setIsCollapsed] = useState(
-    !section.items
+    !items
       .values()
       .reduce((prev, curr) => prev || curr.status !== 'Completed', false)
   );
@@ -97,7 +101,7 @@ export default function ListSection({
   const sectionHandlers = sectionHandlerFactory(
     listId,
     section.id,
-    dispatchSectionChange
+    onSectionChange
   );
 
   return (
@@ -124,15 +128,15 @@ export default function ListSection({
           <AddItem
             addItem={item => {
               setIsCollapsed(false);
-              dispatchSectionChange({
+              onSectionChange({
                 type: 'AddItemToSection',
-                sectionId: section.id,
+                id: section.id,
                 item
               });
             }}
             hasDueDates={hasDueDates}
             hasTimeTracking={hasTimeTracking}
-            nextIndex={section.items.size}
+            nextIndex={items.length}
             sectionId={section.id}
           />
           <Dropdown placement='bottom'>
@@ -148,7 +152,7 @@ export default function ListSection({
             </DropdownTrigger>
             <DropdownMenu
               onAction={() =>
-                dispatchSectionChange({ type: 'DeleteSection', id: section.id })
+                onSectionChange({ type: 'DeleteSection', id: section.id })
               }
             >
               <DropdownItem
@@ -179,16 +183,16 @@ export default function ListSection({
           >
             <SectionBody
               addNewTag={onTagCreate}
-              dispatchItemChange={dispatchItemChange}
               filters={filters}
               hasDueDates={hasDueDates}
               hasTimeTracking={hasTimeTracking}
               isAutoOrdered={isAutoOrdered}
-              items={section.items}
+              items={items}
               members={members}
-              reorderItem={sectionHandlers.reorderItem}
               sectionId={section.id}
-              tagsAvailable={tagsAvailable}
+              tags={tags}
+              onItemEvent={onItemChange}
+              onItemReorder={sectionHandlers.reorderItem}
             />
           </motion.section>
         )}

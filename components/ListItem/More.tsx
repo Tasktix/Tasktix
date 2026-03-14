@@ -28,9 +28,10 @@ import {
 import { ThreeDots, TrashFill } from 'react-bootstrap-icons';
 
 import { NamedColor } from '@/lib/model/color';
-import ListItem from '@/lib/model/listItem';
-import Tag from '@/lib/model/tag';
 import ListMember from '@/lib/model/listMember';
+import List from '@/lib/model/list';
+import Tag from '@/lib/model/tag';
+import ListItem from '@/lib/model/listItem';
 
 import DateInput2 from '../DateInput2';
 import ConfirmedTextInput from '../ConfirmedTextInput';
@@ -68,7 +69,6 @@ import { ItemHandlers, SetItem } from './types';
 export default function More({
   item,
   tags,
-  tagsAvailable,
   members,
   hasDueDates,
   hasTimeTracking,
@@ -79,10 +79,9 @@ export default function More({
 }: {
   item: ListItem;
   tags: Tag[];
-  tagsAvailable: Tag[];
-  members: ListMember[];
-  hasDueDates: boolean;
-  hasTimeTracking: boolean;
+  members: Omit<ListMember, 'role'>[];
+  hasDueDates: List['hasDueDates'];
+  hasTimeTracking: List['hasTimeTracking'];
   elapsedLive: number;
   set: SetItem;
   itemHandlers: ItemHandlers;
@@ -153,11 +152,11 @@ export default function More({
                 <Tags
                   addNewTag={addNewTag}
                   className='py-2'
-                  isComplete={item.status === 'Completed'}
-                  linkTag={itemHandlers.linkTag}
-                  tags={tags}
-                  tagsAvailable={tagsAvailable}
-                  unlinkTag={itemHandlers.unlinkTag}
+                  isComplete={isComplete}
+                  tagsAdded={item.tags}
+                  tagsAvailable={tags.values().toArray()}
+                  onTagLink={itemHandlers.linkTag}
+                  onTagUnlink={itemHandlers.unlinkTag}
                 />
 
                 {members.length > 1 ? (
@@ -166,7 +165,7 @@ export default function More({
                     className='py-2'
                     isComplete={isComplete}
                     itemId={item.id}
-                    members={members}
+                    members={members.values().toArray()}
                   />
                 ) : null}
 

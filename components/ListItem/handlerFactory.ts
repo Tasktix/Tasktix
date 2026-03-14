@@ -21,8 +21,6 @@ import { ActionDispatch, Dispatch, RefObject, SetStateAction } from 'react';
 
 import api from '@/lib/api';
 import ListItem from '@/lib/model/listItem';
-import Tag from '@/lib/model/tag';
-import { NamedColor } from '@/lib/model/color';
 import { ItemAction } from '@/components/List';
 import { addToastForError } from '@/lib/error';
 
@@ -36,7 +34,6 @@ import { addToastForError } from '@/lib/error';
  * @param sectionId The ID for the section that the item belongs to
  * @param timerData All data and callbacks needed to interact with the ListItem
  *  component's internal timer state
- * @param tagsAvailable All tags associated with the list the item belongs to
  * @param dispatchItemChange Callback to propagate state changes to the item
  */
 export function itemHandlerFactory(
@@ -48,7 +45,6 @@ export function itemHandlerFactory(
     setElapsedLive: Dispatch<SetStateAction<number>>;
     stopRunning: () => unknown;
   },
-  tagsAvailable: Tag[],
   dispatchItemChange: ActionDispatch<[action: ItemAction]>
 ) {
   /**
@@ -57,9 +53,7 @@ export function itemHandlerFactory(
   function setName(name: ListItem['name']) {
     api
       .patch(`/item/${itemId}`, { name })
-      .then(() =>
-        dispatchItemChange({ type: 'SetItemName', sectionId, id: itemId, name })
-      )
+      .then(() => dispatchItemChange({ type: 'SetItemName', id: itemId, name }))
       .catch(addToastForError);
   }
 
@@ -72,7 +66,6 @@ export function itemHandlerFactory(
       .then(() => {
         dispatchItemChange({
           type: 'SetItemDueDate',
-          sectionId,
           id: itemId,
           date
         });
@@ -89,7 +82,6 @@ export function itemHandlerFactory(
       .then(() => {
         dispatchItemChange({
           type: 'SetItemPriority',
-          sectionId,
           id: itemId,
           priority
         });
@@ -106,7 +98,6 @@ export function itemHandlerFactory(
       .then(() => {
         dispatchItemChange({
           type: 'SetItemIncomplete',
-          sectionId,
           id: itemId
         });
       })
@@ -140,7 +131,6 @@ export function itemHandlerFactory(
         // Update the internal state
         dispatchItemChange({
           type: 'SetItemComplete',
-          sectionId,
           id: itemId,
           dateCompleted
         });
@@ -157,7 +147,6 @@ export function itemHandlerFactory(
       .then(() => {
         dispatchItemChange({
           type: 'SetItemExpectedMs',
-          sectionId,
           id: itemId,
           expectedMs
         });
@@ -176,10 +165,8 @@ export function itemHandlerFactory(
       .then(() => {
         dispatchItemChange({
           type: 'LinkTagToItem',
-          sectionId,
           itemId,
-          tagId: id,
-          tagsAvailable
+          tagId: id
         });
       })
       .catch(addToastForError);
@@ -196,41 +183,10 @@ export function itemHandlerFactory(
       .then(() =>
         dispatchItemChange({
           type: 'UnlinkTagFromItem',
-          sectionId,
           itemId,
           tagId: id
         })
       )
-      .catch(addToastForError);
-  }
-
-  /**
-   * Adds a just-created tag to the item. Handled separately from `linkTag` because the
-   * React state doesn't necessarily include the new tag yet, so it has to be created from
-   * its name and color instead of just being looked up in the list's tags.
-   *
-   * Note: does **not** make an API request to create the new tag, just to link it to this
-   * item. That API request should succeed before this function is called.
-   *
-   * @param id The new tag's ID
-   * @param name The new tag's name
-   * @param color The new tag's display color
-   */
-  function linkNewTag(
-    id: string,
-    name: string,
-    color: NamedColor
-  ): Promise<unknown> {
-    return api
-      .post(`/item/${itemId}/tag/${id}`, {})
-      .then(() => {
-        dispatchItemChange({
-          type: 'LinkNewTagToItem',
-          sectionId,
-          itemId,
-          tag: new Tag(name, color, id)
-        });
-      })
       .catch(addToastForError);
   }
 
@@ -258,7 +214,6 @@ export function itemHandlerFactory(
     setExpectedMs,
     linkTag,
     unlinkTag,
-    linkNewTag,
     deleteSelf
   };
 }
