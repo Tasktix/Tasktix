@@ -38,12 +38,28 @@ export default function Page() {
       ]
     },
     {
-      type: 'option',
+      type: 'multi-option',
       label: 'tag',
       options: [
         { name: 'Bug', color: 'Red' },
         { name: 'Feature', color: 'Blue' }
       ]
+    },
+    {
+      type: 'date',
+      label: 'due'
+    },
+    {
+      type: 'number',
+      label: 'assignee_count'
+    },
+    {
+      type: 'color',
+      label: 'tag_color'
+    },
+    {
+      type: 'time',
+      label: 'expected_time'
     }
   ];
   const [state, setState] = useState<FilterInput>({
