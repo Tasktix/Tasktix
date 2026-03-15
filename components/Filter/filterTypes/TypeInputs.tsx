@@ -18,10 +18,16 @@
 
 import { Input, Select, SelectItem } from '@heroui/react';
 
+import { DayOfWeek } from '@/lib/types';
+
 import {
+  DateFilterInput,
   DateFilterOperator,
   FilterInput,
   FilterOption,
+  isDayOfWeekOperator,
+  isSingleSelectOperator,
+  OptionFilterInput,
   OptionFilterOperator
 } from '../types';
 
@@ -44,8 +50,56 @@ export default function TypeInput({
   onChange
 }: Readonly<{
   filterData: (FilterInput & FilterOption) | { type: 'undefined' };
-  onChange: (data: FilterInput) => unknown;
+  onChange: (data: Exclude<FilterInput, { type: 'undefined' }>) => unknown;
 }>) {
+  function handleOptionOperatorChange(
+    operator: OptionFilterOperator | undefined
+  ) {
+    if (filterData.type !== 'option')
+      throw new Error('Handling option operator change when option not in use');
+
+    let value = filterData.value;
+
+    if (filterData.operator && operator) {
+      if (
+        (!isSingleSelectOperator(filterData.operator) &&
+          isSingleSelectOperator(operator)) ||
+        (isSingleSelectOperator(filterData.operator) &&
+          !isSingleSelectOperator(operator))
+      )
+        value = undefined;
+    }
+
+    onChange({
+      ...filterData,
+      operator,
+      value
+    } as OptionFilterInput & { id: number; type: 'option' });
+  }
+
+  function handleDateOperatorChange(operator: DateFilterOperator | undefined) {
+    if (filterData.type !== 'date')
+      throw new Error('Handling date operator change when date not in use');
+
+    let value = filterData.value;
+
+    if (filterData.operator && operator) {
+      if (
+        (!isDayOfWeekOperator(filterData.operator) &&
+          isDayOfWeekOperator(operator)) ||
+        (isDayOfWeekOperator(filterData.operator) &&
+          !isDayOfWeekOperator(operator))
+      )
+        value = undefined;
+    }
+
+    onChange({
+      ...filterData,
+      operator,
+      value
+    } as DateFilterInput & { id: number; type: 'date' });
+  }
+
   switch (filterData.type) {
     case 'undefined':
       return (
@@ -56,6 +110,7 @@ export default function TypeInput({
           <Input isDisabled />
         </>
       );
+
     case 'text':
       return (
         <TextFilterInputs
@@ -75,6 +130,7 @@ export default function TypeInput({
           }
         />
       );
+
     case 'number':
       return (
         <NumberFilterInputs
@@ -94,45 +150,21 @@ export default function TypeInput({
           }
         />
       );
+
     case 'option':
       return (
         <OptionFilterInputs
-          operator={filterData.operator}
-          options={filterData.options}
-          value={filterData.value}
-          onOperatorChange={operator => {
-            let value = filterData.value;
-
-            if (
-              (filterData.operator &&
-                filterData.operator in
-                  [OptionFilterOperator.Equal, OptionFilterOperator.NotEqual] &&
-                operator &&
-                operator in
-                  [OptionFilterOperator.In, OptionFilterOperator.NotIn]) ||
-              (filterData.operator &&
-                filterData.operator in
-                  [OptionFilterOperator.In, OptionFilterOperator.NotIn] &&
-                operator &&
-                operator in
-                  [OptionFilterOperator.Equal, OptionFilterOperator.NotEqual])
-            )
-              value = undefined;
-
-            onChange({
-              ...filterData,
-              operator,
-              value
-            });
-          }}
-          onValueChange={value =>
-            onChange({
-              ...filterData,
-              value
+          {...filterData} // Necessary to add `operator` and `value` this way for TS
+          onOperatorChange={handleOptionOperatorChange}
+          onValueChange={(value: string | string[] | undefined) =>
+            onChange({ ...filterData, value } as OptionFilterInput & {
+              id: number;
+              type: 'option';
             })
           }
         />
       );
+
     case 'multi-option':
       return (
         <MultiOptionFilterInputs
@@ -153,6 +185,7 @@ export default function TypeInput({
           }
         />
       );
+
     case 'color':
       return (
         <ColorFilterInputs
@@ -172,60 +205,21 @@ export default function TypeInput({
           }
         />
       );
+
     case 'date':
       return (
         <DateFilterInputs
-          operator={filterData.operator}
-          value={filterData.value}
-          onOperatorChange={operator => {
-            let value = filterData.value;
-
-            if (
-              (filterData.operator &&
-                !(
-                  filterData.operator in
-                  [
-                    DateFilterOperator.DayOfWeek,
-                    DateFilterOperator.NotDayOfWeek
-                  ]
-                ) &&
-                operator &&
-                operator in
-                  [
-                    DateFilterOperator.DayOfWeek,
-                    DateFilterOperator.NotDayOfWeek
-                  ]) ||
-              (filterData.operator &&
-                filterData.operator in
-                  [
-                    DateFilterOperator.DayOfWeek,
-                    DateFilterOperator.NotDayOfWeek
-                  ] &&
-                operator &&
-                !(
-                  operator in
-                  [
-                    DateFilterOperator.DayOfWeek,
-                    DateFilterOperator.NotDayOfWeek
-                  ]
-                ))
-            )
-              value = undefined;
-
-            onChange({
-              ...filterData,
-              operator,
-              value
-            });
-          }}
-          onValueChange={value =>
-            onChange({
-              ...filterData,
-              value
+          {...filterData} // Necessary to add `operator` and `value` this way for TS
+          onOperatorChange={handleDateOperatorChange}
+          onValueChange={(value: Date | DayOfWeek | undefined) =>
+            onChange({ ...filterData, value } as DateFilterInput & {
+              id: number;
+              type: 'date';
             })
           }
         />
       );
+
     case 'time':
       return (
         <TimeFilterInputs

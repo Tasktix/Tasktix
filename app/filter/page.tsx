@@ -19,9 +19,11 @@
 'use client';
 
 import { useState } from 'react';
+import { Card } from '@heroui/react';
 
-import { Filter, FilterOption } from '@/components/Filter';
+import { FilterOption } from '@/components/Filter';
 import FilterRow from '@/components/Filter/FilterRow';
+import { FilterInput } from '@/components/Filter/types';
 
 export default function Page() {
   const filterOptions: FilterOption[] = [
@@ -44,17 +46,19 @@ export default function Page() {
       ]
     }
   ];
-  const [state, setState] = useState<Filter>({
+  const [state, setState] = useState<FilterInput>({
     id: 0,
     type: 'undefined'
   });
 
   return (
-    <FilterRow
-      filterConfigs={filterOptions}
-      filterInput={state}
-      onFilterChange={setState}
-      onFilterDelete={() => {}}
-    />
+    <Card className='p-4 w-2xl self-center m-12'>
+      <FilterRow
+        filterConfigs={filterOptions}
+        filterInput={state}
+        onFilterChange={setState}
+        onFilterDelete={() => {}}
+      />
+    </Card>
   );
 }

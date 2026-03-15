@@ -76,22 +76,25 @@ export default function FilterRow({
     onFilterChange({
       id: filterInput.id,
       type: value.type,
-      label: value.label
+      label: value.label,
+      operator: undefined,
+      value: undefined
     });
   }
 
-  function handleOtherChange(data: FilterInput) {
-    if (data.type === 'undefined') {
-      return;
-    }
+  function handleOtherChange(
+    data: Exclude<FilterInput, { type: 'undefined' }>
+  ) {
+    if (
+      data.id !== filterInput.id ||
+      data.type !== filterInput.type ||
+      data.label !== filterInput.label
+    )
+      throw new Error(
+        'Operator/value change also mutated other filter input components'
+      );
 
-    onFilterChange({
-      id: filterInput.id,
-      type: filterInput.type,
-      label: filterInput.label,
-      operator: data.operator,
-      value: data.value
-    });
+    onFilterChange(data);
   }
 
   return (
@@ -109,7 +112,11 @@ export default function FilterRow({
         ))}
       </Select>
       <TypeInput
-        filterData={{ ...filterInput, ...filterConfig }}
+        filterData={
+          { ...filterInput, ...filterConfig } as
+            | (FilterInput & FilterOption)
+            | { type: 'undefined' }
+        }
         onChange={handleOtherChange}
       />
       <Button

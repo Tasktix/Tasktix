@@ -55,12 +55,10 @@ export type DateFilterInput = {
   label: string;
 } & (
   | {
-      operator:
-        | Exclude<
-            DateFilterOperator,
-            DateFilterOperator.DayOfWeek | DateFilterOperator.NotDayOfWeek
-          >
-        | undefined;
+      operator?: Exclude<
+        DateFilterOperator,
+        DateFilterOperator.DayOfWeek | DateFilterOperator.NotDayOfWeek
+      >;
       value: Date | undefined;
     }
   | {
@@ -82,7 +80,7 @@ export type MultiOptionFilter = {
 
 export type MultiOptionFilterInput = WithUndefined<
   MultiOptionFilter,
-  'operator'
+  'operator' | 'value'
 >;
 
 export type NumberFilterOption = {
@@ -245,4 +243,18 @@ export enum DateFilterOperator {
   GreaterThanEqual = '>=',
   DayOfWeek = '@dow',
   NotDayOfWeek = '!@dow'
+}
+
+export function isSingleSelectOperator(
+  operator: OptionFilterOperator
+): boolean {
+  return (
+    operator in [OptionFilterOperator.Equal, OptionFilterOperator.NotEqual]
+  );
+}
+
+export function isDayOfWeekOperator(operator: DateFilterOperator): boolean {
+  return (
+    operator in [DateFilterOperator.DayOfWeek, DateFilterOperator.NotDayOfWeek]
+  );
 }
