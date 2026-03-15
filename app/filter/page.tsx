@@ -20,11 +20,11 @@
 
 import { useState } from 'react';
 
-import { FilterInputState, FilterType } from '@/components/Filter';
+import { Filter, FilterOption } from '@/components/Filter';
 import FilterRow from '@/components/Filter/FilterRow';
 
 export default function Page() {
-  const filterOptions: FilterType[] = [
+  const filterOptions: FilterOption[] = [
     { type: 'text', label: 'name' },
     {
       type: 'option',
@@ -44,7 +44,7 @@ export default function Page() {
       ]
     }
   ];
-  const [state, setState] = useState<FilterInputState>({
+  const [state, setState] = useState<Filter>({
     id: 0,
     type: 'undefined'
   });

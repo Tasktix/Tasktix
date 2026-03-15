@@ -22,16 +22,6 @@ import { NamedColor } from '@/lib/model/color';
 import { SelectColorFilterOperator } from '../SelectOperator';
 import { ColorFilterOperator } from '../types';
 
-export type ColorFieldData = {
-  label: string;
-};
-
-export type ColorFieldState = {
-  label: string;
-  operator: ColorFilterOperator | undefined;
-  value: NamedColor | undefined;
-};
-
 export function ColorFilterInputs({
   operator,
   value,

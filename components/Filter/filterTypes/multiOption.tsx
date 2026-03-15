@@ -18,22 +18,10 @@
 
 import { Select, Selection, SelectItem } from '@heroui/react';
 
-import { Color } from '@/lib/model/color';
 import { getTextColor } from '@/lib/color';
 
 import { SelectMultiOptionFilterOperator } from '../SelectOperator';
-import { MultiOptionFilterOperator } from '../types';
-
-export type MultiOptionFieldData = {
-  label: string;
-  options: { name: string; color?: Color }[];
-};
-
-export type MultiOptionFieldState = {
-  label: string;
-  operator: MultiOptionFilterOperator | undefined;
-  value: string[] | undefined;
-};
+import { MultiOptionFilterInput, MultiOptionFilterOption } from '../types';
 
 export function MultiOptionFilterInputs({
   operator,
@@ -42,13 +30,11 @@ export function MultiOptionFilterInputs({
   onOperatorChange,
   onValueChange
 }: {
-  operator: MultiOptionFilterOperator | undefined;
-  options: { name: string; color?: Color }[];
-  value: string[];
-  onOperatorChange: (
-    operator: MultiOptionFilterOperator | undefined
-  ) => unknown;
-  onValueChange: (value: string[] | undefined) => unknown;
+  operator: MultiOptionFilterInput['operator'];
+  options: MultiOptionFilterOption['options'];
+  value: MultiOptionFilterInput['value'];
+  onOperatorChange: (operator: MultiOptionFilterInput['operator']) => unknown;
+  onValueChange: (value: MultiOptionFilterInput['value']) => unknown;
 }) {
   function handleValueChange(value: Selection) {
     if (value === 'all') onValueChange(options.map(o => o.name));

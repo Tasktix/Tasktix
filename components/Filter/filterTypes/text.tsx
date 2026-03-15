@@ -19,18 +19,7 @@
 import { Input } from '@heroui/react';
 
 import { SelectTextFilterOperator } from '../SelectOperator';
-import { TextFilterOperator } from '../types';
-
-export type TextFieldData = {
-  type: 'text';
-  label: string;
-};
-
-export type TextFieldState = {
-  label: string;
-  operator: TextFilterOperator | undefined;
-  value: string | undefined;
-};
+import { TextFilterInput, TextFilterOperator } from '../types';
 
 export function TextFilterInputs({
   operator,
@@ -38,10 +27,10 @@ export function TextFilterInputs({
   onOperatorChange,
   onValueChange
 }: Readonly<{
-  operator: TextFilterOperator | undefined;
-  value: string | undefined;
-  onOperatorChange: (operator: TextFilterOperator | undefined) => unknown;
-  onValueChange: (value: string | undefined) => unknown;
+  operator: TextFilterInput['operator'];
+  value: TextFilterInput['value'];
+  onOperatorChange: (operator: TextFilterInput['operator']) => unknown;
+  onValueChange: (value: TextFilterInput['value']) => unknown;
 }>) {
   const isRegex = operator === TextFilterOperator.RegexMatches;
 

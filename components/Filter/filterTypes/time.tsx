@@ -18,17 +18,7 @@
 
 import TimeInput from '../../TimeInput';
 import { SelectComparableFilterOperator } from '../SelectOperator';
-import { ComparableFilterOperator } from '../types';
-
-export type TimeFieldData = {
-  label: string;
-};
-
-export type TimeFieldState = {
-  label: string;
-  operator: ComparableFilterOperator | undefined;
-  value: number | undefined;
-};
+import { TimeFilterInput } from '../types';
 
 export function TimeFilterInputs({
   operator,
@@ -36,10 +26,10 @@ export function TimeFilterInputs({
   onOperatorChange,
   onValueChange
 }: {
-  operator: ComparableFilterOperator | undefined;
-  value: number | undefined;
-  onOperatorChange: (operator: ComparableFilterOperator | undefined) => unknown;
-  onValueChange: (value: number | undefined) => unknown;
+  operator: TimeFilterInput['operator'];
+  value: TimeFilterInput['value'];
+  onOperatorChange: (operator: TimeFilterInput['operator']) => unknown;
+  onValueChange: (value: TimeFilterInput['value']) => unknown;
 }) {
   return (
     <>

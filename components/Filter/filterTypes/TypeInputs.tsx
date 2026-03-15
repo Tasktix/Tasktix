@@ -20,8 +20,8 @@ import { Input, Select, SelectItem } from '@heroui/react';
 
 import {
   DateFilterOperator,
-  FilterInputState,
-  FilterType,
+  FilterInput,
+  FilterOption,
   OptionFilterOperator
 } from '../types';
 
@@ -43,8 +43,8 @@ export default function TypeInput({
   filterData,
   onChange
 }: Readonly<{
-  filterData: (FilterInputState & FilterType) | { type: 'undefined' };
-  onChange: (data: FilterInputState) => unknown;
+  filterData: (FilterInput & FilterOption) | { type: 'undefined' };
+  onChange: (data: FilterInput) => unknown;
 }>) {
   switch (filterData.type) {
     case 'undefined':

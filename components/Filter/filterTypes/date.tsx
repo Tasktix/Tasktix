@@ -16,34 +16,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { DateInput, Select, Selection, SelectItem } from '@heroui/react';
+import { Select, Selection, SelectItem } from '@heroui/react';
 
 import { DayOfWeek } from '@/lib/types';
+import DateInput from '@/components/DateInput';
 
 import { SelectDateFilterOperator } from '../SelectOperator';
-import { DateFilterOperator } from '../types';
-
-export type DateFieldData = {
-  label: string;
-};
-
-export type DateFieldState = {
-  label: string;
-} & (
-  | {
-      operator:
-        | Exclude<
-            DateFilterOperator,
-            DateFilterOperator.DayOfWeek | DateFilterOperator.NotDayOfWeek
-          >
-        | undefined;
-      value: Date | undefined;
-    }
-  | {
-      operator: DateFilterOperator.DayOfWeek | DateFilterOperator.NotDayOfWeek;
-      value: DayOfWeek | undefined;
-    }
-);
+import { DateFilterInput, DateFilterOperator } from '../types';
 
 export function DateFilterInputs({
   value,
@@ -54,12 +33,14 @@ export function DateFilterInputs({
   onOperatorChange: (operator: DateFilterOperator | undefined) => unknown;
 } & (
   | {
-      operator: Exclude<
-        DateFilterOperator,
-        DateFilterOperator.DayOfWeek | DateFilterOperator.NotDayOfWeek
-      >;
+      operator:
+        | Exclude<
+            DateFilterOperator,
+            DateFilterOperator.DayOfWeek | DateFilterOperator.NotDayOfWeek
+          >
+        | undefined;
       value: Date | undefined;
-      onValueChange: (value: Date | undefined) => unknown;
+      onValueChange: (value: DateFilterInput['value']) => unknown;
     }
   | {
       operator: DateFilterOperator.DayOfWeek | DateFilterOperator.NotDayOfWeek;
@@ -71,14 +52,21 @@ export function DateFilterInputs({
     operator === DateFilterOperator.DayOfWeek ||
     operator === DateFilterOperator.NotDayOfWeek;
 
+  // Must list all options here for TS type narrowing to work correctly below
+  const isDate =
+    !operator ||
+    operator === DateFilterOperator.Equal ||
+    operator === DateFilterOperator.NotEqual ||
+    operator === DateFilterOperator.GreaterThan ||
+    operator === DateFilterOperator.GreaterThanEqual ||
+    operator === DateFilterOperator.LessThan ||
+    operator === DateFilterOperator.LessThanEqual;
+
   return (
     <>
       <SelectDateFilterOperator value={operator} onChange={onOperatorChange} />
-      {isDow ? (
-        <SelectDayOfWeek value={value} onValueChange={onValueChange} />
-      ) : (
-        <DateInput value={value} onValueChange={onValueChange} />
-      )}
+      {isDow && <SelectDayOfWeek value={value} onValueChange={onValueChange} />}
+      {isDate && <DateInput value={value} onValueChange={onValueChange} />}
     </>
   );
 }

@@ -19,18 +19,7 @@
 import { NumberInput } from '@heroui/react';
 
 import { SelectComparableFilterOperator } from '../SelectOperator';
-import { ComparableFilterOperator } from '../types';
-
-export type NumberFieldData = {
-  type: 'number';
-  label: string;
-};
-
-export type NumberFieldState = {
-  label: string;
-  operator: ComparableFilterOperator | undefined;
-  value: number | undefined;
-};
+import { NumberFilterInput } from '../types';
 
 export function NumberFilterInputs({
   operator,
@@ -38,10 +27,10 @@ export function NumberFilterInputs({
   onOperatorChange,
   onValueChange
 }: Readonly<{
-  operator: ComparableFilterOperator | undefined;
-  value: number | undefined;
-  onOperatorChange: (operator: ComparableFilterOperator | undefined) => unknown;
-  onValueChange: (value: number | undefined) => unknown;
+  operator: NumberFilterInput['operator'];
+  value: NumberFilterInput['value'];
+  onOperatorChange: (operator: NumberFilterInput['operator']) => unknown;
+  onValueChange: (value: NumberFilterInput['value']) => unknown;
 }>) {
   return (
     <>

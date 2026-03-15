@@ -19,11 +19,15 @@
 import { Kbd, Select, Selection, SelectItem } from '@heroui/react';
 
 import {
-  ColorFilterOperator,
+  ColorFilterInput,
   ComparableFilterOperator,
+  DateFilterInput,
   DateFilterOperator,
+  MultiOptionFilterInput,
   MultiOptionFilterOperator,
+  OptionFilterInput,
   OptionFilterOperator,
+  TextFilterInput,
   TextFilterOperator
 } from './types';
 
@@ -61,8 +65,8 @@ export function SelectTextFilterOperator({
   value,
   onChange
 }: {
-  value: TextFilterOperator | undefined;
-  onChange: (value: TextFilterOperator | undefined) => unknown;
+  value: TextFilterInput['operator'];
+  onChange: (value: TextFilterInput['operator']) => unknown;
 }) {
   return (
     <SelectBaseFilterOperator value={value} onChange={onChange}>
@@ -135,8 +139,8 @@ export function SelectOptionFilterOperator({
   value,
   onChange
 }: {
-  value: OptionFilterOperator | undefined;
-  onChange: (value: OptionFilterOperator | undefined) => unknown;
+  value: OptionFilterInput['operator'];
+  onChange: (value: OptionFilterInput['operator']) => unknown;
 }) {
   return (
     <SelectBaseFilterOperator value={value} onChange={onChange}>
@@ -160,8 +164,8 @@ export function SelectMultiOptionFilterOperator({
   value,
   onChange
 }: {
-  value: MultiOptionFilterOperator | undefined;
-  onChange: (value: MultiOptionFilterOperator | undefined) => unknown;
+  value: MultiOptionFilterInput['operator'];
+  onChange: (value: MultiOptionFilterInput['operator']) => unknown;
 }) {
   return (
     <SelectBaseFilterOperator value={value} onChange={onChange}>
@@ -185,8 +189,8 @@ export function SelectColorFilterOperator({
   value,
   onChange
 }: {
-  value: ColorFilterOperator | undefined;
-  onChange: (value: ColorFilterOperator | undefined) => unknown;
+  value: ColorFilterInput['operator'];
+  onChange: (value: ColorFilterInput['operator']) => unknown;
 }) {
   return <SelectBaseFilterOperator value={value} onChange={onChange} />;
 }
@@ -195,8 +199,8 @@ export function SelectDateFilterOperator({
   value,
   onChange
 }: {
-  value: DateFilterOperator | undefined;
-  onChange: (value: DateFilterOperator | undefined) => unknown;
+  value: DateFilterInput['operator'];
+  onChange: (value: DateFilterInput['operator']) => unknown;
 }) {
   return (
     <SelectBaseFilterOperator value={value} onChange={onChange}>
@@ -223,18 +227,6 @@ export function SelectDateFilterOperator({
         endContent={<Operator o='>=' />}
       >
         is greater than or equals
-      </SelectItem>
-      <SelectItem
-        key={DateFilterOperator.DayOfWeek}
-        endContent={<Operator o='=' />}
-      >
-        is a
-      </SelectItem>
-      <SelectItem
-        key={DateFilterOperator.NotDayOfWeek}
-        endContent={<Operator o='!=' />}
-      >
-        is not a
       </SelectItem>
     </SelectBaseFilterOperator>
   );

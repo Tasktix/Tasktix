@@ -24,31 +24,6 @@ import { getTextColor } from '@/lib/color';
 import { SelectOptionFilterOperator } from '../SelectOperator';
 import { OptionFilterOperator } from '../types';
 
-export type OptionFieldData = {
-  type: 'option';
-  label: string;
-  options: { name: string; color?: Color }[];
-};
-
-export type OptionFieldState = {
-  label: string;
-} & (
-  | {
-      operator:
-        | OptionFilterOperator.Equal
-        | OptionFilterOperator.NotEqual
-        | undefined;
-      value: string | undefined;
-    }
-  | {
-      operator:
-        | OptionFilterOperator.In
-        | OptionFilterOperator.NotIn
-        | undefined;
-      value: string[] | undefined;
-    }
-);
-
 export function OptionFilterInputs({
   operator,
   options,
@@ -78,10 +53,18 @@ export function OptionFilterInputs({
     operator === OptionFilterOperator.NotIn;
 
   function handleValueChange(value: Selection) {
-    if (multiSelectValue) {
+    if (
+      operator === OptionFilterOperator.In ||
+      operator === OptionFilterOperator.NotIn
+    ) {
       if (value === 'all') onValueChange(options.map(o => o.name));
       else onValueChange(value.values().toArray() as string[]);
-    } else {
+    }
+
+    if (
+      operator === OptionFilterOperator.Equal ||
+      operator === OptionFilterOperator.NotEqual
+    ) {
       if (value === 'all') return;
       onValueChange(value.values().next().value as string | undefined);
     }
