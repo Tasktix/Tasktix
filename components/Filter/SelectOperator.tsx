@@ -208,25 +208,25 @@ export function SelectDateFilterOperator({
         key={DateFilterOperator.LessThan}
         endContent={<Operator o='<' />}
       >
-        is less than
+        is before
       </SelectItem>
       <SelectItem
         key={DateFilterOperator.LessThanEqual}
         endContent={<Operator o='<=' />}
       >
-        is less than or equals
+        is before or on
       </SelectItem>
       <SelectItem
         key={DateFilterOperator.GreaterThan}
         endContent={<Operator o='>' />}
       >
-        is greater than
+        is after
       </SelectItem>
       <SelectItem
         key={DateFilterOperator.GreaterThanEqual}
         endContent={<Operator o='>=' />}
       >
-        is greater than or equals
+        is on or after
       </SelectItem>
     </SelectBaseFilterOperator>
   );
