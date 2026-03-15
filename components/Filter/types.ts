@@ -55,10 +55,12 @@ export type DateFilterInput = {
   label: string;
 } & (
   | {
-      operator?: Exclude<
-        DateFilterOperator,
-        DateFilterOperator.DayOfWeek | DateFilterOperator.NotDayOfWeek
-      >;
+      operator:
+        | Exclude<
+            DateFilterOperator,
+            DateFilterOperator.DayOfWeek | DateFilterOperator.NotDayOfWeek
+          >
+        | undefined;
       value: Date | undefined;
     }
   | {
