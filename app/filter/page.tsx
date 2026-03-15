@@ -21,12 +21,12 @@
 import { useState } from 'react';
 import { Card } from '@heroui/react';
 
-import { FilterOption } from '@/components/Filter';
+import { FilterConfig } from '@/components/Filter';
 import FilterRow from '@/components/Filter/FilterRow';
 import { FilterInput } from '@/components/Filter/types';
 
 export default function Page() {
-  const filterOptions: FilterOption[] = [
+  const filterOptions: FilterConfig[] = [
     { type: 'text', label: 'name' },
     {
       type: 'option',

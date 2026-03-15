@@ -21,7 +21,7 @@ import { Select, Selection, SelectItem } from '@heroui/react';
 import { getTextColor } from '@/lib/color';
 
 import { SelectMultiOptionFilterOperator } from '../SelectOperator';
-import { MultiOptionFilterInput, MultiOptionFilterOption } from '../types';
+import { MultiOptionFilterInput, MultiOptionFilterConfig } from '../types';
 
 export function MultiOptionFilterInputs({
   operator,
@@ -31,7 +31,7 @@ export function MultiOptionFilterInputs({
   onValueChange
 }: {
   operator: MultiOptionFilterInput['operator'];
-  options: MultiOptionFilterOption['options'];
+  options: MultiOptionFilterConfig['options'];
   value: MultiOptionFilterInput['value'];
   onOperatorChange: (operator: MultiOptionFilterInput['operator']) => unknown;
   onValueChange: (value: MultiOptionFilterInput['value']) => unknown;

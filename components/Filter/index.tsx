@@ -19,7 +19,7 @@
 export { default } from './FilterText';
 
 export {
-  type FilterOption,
+  type FilterConfig,
   type FilterGroup,
   type Filter,
   ComparableFilterOperator,

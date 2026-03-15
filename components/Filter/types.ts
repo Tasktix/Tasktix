@@ -19,7 +19,7 @@
 import { Color, NamedColor } from '@/lib/model/color';
 import { DayOfWeek, WithUndefined } from '@/lib/types';
 
-export type ColorFilterOption = {
+export type ColorFilterConfig = {
   label: string;
 };
 
@@ -31,7 +31,7 @@ export type ColorFilter = {
 
 export type ColorFilterInput = WithUndefined<ColorFilter, 'operator' | 'value'>;
 
-export type DateFilterOption = {
+export type DateFilterConfig = {
   label: string;
 };
 
@@ -69,7 +69,7 @@ export type DateFilterInput = {
     }
 );
 
-export type MultiOptionFilterOption = {
+export type MultiOptionFilterConfig = {
   label: string;
   options: { name: string; color?: Color }[];
 };
@@ -85,7 +85,7 @@ export type MultiOptionFilterInput = WithUndefined<
   'operator' | 'value'
 >;
 
-export type NumberFilterOption = {
+export type NumberFilterConfig = {
   type: 'number';
   label: string;
 };
@@ -101,7 +101,7 @@ export type NumberFilterInput = WithUndefined<
   'operator' | 'value'
 >;
 
-export type OptionFilterOption = {
+export type OptionFilterConfig = {
   type: 'option';
   label: string;
   options: { name: string; color?: Color }[];
@@ -136,7 +136,7 @@ export type OptionFilterInput = {
     }
 );
 
-export type TextFilterOption = {
+export type TextFilterConfig = {
   type: 'text';
   label: string;
 };
@@ -149,7 +149,7 @@ export type TextFilter = {
 
 export type TextFilterInput = WithUndefined<TextFilter, 'operator' | 'value'>;
 
-export type TimeFilterOption = {
+export type TimeFilterConfig = {
   label: string;
 };
 
@@ -161,14 +161,14 @@ export type TimeFilter = {
 
 export type TimeFilterInput = WithUndefined<TimeFilter, 'operator' | 'value'>;
 
-export type FilterOption =
-  | (TextFilterOption & { type: 'text' })
-  | (NumberFilterOption & { type: 'number' })
-  | (OptionFilterOption & { type: 'option' })
-  | (MultiOptionFilterOption & { type: 'multi-option' })
-  | (ColorFilterOption & { type: 'color' })
-  | (DateFilterOption & { type: 'date' })
-  | (TimeFilterOption & { type: 'time' });
+export type FilterConfig =
+  | (TextFilterConfig & { type: 'text' })
+  | (NumberFilterConfig & { type: 'number' })
+  | (OptionFilterConfig & { type: 'option' })
+  | (MultiOptionFilterConfig & { type: 'multi-option' })
+  | (ColorFilterConfig & { type: 'color' })
+  | (DateFilterConfig & { type: 'date' })
+  | (TimeFilterConfig & { type: 'time' });
 
 export type Filter = { id: number } & (
   | (TextFilter & { type: 'text' })

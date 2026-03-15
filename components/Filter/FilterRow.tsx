@@ -29,17 +29,17 @@ import {
 import { Button, Select, Selection, SelectItem } from '@heroui/react';
 import { JSX } from 'react';
 
-import { FilterInput, FilterOption } from './types';
+import { FilterInput, FilterConfig } from './types';
 import TypeInput from './filterTypes/TypeInputs';
 
 export type FilterRowProps = Readonly<{
   filterInput: FilterInput;
-  filterConfigs: FilterOption[];
+  filterConfigs: FilterConfig[];
   onFilterChange: (f: FilterInput) => unknown;
   onFilterDelete: () => unknown;
 }>;
 
-const iconMap: Record<FilterOption['type'], JSX.Element> = {
+const iconMap: Record<FilterConfig['type'], JSX.Element> = {
   text: <TextFilterIcon />,
   number: <NumberFilterIcon />,
   option: <OptionFilterInput />,
@@ -114,7 +114,7 @@ export default function FilterRow({
       <TypeInput
         filterData={
           { ...filterInput, ...filterConfig } as
-            | (FilterInput & FilterOption)
+            | (FilterInput & FilterConfig)
             | { type: 'undefined' }
         }
         onChange={handleOtherChange}

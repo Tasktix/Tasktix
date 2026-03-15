@@ -24,7 +24,7 @@ import {
   DateFilterInput,
   DateFilterOperator,
   FilterInput,
-  FilterOption,
+  FilterConfig,
   isDayOfWeekOperator,
   isSingleSelectOperator,
   OptionFilterInput,
@@ -49,7 +49,7 @@ export default function TypeInput({
   filterData,
   onChange
 }: Readonly<{
-  filterData: (FilterInput & FilterOption) | { type: 'undefined' };
+  filterData: (FilterInput & FilterConfig) | { type: 'undefined' };
   onChange: (data: Exclude<FilterInput, { type: 'undefined' }>) => unknown;
 }>) {
   function handleOptionOperatorChange(
