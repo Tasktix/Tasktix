@@ -57,7 +57,7 @@ export default function Page() {
         filterConfigs={filterOptions}
         filterInput={state}
         onFilterChange={setState}
-        onFilterDelete={() => {}}
+        onFilterDelete={() => alert('Deleting row')}
       />
     </Card>
   );

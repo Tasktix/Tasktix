@@ -250,13 +250,14 @@ export enum DateFilterOperator {
 export function isSingleSelectOperator(
   operator: OptionFilterOperator
 ): boolean {
-  return (
-    operator in [OptionFilterOperator.Equal, OptionFilterOperator.NotEqual]
+  return [OptionFilterOperator.Equal, OptionFilterOperator.NotEqual].includes(
+    operator
   );
 }
 
 export function isDayOfWeekOperator(operator: DateFilterOperator): boolean {
-  return (
-    operator in [DateFilterOperator.DayOfWeek, DateFilterOperator.NotDayOfWeek]
-  );
+  return [
+    DateFilterOperator.DayOfWeek,
+    DateFilterOperator.NotDayOfWeek
+  ].includes(operator);
 }

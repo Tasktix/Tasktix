@@ -22,7 +22,7 @@ import { Color } from '@/lib/model/color';
 import { getTextColor } from '@/lib/color';
 
 import { SelectOptionFilterOperator } from '../SelectOperator';
-import { OptionFilterOperator } from '../types';
+import { isSingleSelectOperator, OptionFilterOperator } from '../types';
 
 export function OptionFilterInputs({
   operator,
@@ -48,9 +48,7 @@ export function OptionFilterInputs({
       onValueChange: (value: string[] | undefined) => unknown;
     }
 )) {
-  const multiSelectValue =
-    operator === OptionFilterOperator.In ||
-    operator === OptionFilterOperator.NotIn;
+  const singleSelectValue = operator && isSingleSelectOperator(operator);
 
   function handleValueChange(value: Selection) {
     if (
@@ -77,8 +75,10 @@ export function OptionFilterInputs({
         onChange={onOperatorChange}
       />
       <Select
-        selectedKeys={value}
-        selectionMode={multiSelectValue ? 'multiple' : 'single'}
+        selectedKeys={
+          typeof value === 'string' ? [value] : value === undefined ? [] : value
+        }
+        selectionMode={singleSelectValue ? 'single' : 'multiple'}
         onSelectionChange={handleValueChange}
       >
         {options.map(o => (

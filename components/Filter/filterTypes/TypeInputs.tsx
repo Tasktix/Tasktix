@@ -62,12 +62,15 @@ export default function TypeInput({
 
     if (filterData.operator && operator) {
       if (
-        (!isSingleSelectOperator(filterData.operator) &&
-          isSingleSelectOperator(operator)) ||
-        (isSingleSelectOperator(filterData.operator) &&
-          !isSingleSelectOperator(operator))
+        !isSingleSelectOperator(filterData.operator) &&
+        isSingleSelectOperator(operator)
       )
-        value = undefined;
+        value = value && value[0];
+      if (
+        isSingleSelectOperator(filterData.operator) &&
+        !isSingleSelectOperator(operator)
+      )
+        value = (value && [value]) as string[] | undefined;
     }
 
     onChange({
@@ -156,12 +159,12 @@ export default function TypeInput({
         <OptionFilterInputs
           {...filterData} // Necessary to add `operator` and `value` this way for TS
           onOperatorChange={handleOptionOperatorChange}
-          onValueChange={(value: string | string[] | undefined) =>
+          onValueChange={(value: string | string[] | undefined) => {
             onChange({ ...filterData, value } as OptionFilterInput & {
               id: number;
               type: 'option';
-            })
-          }
+            });
+          }}
         />
       );
 
