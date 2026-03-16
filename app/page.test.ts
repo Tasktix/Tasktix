@@ -19,25 +19,20 @@
 import { redirect } from 'next/navigation';
 
 import Home from '@/app/page';
-import { getUser } from '@/lib/session';
 import User from '@/lib/model/user';
+import { useAuth } from '@/components/AuthProvider';
 
-vi.mock('next/navigation', () => ({
-  redirect: vi.fn()
-}));
-
-vi.mock('@/lib/session', () => ({
-  getUser: vi.fn()
-}));
+vi.mock('next/navigation');
+vi.mock('@/components/AuthProvider');
 
 describe('root route redirect logic', () => {
   beforeEach(() => {
     vi.resetAllMocks();
   });
 
-  it('redirects authenticated users to /list', async () => {
-    vi.mocked(getUser).mockResolvedValue(
-      new User(
+  it('redirects authenticated users to /list', () => {
+    vi.mocked(useAuth).mockReturnValue({
+      loggedInUser: new User(
         'userId',
         'testUser',
         'test@example.com',
@@ -46,17 +41,19 @@ describe('root route redirect logic', () => {
         new Date(),
         {}
       )
-    );
+    } as ReturnType<typeof useAuth>);
 
-    await Home();
+    Home();
 
     expect(redirect).toHaveBeenCalledWith('/list');
   });
 
-  it('redirects unauthenticated users to /about', async () => {
-    vi.mocked(getUser).mockResolvedValue(false);
+  it('redirects unauthenticated users to /about', () => {
+    vi.mocked(useAuth).mockReturnValue({ loggedInUser: false } as ReturnType<
+      typeof useAuth
+    >);
 
-    await Home();
+    Home();
 
     expect(redirect).toHaveBeenCalledWith('/about');
   });
