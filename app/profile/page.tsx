@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { getUser } from '@/lib/session';
+import { useAuth } from '@/components/AuthProvider';
 
 import UserProperties from './components/UserProperties';
 
@@ -24,14 +24,14 @@ import UserProperties from './components/UserProperties';
  * Gets current user information and sends it to UserProperties
  *
  */
-export default async function Page() {
-  const userDetails = await getUser();
+export default function Page() {
+  const { loggedInUser } = useAuth();
 
   return (
     <main className='flex p-6 justify-center flex-grow'>
       <div className='border-2 border-content3 bg-content1 shadow-lg shadow-content2 w-130 m-4 rounded-lg px-4 h-full'>
         <h1 className='text-2xl p-4'>Profile</h1>
-        <UserProperties user={JSON.stringify(userDetails)} />
+        <UserProperties user={JSON.stringify(loggedInUser)} />
       </div>
     </main>
   );

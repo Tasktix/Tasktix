@@ -17,9 +17,11 @@
  *
  */
 
+'use server';
+
 import { redirect } from 'next/navigation';
 
-import { getUser } from '@/lib/session';
+import { useAuth } from '@/components/AuthProvider';
 
 /* Root route handler.
  *
@@ -30,12 +32,9 @@ import { getUser } from '@/lib/session';
  *
  * No UI is rendered here.
  */
-export default async function Home() {
-  const user = await getUser();
+export default function Home() {
+  const { loggedInUser } = useAuth();
 
-  if (user) {
-    redirect('/list');
-  }
-
-  redirect('/about');
+  if (loggedInUser) redirect('/list');
+  else redirect('/about');
 }
