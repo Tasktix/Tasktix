@@ -17,8 +17,6 @@
  *
  */
 
-'use server';
-
 import { redirect } from 'next/navigation';
 
 import { useAuth } from '@/components/AuthProvider';
