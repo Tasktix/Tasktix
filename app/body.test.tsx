@@ -62,7 +62,7 @@ describe('Body', () => {
       setLoggedInUser: vi.fn()
     });
 
-    const { container } = render(
+    render(
       <HeroUIProvider disableRipple>
         <Body>
           <div>child</div>
@@ -70,8 +70,10 @@ describe('Body', () => {
       </HeroUIProvider>
     );
 
-    expect(container.firstChild).toHaveClass('min-h-dvh');
-    expect(screen.getByRole('main')).toHaveClass('flex-1');
+    const main = screen.getByRole('main');
+
+    expect(main.parentElement).toHaveClass('flex', 'min-h-dvh', 'flex-col');
+    expect(main).toHaveClass('flex-1');
     expect(
       screen.getByText(/Tasktix is licensed under the GNU AGPL v3/i)
     ).toHaveClass('mt-auto');

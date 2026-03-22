@@ -27,6 +27,10 @@ import ListSectionModel from '@/lib/model/listSection';
 
 import List from '../List';
 
+vi.mock('@/lib/sse/client', () => ({
+  subscribe: vi.fn(() => vi.fn())
+}));
+
 vi.mock('@/components/SearchBar', () => ({
   default: () => <div data-testid='search-bar' />
 }));

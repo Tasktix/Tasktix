@@ -18,8 +18,11 @@
  * @vitest-environment jsdom
  */
 
+import type { ReactNode } from 'react';
+
 import '@testing-library/jest-dom';
-import { fireEvent, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { HeroUIProvider } from '@heroui/react';
 import { useTheme } from 'next-themes';
 
@@ -29,6 +32,77 @@ vi.mock(import('framer-motion'), async importOriginal => ({
   ...(await importOriginal()),
   LazyMotion: ({ children }) => <div>{children}</div>
 }));
+
+vi.mock('@heroui/react', async importOriginal => {
+  const originalModule = await importOriginal<typeof import('@heroui/react')>();
+  const React = await import('react');
+
+  const Popover = (({ children }: { children: ReactNode }) => (
+    <div>{children}</div>
+  )) as unknown as typeof originalModule.Popover;
+
+  const PopoverTrigger = (({ children }: { children: ReactNode }) => (
+    <>{children}</>
+  )) as unknown as typeof originalModule.PopoverTrigger;
+
+  const PopoverContent = (({ children }: { children: ReactNode }) => (
+    <div>{children}</div>
+  )) as unknown as typeof originalModule.PopoverContent;
+
+  const Listbox = (({
+    children,
+    onAction,
+    'aria-label': ariaLabel
+  }: {
+    children: ReactNode;
+    onAction?: (key: string) => void;
+    'aria-label'?: string;
+  }) => (
+    <div aria-label={ariaLabel} role='listbox'>
+      {React.Children.map(children, child => {
+        if (!React.isValidElement(child)) return child;
+
+        const itemKey = String(child.key).replace(/^\.\$?/, '');
+
+        return React.cloneElement(
+          child as React.ReactElement<{
+            itemKey: string;
+            onAction?: (key: string) => void;
+          }>,
+          { itemKey, onAction }
+        );
+      })}
+    </div>
+  )) as unknown as typeof originalModule.Listbox;
+
+  const ListboxItem = (({
+    children,
+    itemKey,
+    onAction
+  }: {
+    children: ReactNode;
+    itemKey: string;
+    onAction?: (key: string) => void;
+  }) => (
+    <button
+      aria-selected='false'
+      role='option'
+      type='button'
+      onClick={() => onAction?.(itemKey)}
+    >
+      {children}
+    </button>
+  )) as unknown as typeof originalModule.ListboxItem;
+
+  return {
+    ...originalModule,
+    Popover,
+    PopoverTrigger,
+    PopoverContent,
+    Listbox,
+    ListboxItem
+  };
+});
 
 vi.mock(import('next-themes'), async importOriginal => {
   const originalModule = await importOriginal();
@@ -70,7 +144,8 @@ describe('ThemeSwitcher', () => {
     expect(setTheme).toHaveBeenCalledWith('dark');
   });
 
-  test('opens the theme menu on click and allows selecting system theme', () => {
+  test('opens the theme menu on click and allows selecting system theme', async () => {
+    const user = userEvent.setup();
     const setTheme = vi.fn();
 
     vi.mocked(useTheme).mockReturnValue({
@@ -87,9 +162,11 @@ describe('ThemeSwitcher', () => {
     );
 
     fireEvent.click(screen.getByLabelText('Choose theme'));
-    fireEvent.click(screen.getByText('System'));
+    await user.click(await screen.findByRole('option', { name: 'System' }));
 
-    expect(setTheme).toHaveBeenCalledWith('system');
+    await waitFor(() => {
+      expect(setTheme).toHaveBeenCalledWith('system');
+    });
   });
 
   test('uses the resolved system theme to determine the next toggle target', () => {
