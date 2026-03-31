@@ -29,10 +29,11 @@ import {
   ModalContent,
   ModalHeader,
   Form,
-  useDisclosure
+  useDisclosure,
+  addToast
 } from '@heroui/react';
 import { FormEvent, startTransition, useEffect, useState } from 'react';
-import { Github, Trash } from 'react-bootstrap-icons';
+import { Github, TrashFill } from 'react-bootstrap-icons';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import { addToastForError } from '@/lib/error';
@@ -99,9 +100,9 @@ export default function AuthSettings({ user }: { user: User }) {
   const isGithubLinked = accounts.some(acc => acc.providerId === 'github');
 
   /**
-   * Attempts to a link a users Tasktix account to their Github account,
-   * redirects back to this page on success, Errors from this are handled in
-   * the useAffect above by adding toasts.
+   * Attempts to a link a user's Tasktix account to their Github account,
+   * redirecting back to this page on success, Errors from this are displayed 
+   * as toasts in the useEffect for queryParams.
    */
   function handleLinkGithub() {
     startTransition(async () => {
@@ -114,7 +115,7 @@ export default function AuthSettings({ user }: { user: User }) {
   }
 
   /**
-   * Attempts to unlink a users Tasktix account from Github
+   * Attempts to unlink a user's Tasktix account from Github
    */
   function handleUnlinkGithub() {
     startTransition(async () => {
@@ -153,6 +154,8 @@ export default function AuthSettings({ user }: { user: User }) {
           onSuccess: () => {
             setLoggedInUser(false);
             router.push('/');
+            addToast({title: "Account succesfully deleted", color: 'success'})
+
           },
           onError: ctx => {
             addToastForError(ctx.error);
@@ -180,8 +183,8 @@ export default function AuthSettings({ user }: { user: User }) {
       : []),
     {
       title: 'Delete Account',
-      description: 'This action is irreversible',
-      icon: <Trash />,
+      description: 'Permanently delete your account',
+      icon: <TrashFill />,
       actionLabel: 'Delete Account',
       handler: onOpen,
       isCriticalAction: true,
@@ -190,8 +193,8 @@ export default function AuthSettings({ user }: { user: User }) {
   ].filter(Boolean);
 
   return (
-    <div className='max-w-4xl p-6'>
-      <h2 className='text-2xl font-semibold mb-6'>Account Settings</h2>
+    <div className='p-6'>
+      <h2 className='text-xl p-4'>Account Settings</h2>
       <Card className=' border border-white/10 rounded-lg'>
         <CardBody className='p-0'>
           {methods.map((method, index) => (
@@ -229,7 +232,7 @@ function AuthSettingRow({
   return (
     // Already refactored to reasonable JSX depth skipcq: JS-0415
     <div data-testid={method.testId}>
-      <div className='flex items-center justify-between p-5 hover:bg-white/[0.02] transition-colors group'>
+      <div className='flex items-center justify-between p-5 hover:bg-white/2 transition-colors group'>
         <div className='flex items-start gap-4'>
           <div className='mt-1'>{method.icon}</div>
           <div className='flex flex-col'>
@@ -239,11 +242,9 @@ function AuthSettingRow({
         </div>
         <Button
           aria-label={method.actionLabel}
-          className={`font-medium border border-white/10 text-white ${
-            method.isCriticalAction ? 'bg-danger' : 'bg-[#27272a]'
-          }`}
+          color={method.isCriticalAction ? 'danger' : 'default'}
           size='sm'
-          variant='flat'
+          variant='solid'
           onPress={method.handler}
         >
           {method.actionLabel}
@@ -254,11 +255,10 @@ function AuthSettingRow({
   );
 }
 /**
- * Renderes Modal prompting user to input their password to confirm account deletion
+ * Renders a modal prompting the user to input their password to confirm account deletion
  * @param isOpen is the modal open (from useDisclosure)
  * @param onOpenChange how to handle changing the modals openness (from useDisclosure)
  * @param handleDeleteAccount Handler function to attempt account deletion
- * @returns
  */
 function DeleteAccountModal({
   isOpen,
@@ -279,7 +279,6 @@ function DeleteAccountModal({
         <ModalBody>
           <Form className='w-full gap-4' onSubmit={handleDeleteAccount}>
             <Input
-              isRequired
               aria-label='Password Input'
               errorMessage='Password is required to delete account'
               label='Password'

@@ -78,7 +78,7 @@ const MOCK_USER = new User(
 );
 
 describe('Linking/Unlinking Github', () => {
-  test('Github row not rendered Github OAuth not configured', () => {
+  test('Github row not rendered if Github OAuth not configured', () => {
     vi.mocked(useAuth).mockReturnValue({
       loggedInUser: MOCK_USER,
       setLoggedInUser: vi.fn(),
@@ -306,7 +306,7 @@ describe('Account Deletion', () => {
       expect.anything()
     );
   });
-  test('Redirects to Home after deleting account', async () => {
+  test('Does not redirect to home, or delete account account deletion fails', async () => {
     const user = userEvent.setup();
     const setLoggedInUserMock = vi.fn();
     const exampleSuccess = { data: { success: true, message: 'User deleted' } };
