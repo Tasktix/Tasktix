@@ -35,7 +35,8 @@ export default function ItemSection({
   totalSections: [string, string][];
   updateSection: (e: any) => unknown;
 }) {
-  const selectItems = totalSections.map(([id, label]) => ({ id: id, label: label }))
+  const updatedTotalSections = totalSections.filter(([id, name]) => name != currentSection[1])
+  const selectItems = updatedTotalSections.map(([id, label]) => ({ id: id, label: label }))
 
   return (
     <div className={`-mt-2 -mb-2`}>

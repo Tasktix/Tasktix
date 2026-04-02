@@ -187,10 +187,10 @@ export default function listReducer(
 
     case 'ChangeItemSection':
       //Copied from 'AddItemToSection'
-      const section = newState.list.sections.get(action.pastSectionId);
+      const section = newState.list.sections.get(action.targetSectionId);
 
       if (!section)
-        throw new Error(`Unable to find section with ID ${action.pastSectionId}`);
+        throw new Error(`Unable to find section with ID ${action.targetSectionId}`);
 
       section.items.set(action.targetItem.id, action.targetItem);
       
