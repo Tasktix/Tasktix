@@ -101,7 +101,7 @@ export default function AuthSettings({ user }: { user: User }) {
 
   /**
    * Attempts to a link a user's Tasktix account to their Github account,
-   * redirecting back to this page on success, Errors from this are displayed 
+   * redirecting back to this page on success, Errors from this are displayed
    * as toasts in the useEffect for queryParams.
    */
   function handleLinkGithub() {
@@ -154,8 +154,10 @@ export default function AuthSettings({ user }: { user: User }) {
           onSuccess: () => {
             setLoggedInUser(false);
             router.push('/');
-            addToast({title: "Account succesfully deleted", color: 'success'})
-
+            addToast({
+              title: 'Account succesfully deleted',
+              color: 'success'
+            });
           },
           onError: ctx => {
             addToastForError(ctx.error);

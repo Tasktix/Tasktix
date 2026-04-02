@@ -165,3 +165,29 @@ export async function getRoleByList(
 
   return result ?? false;
 }
+
+/**
+ * Determines if a user is the last remaining admin in a list. For use to
+ * ensure when deleting a user, no list will be orphaned.
+ * @param userId
+ */
+export async function getIsLastAdmin(userId: string): Promise<boolean> {
+  const adminLists = await prisma.listMember.findMany({
+    where: {
+      userId,
+      role: { name: 'Admin' }
+    }
+  });
+
+  for (const list of adminLists) {
+    const adminCount = await prisma.listMember.count({
+      where: { listId: list.listId, role: { name: 'Admin' } }
+    });
+
+    if (adminCount <= 1) {
+      return true;
+    }
+  }
+
+  return false;
+}

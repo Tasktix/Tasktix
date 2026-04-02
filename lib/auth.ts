@@ -20,12 +20,13 @@
 
 import 'server-only';
 
-import { betterAuth, DBFieldType } from 'better-auth';
+import { APIError, betterAuth, DBFieldType } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { PrismaClient } from '@prisma/client';
 import { genericOAuth, haveIBeenPwned, username } from 'better-auth/plugins';
 
 import { namedColors } from './model/color';
+import { getIsLastAdmin } from './database/user';
 
 const prisma = new PrismaClient();
 
@@ -92,7 +93,20 @@ export const auth = betterAuth({
     modelName: 'User',
     tableName: 'User',
     deleteUser: {
-      enabled: true
+      enabled: true,
+      beforeDelete: async user => {
+        /** Ideally this check would be transactionized with account deletion to
+         * prevent race conditions orphaning a list, but that does not appear
+         * possible with BetterAuth
+         */
+        const isLastAdmin = await getIsLastAdmin(user.id);
+
+        if (isLastAdmin) {
+          throw new APIError('BAD_REQUEST', {
+            message: 'Cannot delete a lists only admin account'
+          });
+        }
+      }
     },
     changeEmail: {
       enabled: true,
@@ -114,7 +128,8 @@ export const auth = betterAuth({
   },
   session: {
     modelName: 'Session',
-    tableName: 'Session'
+    tableName: 'Session',
+    freshAge: 1
   },
   account: {
     modelName: 'Account',
