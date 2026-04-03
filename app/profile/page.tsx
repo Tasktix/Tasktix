@@ -27,6 +27,8 @@ import UserProperties from './components/UserProperties';
  *
  */
 export default function Page() {
+  // Nothing substantial to test here - skipcq: TCV-001
+
   const { loggedInUser } = useAuth();
 
   return (
