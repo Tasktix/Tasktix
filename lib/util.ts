@@ -31,5 +31,5 @@ export function retry<T>(fn: () => T, attempts = 3): T | undefined {
       /* Don't need to do anything; already retrying in loop */
     }
 
-  return;
+  return undefined;
 }
