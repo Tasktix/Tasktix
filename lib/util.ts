@@ -16,9 +16,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-export function retry<T>(fn: () => T, attempts: number = 3): T | void {
+/**
+ * Catches any errors thrown by the given function and retries it to resolve ephemeral
+ * errors
+ *
+ * @param fn The function to retry
+ * @param attempts The maximum number of times to retry the function
+ */
+export function retry<T>(fn: () => T, attempts = 3): T | undefined {
   for (let i = 1; i <= attempts; i++)
     try {
       return fn();
-    } catch {}
+    } catch {
+      /* Don't need to do anything; already retrying in loop */
+    }
 }
