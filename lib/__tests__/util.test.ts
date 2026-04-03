@@ -48,7 +48,7 @@ describe('retry', () => {
 
     const result = retry(fn) as true | undefined;
 
-    expect(result).toBe(undefined);
+    expect(result).toBe(undefined); // toBe expects an argument- skipcq: JS-W1042
     expect(fn).toHaveBeenCalledTimes(3);
   });
 
@@ -59,7 +59,7 @@ describe('retry', () => {
 
     const result = retry(fn, 6) as true | undefined;
 
-    expect(result).toBe(undefined);
+    expect(result).toBe(undefined); // toBe expects an argument- skipcq: JS-W1042
     expect(fn).toHaveBeenCalledTimes(6);
   });
 });
