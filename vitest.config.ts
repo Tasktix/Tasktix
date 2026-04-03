@@ -23,6 +23,9 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 export default defineConfig({
   plugins: [tsconfigPaths(), react()],
   test: {
+    environment: 'jsdom',
+    setupFiles: './vitest.setup.ts',
+    globals: true,
     coverage: {
       enabled: true,
       provider: 'v8',
@@ -33,7 +36,6 @@ export default defineConfig({
         'lib/**/*.{ts,tsx}'
       ],
       exclude: ['node_modules/', 'lib/database/*.ts']
-    },
-    globals: true
+    }
   }
 });

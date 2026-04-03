@@ -16,6 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+'use client';
+
 import {
   Button,
   Listbox,
@@ -25,65 +27,171 @@ import {
   PopoverTrigger
 } from '@heroui/react';
 import { useTheme } from 'next-themes';
-import { useState } from 'react';
-import { ChevronDown, Display, MoonFill, SunFill } from 'react-bootstrap-icons';
+import { useEffect, useRef, useState } from 'react';
+import { Display, MoonFill, SunFill } from 'react-bootstrap-icons';
 
 /**
- * Input for switching between light, dark, and system themes. Provides a button for
- * toggling between light/dark mode plus a separate button that opens a click-driven
- * menu for choosing light, dark, or system mode.
+ * Input for switching between light, dark, and system themes. Uses a single icon
+ * button that toggles light/dark on desktop while revealing the full theme menu on
+ * hover, and toggles the theme menu directly on mobile.
  */
 export default function ThemeSwitcher() {
   const { theme, resolvedTheme, setTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [portalEl, setPortalEl] = useState<HTMLDivElement | null>(null);
+  const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const selectedTheme = theme || 'system';
-  const activeTheme =
-    selectedTheme === 'system' ? (resolvedTheme ?? 'light') : selectedTheme;
+  const selectedTheme = theme ?? 'system';
+  const activeTheme = resolvedTheme ?? 'light';
   const nextTheme = activeTheme === 'dark' ? 'light' : 'dark';
+
+  function setContainer(node: HTMLDivElement | null) {
+    containerRef.current = node;
+    setPortalEl(node);
+  }
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(hover: none), (pointer: coarse)');
+
+    function updateIsMobile(event?: MediaQueryListEvent) {
+      setIsMobile(event?.matches ?? mediaQuery.matches);
+      setIsOpen(false);
+    }
+
+    updateIsMobile();
+    mediaQuery.addEventListener('change', updateIsMobile);
+
+    return () => {
+      mediaQuery.removeEventListener('change', updateIsMobile);
+
+      if (closeTimeoutRef.current) {
+        clearTimeout(closeTimeoutRef.current);
+      }
+    };
+  }, []);
 
   function chooseTheme(themeKey: string) {
     setTheme(themeKey);
     setIsOpen(false);
   }
 
-  return (
-    <div className='flex items-center gap-1'>
-      <Button
-        isIconOnly
-        aria-label={`Set ${nextTheme} theme`}
-        variant='ghost'
-        onPress={() => setTheme(nextTheme)}
-      >
-        {activeTheme === 'dark' ? <SunFill /> : <MoonFill />}
-      </Button>
+  function cancelPendingClose() {
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+      closeTimeoutRef.current = null;
+    }
+  }
 
-      <Popover isOpen={isOpen} placement='bottom-end' onOpenChange={setIsOpen}>
+  function scheduleClose() {
+    cancelPendingClose();
+    closeTimeoutRef.current = setTimeout(() => {
+      setIsOpen(false);
+      closeTimeoutRef.current = null;
+    }, 100);
+  }
+
+  function handlePress() {
+    if (isMobile) {
+      setIsOpen(open => !open);
+
+      return;
+    }
+
+    setTheme(nextTheme);
+  }
+
+  function handleOpenChange(nextOpen: boolean) {
+    if (isMobile || !nextOpen) {
+      setIsOpen(nextOpen);
+    }
+  }
+
+  return (
+    <div
+      ref={setContainer}
+      className='flex items-center'
+      onMouseEnter={() => {
+        if (!isMobile) {
+          cancelPendingClose();
+          setIsOpen(true);
+        }
+      }}
+      onMouseLeave={() => {
+        if (!isMobile) {
+          scheduleClose();
+        }
+      }}
+    >
+      <Popover
+        isOpen={isOpen}
+        placement='bottom-end'
+        portalContainer={portalEl ?? undefined}
+        onOpenChange={handleOpenChange}
+      >
         <PopoverTrigger>
           <Button
             isIconOnly
             aria-expanded={isOpen}
             aria-haspopup='menu'
-            aria-label='Choose theme'
+            aria-label={
+              isMobile ? 'Open theme menu' : `Switch to ${nextTheme} mode`
+            }
             variant='ghost'
+            onKeyDown={event => {
+              if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+                event.preventDefault();
+                setIsOpen(true);
+              }
+
+              if (event.key === 'Escape') {
+                setIsOpen(false);
+              }
+            }}
+            onPress={handlePress}
           >
-            <ChevronDown />
+            {activeTheme === 'dark' ? <SunFill /> : <MoonFill />}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className='p-0'>
+        <PopoverContent
+          className='p-0'
+          onMouseEnter={() => {
+            if (!isMobile) {
+              cancelPendingClose();
+              setIsOpen(true);
+            }
+          }}
+          onMouseLeave={() => {
+            if (!isMobile) {
+              scheduleClose();
+            }
+          }}
+        >
           <Listbox
             aria-label='Theme options'
             selectedKeys={[selectedTheme]}
             selectionMode='single'
-            onAction={key => chooseTheme(String(key))}
           >
-            <ListboxItem key='light' startContent={<SunFill />}>
+            <ListboxItem
+              key='light'
+              startContent={<SunFill />}
+              onPress={() => chooseTheme('light')}
+            >
               Light
             </ListboxItem>
-            <ListboxItem key='dark' startContent={<MoonFill />}>
+            <ListboxItem
+              key='dark'
+              startContent={<MoonFill />}
+              onPress={() => chooseTheme('dark')}
+            >
               Dark
             </ListboxItem>
-            <ListboxItem key='system' startContent={<Display />}>
+            <ListboxItem
+              key='system'
+              startContent={<Display />}
+              onPress={() => chooseTheme('system')}
+            >
               System
             </ListboxItem>
           </Listbox>

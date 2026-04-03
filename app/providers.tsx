@@ -18,7 +18,6 @@
 
 'use client';
 
-import { ThemeProvider } from 'next-themes';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 
@@ -46,11 +45,9 @@ export function Providers({
     <HeroUIProvider
       navigate={(href, routerOptions) => router.push(href, routerOptions)}
     >
-      <ThemeProvider attribute='class' defaultTheme='system'>
-        <AuthProvider loggedInUserAtStart={loggedInUserAtStart}>
-          {children}
-        </AuthProvider>
-      </ThemeProvider>
+      <AuthProvider loggedInUserAtStart={loggedInUserAtStart}>
+        {children}
+      </AuthProvider>
     </HeroUIProvider>
   );
 }

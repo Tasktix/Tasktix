@@ -16,33 +16,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { Metadata } from 'next';
+import '@testing-library/jest-dom';
 
-import { ThemeProvider } from 'next-themes';
-
-import Body from '@/app/body';
-import { getUser } from '@/lib/session';
-
-import { Providers } from './providers';
-import './globals.css';
-
-export const metadata: Metadata = {
-  title: 'Tasktix',
-  description: 'For all your to-do needs!'
-} as const;
-
-export default async function RootLayout({
-  children
-}: Readonly<{ children: React.ReactNode }>) {
-  return (
-    <html suppressHydrationWarning lang='en'>
-      <body>
-        <ThemeProvider enableSystem attribute='class' defaultTheme='system'>
-          <Providers loggedInUserAtStart={await getUser()}>
-            <Body>{children}</Body>
-          </Providers>
-        </ThemeProvider>
-      </body>
-    </html>
-  );
-}
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: (query: string) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: () => {}, // deprecated
+    removeListener: () => {}, // deprecated
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    dispatchEvent: () => false
+  })
+});

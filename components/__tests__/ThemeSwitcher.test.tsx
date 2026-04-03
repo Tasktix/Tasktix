@@ -37,9 +37,22 @@ vi.mock('@heroui/react', async importOriginal => {
   const originalModule = await importOriginal<typeof import('@heroui/react')>();
   const React = await import('react');
 
-  const Popover = (({ children }: { children: ReactNode }) => (
-    <div>{children}</div>
-  )) as unknown as typeof originalModule.Popover;
+  const Popover = (({
+    children,
+    isOpen
+  }: {
+    children: ReactNode;
+    isOpen?: boolean;
+  }) => {
+    const [trigger, content] = React.Children.toArray(children);
+
+    return (
+      <div>
+        {trigger}
+        {isOpen ? content : null}
+      </div>
+    );
+  }) as unknown as typeof originalModule.Popover;
 
   const PopoverTrigger = (({ children }: { children: ReactNode }) => (
     <>{children}</>
@@ -78,17 +91,22 @@ vi.mock('@heroui/react', async importOriginal => {
   const ListboxItem = (({
     children,
     itemKey,
-    onAction
+    onAction,
+    onPress
   }: {
     children: ReactNode;
     itemKey: string;
     onAction?: (key: string) => void;
+    onPress?: () => void;
   }) => (
     <button
       aria-selected='false'
       role='option'
       type='button'
-      onClick={() => onAction?.(itemKey)}
+      onClick={() => {
+        onAction?.(itemKey);
+        onPress?.();
+      }}
     >
       {children}
     </button>
@@ -120,6 +138,15 @@ vi.mock(import('next-themes'), async importOriginal => {
 
 beforeEach(() => {
   vi.resetAllMocks();
+
+  Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    value: vi.fn().mockImplementation(() => ({
+      matches: false,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn()
+    }))
+  });
 });
 
 describe('ThemeSwitcher', () => {
@@ -139,12 +166,12 @@ describe('ThemeSwitcher', () => {
       </HeroUIProvider>
     );
 
-    fireEvent.click(screen.getByLabelText('Set dark theme'));
+    fireEvent.click(screen.getByLabelText('Switch to dark mode'));
 
     expect(setTheme).toHaveBeenCalledWith('dark');
   });
 
-  test('opens the theme menu on click and allows selecting system theme', async () => {
+  test('opens the theme menu on hover and allows selecting system theme on desktop', async () => {
     const user = userEvent.setup();
     const setTheme = vi.fn();
 
@@ -161,12 +188,76 @@ describe('ThemeSwitcher', () => {
       </HeroUIProvider>
     );
 
-    fireEvent.click(screen.getByLabelText('Choose theme'));
+    fireEvent.mouseEnter(
+      screen.getByLabelText('Switch to light mode').parentElement!
+    );
     await user.click(await screen.findByRole('option', { name: 'System' }));
 
     await waitFor(() => {
       expect(setTheme).toHaveBeenCalledWith('system');
     });
+  });
+
+  test('does not open the theme menu when clicked on desktop', () => {
+    const setTheme = vi.fn();
+
+    vi.mocked(useTheme).mockReturnValue({
+      theme: 'dark',
+      resolvedTheme: 'dark',
+      themes: ['light', 'dark', 'system'],
+      setTheme
+    });
+
+    render(
+      <HeroUIProvider disableRipple>
+        <ThemeSwitcher />
+      </HeroUIProvider>
+    );
+
+    fireEvent.click(screen.getByLabelText('Switch to light mode'));
+
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+    expect(setTheme).toHaveBeenCalledWith('light');
+  });
+
+  test('toggles the theme menu on press for mobile', async () => {
+    const user = userEvent.setup();
+    const setTheme = vi.fn();
+
+    vi.mocked(window.matchMedia).mockImplementation(() => ({
+      matches: true,
+      media: '',
+      onchange: null,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      addListener: vi.fn(), // deprecated but required for type
+      removeListener: vi.fn(), // deprecated but required for type
+      dispatchEvent: vi.fn()
+    }));
+
+    vi.mocked(useTheme).mockReturnValue({
+      theme: 'light',
+      resolvedTheme: 'light',
+      themes: ['light', 'dark', 'system'],
+      setTheme
+    });
+
+    render(
+      <HeroUIProvider disableRipple>
+        <ThemeSwitcher />
+      </HeroUIProvider>
+    );
+
+    const button = await screen.findByLabelText('Open theme menu');
+
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+
+    await user.click(button);
+    expect(screen.getByRole('listbox')).toBeInTheDocument();
+
+    await user.click(button);
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+    expect(setTheme).not.toHaveBeenCalled();
   });
 
   test('uses the resolved system theme to determine the next toggle target', () => {
@@ -185,7 +276,7 @@ describe('ThemeSwitcher', () => {
       </HeroUIProvider>
     );
 
-    fireEvent.click(screen.getByLabelText('Set light theme'));
+    fireEvent.click(screen.getByLabelText('Switch to light mode'));
 
     expect(setTheme).toHaveBeenCalledWith('light');
   });
