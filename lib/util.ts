@@ -16,24 +16,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-'use server';
-
-import { headers } from 'next/headers';
-
-import { getUserById } from '@/lib/database/user';
-import User from '@/lib/model/user';
-
-import { auth } from './auth';
-import { retry } from './util';
-
-export async function getUser(): Promise<User | false> {
-  const session = await retry(
-    async () => await auth.api.getSession({ headers: await headers() })
-  );
-
-  if (!session) return false;
-
-  const user = await getUserById(session.user.id);
-
-  return user;
+export function retry<T>(fn: () => T, attempts: number = 3): T | void {
+  for (let i = 1; i <= attempts; i++)
+    try {
+      return fn();
+    } catch {}
 }
