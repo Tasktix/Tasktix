@@ -19,10 +19,10 @@
 'use client';
 
 import { useAuth } from '@/components/AuthProvider';
+import User from '@/lib/model/user';
 
 import UserProperties from './components/UserProperties';
 import AuthSettings from './components/AuthSettings';
-import User from '@/lib/model/user';
 
 /**
  * Gets current user information and sends it to UserProperties
