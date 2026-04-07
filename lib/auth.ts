@@ -22,13 +22,11 @@ import 'server-only';
 
 import { APIError, betterAuth, DBFieldType } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
-import { PrismaClient } from '@prisma/client';
 import { genericOAuth, haveIBeenPwned, username } from 'better-auth/plugins';
 
 import { namedColors } from './model/color';
 import { getIsLastAdmin } from './database/user';
-
-const prisma = new PrismaClient();
+import { prisma } from './database/db_connect';
 
 export type OAuthConfig = {
   githubEnabled: boolean;
