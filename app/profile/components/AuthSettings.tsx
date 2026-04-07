@@ -272,7 +272,6 @@ function DeleteAccountModal({
   handleDeleteAccount: (e: FormEvent<HTMLFormElement>) => void;
 }) {
   return (
-    // Already refactored to reasonable JSX depth skipcq: JS-0415
     <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
       <ModalContent className='p-2'>
         <ModalHeader className='justify-center'>
@@ -288,15 +287,14 @@ function DeleteAccountModal({
               type='password'
             />
 
-            <div className='flex gap-2 w-full justify-end'>
               <Button
+                className='gap-2 self-end'
                 aria-label='Confirm Delete Account'
                 color='danger'
                 type='submit'
               >
                 Confirm
               </Button>
-            </div>
           </Form>
         </ModalBody>
       </ModalContent>
