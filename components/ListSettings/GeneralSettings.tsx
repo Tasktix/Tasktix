@@ -47,6 +47,7 @@ export default function GeneralSettings({
   hasDueDates,
   hasTimeTracking,
   isAutoOrdered,
+  isKanban,
   setListName
 }: Readonly<{
   listId: string;
@@ -55,6 +56,7 @@ export default function GeneralSettings({
   isAutoOrdered: boolean;
   hasDueDates: boolean;
   hasTimeTracking: boolean;
+  isKanban: boolean;
   setListName: (name: string) => unknown;
 }>) {
   const router = useRouter();
@@ -110,7 +112,7 @@ export default function GeneralSettings({
 
   return (
     <>
-      <span className='flex flex-col gap-4 overflow-y-auto'>
+      <span className='flex flex-col gap-4 overflow-y-scroll'>
         <span className='flex gap-4 mb-2'>
           <ConfirmedTextInput
             showUnderline
@@ -120,7 +122,9 @@ export default function GeneralSettings({
           />
           <ColorPicker value={listColor} onValueChange={updateColor} />
         </span>
+        {/* <span className={'grid grid-cols-2'}> */}
         <Switch
+          // className={'my-2'}
           isSelected={hasTimeTracking}
           size='sm'
           onValueChange={updateHasTimeTracking}
@@ -128,6 +132,7 @@ export default function GeneralSettings({
           Track completion time
         </Switch>
         <Switch
+          //className={'my-2'}
           isSelected={hasDueDates}
           size='sm'
           onValueChange={updateHasDueDates}
@@ -135,12 +140,21 @@ export default function GeneralSettings({
           Track due dates
         </Switch>
         <Switch
+          //className={'my-2'}
           isSelected={isAutoOrdered}
           size='sm'
           onValueChange={updateIsAutoOrdered}
         >
           Auto-order list items
         </Switch>
+        <Switch
+          //className={'my-2'}
+          isSelected={isKanban}
+          size='sm'
+        >
+          View in Kanban Mode
+        </Switch>
+        {/* </span> */}
       </span>
       <span className='flex justify-end'>
         <Button

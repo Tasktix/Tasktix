@@ -108,16 +108,17 @@ export default function ListSettings({
           <ModalHeader className='justify-center pb-0'>
             List Settings
           </ModalHeader>
-          <ModalBody className='overflow-clip'>
+          <ModalBody className='min-h-0'>
             <Tabs aria-label='Options' variant='underlined'>
               <Tab
-                className='flex flex-col gap-4 grow justify-between'
+                className='flex flex-col gap-4 grow justify-between min-h-0'
                 title='General'
               >
                 <GeneralSettings
                   hasDueDates={hasDueDates}
                   hasTimeTracking={hasTimeTracking}
                   isAutoOrdered={isAutoOrdered}
+                  isKanban={false}
                   listColor={listColor}
                   listId={listId}
                   listName={listName}
@@ -125,7 +126,7 @@ export default function ListSettings({
                 />
               </Tab>
               <Tab
-                className='flex flex-col gap-6 grow shrink justify-between overflow-clip'
+                className='flex flex-col gap-6 grow shrink justify-between min-h-0'
                 title='Members'
               >
                 <MemberSettings
@@ -138,7 +139,7 @@ export default function ListSettings({
                 />
               </Tab>
               <Tab
-                className='flex flex-col gap-6 grow shrink justify-between overflow-clip'
+                className='flex flex-col gap-6 grow shrink justify-between min-h-0'
                 title='Tags'
               >
                 <TagSettings
