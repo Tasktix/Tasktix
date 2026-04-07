@@ -19,7 +19,6 @@
 'use client';
 
 import { useAuth } from '@/components/AuthProvider';
-import User from '@/lib/model/user';
 
 import UserProperties from './components/UserProperties';
 import AuthSettings from './components/AuthSettings';
@@ -38,7 +37,7 @@ export default function Page() {
       <div className='border-2 border-content3 bg-content1 shadow-lg shadow-content2 w-130 m-4 rounded-lg px-4 h-full'>
         <h1 className='text-2xl p-4'>Profile</h1>
         <UserProperties user={JSON.stringify(loggedInUser)} />
-        <AuthSettings user={loggedInUser as User} />
+        {loggedInUser && <AuthSettings user={loggedInUser} />}
       </div>
     </main>
   );

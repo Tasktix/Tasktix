@@ -30,7 +30,8 @@ import {
   ModalHeader,
   Form,
   useDisclosure,
-  addToast
+  addToast,
+  Alert
 } from '@heroui/react';
 import { FormEvent, startTransition, useEffect, useState } from 'react';
 import { Github, TrashFill } from 'react-bootstrap-icons';
@@ -168,21 +169,17 @@ export default function AuthSettings({ user }: { user: User }) {
   }
 
   const methods = [
-    ...(oauthConfig.githubEnabled
-      ? [
-          {
-            title: 'Github',
-            description: isGithubLinked
-              ? `Linked to ${user.name}`
-              : 'Link to your Github account',
-            icon: <Github />,
-            actionLabel: isGithubLinked ? 'Disconnect' : 'Connect',
-            handler: isGithubLinked ? handleUnlinkGithub : handleLinkGithub,
-            isCriticalAction: false,
-            testId: 'link-to-github'
-          }
-        ]
-      : []),
+    oauthConfig.githubEnabled && {
+      title: 'Github',
+      description: isGithubLinked
+        ? `Linked to ${user.name}`
+        : 'Link to your Github account',
+      icon: <Github />,
+      actionLabel: isGithubLinked ? 'Disconnect' : 'Connect',
+      handler: isGithubLinked ? handleUnlinkGithub : handleLinkGithub,
+      isCriticalAction: false,
+      testId: 'link-to-github'
+    },
     {
       title: 'Delete Account',
       description: 'Permanently delete your account',
@@ -192,7 +189,7 @@ export default function AuthSettings({ user }: { user: User }) {
       isCriticalAction: true,
       testId: 'delete-account'
     }
-  ].filter(Boolean);
+  ].filter(Boolean) as AccountMethod[];
 
   return (
     <div className='p-6'>
@@ -279,11 +276,16 @@ function DeleteAccountModal({
           Confirm Account Deletion
         </ModalHeader>
         <ModalBody>
+          <Alert
+            color='danger'
+            description='This will delete all data associated with your account'
+            title='This action is irreversible.'
+          />
           <Form className='w-full gap-4' onSubmit={handleDeleteAccount}>
             <Input
               aria-label='Password Input'
-              errorMessage='Password is required to delete account'
               label='Password'
+              labelPlacement='outside'
               name='password'
               type='password'
             />
