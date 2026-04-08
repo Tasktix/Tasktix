@@ -26,6 +26,7 @@ import {
 } from '@/lib/database/listItem';
 import { getUser } from '@/lib/session';
 import { ZodListItem } from '@/lib/model/listItem';
+import { querySectionInList } from '@/lib/database/list';
 
 const PatchBody = ZodListItem.omit({
   id: true,
@@ -59,6 +60,13 @@ export async function PATCH(
   const requestBody = parseResult.data;
 
   if (requestBody.sectionId !== undefined) {
+    // TODO Why is ListID also not confirmed?
+    const allowed = await querySectionInList(
+      item.listId!,
+      requestBody.sectionId
+    );
+
+    if (!allowed) return ClientError.BadRequest('Section not found');
     const res = await updateItemSection(item, requestBody.sectionId);
 
     if (!res) return ServerError.Internal('Failed to change section');
