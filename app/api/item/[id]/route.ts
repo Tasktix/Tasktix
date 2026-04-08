@@ -60,9 +60,8 @@ export async function PATCH(
   const requestBody = parseResult.data;
 
   if (requestBody.sectionId !== undefined) {
-    // TODO Why is ListID also not confirmed?
     const allowed = await querySectionInList(
-      item.listId!,
+      item.listId,
       requestBody.sectionId
     );
 

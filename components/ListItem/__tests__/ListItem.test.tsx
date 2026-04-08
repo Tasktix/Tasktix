@@ -54,7 +54,7 @@ beforeEach(vi.resetAllMocks);
 afterAll(vi.unstubAllEnvs);
 
 it('Shows everything faded and shows the completion date instead of due date when the item is marked completed', () => {
-  const item = new ListItemModel('Test item', {
+  const item = new ListItemModel('Test item', 'section-id', {
     priority: 'High',
     status: 'Completed',
     expectedMs: 5000 * 60,
@@ -96,7 +96,7 @@ it('Displays the associated list when one is provided', () => {
         dispatchItemChange={vi.fn()}
         hasDueDates={false}
         hasTimeTracking={false}
-        item={new ListItemModel('Test item', {})}
+        item={new ListItemModel('Test item', 'section-id', {})}
         list={
           new List('List Name', 'Cyan', [], [], false, false, false, 'list-id')
         }
@@ -137,7 +137,7 @@ it('Displays all members assigned to the item', () => {
       { color: 'Blue' }
     )
   ];
-  const item = new ListItemModel('Test item', {
+  const item = new ListItemModel('Test item', 'section-id', {
     assignees: [new Assignee(members[0], ''), new Assignee(members[1], '')]
   });
 

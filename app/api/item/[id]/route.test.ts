@@ -38,7 +38,7 @@ const MOCK_USER = new User(
   new Date(),
   { color: 'Amber' }
 );
-const MOCK_ITEM = new ListItem('test tag', {});
+const MOCK_ITEM = new ListItem('test tag', 'dummySection', {});
 const ITEM_PATH = `http://localhost/api/item/${MOCK_ITEM.id}` as const;
 
 vi.mock('@/lib/session');
@@ -52,7 +52,10 @@ beforeEach(() => {
 describe('PATCH', () => {
   test('Updates item name when provided & requestor has permissions', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
-    vi.mocked(getListItemById).mockResolvedValue(MOCK_ITEM);
+    vi.mocked(getListItemById).mockResolvedValue({
+      ...MOCK_ITEM,
+      listId: 'dummy-id'
+    });
     vi.mocked(getRoleByItem).mockResolvedValue(
       new MemberRole('ItemUpdater', 'Updates items and does nothing else', {
         canUpdateItems: true
@@ -96,7 +99,10 @@ describe('PATCH', () => {
 
     test("Indicates no resource exists if requestor is not a member of the list they're updating an item of", async () => {
       vi.mocked(getUser).mockResolvedValue(MOCK_USER);
-      vi.mocked(getListItemById).mockResolvedValue(MOCK_ITEM);
+      vi.mocked(getListItemById).mockResolvedValue({
+        ...MOCK_ITEM,
+        listId: 'dummy-id'
+      });
       vi.mocked(getRoleByItem).mockResolvedValue(false);
 
       const response = await PATCH(
@@ -115,7 +121,10 @@ describe('PATCH', () => {
 
     test('Rejects request if requestor has insufficient permissions to update item', async () => {
       vi.mocked(getUser).mockResolvedValue(MOCK_USER);
-      vi.mocked(getListItemById).mockResolvedValue(MOCK_ITEM);
+      vi.mocked(getListItemById).mockResolvedValue({
+        ...MOCK_ITEM,
+        listId: 'dummy-id'
+      });
       vi.mocked(getRoleByItem).mockResolvedValue(
         new MemberRole('NotItemUpdater', 'Does everything but update items', {
           canAddItems: true,

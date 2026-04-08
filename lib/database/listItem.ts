@@ -39,13 +39,26 @@ export async function createListItem(
   return true;
 }
 
-export async function getListItemById(id: string): Promise<ListItem | false> {
+export async function getListItemById(
+  id: string
+): Promise<(ListItem & { listId: string }) | false> {
   const result = await prisma.item.findUnique({
     where: { id },
-    include: { tags: true, assignees: { include: { user: true } } }
+    include: {
+      tags: true,
+      assignees: { include: { user: true } },
+      section: {
+        select: { listId: true }
+      }
+    }
   });
 
-  return result ?? false;
+  if (!result) return false;
+
+  return {
+    ...result,
+    listId: result.section.listId
+  };
 }
 
 export async function getListItemsByUser(userId: string): Promise<ListItem[]> {
@@ -219,10 +232,9 @@ export async function updateItemSection(
             sectionIndex: targetSectionCount + 1
           }
         });
-
         await tx.item.updateMany({
           where: {
-            sectionId: 'foo', //TODO How to get (cleanly) Original Section,
+            sectionId: item.sectionId,
             sectionIndex: {
               gte: originalIndex
             }

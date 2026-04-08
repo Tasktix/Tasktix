@@ -79,7 +79,7 @@ export async function POST(request: Request) {
   if (!expectedMs && list.hasTimeTracking)
     return ClientError.BadRequest('Invalid expected duration');
 
-  const listItem = new ListItem(name, {
+  const listItem = new ListItem(name, requestBody.sectionId, {
     priority,
     expectedMs,
     sectionIndex,
