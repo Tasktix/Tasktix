@@ -18,6 +18,8 @@
 
 'use server';
 
+import { Prisma } from '@prisma/client';
+
 import List from '@/lib/model/list';
 import ListMember from '@/lib/model/listMember';
 import Tag from '@/lib/model/tag';
@@ -35,9 +37,8 @@ export async function createList(
         members: {
           createMany: {
             data: list.members.map(m => ({
-              ...m,
-              user: undefined,
-              userId: m.user.id
+              userId: m.user.id,
+              roleId: m.role.id
             }))
           }
         }
@@ -66,7 +67,7 @@ export async function createListMember(
 ): Promise<boolean> {
   try {
     await prisma.listMember.create({
-      data: { listId, ...member, user: undefined, userId: member.user.id }
+      data: { listId, roleId: member.role.id, userId: member.user.id }
     });
   } catch {
     return false;
@@ -79,7 +80,7 @@ export async function getListById(id: string): Promise<List | false> {
   const result = await prisma.list.findUnique({
     where: { id },
     include: {
-      members: { include: { user: true } },
+      members: { include: { user: true, role: true } },
       sections: {
         include: {
           items: {
@@ -101,7 +102,7 @@ export async function getListBySectionId(id: string): Promise<List | false> {
   const result = await prisma.list.findFirst({
     where: { sections: { some: { id } } },
     include: {
-      members: { include: { user: true } },
+      members: { include: { user: true, role: true } },
       sections: {
         include: {
           items: {
@@ -133,7 +134,8 @@ export async function getListMembersByUser(
   userId: string
 ): Promise<{ [id: string]: Omit<ListMember, 'user'>[] }> {
   const result = await prisma.listMember.findMany({
-    where: { userId }
+    where: { userId },
+    include: { role: true }
   });
 
   const returnVal: { [id: string]: Omit<ListMember, 'user'>[] } = {};
@@ -144,33 +146,6 @@ export async function getListMembersByUser(
   }
 
   return returnVal;
-}
-
-export async function getListMember(
-  userId: string,
-  listId: string
-): Promise<Omit<ListMember, 'user'> | false> {
-  const result = await prisma.listMember.findUnique({
-    where: { userId_listId: { userId, listId } }
-  });
-
-  return result ?? false;
-}
-
-export async function getListMemberByItem(
-  userId: string,
-  itemId: string
-): Promise<Omit<ListMember, 'user'> | false> {
-  const result = await prisma.listMember.findFirst({
-    where: {
-      userId,
-      list: {
-        sections: { some: { items: { some: { id: itemId } } } }
-      }
-    }
-  });
-
-  return result ?? false;
 }
 
 /**
@@ -336,14 +311,36 @@ export async function updateTag(tag: Tag): Promise<boolean> {
 export async function updateListMember(
   listId: string,
   userId: string,
-  member: Omit<ListMember, 'user'>
+  roleId: string
 ): Promise<boolean> {
   try {
-    await prisma.listMember.update({
-      where: { userId_listId: { userId, listId } },
-      data: { ...member }
-    });
-  } catch {
+    await prisma.$transaction(
+      async tx => {
+        // Prevent race conditions removing all admins by locking admin rows for
+        // full transaction duration
+        await tx.$queryRaw`
+          SELECT \`userId\` FROM \`ListMember\`
+            INNER JOIN \`MemberRole\` ON \`ListMember\`.\`roleId\` = \`MemberRole\`.\`id\`
+          WHERE \`ListMember\`.\`listId\` = ${listId} AND \`MemberRole\`.\`name\` = 'Admin'
+          FOR UPDATE;
+        `;
+
+        await tx.listMember.update({
+          where: { userId_listId: { userId, listId } },
+          data: { roleId }
+        });
+
+        const admins = await tx.listMember.count({
+          where: { listId, role: { name: 'Admin' } }
+        });
+
+        if (admins < 1) throw new Error('Must have an admin for the list');
+      },
+      { isolationLevel: Prisma.TransactionIsolationLevel.ReadCommitted }
+    );
+  } catch (error) {
+    console.log(error);
+
     return false;
   }
 

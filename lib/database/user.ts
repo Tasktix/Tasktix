@@ -18,6 +18,7 @@
 
 'use server';
 
+import MemberRole from '@/lib/model/memberRole';
 import User from '@/lib/model/user';
 
 import { prisma } from './db_connect';
@@ -57,6 +58,110 @@ export async function getUserByUsername(
  */
 export async function getUserByEmail(email: string): Promise<User | false> {
   const result = await prisma.user.findUnique({ where: { email } });
+
+  return result ?? false;
+}
+
+/**
+ * Gets all roles a member can have
+ */
+export async function getAvailableRoles(): Promise<MemberRole[] | false> {
+  const result = await prisma.memberRole.findMany();
+
+  return result ?? false;
+}
+
+/**
+ * Gets a specific member role's details
+ *
+ * @param id The ID of the role to get
+ */
+export async function getRole(id: string): Promise<MemberRole | false> {
+  const result = await prisma.memberRole.findUnique({ where: { id } });
+
+  return result ?? false;
+}
+
+/**
+ * Gets the Admin role (fully-permissioned user hardcoded into migrations)
+ */
+export async function getAdminRole(): Promise<MemberRole> {
+  return await prisma.memberRole.findUniqueOrThrow({
+    where: { name: 'Admin' }
+  });
+}
+
+/**
+ * Gets the given user's role (permissions) for the list that the given item belongs to
+ *
+ * @param userId The user to retrieve the role for
+ * @param itemId The item to find the list to retrieve the role for
+ */
+export async function getRoleByItem(
+  userId: string,
+  itemId: string
+): Promise<MemberRole | false> {
+  const result = await prisma.memberRole.findFirst({
+    where: {
+      listMembers: {
+        some: {
+          userId,
+          list: {
+            sections: { some: { items: { some: { id: itemId } } } }
+          }
+        }
+      }
+    }
+  });
+
+  return result ?? false;
+}
+
+/**
+ * Gets the given user's role (permissions) for the list that the given tag belongs to
+ *
+ * @param userId The user to retrieve the role for
+ * @param tagId The tag to find the list to retrieve the role for
+ */
+export async function getRoleByTag(
+  userId: string,
+  tagId: string
+): Promise<MemberRole | false> {
+  const result = await prisma.memberRole.findFirst({
+    where: {
+      listMembers: {
+        some: {
+          userId,
+          list: {
+            sections: {
+              some: { items: { some: { tags: { some: { id: tagId } } } } }
+            }
+          }
+        }
+      }
+    }
+  });
+
+  return result ?? false;
+}
+
+/**
+ * Gets the given user's role (permissions) for the given list
+ *
+ * @param userId The user to retrieve the role for
+ * @param listId The list to retrieve the role for
+ */
+export async function getRoleByList(
+  userId: string,
+  listId: string
+): Promise<MemberRole | false> {
+  const result = await prisma.memberRole.findFirst({
+    where: {
+      listMembers: {
+        some: { userId, list: { id: listId } }
+      }
+    }
+  });
 
   return result ?? false;
 }

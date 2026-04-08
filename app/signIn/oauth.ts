@@ -16,19 +16,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+'use client';
+
 import { addToast } from '@heroui/react';
-import { SuccessContext } from 'better-auth/react';
+import { ErrorContext, SuccessContext } from 'better-auth/react';
 
 import { authClient } from '@/lib/auth-client';
 import User from '@/lib/model/user';
 import { OAuthConfig } from '@/lib/auth';
 
-export interface OAuthControllers {
-  setLoggedInUser: (user: User) => void;
-  oauthConfig?: OAuthConfig;
-}
-
-type supportedProvider = 'github';
+type supportedProvider = 'github' | 'custom';
 /**
  * Handles OAuth social sign-in authentication flow.
  *
@@ -51,20 +48,46 @@ type supportedProvider = 'github';
 
 export async function handleOAuth(
   provider: supportedProvider,
-  controllers: OAuthControllers
+  setLoggedInUser: (user: User) => void,
+  oauthConfig: OAuthConfig
 ) {
-  await authClient.signIn.social(
-    {
-      provider,
-      callbackURL: '/list'
-    },
-    {
-      onSuccess: (ctx: SuccessContext<{ User: User }>) => {
-        controllers.setLoggedInUser(ctx.data.User);
+  /**
+   * Handles successful login via OAuth
+   *
+   * @param ctx The BetterAuth context for the signin
+   */
+  const handleSuccess = (ctx: SuccessContext<{ User: User }>) => {
+    setLoggedInUser(ctx.data.User);
+  };
+
+  /**
+   * Handles errors from BetterAuth for failed login via OAuth
+   *
+   * @param ctx The BetterAuth context for the error
+   */
+  const handleError = (ctx: ErrorContext) => {
+    addToast({ title: ctx.error.message, color: 'danger' });
+  };
+
+  if (provider === 'custom') {
+    if (!oauthConfig.customEnabled)
+      throw new Error('Received custom auth attempt when no provider set');
+
+    await authClient.signIn.oauth2(
+      {
+        providerId: oauthConfig.customProviderId,
+        callbackURL: '/list',
+        scopes: oauthConfig.customProviderScope
       },
-      onError: ctx => {
-        addToast({ title: ctx.error.message, color: 'danger' });
-      }
-    }
-  );
+      { onSuccess: handleSuccess, onError: handleError }
+    );
+  } else {
+    await authClient.signIn.social(
+      {
+        provider,
+        callbackURL: '/list'
+      },
+      { onSuccess: handleSuccess, onError: handleError }
+    );
+  }
 }

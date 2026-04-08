@@ -21,10 +21,15 @@ import type { auth } from './auth';
 import { createAuthClient } from 'better-auth/react';
 import {
   inferAdditionalFields,
+  genericOAuthClient,
   usernameClient
 } from 'better-auth/client/plugins';
 
 // authClient functionality is tested where used - skipcq: TCV-001
 export const authClient = createAuthClient({
-  plugins: [usernameClient(), inferAdditionalFields<typeof auth>()]
+  plugins: [
+    genericOAuthClient(),
+    usernameClient(),
+    inferAdditionalFields<typeof auth>()
+  ]
 });

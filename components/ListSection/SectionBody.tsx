@@ -29,11 +29,7 @@ import {
 } from '@/components/ListItem';
 import { Filters } from '@/components/SearchBar/types';
 import { NamedColor } from '@/lib/model/color';
-import {
-  sortItems,
-  sortItemsByCompleted,
-  sortItemsByOrder
-} from '@/lib/sortItems';
+import { sortItems, sortItemsByCompleted, sortItemsByOrder } from '@/lib/sort';
 
 import { ItemAction } from '../List';
 

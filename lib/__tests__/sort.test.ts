@@ -23,7 +23,7 @@ import {
   sortItemsByCompleted,
   sortItemsByIndex,
   sortItemsByOrder
-} from '../sortItems';
+} from '../sort';
 
 beforeAll(() => {
   vi.useFakeTimers();
