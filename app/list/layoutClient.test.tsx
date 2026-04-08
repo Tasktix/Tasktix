@@ -19,7 +19,7 @@
  */
 
 import { createContext } from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 import LayoutClient from '@/app/list/layoutClient';
@@ -35,14 +35,7 @@ vi.mock('@/components/Sidebar', () => ({
 }));
 
 describe('LayoutClient mobile drawer', () => {
-  it('opens the drawer when hamburger is clicked on a small window', () => {
-    Object.defineProperty(globalThis, 'innerWidth', {
-      configurable: true,
-      writable: true,
-      value: 500
-    });
-    globalThis.dispatchEvent(new Event('resize'));
-
+  it('opens the drawer when hamburger is clicked on a small window', async () => {
     render(
       <LayoutClient startingLists='[]'>
         <main>Content</main>
@@ -52,15 +45,16 @@ describe('LayoutClient mobile drawer', () => {
     const hamburger = screen.getByRole('button', {
       name: /open navigation menu/i
     });
-    const drawer = document.getElementById('mobile-sidebar-drawer');
 
-    expect(drawer).not.toBeNull();
+    expect(document.getElementById('mobile-sidebar-drawer')).toBeNull();
     expect(hamburger).toHaveAttribute('aria-expanded', 'false');
-    expect(drawer).toHaveClass('-translate-x-full');
 
     fireEvent.click(hamburger);
 
     expect(hamburger).toHaveAttribute('aria-expanded', 'true');
-    expect(drawer).toHaveClass('translate-x-0');
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeVisible();
+      expect(screen.getByText('Navigation')).toBeVisible();
+    });
   });
 });

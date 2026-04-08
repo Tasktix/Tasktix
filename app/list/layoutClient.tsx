@@ -18,9 +18,16 @@
 
 'use client';
 
-import { ReactNode, useEffect, useReducer, useRef, useState } from 'react';
-import { List as ListIcon, X } from 'react-bootstrap-icons';
-import { Button } from '@heroui/react';
+import { ReactNode, useReducer, useRef } from 'react';
+import {
+  Button,
+  Drawer,
+  DrawerBody,
+  DrawerContent,
+  DrawerHeader,
+  useDisclosure
+} from '@heroui/react';
+import { List as ListIcon } from 'react-bootstrap-icons';
 
 import Sidebar, { listReducer, ListContext } from '@/components/Sidebar';
 import List from '@/lib/model/list';
@@ -32,45 +39,17 @@ export default function LayoutClient({
   startingLists: string;
   children: ReactNode;
 }) {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const {
+    isOpen: isDrawerOpen,
+    onClose: closeDrawer,
+    onOpen,
+    onOpenChange
+  } = useDisclosure();
   const [lists, dispatchEvent] = useReducer(
     listReducer,
     JSON.parse(startingLists) as List[]
   );
   const hamburgerRef = useRef<HTMLButtonElement>(null);
-  const drawerRef = useRef<HTMLDivElement>(null);
-  const wasDrawerOpenRef = useRef(false);
-
-  function closeDrawer() {
-    setIsDrawerOpen(false);
-  }
-
-  useEffect(() => {
-    if (!isDrawerOpen) {
-      if (wasDrawerOpenRef.current) hamburgerRef.current?.focus();
-      wasDrawerOpenRef.current = false;
-
-      return;
-    }
-
-    wasDrawerOpenRef.current = true;
-
-    function onKeydown(event: KeyboardEvent) {
-      if (event.key === 'Escape') closeDrawer();
-    }
-
-    const focusTarget =
-      drawerRef.current?.querySelector<HTMLElement>(
-        'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
-      ) || drawerRef.current;
-
-    focusTarget?.focus();
-    document.addEventListener('keydown', onKeydown);
-
-    return () => {
-      document.removeEventListener('keydown', onKeydown);
-    };
-  }, [isDrawerOpen]);
 
   return (
     <ListContext.Provider value={dispatchEvent}>
@@ -86,7 +65,7 @@ export default function LayoutClient({
               aria-expanded={isDrawerOpen}
               aria-label='Open navigation menu'
               variant='ghost'
-              onPress={() => setIsDrawerOpen(true)}
+              onPress={onOpen}
             >
               <ListIcon size={20} />
             </Button>
@@ -96,38 +75,34 @@ export default function LayoutClient({
         </div>
       </div>
 
-      <div
-        aria-hidden={!isDrawerOpen}
-        aria-modal={isDrawerOpen}
-        className={`fixed inset-0 z-40 transition-opacity duration-200 md:hidden ${isDrawerOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'}`}
-        role='dialog'
+      <Drawer
+        hideCloseButton
+        classNames={{
+          backdrop: 'md:hidden',
+          base: 'md:hidden',
+          wrapper: 'md:hidden'
+        }}
+        isOpen={isDrawerOpen}
+        placement='left'
+        scrollBehavior='inside'
+        onOpenChange={onOpenChange}
       >
-        <div className='absolute inset-0 bg-black/50' />
-        <div
-          ref={drawerRef}
-          className={`absolute left-0 top-0 flex h-full w-72 max-w-[85vw] flex-col border-r border-content3 bg-content1 p-4 shadow-2xl transition-transform duration-200 ${isDrawerOpen ? 'translate-x-0' : '-translate-x-full'}`}
+        <DrawerContent
+          className='w-72 max-w-[85vw] rounded-none border-r border-content3 p-4 shadow-2xl'
           id='mobile-sidebar-drawer'
-          tabIndex={-1}
-          onClick={event => event.stopPropagation()}
         >
-          <div className='mb-2 flex items-center justify-between'>
-            <span className='text-sm font-semibold'>Navigation</span>
-            <Button
-              isIconOnly
-              aria-label='Close navigation menu'
-              variant='ghost'
-              onPress={closeDrawer}
-            >
-              <X size={20} />
-            </Button>
-          </div>
-          <Sidebar
-            className='w-full flex-1 p-0 pr-0 shadow-none'
-            lists={lists}
-            onNavigate={closeDrawer}
-          />
-        </div>
-      </div>
+          <DrawerHeader className='px-0 pb-2 pt-0 text-sm font-semibold'>
+            Navigation
+          </DrawerHeader>
+          <DrawerBody className='px-0 pb-0 pt-0'>
+            <Sidebar
+              className='w-full flex-1 p-0 pr-0 shadow-none'
+              lists={lists}
+              onNavigate={closeDrawer}
+            />
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
     </ListContext.Provider>
   );
 }

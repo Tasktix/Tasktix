@@ -24,7 +24,8 @@ import {
   ListboxItem,
   Popover,
   PopoverContent,
-  PopoverTrigger
+  PopoverTrigger,
+  Selection
 } from '@heroui/react';
 import { useTheme } from 'next-themes';
 import { useEffect, useRef, useState } from 'react';
@@ -44,6 +45,7 @@ export default function ThemeSwitcher() {
   const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const selectedTheme = theme ?? 'system';
+  const selectedThemeKeys = new Set([selectedTheme]);
   const activeTheme = resolvedTheme ?? 'light';
   const nextTheme = activeTheme === 'dark' ? 'light' : 'dark';
 
@@ -53,7 +55,9 @@ export default function ThemeSwitcher() {
   }
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia('(hover: none), (pointer: coarse)');
+    const mediaQuery = globalThis.matchMedia(
+      '(hover: none), (pointer: coarse)'
+    );
 
     function updateIsMobile(event?: MediaQueryListEvent) {
       setIsMobile(event?.matches ?? mediaQuery.matches);
@@ -109,21 +113,7 @@ export default function ThemeSwitcher() {
   }
 
   return (
-    <div
-      ref={setContainer}
-      className='flex items-center'
-      onMouseEnter={() => {
-        if (!isMobile) {
-          cancelPendingClose();
-          setIsOpen(true);
-        }
-      }}
-      onMouseLeave={() => {
-        if (!isMobile) {
-          scheduleClose();
-        }
-      }}
-    >
+    <div ref={setContainer} className='flex items-center'>
       <Popover
         isOpen={isOpen}
         placement='bottom-end'
@@ -149,6 +139,17 @@ export default function ThemeSwitcher() {
                 setIsOpen(false);
               }
             }}
+            onMouseEnter={() => {
+              if (!isMobile) {
+                cancelPendingClose();
+                setIsOpen(true);
+              }
+            }}
+            onMouseLeave={() => {
+              if (!isMobile) {
+                scheduleClose();
+              }
+            }}
             onPress={handlePress}
           >
             {activeTheme === 'dark' ? <SunFill /> : <MoonFill />}
@@ -170,28 +171,23 @@ export default function ThemeSwitcher() {
         >
           <Listbox
             aria-label='Theme options'
-            selectedKeys={[selectedTheme]}
+            selectedKeys={selectedThemeKeys}
             selectionMode='single'
+            onSelectionChange={(keys: Selection) => {
+              if (keys === 'all') return;
+
+              const selectedKey = keys.keys().next().value;
+
+              if (selectedKey) chooseTheme(String(selectedKey));
+            }}
           >
-            <ListboxItem
-              key='light'
-              startContent={<SunFill />}
-              onPress={() => chooseTheme('light')}
-            >
+            <ListboxItem key='light' startContent={<SunFill />}>
               Light
             </ListboxItem>
-            <ListboxItem
-              key='dark'
-              startContent={<MoonFill />}
-              onPress={() => chooseTheme('dark')}
-            >
+            <ListboxItem key='dark' startContent={<MoonFill />}>
               Dark
             </ListboxItem>
-            <ListboxItem
-              key='system'
-              startContent={<Display />}
-              onPress={() => chooseTheme('system')}
-            >
+            <ListboxItem key='system' startContent={<Display />}>
               System
             </ListboxItem>
           </Listbox>

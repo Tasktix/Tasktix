@@ -64,14 +64,21 @@ vi.mock('@heroui/react', async importOriginal => {
 
   const Listbox = (({
     children,
-    onAction,
+    onSelectionChange,
+    selectedKeys,
     'aria-label': ariaLabel
   }: {
     children: ReactNode;
-    onAction?: (key: string) => void;
+    onSelectionChange?: (keys: Set<string>) => void;
+    selectedKeys?: Iterable<string>;
     'aria-label'?: string;
   }) => (
-    <div aria-label={ariaLabel} role='listbox'>
+    <select
+      aria-label={ariaLabel}
+      size={3}
+      value={String(selectedKeys?.[Symbol.iterator]().next().value ?? '')}
+      onChange={event => onSelectionChange?.(new Set([event.target.value]))}
+    >
       {React.Children.map(children, child => {
         if (!React.isValidElement(child)) return child;
 
@@ -80,36 +87,21 @@ vi.mock('@heroui/react', async importOriginal => {
         return React.cloneElement(
           child as React.ReactElement<{
             itemKey: string;
-            onAction?: (key: string) => void;
           }>,
-          { itemKey, onAction }
+          { itemKey }
         );
       })}
-    </div>
+    </select>
   )) as unknown as typeof originalModule.Listbox;
 
   const ListboxItem = (({
     children,
-    itemKey,
-    onAction,
-    onPress
+    itemKey
   }: {
     children: ReactNode;
     itemKey: string;
-    onAction?: (key: string) => void;
-    onPress?: () => void;
   }) => (
-    <button
-      aria-selected='false'
-      role='option'
-      type='button'
-      onClick={() => {
-        onAction?.(itemKey);
-        onPress?.();
-      }}
-    >
-      {children}
-    </button>
+    <option value={itemKey}>{children}</option>
   )) as unknown as typeof originalModule.ListboxItem;
 
   return {
@@ -139,7 +131,7 @@ vi.mock(import('next-themes'), async importOriginal => {
 beforeEach(() => {
   vi.resetAllMocks();
 
-  Object.defineProperty(window, 'matchMedia', {
+  Object.defineProperty(globalThis, 'matchMedia', {
     writable: true,
     value: vi.fn().mockImplementation(() => ({
       matches: false,
@@ -188,10 +180,11 @@ describe('ThemeSwitcher', () => {
       </HeroUIProvider>
     );
 
-    fireEvent.mouseEnter(
-      screen.getByLabelText('Switch to light mode').parentElement!
+    fireEvent.mouseEnter(screen.getByLabelText('Switch to light mode'));
+    await user.selectOptions(
+      await screen.findByRole('listbox', { name: 'Theme options' }),
+      'system'
     );
-    await user.click(await screen.findByRole('option', { name: 'System' }));
 
     await waitFor(() => {
       expect(setTheme).toHaveBeenCalledWith('system');
@@ -224,7 +217,7 @@ describe('ThemeSwitcher', () => {
     const user = userEvent.setup();
     const setTheme = vi.fn();
 
-    vi.mocked(window.matchMedia).mockImplementation(() => ({
+    vi.mocked(globalThis.matchMedia).mockImplementation(() => ({
       matches: true,
       media: '',
       onchange: null,
