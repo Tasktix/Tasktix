@@ -198,7 +198,7 @@ export default function AddItem({
             onSubmit={createItem}
           >
             <Input
-              ref={input => {
+              ref={(input: HTMLInputElement | null) => {
                 focusInput.current = input;
               }}
               className='w-44 -mt-2'

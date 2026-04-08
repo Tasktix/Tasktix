@@ -22,6 +22,7 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
   plugins: [tsconfigPaths(), react()],
+  resolve: { alias: { 'server-only': 'data:text/javascript,export {}' } },
   test: {
     environment: 'jsdom',
     setupFiles: './vitest.setup.ts',

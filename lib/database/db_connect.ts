@@ -16,6 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import 'server-only';
+
 import { PrismaClient } from '@prisma/client';
 
 // This file's logic ensures only 1 copy of the Prisma client is created, even when the

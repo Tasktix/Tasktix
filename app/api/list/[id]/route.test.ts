@@ -16,13 +16,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { getIsListMember, getListById, updateList } from '@/lib/database/list';
+import { deleteList, getListById, updateList } from '@/lib/database/list';
 import List from '@/lib/model/list';
 import User from '@/lib/model/user';
 import { getUser } from '@/lib/session';
 import { broadcastEvent } from '@/lib/sse/server';
+import { getRoleByList } from '@/lib/database/user';
+import MemberRole from '@/lib/model/memberRole';
 
-import { PATCH } from './route';
+import { DELETE, PATCH } from './route';
 
 const MOCK_USER = new User(
   'user-id',
@@ -32,6 +34,24 @@ const MOCK_USER = new User(
   new Date(),
   new Date(),
   { color: 'Amber' }
+);
+const MOCK_ROLE_CAN_UPDATE_LIST = new MemberRole(
+  'ListUpdater',
+  'Updates the list and nothing else',
+  { canUpdateList: true }
+);
+const MOCK_ROLE_CANNOT_UPDATE_LIST = new MemberRole(
+  'NotListUpdater',
+  'Does everything but update the list',
+  {
+    canAddItems: true,
+    canUpdateItems: true,
+    canDeleteItems: true,
+    canManageTags: true,
+    canManageAssignees: true,
+    canManageMembers: true,
+    canDeleteList: true
+  }
 );
 const MOCK_LIST = new List(
   'List name',
@@ -48,6 +68,7 @@ const LIST_PATH = `http://localhost/api/list/${MOCK_LIST.id}` as const;
 
 vi.mock('@/lib/session');
 vi.mock('@/lib/database/list');
+vi.mock('@/lib/database/user');
 vi.mock('@/lib/sse/server');
 
 beforeEach(() => {
@@ -58,7 +79,7 @@ describe('PATCH', () => {
   test('Allows updating list name without altering other fields', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
     vi.mocked(getListById).mockResolvedValue(structuredClone(MOCK_LIST));
-    vi.mocked(getIsListMember).mockResolvedValue(true);
+    vi.mocked(getRoleByList).mockResolvedValue(MOCK_ROLE_CAN_UPDATE_LIST);
     vi.mocked(updateList).mockResolvedValue(true);
 
     const response = await PATCH(
@@ -89,7 +110,7 @@ describe('PATCH', () => {
   test('Allows updating time tracking without altering other fields', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
     vi.mocked(getListById).mockResolvedValue(structuredClone(MOCK_LIST));
-    vi.mocked(getIsListMember).mockResolvedValue(true);
+    vi.mocked(getRoleByList).mockResolvedValue(MOCK_ROLE_CAN_UPDATE_LIST);
     vi.mocked(updateList).mockResolvedValue(true);
 
     const response = await PATCH(
@@ -120,7 +141,7 @@ describe('PATCH', () => {
   test('Allows updating due dates without altering other fields', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
     vi.mocked(getListById).mockResolvedValue(structuredClone(MOCK_LIST));
-    vi.mocked(getIsListMember).mockResolvedValue(true);
+    vi.mocked(getRoleByList).mockResolvedValue(MOCK_ROLE_CAN_UPDATE_LIST);
     vi.mocked(updateList).mockResolvedValue(true);
 
     const response = await PATCH(
@@ -151,7 +172,7 @@ describe('PATCH', () => {
   test('Allows updating auto-ordering without altering other fields', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
     vi.mocked(getListById).mockResolvedValue(structuredClone(MOCK_LIST));
-    vi.mocked(getIsListMember).mockResolvedValue(true);
+    vi.mocked(getRoleByList).mockResolvedValue(MOCK_ROLE_CAN_UPDATE_LIST);
     vi.mocked(updateList).mockResolvedValue(true);
 
     const response = await PATCH(
@@ -182,7 +203,7 @@ describe('PATCH', () => {
   test('Allows updating color without altering other fields', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
     vi.mocked(getListById).mockResolvedValue(structuredClone(MOCK_LIST));
-    vi.mocked(getIsListMember).mockResolvedValue(true);
+    vi.mocked(getRoleByList).mockResolvedValue(MOCK_ROLE_CAN_UPDATE_LIST);
     vi.mocked(updateList).mockResolvedValue(true);
 
     const response = await PATCH(
@@ -247,7 +268,7 @@ describe('PATCH', () => {
     test('Rejects requests to modify list not a member of', async () => {
       vi.mocked(getUser).mockResolvedValue(MOCK_USER);
       vi.mocked(getListById).mockResolvedValue(structuredClone(MOCK_LIST));
-      vi.mocked(getIsListMember).mockResolvedValue(false);
+      vi.mocked(getRoleByList).mockResolvedValue(false);
 
       const response = await PATCH(
         new Request(LIST_PATH, {
@@ -262,10 +283,28 @@ describe('PATCH', () => {
       expect(broadcastEvent).not.toHaveBeenCalled();
     });
 
+    test('Rejects request if requestor has insufficient permissions to modify the list', async () => {
+      vi.mocked(getUser).mockResolvedValue(MOCK_USER);
+      vi.mocked(getListById).mockResolvedValue(structuredClone(MOCK_LIST));
+      vi.mocked(getRoleByList).mockResolvedValue(MOCK_ROLE_CANNOT_UPDATE_LIST);
+
+      const response = await PATCH(
+        new Request(LIST_PATH, {
+          method: 'patch',
+          body: JSON.stringify({ name: 'New list name' })
+        }),
+        { params: Promise.resolve({ id: 'list-id' }) }
+      );
+
+      expect(response.status).toBe(403);
+      expect(updateList).not.toHaveBeenCalled();
+      expect(broadcastEvent).not.toHaveBeenCalled();
+    });
+
     test('Rejects requests with malformed bodies', async () => {
       vi.mocked(getUser).mockResolvedValue(MOCK_USER);
       vi.mocked(getListById).mockResolvedValue(structuredClone(MOCK_LIST));
-      vi.mocked(getIsListMember).mockResolvedValue(true);
+      vi.mocked(getRoleByList).mockResolvedValue(MOCK_ROLE_CAN_UPDATE_LIST);
 
       const response = await PATCH(
         new Request(LIST_PATH, {
@@ -283,7 +322,7 @@ describe('PATCH', () => {
     test("Warns the user and doesn't push updates if updating the list fails", async () => {
       vi.mocked(getUser).mockResolvedValue(MOCK_USER);
       vi.mocked(getListById).mockResolvedValue(structuredClone(MOCK_LIST));
-      vi.mocked(getIsListMember).mockResolvedValue(true);
+      vi.mocked(getRoleByList).mockResolvedValue(MOCK_ROLE_CAN_UPDATE_LIST);
       vi.mocked(updateList).mockResolvedValue(false);
 
       const response = await PATCH(
@@ -296,6 +335,88 @@ describe('PATCH', () => {
 
       expect(response.status).toBe(500);
       expect(broadcastEvent).not.toHaveBeenCalled();
+    });
+  });
+});
+
+describe('DELETE', () => {
+  test('Deletes list when requestor has permissions', async () => {
+    vi.mocked(getUser).mockResolvedValue(MOCK_USER);
+    vi.mocked(getRoleByList).mockResolvedValue(
+      new MemberRole('ListDeleter', 'Deletes the list and nothing else', {
+        canDeleteList: true
+      })
+    );
+    vi.mocked(deleteList).mockResolvedValue(true);
+
+    const response = await DELETE(
+      new Request(LIST_PATH, {
+        method: 'DELETE'
+      }),
+      { params: Promise.resolve({ id: 'list-id' }) }
+    );
+
+    expect(response.status).toBe(200);
+    expect(deleteList).toHaveBeenCalledExactlyOnceWith('list-id');
+  });
+
+  describe('Errors', () => {
+    test('Rejects unauthenticated users', async () => {
+      vi.mocked(getUser).mockResolvedValue(false);
+
+      const response = await DELETE(
+        new Request(LIST_PATH, {
+          method: 'DELETE'
+        }),
+        { params: Promise.resolve({ id: 'list-id' }) }
+      );
+
+      expect(response.status).toBe(401);
+      expect(deleteList).not.toHaveBeenCalled();
+    });
+
+    test('Indicates no resource exists if requestor is not a member of the list', async () => {
+      vi.mocked(getUser).mockResolvedValue(MOCK_USER);
+      vi.mocked(getRoleByList).mockResolvedValue(false);
+
+      const response = await DELETE(
+        new Request(LIST_PATH, {
+          method: 'DELETE'
+        }),
+        { params: Promise.resolve({ id: 'list-id' }) }
+      );
+
+      expect(response.status).toBe(404);
+      expect(deleteList).not.toHaveBeenCalled();
+    });
+
+    test('Rejects request if requestor has insufficient permissions to delete the list', async () => {
+      vi.mocked(getUser).mockResolvedValue(MOCK_USER);
+      vi.mocked(getRoleByList).mockResolvedValue(
+        new MemberRole(
+          'NotListDeleter',
+          'Does everything but delete the list',
+          {
+            canAddItems: true,
+            canUpdateItems: true,
+            canDeleteItems: true,
+            canManageTags: true,
+            canManageAssignees: true,
+            canManageMembers: true,
+            canUpdateList: true
+          }
+        )
+      );
+
+      const response = await DELETE(
+        new Request(LIST_PATH, {
+          method: 'DELETE'
+        }),
+        { params: Promise.resolve({ id: 'list-id' }) }
+      );
+
+      expect(response.status).toBe(403);
+      expect(deleteList).not.toHaveBeenCalled();
     });
   });
 });

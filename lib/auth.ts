@@ -16,14 +16,65 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/* eslint-disable no-console */
+
+import 'server-only';
+
 import { betterAuth, DBFieldType } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
-import { PrismaClient } from '@prisma/client';
-import { haveIBeenPwned, username } from 'better-auth/plugins';
+import { genericOAuth, haveIBeenPwned, username } from 'better-auth/plugins';
 
 import { namedColors } from './model/color';
+import { prisma } from './database/db_connect';
 
-const prisma = new PrismaClient();
+export type OAuthConfig = {
+  githubEnabled: boolean;
+} & (
+  | { customEnabled: false }
+  | {
+      customEnabled: true;
+      customProviderId: string;
+      customProviderScope?: string[];
+    }
+);
+
+/**
+ * Server function that allows client to access state of OAuth configuration, available from the useAuth hook.
+ * Should not be called from client
+ *
+ * @returns Object containing all supported oauth providers and whether they have been configured
+ */
+export const getOAuthConfig = () => {
+  let scopes;
+
+  try {
+    scopes = process.env.OAUTH_SCOPES
+      ? (JSON.parse(process.env.OAUTH_SCOPES) as string[])
+      : undefined;
+  } catch {
+    console.error(
+      'Failed to parse OAUTH_SCOPES environment variable. Should be a JSON array of strings'
+    );
+  }
+
+  const githubEnabled =
+    Boolean(process.env.GITHUB_CLIENT_ID) &&
+    Boolean(process.env.GITHUB_CLIENT_SECRET);
+  const customEnabled =
+    Boolean(process.env.OAUTH_PROVIDER_ID) &&
+    Boolean(process.env.OAUTH_CLIENT_ID);
+
+  const config: OAuthConfig = customEnabled
+    ? {
+        githubEnabled,
+        customEnabled,
+        customProviderId: process.env.OAUTH_PROVIDER_ID as string,
+        customProviderScope: scopes
+      }
+    : { githubEnabled, customEnabled };
+
+  return config;
+};
 
 // auth functionality is tested where used - skipcq: TCV-001
 export const auth = betterAuth({
@@ -46,7 +97,8 @@ export const auth = betterAuth({
     additionalFields: {
       color: {
         type: namedColors as unknown as DBFieldType,
-        required: true
+        required: true,
+        defaultValue: 'Blue'
       },
       legacyPassword: {
         type: 'string',
@@ -71,8 +123,16 @@ export const auth = betterAuth({
     enabled: true,
     minPasswordLength: 10
   },
-
-  socialProviders: {},
+  socialProviders: {
+    ...(getOAuthConfig().githubEnabled
+      ? {
+          github: {
+            clientId: process.env.GITHUB_CLIENT_ID as string,
+            clientSecret: process.env.GITHUB_CLIENT_SECRET as string
+          }
+        }
+      : {})
+  },
   plugins: [
     username(),
     ...(process.env.ENABLE_PASSWORD_STRENGTH_CHECK === 'true'
@@ -80,6 +140,23 @@ export const auth = betterAuth({
           haveIBeenPwned({
             customPasswordCompromisedMessage:
               'Please choose a more secure password'
+          })
+        ]
+      : []),
+    ...(getOAuthConfig().customEnabled
+      ? [
+          genericOAuth({
+            config: [
+              {
+                providerId: process.env.OAUTH_PROVIDER_ID as string,
+                authorizationUrl: process.env.OAUTH_AUTHORIZATION_URL,
+                tokenUrl: process.env.OAUTH_TOKEN_URL,
+                userInfoUrl: process.env.OAUTH_USERINFO_URL,
+                clientId: process.env.OAUTH_CLIENT_ID as string,
+                clientSecret: process.env.OAUTH_CLIENT_SECRET,
+                discoveryUrl: process.env.OAUTH_DISCOVERY_URL
+              }
+            ]
           })
         ]
       : [])

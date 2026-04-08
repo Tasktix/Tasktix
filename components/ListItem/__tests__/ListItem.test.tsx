@@ -28,8 +28,15 @@ import Assignee from '@/lib/model/assignee';
 import User from '@/lib/model/user';
 import ListMember from '@/lib/model/listMember';
 import List from '@/lib/model/list';
+import MemberRole from '@/lib/model/memberRole';
 
 import ListItem from '../ListItem';
+
+const MOCK_ROLE_CAN_VIEW = new MemberRole(
+  'Viewer',
+  'No explicit permissions',
+  {}
+);
 
 vi.mock(import('framer-motion'), async importOriginal => {
   const originalFramerMotion = await importOriginal();
@@ -142,7 +149,7 @@ it('Displays all members assigned to the item', () => {
         hasDueDates={false}
         hasTimeTracking={false}
         item={item}
-        members={members.map(m => new ListMember(m, true, true, true, true))}
+        members={members.map(m => new ListMember(m, MOCK_ROLE_CAN_VIEW))}
         sectionId='section-id'
         tagsAvailable={[]}
       />

@@ -40,6 +40,8 @@ import {
   getPasswordMessage
 } from '../messages';
 
+import OAuth from './OAuth';
+
 export default function SignUp() {
   interface InputMessages {
     username: InputMessage;
@@ -47,8 +49,7 @@ export default function SignUp() {
     password: InputMessage;
   }
 
-  const { setLoggedInUser } = useAuth();
-
+  const { setLoggedInUser, oauthConfig } = useAuth();
   const defaultMessage: InputMessage = { message: '', color: 'default' };
 
   const [inputs, setInputs] = useState({
@@ -155,11 +156,12 @@ export default function SignUp() {
         variant='bordered'
         onValueChange={handlePasswordInput}
       />
-      <div className='flex justify-center mt-6'>
+      <div className='flex justify-center mt-4'>
         <Button color='primary' type='submit'>
           Sign Up
         </Button>
       </div>
+      <OAuth oauthConfig={oauthConfig} setLoggedInUser={setLoggedInUser} />
     </form>
   );
 }
