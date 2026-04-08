@@ -171,23 +171,23 @@ export async function getRoleByList(
  * ensure when deleting a user, no list will be orphaned.
  * @param userId
  */
-export async function getIsLastAdmin(userId: string): Promise<boolean> {
-  const adminLists = await prisma.listMember.findMany({
+export async function getIsOnlyAdminOnSharedList(
+  userId: string
+): Promise<boolean> {
+  const orphanedList = await prisma.listMember.findFirst({
     where: {
-      userId,
-      role: { name: 'Admin' }
+      userId: userId,
+      role: { name: 'Admin' },
+      list: {
+        members: {
+          none: {
+            role: { name: 'Admin' },
+            userId: { not: userId }
+          }
+        }
+      }
     }
   });
 
-  for (const list of adminLists) {
-    const adminCount = await prisma.listMember.count({
-      where: { listId: list.listId, role: { name: 'Admin' } }
-    });
-
-    if (adminCount <= 1) {
-      return true;
-    }
-  }
-
-  return false;
+  return Boolean(orphanedList);
 }

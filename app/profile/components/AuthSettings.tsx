@@ -243,7 +243,7 @@ function AuthSettingRow({
           aria-label={method.actionLabel}
           color={method.isCriticalAction ? 'danger' : 'default'}
           size='sm'
-          variant='solid'
+          variant='ghost'
           onPress={method.handler}
         >
           {method.actionLabel}

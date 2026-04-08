@@ -25,7 +25,7 @@ import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { genericOAuth, haveIBeenPwned, username } from 'better-auth/plugins';
 
 import { namedColors } from './model/color';
-import { getIsLastAdmin } from './database/user';
+import { getIsOnlyAdminOnSharedList } from './database/user';
 import { prisma } from './database/db_connect';
 
 export type OAuthConfig = {
@@ -97,7 +97,7 @@ export const auth = betterAuth({
          * prevent race conditions orphaning a list, but that does not appear
          * possible with BetterAuth
          */
-        const isLastAdmin = await getIsLastAdmin(user.id);
+        const isLastAdmin = await getIsOnlyAdminOnSharedList(user.id);
 
         if (isLastAdmin) {
           throw new APIError('BAD_REQUEST', {

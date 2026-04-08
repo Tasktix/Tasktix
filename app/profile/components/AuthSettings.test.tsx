@@ -289,7 +289,7 @@ describe('Account Deletion', () => {
 
     const deleteAccountButton = getByLabelText('Delete Account');
 
-    expect(deleteAccountButton).toHaveClass('bg-danger');
+    expect(deleteAccountButton).toHaveClass('border-danger');
 
     await user.click(deleteAccountButton);
 
@@ -306,7 +306,7 @@ describe('Account Deletion', () => {
       expect.anything()
     );
   });
-  test('Does not redirect to home, or delete account account deletion fails', async () => {
+  test('Redirects to home after deleting account', async () => {
     const user = userEvent.setup();
     const setLoggedInUserMock = vi.fn();
     const exampleSuccess = { data: { success: true, message: 'User deleted' } };
@@ -342,7 +342,7 @@ describe('Account Deletion', () => {
 
     const deleteAccountButton = getByLabelText('Delete Account');
 
-    expect(deleteAccountButton).toHaveClass('bg-danger');
+    expect(deleteAccountButton).toHaveClass('border-danger');
 
     await user.click(deleteAccountButton);
 
@@ -406,7 +406,7 @@ describe('Account Deletion', () => {
 
     const deleteAccountButton = getByLabelText('Delete Account');
 
-    expect(deleteAccountButton).toHaveClass('bg-danger');
+    expect(deleteAccountButton).toHaveClass('border-danger');
 
     await user.click(deleteAccountButton);
 

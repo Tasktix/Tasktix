@@ -44,6 +44,9 @@ describe('delete account', () => {
       });
   });
 
+  // This test succesfully validates the verification of session freshness,
+  // but includes busy waiting for over a minute, if session freshness proves
+  // to be an important issue, this test may be useful
   it.skip('Deletion fails if session is stale', () => {
     cy.login('newUser', 'password123');
     cy.clock();
@@ -54,7 +57,7 @@ describe('delete account', () => {
     cy.findByLabelText('Delete Account').click();
 
     // Move Clock forward to make session stale
-    cy.tick(65 * 1000);
+    cy.wait(65 * 1000);
 
     cy.findByLabelText('Confirm Delete Account').click();
 
@@ -64,6 +67,7 @@ describe('delete account', () => {
         cy.contains('Session expired.').should('be.visible');
       });
   });
+
   it('Deletion succeeds with correct password', () => {
     cy.login('newUser', 'password123');
 
