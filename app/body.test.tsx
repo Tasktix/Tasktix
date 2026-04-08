@@ -30,6 +30,20 @@ import Body from '@/app/body';
 import { authClient } from '@/lib/auth-client';
 import AuthProvider, { useAuth } from '@/components/AuthProvider';
 
+Object.defineProperty(globalThis, 'matchMedia', {
+  writable: true,
+  value: (query: string) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: () => {}, // deprecated
+    removeListener: () => {}, // deprecated
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    dispatchEvent: () => false
+  })
+});
+
 vi.mock(import('framer-motion'), async importOriginal => ({
   ...(await importOriginal()),
   LazyMotion: ({ children }) => <div>{children}</div>

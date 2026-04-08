@@ -24,9 +24,6 @@ export default defineConfig({
   plugins: [tsconfigPaths(), react()],
   resolve: { alias: { 'server-only': 'data:text/javascript,export {}' } },
   test: {
-    environment: 'jsdom',
-    setupFiles: './vitest.setup.ts',
-    globals: true,
     coverage: {
       enabled: true,
       provider: 'v8',
@@ -37,6 +34,7 @@ export default defineConfig({
         'lib/**/*.{ts,tsx}'
       ],
       exclude: ['node_modules/', 'lib/database/*.ts']
-    }
+    },
+    globals: true
   }
 });
