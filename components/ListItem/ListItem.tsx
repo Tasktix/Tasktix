@@ -204,7 +204,7 @@ export default function ListItem({
     <div
       className={`p-4 bg-content1 flex gap-4 items-center justify-between w-full ${reorderControls ? '' : 'border-b-1 border-content3 last:border-b-0'}`}
     >
-      <span className='flex gap-4 items-center justify-between w-2/5'>
+      <span className='flex grow gap-4 items-center justify-between w-2/5'>
         {reorderControls ? (
           <div
             className={`px-1 py-2 -mx-3 rounded-lg ${item.status === 'Completed' ? 'text-foreground/20' : 'text-foreground/50 cursor-grab'} text-lg`}
@@ -291,7 +291,7 @@ export default function ListItem({
           )}
         </span>
       </span>
-      <span className='flex gap-4 items-center justify-between w-3/5'>
+      <span className='flex gap-4 items-center justify-between w-3/5 max-w-fit lg:max-w-full'>
         <Priority
           isComplete={item.status === 'Completed'}
           priority={item.priority}

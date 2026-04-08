@@ -33,3 +33,14 @@
 
 // Import commands.js using ES2015 syntax:
 import './commands';
+
+before(() => {
+  cy.exec('npm run start:test', { timeout: 180000 });
+});
+
+after(() => {
+  cy.exec('npm run stop:test', {
+    failOnNonZeroExit: false,
+    timeout: 180000
+  });
+});

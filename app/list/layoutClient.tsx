@@ -101,7 +101,6 @@ export default function LayoutClient({
         aria-modal={isDrawerOpen}
         className={`fixed inset-0 z-40 transition-opacity duration-200 md:hidden ${isDrawerOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'}`}
         role='dialog'
-        onClick={closeDrawer}
       >
         <div className='absolute inset-0 bg-black/50' />
         <div

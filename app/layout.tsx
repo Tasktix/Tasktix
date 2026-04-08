@@ -18,8 +18,6 @@
 
 import type { Metadata } from 'next';
 
-import { ThemeProvider } from 'next-themes';
-
 import Body from '@/app/body';
 import { getUser } from '@/lib/session';
 import { getOAuthConfig } from '@/lib/auth';

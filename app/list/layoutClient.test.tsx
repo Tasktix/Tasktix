@@ -36,12 +36,12 @@ vi.mock('@/components/Sidebar', () => ({
 
 describe('LayoutClient mobile drawer', () => {
   it('opens the drawer when hamburger is clicked on a small window', () => {
-    Object.defineProperty(window, 'innerWidth', {
+    Object.defineProperty(globalThis, 'innerWidth', {
       configurable: true,
       writable: true,
       value: 500
     });
-    window.dispatchEvent(new Event('resize'));
+    globalThis.dispatchEvent(new Event('resize'));
 
     render(
       <LayoutClient startingLists='[]'>

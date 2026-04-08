@@ -115,10 +115,9 @@ export default function List({
             roles={builtRoles}
             setListName={listHandlers.setName}
             tagsAvailable={tagsAvailable}
-        />
+          />
         </div>
       </div>
-        
 
       {Array.from(list.sections.values()).map(section => (
         <ListSection

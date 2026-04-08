@@ -96,10 +96,10 @@ export default function ListSettings({
     <>
       <Button
         isIconOnly
+        aria-label='List settings'
         className='bg-content1 shadow-lg shadow-content2'
         size='lg'
         variant='ghost'
-        aria-label='List settings'
         onPress={onOpen}
       >
         <GearWideConnected size={20} />
