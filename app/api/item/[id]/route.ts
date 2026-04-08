@@ -30,7 +30,7 @@ import { ZodListItem } from '@/lib/model/listItem';
 const PatchBody = ZodListItem.omit({
   id: true,
   sectionIndex: true
-}).partial()
+}).partial();
 
 export async function PATCH(
   request: Request,
@@ -60,9 +60,8 @@ export async function PATCH(
 
   if (requestBody.sectionId !== undefined) {
     const res = await updateItemSection(item, requestBody.sectionId);
-    
-    if (!res) return ServerError.Internal('Failed to change section');
 
+    if (!res) return ServerError.Internal('Failed to change section');
   } else {
     if (requestBody.name) item.name = requestBody.name;
     if (requestBody.status) item.status = requestBody.status;
@@ -79,11 +78,12 @@ export async function PATCH(
       item.dateCompleted = requestBody.dateCompleted
         ? new Date(requestBody.dateCompleted)
         : null;
-  
+
     const result = await updateListItem(item);
-  
+
     if (!result) return ServerError.Internal('Could not update item');
   }
+
   return Success.OK('Item updated');
 }
 

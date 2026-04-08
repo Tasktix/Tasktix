@@ -207,39 +207,38 @@ export async function updateItemSection(
   try {
     await prisma.$transaction(
       async tx => {
-        
         const targetSectionCount = await tx.item.count({
           where: { sectionId }
-        })
-        const originalIndex =item.sectionIndex;
-        
+        });
+        const originalIndex = item.sectionIndex;
+
         await tx.item.update({
           where: { id: item.id },
           data: {
             sectionId,
             sectionIndex: targetSectionCount + 1
-          }          
+          }
         });
 
         await tx.item.updateMany({
           where: {
-            sectionId: "foo", //TODO How to get (cleanly) Original Section,
+            sectionId: 'foo', //TODO How to get (cleanly) Original Section,
             sectionIndex: {
-              gte: originalIndex,
-            },
+              gte: originalIndex
+            }
           },
           data: {
             sectionIndex: {
-              decrement: 1,
-            },
-          },
+              decrement: 1
+            }
+          }
         });
-
       },
       { isolationLevel: Prisma.TransactionIsolationLevel.Serializable }
     );
   } catch {
     return false;
   }
+
   return true;
 }
