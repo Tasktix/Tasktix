@@ -176,7 +176,7 @@ export async function getIsOnlyAdminOnSharedList(
 ): Promise<boolean> {
   const orphanedList = await prisma.listMember.findFirst({
     where: {
-      userId: userId,
+      userId,
       role: { name: 'Admin' },
       list: {
         members: {
