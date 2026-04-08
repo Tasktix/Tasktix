@@ -21,6 +21,7 @@ import { getRoleByItem } from '@/lib/database/user';
 import {
   deleteListItem,
   getListItemById,
+  updateItemSection,
   updateListItem
 } from '@/lib/database/listItem';
 import { getUser } from '@/lib/session';
@@ -28,9 +29,8 @@ import { ZodListItem } from '@/lib/model/listItem';
 
 const PatchBody = ZodListItem.omit({
   id: true,
-  sectionIndex: true,
-  sectionId: true
-}).partial();
+  sectionIndex: true
+}).partial()
 
 export async function PATCH(
   request: Request,
@@ -58,26 +58,32 @@ export async function PATCH(
 
   const requestBody = parseResult.data;
 
-  if (requestBody.name) item.name = requestBody.name;
-  if (requestBody.status) item.status = requestBody.status;
-  if (requestBody.priority) item.priority = requestBody.priority;
-  if (requestBody.dateDue) item.dateDue = new Date(requestBody.dateDue);
-  if (requestBody.expectedMs) item.expectedMs = requestBody.expectedMs;
-  if (requestBody.elapsedMs !== undefined)
-    item.elapsedMs = requestBody.elapsedMs;
-  if (requestBody.dateStarted !== undefined)
-    item.dateStarted = requestBody.dateStarted
-      ? new Date(requestBody.dateStarted)
-      : null;
-  if (requestBody.dateCompleted !== undefined)
-    item.dateCompleted = requestBody.dateCompleted
-      ? new Date(requestBody.dateCompleted)
-      : null;
+  if (requestBody.sectionId !== undefined) {
+    const res = await updateItemSection(item, requestBody.sectionId);
+    
+    if (!res) return ServerError.Internal('Failed to change section');
 
-  const result = await updateListItem(item);
-
-  if (!result) return ServerError.Internal('Could not update item');
-
+  } else {
+    if (requestBody.name) item.name = requestBody.name;
+    if (requestBody.status) item.status = requestBody.status;
+    if (requestBody.priority) item.priority = requestBody.priority;
+    if (requestBody.dateDue) item.dateDue = new Date(requestBody.dateDue);
+    if (requestBody.expectedMs) item.expectedMs = requestBody.expectedMs;
+    if (requestBody.elapsedMs !== undefined)
+      item.elapsedMs = requestBody.elapsedMs;
+    if (requestBody.dateStarted !== undefined)
+      item.dateStarted = requestBody.dateStarted
+        ? new Date(requestBody.dateStarted)
+        : null;
+    if (requestBody.dateCompleted !== undefined)
+      item.dateCompleted = requestBody.dateCompleted
+        ? new Date(requestBody.dateCompleted)
+        : null;
+  
+    const result = await updateListItem(item);
+  
+    if (!result) return ServerError.Internal('Could not update item');
+  }
   return Success.OK('Item updated');
 }
 
