@@ -36,10 +36,6 @@ Object.defineProperty(globalThis, 'matchMedia', {
     matches: false,
     media: query,
     onchange: null,
-    addListener: () => {}, // deprecated
-    removeListener: () => {}, // deprecated
-    addEventListener: () => {},
-    removeEventListener: () => {},
     dispatchEvent: () => false
   })
 });
@@ -78,6 +74,7 @@ describe('Body', () => {
   it('uses a full-height document flow layout with a non-sticky footer', () => {
     vi.mocked(useAuth).mockReturnValue({
       loggedInUser: false,
+      oauthConfig: MOCK_OAUTH_CONFIG,
       setLoggedInUser: vi.fn()
     });
 

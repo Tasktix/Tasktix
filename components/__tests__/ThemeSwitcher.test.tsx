@@ -55,7 +55,7 @@ vi.mock('@heroui/react', async importOriginal => {
   }) as unknown as typeof originalModule.Popover;
 
   const PopoverTrigger = (({ children }: { children: ReactNode }) => (
-    <>{children}</>
+    <div>{children}</div>
   )) as unknown as typeof originalModule.PopoverTrigger;
 
   const PopoverContent = (({ children }: { children: ReactNode }) => (

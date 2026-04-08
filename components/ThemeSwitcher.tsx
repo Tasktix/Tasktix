@@ -59,6 +59,7 @@ export default function ThemeSwitcher() {
       '(hover: none), (pointer: coarse)'
     );
 
+    // Keep hover-only behavior disabled on touch-oriented devices.
     function updateIsMobile(event?: MediaQueryListEvent) {
       setIsMobile(event?.matches ?? mediaQuery.matches);
       setIsOpen(false);
@@ -76,11 +77,13 @@ export default function ThemeSwitcher() {
     };
   }, []);
 
+  // Apply the selected theme and close the menu after a choice is made.
   function chooseTheme(themeKey: string) {
     setTheme(themeKey);
     setIsOpen(false);
   }
 
+  // Clear any pending delayed close so hover interactions stay responsive.
   function cancelPendingClose() {
     if (closeTimeoutRef.current) {
       clearTimeout(closeTimeoutRef.current);
@@ -88,6 +91,7 @@ export default function ThemeSwitcher() {
     }
   }
 
+  // Delay closing slightly so pointer movement between trigger and menu feels stable.
   function scheduleClose() {
     cancelPendingClose();
     closeTimeoutRef.current = setTimeout(() => {
@@ -96,6 +100,7 @@ export default function ThemeSwitcher() {
     }, 100);
   }
 
+  // Toggle the menu on mobile, but keep desktop click behavior as a quick theme swap.
   function handlePress() {
     if (isMobile) {
       setIsOpen(open => !open);
@@ -106,6 +111,7 @@ export default function ThemeSwitcher() {
     setTheme(nextTheme);
   }
 
+  // Let HeroUI close the popover, while only allowing it to open itself on mobile.
   function handleOpenChange(nextOpen: boolean) {
     if (isMobile || !nextOpen) {
       setIsOpen(nextOpen);
