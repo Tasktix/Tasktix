@@ -138,19 +138,16 @@ describe('Edit Tags', () => {
   });
 });
 describe('Removing Tags', () => {
-  it('Deletes tag on delete buton press', async () => {
+  it('Deletes tag on delete button press', async () => {
     const user = userEvent.setup();
     const setTagsAvailableMock = vi.fn();
-    const confirmSpy = vi
-      .spyOn(window, 'confirm')
-      .mockImplementation(() => true);
 
     vi.mocked(api.delete).mockResolvedValue({
       code: 200,
       message: 'Success',
       content: undefined
     });
-    const { getByLabelText } = render(
+    const { getByLabelText, getByRole } = render(
       <TagSettings
         addNewTag={vi.fn()}
         setTagsAvailable={setTagsAvailableMock}
@@ -166,7 +163,7 @@ describe('Removing Tags', () => {
     expect(deleteTag1).toBeVisible();
 
     await user.click(deleteTag1);
-    expect(confirmSpy).toHaveBeenCalled();
+    await user.click(getByRole('button', { name: 'Confirm' }));
 
     expect(api.delete).toHaveBeenCalledWith('/tag/id-tag1');
     expect(setTagsAvailableMock).toHaveBeenCalledWith([
@@ -177,16 +174,13 @@ describe('Removing Tags', () => {
   it('Does not delete tag if not confirmed', async () => {
     const user = userEvent.setup();
     const setTagsAvailableMock = vi.fn();
-    const confirmSpy = vi
-      .spyOn(window, 'confirm')
-      .mockImplementation(() => false);
 
     vi.mocked(api.delete).mockResolvedValue({
       code: 200,
       message: 'Success',
       content: undefined
     });
-    const { getByLabelText } = render(
+    const { getByLabelText, getByRole } = render(
       <TagSettings
         addNewTag={vi.fn()}
         setTagsAvailable={setTagsAvailableMock}
@@ -202,7 +196,7 @@ describe('Removing Tags', () => {
     expect(deleteTag1).toBeVisible();
 
     await user.click(deleteTag1);
-    expect(confirmSpy).toHaveBeenCalled();
+    await user.click(getByRole('button', { name: 'Cancel' }));
 
     expect(api.delete).not.toHaveBeenCalled();
     expect(setTagsAvailableMock).not.toHaveBeenCalled();

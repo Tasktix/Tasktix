@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { getOAuthConfig } from '../auth';
+import { getOAuthConfig, OAuthConfig } from '../auth';
 
 beforeEach(vi.unstubAllEnvs);
 
@@ -99,9 +99,11 @@ describe('getOAuthConfig', () => {
   test('Leaves custom SSO scopes undefined if no environment variable', () => {
     vi.stubEnv('OAUTH_SCOPES', undefined); // TS requires 2 args - skipcq: JS-W1042
 
-    const config = getOAuthConfig();
+    const config = getOAuthConfig() as OAuthConfig & {
+      customProviderScope: unknown;
+    };
 
-    expect(config).not.toHaveProperty('customProviderScope');
+    expect(config.customProviderScope).toBeUndefined();
   });
 
   test('Logs an error if custom SSO scopes environment variable is unparsable', () => {
