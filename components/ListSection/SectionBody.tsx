@@ -204,7 +204,7 @@ function compareFilter(
     case 'tag':
       return (
         value instanceof Set &&
-        item.tags.reduce((prev, tag) => prev || value.has(tag.id), false)
+        item.tags.reduce((prev, tag) => prev || value.has(tag.name), false)
       );
 
     case 'user':
