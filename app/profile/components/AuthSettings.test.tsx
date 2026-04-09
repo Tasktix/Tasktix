@@ -112,7 +112,7 @@ describe('Linking/Unlinking Github', () => {
 
     expect(githubRow).toBeInTheDocument();
   });
-  
+
   test('Allows linking an account to Github if not currently linked', async () => {
     const user = userEvent.setup();
 

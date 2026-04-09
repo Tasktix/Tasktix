@@ -35,5 +35,5 @@ export function addToastForError(error: unknown) {
   )
     title = error.message;
 
-  addToast({ description: title, color: 'danger' });
+  addToast({ title, color: 'danger' });
 }
