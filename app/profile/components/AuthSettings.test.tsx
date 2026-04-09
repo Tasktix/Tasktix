@@ -112,6 +112,7 @@ describe('Linking/Unlinking Github', () => {
 
     expect(githubRow).toBeInTheDocument();
   });
+  
   test('Allows linking an account to Github if not currently linked', async () => {
     const user = userEvent.setup();
 
@@ -194,6 +195,7 @@ describe('Linking/Unlinking Github', () => {
       expect.anything()
     );
   });
+
   test('Failed Github uninking creates error toast', async () => {
     const user = userEvent.setup();
 
@@ -306,6 +308,7 @@ describe('Account Deletion', () => {
       expect.anything()
     );
   });
+
   test('Redirects to home after deleting account', async () => {
     const user = userEvent.setup();
     const setLoggedInUserMock = vi.fn();
@@ -363,7 +366,7 @@ describe('Account Deletion', () => {
     expect(routerMock.push).toHaveBeenCalledWith('/');
   });
 
-  test('Redirects to Home after deleting account', async () => {
+  test('Does not redirect to Home after failed account deletion', async () => {
     const user = userEvent.setup();
     const setLoggedInUserMock = vi.fn();
     const exampleError = {
