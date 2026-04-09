@@ -14,5 +14,6 @@ COPY prisma ./prisma
 COPY lib/auth.ts ./lib/auth.ts
 COPY lib/database/db_connect.ts ./lib/database/db_connect.ts
 COPY lib/model/color.ts ./lib/model/color.ts
+COPY lib/database/user.ts ./lib/database/user.ts
 
 CMD [ "sh", "entry.sh" ]
