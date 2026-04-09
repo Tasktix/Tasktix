@@ -185,7 +185,7 @@ export async function getIsOnlyAdminOnSharedList(
             userId: { not: userId }
           },
           some: {
-            userId: { not: userId}
+            userId: { not: userId }
           }
         }
       }

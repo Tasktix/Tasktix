@@ -87,4 +87,26 @@ describe('delete account', () => {
         cy.contains('Account succesfully deleted').should('be.visible');
       });
   });
+
+  it('Deletion succeeds as only admin of non-shared list', () => {
+    cy.login('newUser', 'password123');
+
+    cy.createList('dummyList');
+
+    cy.findByLabelText('Profile Actions Dropdown').click();
+    cy.findByLabelText('Profile').should('be.visible').click();
+
+    cy.findByLabelText('Delete Account').click();
+    cy.findByLabelText('Password').should('be.visible').type('password123');
+
+    cy.findByLabelText('Confirm Delete Account').click();
+
+    cy.location('pathname').should('eq', '/about');
+
+    cy.get('[data-toast="true"]')
+      .should('be.visible')
+      .within(() => {
+        cy.contains('Account succesfully deleted').should('be.visible');
+      });
+  });
 });
