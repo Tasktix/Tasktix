@@ -183,6 +183,9 @@ export async function getIsOnlyAdminOnSharedList(
           none: {
             role: { name: 'Admin' },
             userId: { not: userId }
+          },
+          some: {
+            userId: { not: userId}
           }
         }
       }
