@@ -101,7 +101,7 @@ export const auth = betterAuth({
 
         if (isLastAdmin) {
           throw new APIError('BAD_REQUEST', {
-            message: 'Cannot delete a lists only admin account'
+            message: 'Cannot delete the only admin account in a shared list.'
           });
         }
       }
