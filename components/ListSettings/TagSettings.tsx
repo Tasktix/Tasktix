@@ -28,34 +28,30 @@ import { NamedColor } from '@/lib/model/color';
 import { addToastForError } from '@/lib/error';
 
 import ConfirmModal from '../ConfirmModal';
+import { FullState, TagAction } from '../List/types';
 
 /**
  * Displays all tags in the List and allows tags to be added, edited, and deleted
  *
  * @param listId The list the tags are for
- * @param tagsAvailable All tags currently part of the list
+ * @param tags All tags currently part of the list
  * @param addNewTag A callback for adding a tag to the list
- * @param setTagsAvailable A callback for updating React state with changes to the tags
+ * @param onTagEvent A callback for updating React state with changes to a tag
  */
 export default function TagSettings({
-  tagsAvailable,
+  tags,
   addNewTag,
-  setTagsAvailable
+  onTagEvent
 }: Readonly<{
-  tagsAvailable: Tag[];
+  tags: FullState['tags'];
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
-  setTagsAvailable: (value: Tag[]) => unknown;
+  onTagEvent: (event: TagAction) => unknown;
 }>) {
   return (
     <>
       <span className='flex flex-col gap-4 shrink overflow-y-auto'>
-        {tagsAvailable.map(tag => (
-          <TagDetails
-            key={tag.id}
-            setTagsAvailable={setTagsAvailable}
-            tag={tag}
-            tagsAvailable={tagsAvailable}
-          />
+        {tags.values().map(tag => (
+          <TagDetails key={tag.id} tag={tag} onTagEvent={onTagEvent} />
         ))}
       </span>
       <TagInput onTagCreated={addNewTag} />
@@ -65,25 +61,17 @@ export default function TagSettings({
 
 function TagDetails({
   tag,
-  tagsAvailable,
-  setTagsAvailable
+  onTagEvent
 }: {
   tag: Tag;
-  tagsAvailable: Tag[];
-  setTagsAvailable: (value: Tag[]) => unknown;
+  onTagEvent: (event: TagAction) => unknown;
 }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   function updateTagName(name: string) {
     api
       .patch(`/tag/${tag.id}`, { name })
-      .then(() => {
-        setTagsAvailable(
-          tagsAvailable.map(t =>
-            t.id === tag.id ? new Tag(name, t.color, t.id) : t
-          )
-        );
-      })
+      .then(() => onTagEvent({ type: 'UpdateTagName', id: tag.id, name }))
       .catch(addToastForError);
   }
 
@@ -91,13 +79,7 @@ function TagDetails({
     if (color)
       api
         .patch(`/tag/${tag.id}`, { color })
-        .then(() => {
-          setTagsAvailable(
-            tagsAvailable.map(t =>
-              t.id === tag.id ? new Tag(t.name, color, t.id) : t
-            )
-          );
-        })
+        .then(() => onTagEvent({ type: 'UpdateTagColor', id: tag.id, color }))
         .catch(addToastForError);
   }
 
@@ -105,7 +87,7 @@ function TagDetails({
     api
       .delete(`/tag/${tag.id}`)
       .then(() => {
-        setTagsAvailable(tagsAvailable.filter(t => t.id !== tag.id));
+        onTagEvent({ type: 'DeleteTag', id: tag.id });
       })
       .catch(addToastForError);
   }

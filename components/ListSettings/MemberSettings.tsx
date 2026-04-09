@@ -34,24 +34,26 @@ import api from '@/lib/api';
 import { sortRolesByPermissions } from '@/lib/sort';
 import { addToastForError } from '@/lib/error';
 
+import { FullState, MemberAction } from '../List/types';
+
 /**
  * Displays all list members and their permissions. Allows adding new members and updating
  * current members' permissions
  *
  * @param listId The list the members are for
  * @param members All members of the list
- * @param setMembers A callback for updating React state with changes to the members
+ * @param onMemberEvent A callback for updating React state with changes to the members
  */
 export default function MemberSettings({
   listId,
   members,
   roles,
-  setMembers
+  onMemberEvent
 }: Readonly<{
   listId: string;
-  members: ListMember[];
+  members: FullState['members'];
   roles: Map<string, MemberRole>;
-  setMembers: (members: ListMember[]) => unknown;
+  onMemberEvent: (event: MemberAction) => unknown;
 }>) {
   const [newMemberEmail, setNewMemberEmail] = useState('');
   const [newRole, setNewRole] = useState(roles.keys().next().value as string);
@@ -78,12 +80,15 @@ export default function MemberSettings({
       .then(res => {
         if (!res.content) throw new Error('User added, but unable to display');
 
-        const listMember = JSON.parse(res.content) as ListMember;
+        const member = JSON.parse(res.content) as ListMember;
 
-        listMember.user.createdAt = new Date(listMember.user.createdAt);
-        listMember.user.updatedAt = new Date(listMember.user.updatedAt);
+        member.user.createdAt = new Date(member.user.createdAt);
+        member.user.updatedAt = new Date(member.user.updatedAt);
 
-        setMembers([...members, listMember]);
+        onMemberEvent({
+          type: 'AddMember',
+          member: { ...member, role: member.role.id }
+        });
       })
       .catch(addToastForError);
   }
@@ -103,11 +108,11 @@ export default function MemberSettings({
         // which `trueRoleId` is one, is generated based on the `roles`
         const role = roles.get(trueRoleId) as MemberRole;
 
-        setMembers(
-          members.map(m =>
-            m.user.id === userId ? new ListMember(m.user, role) : m
-          )
-        );
+        onMemberEvent({
+          type: 'UpdateMemberPermissions',
+          id: userId,
+          role: role.id
+        });
       })
       .catch(addToastForError);
   }
@@ -116,6 +121,7 @@ export default function MemberSettings({
     <span className='flex flex-col gap-4 shrink overflow-y-auto'>
       <form className='flex gap-2' onSubmit={handleAddMember}>
         <Input
+          aria-label='New member email'
           placeholder='Email...'
           value={newMemberEmail}
           onValueChange={setNewMemberEmail}
@@ -126,7 +132,9 @@ export default function MemberSettings({
           variant='underlined'
           onSelectionChange={handleUpdateNewRole}
         >
-          {Array.from(roles.values())
+          {roles
+            .values()
+            .toArray()
             .sort(sortRolesByPermissions)
             .map(role => (
               <SelectItem key={role.id} description={role.description}>
@@ -144,36 +152,41 @@ export default function MemberSettings({
           Send Invite
         </Button>
       </form>
-      {members.map(member => (
-        <div key={member.user.id} className='flex gap-4'>
-          <User
-            avatarProps={{
-              classNames: {
-                base: getBackgroundColor(member.user.color)
-              },
-              size: 'sm'
-            }}
-            name={member.user.username ?? member.user.name}
-          />
-          <Select
-            aria-label={`${member.user.username ?? member.user.name} Role`}
-            selectedKeys={[member.role.id]}
-            variant='underlined'
-            onSelectionChange={handleUpdatePermissions.bind(
-              null,
-              member.user.id
-            )}
-          >
-            {Array.from(roles.values())
-              .sort(sortRolesByPermissions)
-              .map(role => (
-                <SelectItem key={role.id} description={role.description}>
-                  {role.name}
-                </SelectItem>
-              ))}
-          </Select>
-        </div>
-      ))}
+      {members
+        .values()
+        .map(member => (
+          <div key={member.user.id} className='flex gap-4'>
+            <User
+              avatarProps={{
+                classNames: {
+                  base: getBackgroundColor(member.user.color)
+                },
+                size: 'sm'
+              }}
+              name={member.user.username ?? member.user.name}
+            />
+            <Select
+              aria-label={`${member.user.username ?? member.user.name} Role`}
+              selectedKeys={[member.role]}
+              variant='underlined'
+              onSelectionChange={handleUpdatePermissions.bind(
+                null,
+                member.user.id
+              )}
+            >
+              {roles
+                .values()
+                .toArray()
+                .sort(sortRolesByPermissions)
+                .map(role => (
+                  <SelectItem key={role.id} description={role.description}>
+                    {role.name}
+                  </SelectItem>
+                ))}
+            </Select>
+          </div>
+        ))
+        .toArray()}
     </span>
   );
 }
