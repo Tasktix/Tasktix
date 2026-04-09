@@ -320,7 +320,8 @@ export async function updateListMember(
         // full transaction duration
         await tx.$queryRaw`
           SELECT \`userId\` FROM \`ListMember\`
-          WHERE \`listId\` = ${listId} AND \`name\` = 'Admin'
+            INNER JOIN \`MemberRole\` ON \`ListMember\`.\`roleId\` = \`MemberRole\`.\`id\`
+          WHERE \`ListMember\`.\`listId\` = ${listId} AND \`MemberRole\`.\`name\` = 'Admin'
           FOR UPDATE;
         `;
 
@@ -337,7 +338,9 @@ export async function updateListMember(
       },
       { isolationLevel: Prisma.TransactionIsolationLevel.ReadCommitted }
     );
-  } catch {
+  } catch (error) {
+    console.log(error);
+
     return false;
   }
 
