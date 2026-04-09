@@ -19,13 +19,15 @@
 import {
   deleteListItem,
   getListItemById,
-  updateListItem
+  updateListItem,
+  updateItemSection
 } from '@/lib/database/listItem';
 import { getRoleByItem } from '@/lib/database/user';
 import ListItem from '@/lib/model/listItem';
 import MemberRole from '@/lib/model/memberRole';
 import User from '@/lib/model/user';
 import { getUser } from '@/lib/session';
+import { querySectionInList } from '@/lib/database/list';
 
 import { DELETE, PATCH } from './route';
 
@@ -43,6 +45,7 @@ const ITEM_PATH = `http://localhost/api/item/${MOCK_ITEM.id}` as const;
 
 vi.mock('@/lib/session');
 vi.mock('@/lib/database/listItem');
+vi.mock('@/lib/database/list');
 vi.mock('@/lib/database/user');
 
 beforeEach(() => {
@@ -76,6 +79,37 @@ describe('PATCH', () => {
     expect(response.status).toBe(200);
     expect(updateListItem).toHaveBeenCalledExactlyOnceWith(
       expect.objectContaining({ name: 'New item name' })
+    );
+  });
+
+  test('Changes Item section when valid section provided and requestor is permissioned', async () => {
+    vi.mocked(getUser).mockResolvedValue(MOCK_USER);
+    vi.mocked(getListItemById).mockResolvedValue({
+      ...MOCK_ITEM,
+      listId: 'dummy-id'
+    });
+    vi.mocked(getRoleByItem).mockResolvedValue(
+      new MemberRole('ItemUpdater', 'Updates items and does nothing else', {
+        canUpdateItems: true
+      })
+    );
+    vi.mocked(querySectionInList).mockResolvedValue(true);
+    vi.mocked(updateItemSection).mockResolvedValue(true);
+
+    const response = await PATCH(
+      new Request(ITEM_PATH, {
+        method: 'patch',
+        body: JSON.stringify({ sectionId: 'asdfasdfasdfasdf' })
+      }),
+      {
+        params: Promise.resolve({ id: MOCK_ITEM.id })
+      }
+    );
+
+    expect(response.status).toBe(200);
+    expect(updateItemSection).toHaveBeenCalledExactlyOnceWith(
+      expect.anything(),
+      'asdfasdfasdfasdf'
     );
   });
 
@@ -149,6 +183,41 @@ describe('PATCH', () => {
 
       expect(response.status).toBe(403);
       expect(updateListItem).not.toHaveBeenCalled();
+    });
+
+    test('Rejects requests to move an item to a section that is part of a different list', async () => {
+      vi.mocked(getUser).mockResolvedValue(MOCK_USER);
+      vi.mocked(getRoleByItem).mockResolvedValue(
+        new MemberRole('DoesAllThings', 'Does everything', {
+          canAddItems: true,
+          canUpdateItems: true,
+          canDeleteItems: true,
+          canManageTags: true,
+          canManageAssignees: true,
+          canManageMembers: true,
+          canUpdateList: true,
+          canDeleteList: true
+        })
+      );
+      vi.mocked(getListItemById).mockResolvedValue({
+        ...MOCK_ITEM,
+        listId: 'dummy-id'
+      });
+      vi.mocked(querySectionInList).mockResolvedValue(false);
+
+      const response = await PATCH(
+        new Request(ITEM_PATH, {
+          method: 'patch',
+          body: JSON.stringify({ sectionId: 'asdfasdfasdfasdf' })
+        }),
+        {
+          params: Promise.resolve({ id: MOCK_ITEM.id })
+        }
+      );
+
+      expect(querySectionInList).toBeCalledWith('dummy-id', 'asdfasdfasdfasdf');
+      expect(response.status).toBe(400);
+      expect(updateItemSection).not.toHaveBeenCalled();
     });
   });
 });
