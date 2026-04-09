@@ -42,7 +42,7 @@ export async function POST(request: Request) {
   const role = await getAdminRole();
 
   const listMember = new ListMember(user, role);
-  const list = new List(name, color, [listMember], [], true, true, true);
+  const list = new List(name, color, [listMember], [], [], true, true, true);
 
   const result = await createList(list);
 

@@ -35,33 +35,27 @@ import { NamedColor } from '@/lib/model/color';
 import TagInput from '../TagInput';
 
 export default function Tags({
-  tags,
+  tagsAdded,
   isComplete,
   tagsAvailable,
   className,
   addNewTag,
-  linkTag,
-  linkNewTag,
-  unlinkTag
+  onTagLink,
+  onTagUnlink
 }: {
-  tags: TagModel[];
+  tagsAdded: TagModel[];
   isComplete: boolean;
   tagsAvailable?: TagModel[];
   className?: string;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
-  linkTag: (id: string) => unknown;
-  linkNewTag?: (
-    id: string,
-    name: string,
-    color: NamedColor
-  ) => Promise<unknown>;
-  unlinkTag: (id: string) => unknown;
+  onTagLink: (id: string) => unknown;
+  onTagUnlink: (id: string) => unknown;
 }) {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
   const tagsMap = Object.fromEntries((tagsAvailable ?? []).map(t => [t.id, t]));
 
-  const displayTags = tags
+  const displayTags = tagsAdded
     .map(tag => tagsMap[tag.id])
     .filter(Boolean)
     .sort((a, b) => a.name.localeCompare(b.name));
@@ -102,7 +96,7 @@ export default function Tags({
         </Button>
       </PopoverTrigger>
       <PopoverContent>
-        {tags
+        {tagsAdded
           .sort((a, b) => (a.name > b.name ? 1 : -1))
           .map(tag => (
             <div
@@ -116,7 +110,7 @@ export default function Tags({
                 className='rounded-lg w-8 h-8 min-w-8 min-h-8'
                 color='danger'
                 variant='flat'
-                onPress={unlinkTag.bind(null, tag.id)}
+                onPress={onTagUnlink.bind(null, tag.id)}
               >
                 <X />
               </Button>
@@ -126,7 +120,8 @@ export default function Tags({
           ? tagsAvailable
               .sort((a, b) => (a.name > b.name ? 1 : -1))
               .map(tag => {
-                if (tags.some(usedTag => usedTag.id === tag.id)) return null;
+                if (tagsAdded.some(usedTag => usedTag.id === tag.id))
+                  return null;
                 else
                   return (
                     <div
@@ -140,7 +135,7 @@ export default function Tags({
                         className='rounded-lg w-8 h-8 min-w-8 min-h-8'
                         color='primary'
                         variant='flat'
-                        onPress={linkTag.bind(null, tag.id)}
+                        onPress={onTagLink.bind(null, tag.id)}
                       >
                         <Plus />
                       </Button>
@@ -154,7 +149,7 @@ export default function Tags({
           onTagCreated={async (name, color) => {
             const id = await addNewTag(name, color);
 
-            if (linkNewTag) await linkNewTag(id, name, color);
+            await onTagLink(id);
           }}
         />
       </PopoverContent>
