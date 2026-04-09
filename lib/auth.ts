@@ -20,11 +20,12 @@
 
 import 'server-only';
 
-import { betterAuth, DBFieldType } from 'better-auth';
+import { APIError, betterAuth, DBFieldType } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { genericOAuth, haveIBeenPwned, username } from 'better-auth/plugins';
 
 import { namedColors } from './model/color';
+import { getIsOnlyAdminOnSharedList } from './database/user';
 import { prisma } from './database/db_connect';
 
 export type OAuthConfig = {
@@ -89,6 +90,22 @@ export const auth = betterAuth({
   user: {
     modelName: 'User',
     tableName: 'User',
+    deleteUser: {
+      enabled: true,
+      beforeDelete: async user => {
+        /** Ideally this check would be transactionized with account deletion to
+         * prevent race conditions orphaning a list, but that does not appear
+         * possible with BetterAuth
+         */
+        const isLastAdmin = await getIsOnlyAdminOnSharedList(user.id);
+
+        if (isLastAdmin) {
+          throw new APIError('BAD_REQUEST', {
+            message: 'Cannot delete the only admin account in a shared list.'
+          });
+        }
+      }
+    },
     changeEmail: {
       enabled: true,
       // Necessary unless we have an email server
@@ -109,7 +126,8 @@ export const auth = betterAuth({
   },
   session: {
     modelName: 'Session',
-    tableName: 'Session'
+    tableName: 'Session',
+    freshAge: 1
   },
   account: {
     modelName: 'Account',
