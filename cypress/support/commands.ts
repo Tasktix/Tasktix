@@ -76,9 +76,9 @@ Cypress.Commands.add('login', (username: string, password: string) => {
 Cypress.Commands.add('createList', (listName: string) => {
   cy.visit('/list');
 
-  cy.get('button .bi-plus').click();
+  cy.findByLabelText('Create new list').click();
   cy.findByPlaceholderText('List name').type(listName);
-  cy.get('button[type="submit"]').click();
+  cy.findByLabelText('Submit list').click();
 
   cy.location('pathname').should('match', /^\/list\/[a-zA-Z0-9]{16}$/);
 });
