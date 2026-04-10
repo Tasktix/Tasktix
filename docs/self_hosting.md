@@ -115,12 +115,12 @@ INSERT INTO `MemberRole` (
   `description`,
   `canAddItems`,
   `canUpdateItems`,
-  `canManageItems`,
+  `canDeleteItems`,
   `canManageTags`,
   `canManageAssignees`,
   `canManageMembers`,
   `canUpdateList`,
-  `canManageList`
+  `canDeleteList`
 ) VALUES (
   'Ok2GO5KJcAXOjnnT',
   'Manager',

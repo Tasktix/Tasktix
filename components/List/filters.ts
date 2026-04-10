@@ -17,8 +17,8 @@
  */
 
 import { InputOption, InputOptionGroup } from '@/components/SearchBar/types';
-import List from '@/lib/model/list';
-import Tag from '@/lib/model/tag';
+
+import { FullState } from './types';
 
 /**
  * Builds the list of available filters based on the list's settings (e.g. whether due
@@ -26,11 +26,9 @@ import Tag from '@/lib/model/tag';
  *
  * @param list The rich list object (including members, items, etc.), used to check
  *  settings and details
- * @param tagsAvailable All tags associated with the list
  */
 export function getFilterOptions(
-  list: Omit<List, 'sections'>,
-  tagsAvailable: Tag[]
+  list: Omit<FullState, 'items' | 'sections'>
 ): InputOptionGroup[] {
   const generalOptions: InputOption[] = [
     { type: 'String', label: 'name' },
@@ -43,19 +41,24 @@ export function getFilterOptions(
         { name: 'Low', color: 'success' }
       ]
     },
-    { type: 'Select', label: 'tag', selectOptions: tagsAvailable }
+    {
+      type: 'Select',
+      label: 'tag',
+      selectOptions: list.tags.values().toArray()
+    }
   ];
 
-  if (list.members.length > 1)
+  if (list.members.size > 1)
     generalOptions.push({
       type: 'Select',
       label: 'user',
-      selectOptions: list.members.map(member => {
-        return {
+      selectOptions: list.members
+        .values()
+        .map(member => ({
           name: member.user.username ?? member.user.name,
           color: member.user.color
-        };
-      })
+        }))
+        .toArray()
     });
   if (list.hasTimeTracking)
     generalOptions.push({
