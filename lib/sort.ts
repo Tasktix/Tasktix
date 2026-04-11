@@ -60,7 +60,10 @@ export function sortRolesByPermissions(a: MemberRole, b: MemberRole): number {
  * @returns A positive number if `a` should be before `b`; a negative number if `b` should
  *  be before `a`; 0 if `a` == `b`
  */
-export function sortItemsByCompleted(a: ListItem, b: ListItem): number {
+export function sortItemsByCompleted(
+  a: Pick<ListItem, 'dateCompleted' | 'status'>,
+  b: Pick<ListItem, 'dateCompleted' | 'status'>
+): number {
   if (a.dateCompleted && b.dateCompleted) {
     if (a.dateCompleted < b.dateCompleted) return 1;
     else if (b.dateCompleted < a.dateCompleted) return -1;
@@ -83,7 +86,10 @@ export function sortItemsByCompleted(a: ListItem, b: ListItem): number {
  * @returns A positive number if `a` should be before `b`; a negative number if `b` should
  *  be before `a`; 0 if `a` == `b`
  */
-export function sortItemsByIndex(a: ListItem, b: ListItem): number {
+export function sortItemsByIndex(
+  a: Pick<ListItem, 'sectionIndex'>,
+  b: Pick<ListItem, 'sectionIndex'>
+): number {
   if (a.sectionIndex > b.sectionIndex) return 1;
   if (b.sectionIndex > a.sectionIndex) return -1;
 
@@ -102,8 +108,8 @@ export function sortItemsByIndex(a: ListItem, b: ListItem): number {
  */
 export function sortItemsByOrder(
   itemOrder: Map<string, number>,
-  a: ListItem,
-  b: ListItem
+  a: Pick<ListItem, 'id'>,
+  b: Pick<ListItem, 'id'>
 ): number {
   const indexA = itemOrder.get(a.id);
   const indexB = itemOrder.get(b.id);
@@ -130,8 +136,8 @@ export function sortItemsByOrder(
 export function sortItems(
   hasTimeTracking: boolean,
   hasDueDates: boolean,
-  a: ListItem,
-  b: ListItem
+  a: Pick<ListItem, 'dateCompleted' | 'dateDue' | 'priority' | 'status'>,
+  b: Pick<ListItem, 'dateCompleted' | 'dateDue' | 'priority' | 'status'>
 ): number {
   const completed_order = sortItemsByCompleted(a, b);
 

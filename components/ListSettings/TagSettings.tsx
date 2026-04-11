@@ -27,33 +27,29 @@ import api from '@/lib/api';
 import { NamedColor } from '@/lib/model/color';
 import { addToastForError } from '@/lib/error';
 
+import { FullState, TagAction } from '../List/types';
+
 /**
  * Displays all tags in the List and allows tags to be added, edited, and deleted
  *
  * @param listId The list the tags are for
- * @param tagsAvailable All tags currently part of the list
+ * @param tags All tags currently part of the list
  * @param addNewTag A callback for adding a tag to the list
- * @param setTagsAvailable A callback for updating React state with changes to the tags
+ * @param onTagEvent A callback for updating React state with changes to a tag
  */
 export default function TagSettings({
-  tagsAvailable,
+  tags,
   addNewTag,
-  setTagsAvailable
+  onTagEvent
 }: Readonly<{
-  tagsAvailable: Tag[];
+  tags: FullState['tags'];
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
-  setTagsAvailable: (value: Tag[]) => unknown;
+  onTagEvent: (event: TagAction) => unknown;
 }>) {
   function updateTagName(tag: Tag, name: string) {
     api
       .patch(`/tag/${tag.id}`, { name })
-      .then(() => {
-        setTagsAvailable(
-          tagsAvailable.map(t =>
-            t.id === tag.id ? new Tag(name, t.color, t.id) : t
-          )
-        );
-      })
+      .then(() => onTagEvent({ type: 'UpdateTagName', id: tag.id, name }))
       .catch(addToastForError);
   }
 
@@ -61,13 +57,7 @@ export default function TagSettings({
     if (color)
       api
         .patch(`/tag/${tag.id}`, { color })
-        .then(() => {
-          setTagsAvailable(
-            tagsAvailable.map(t =>
-              t.id === tag.id ? new Tag(t.name, color, t.id) : t
-            )
-          );
-        })
+        .then(() => onTagEvent({ type: 'UpdateTagColor', id: tag.id, color }))
         .catch(addToastForError);
   }
 
@@ -81,16 +71,14 @@ export default function TagSettings({
 
     api
       .delete(`/tag/${id}`)
-      .then(() => {
-        setTagsAvailable(tagsAvailable.filter(tag => tag.id !== id));
-      })
+      .then(() => onTagEvent({ type: 'DeleteTag', id }))
       .catch(addToastForError);
   }
 
   return (
     <>
       <span className='flex flex-col gap-4 shrink overflow-y-auto'>
-        {tagsAvailable.map(tag => (
+        {tags.values().map(tag => (
           <span key={tag.id} className='flex gap-2 items-center'>
             <ConfirmedTextInput
               showUnderline
