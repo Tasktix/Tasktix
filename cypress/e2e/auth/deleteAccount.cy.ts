@@ -27,7 +27,7 @@ describe('delete account', () => {
   it('Deletion fails if password invalid', () => {
     cy.login('newUser', 'password123');
 
-    cy.findByLabelText('Profile Actions Dropdown').click();
+    cy.findByLabelText('Profile actions').click();
     cy.findByLabelText('Profile').should('be.visible').click();
 
     cy.findByLabelText('Delete Account').click();
@@ -51,7 +51,7 @@ describe('delete account', () => {
     cy.login('newUser', 'password123');
     cy.clock();
 
-    cy.findByLabelText('Profile Actions Dropdown').click();
+    cy.findByLabelText('Profile actions').click();
     cy.findByLabelText('Profile').should('be.visible').click();
 
     cy.findByLabelText('Delete Account').click();
@@ -71,7 +71,7 @@ describe('delete account', () => {
   it('Deletion succeeds with correct password', () => {
     cy.login('newUser', 'password123');
 
-    cy.findByLabelText('Profile Actions Dropdown').click();
+    cy.findByLabelText('Profile actions').click();
     cy.findByLabelText('Profile').should('be.visible').click();
 
     cy.findByLabelText('Delete Account').click();
