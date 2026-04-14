@@ -16,32 +16,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import ListItemGroup from '@/components/ListItemGroup';
-import {
-  getListMembersByUser,
-  getListsByUser,
-  getTagsByUser
-} from '@/lib/database/list';
-import { getListItemsByUser } from '@/lib/database/listItem';
-import { getUser } from '@/lib/session';
-
-export default async function Page() {
-  const user = await getUser();
-
-  const lists = await getListsByUser(user ? user.id : '');
-  const items = await getListItemsByUser(user ? user.id : '');
-  const tags = await getTagsByUser(user ? user.id : '');
-  const members = await getListMembersByUser(user ? user.id : '');
+export default function Page() {
+  // No logic to test - skipcq: TCV-001
 
   return (
-    <main className='w-full min-w-0 grow overflow-x-hidden overflow-y-scroll p-4 md:p-8 flex flex-col gap-8'>
-      <ListItemGroup
-        alternate="You're all caught up!"
-        members={JSON.stringify(members)}
-        startingItems={JSON.stringify(items)}
-        startingLists={JSON.stringify(lists)}
-        startingTags={JSON.stringify(tags)}
-      />
+    <main className='p-8 w-full flex grow flex-col gap-8 overflow-y-scroll'>
+      <div className='h-16 flex items-center justify-center bg-content2'>
+        Today view coming soon...
+      </div>
     </main>
   );
 }
