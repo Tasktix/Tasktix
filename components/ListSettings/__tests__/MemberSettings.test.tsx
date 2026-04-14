@@ -102,10 +102,10 @@ describe('Adding members', () => {
     );
 
     expect(getByLabelText('New member email')).toBeVisible();
-    expect(getByText('Send Invite')).toBeVisible();
+    expect(getByText('Add Member')).toBeVisible();
 
     await user.type(getByLabelText('New member email'), 'user2');
-    await user.click(getByText('Send Invite'));
+    await user.click(getByText('Add Member'));
 
     expect(getByLabelText('New member email')).toHaveValue('');
     expect(onMemberEvent).toHaveBeenCalledTimes(1);
@@ -137,10 +137,10 @@ describe('Adding members', () => {
     );
 
     expect(getByLabelText('New member email')).toBeVisible();
-    expect(getByText('Send Invite')).toBeVisible();
+    expect(getByText('Add Member')).toBeVisible();
 
     await user.type(getByLabelText('New member email'), 'user2');
-    await user.click(getByText('Send Invite'));
+    await user.click(getByText('Add Member'));
 
     expect(getByLabelText('New member email')).toHaveValue('');
     expect(addToast).toHaveBeenCalledTimes(1);
@@ -175,10 +175,10 @@ describe('Adding members', () => {
     );
 
     expect(getByLabelText('New member email')).toBeVisible();
-    expect(getByText('Send Invite')).toBeVisible();
+    expect(getByText('Add Member')).toBeVisible();
 
     await user.type(getByLabelText('New member email'), 'user2');
-    await user.click(getByText('Send Invite'));
+    await user.click(getByText('Add Member'));
 
     expect(getByLabelText('New member email')).toHaveValue('');
     expect(addToast).toHaveBeenCalledTimes(1);

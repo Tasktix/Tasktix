@@ -261,7 +261,7 @@ describe('List member changes', () => {
     await user.click(getByLabelText('New member role'));
     await waitFor(() => expect(getByLabelText('Adder')).toBeVisible());
     await user.click(getByLabelText('Adder'));
-    await user.click(getByRole('button', { name: 'Send Invite' }));
+    await user.click(getByRole('button', { name: 'Add Member' }));
 
     await waitFor(() => expect(getByText('New user')).toBeVisible());
   });
