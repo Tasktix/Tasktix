@@ -78,7 +78,7 @@ export default function ListItem({
   dispatchItemChange,
   addNewTag
 }: ListItemParams) {
-  const timer = useRef<NodeJS.Timeout>(undefined);
+  const timer = useRef<NodeJS.Timeout | null>(null);
   const updateTime = useRef(() => {});
   const lastTime = useRef(new Date());
   const [elapsedLive, setElapsedLive] = useState(
@@ -114,7 +114,9 @@ export default function ListItem({
         .then(() => {
           // Update the timer
           lastTime.current = startedDate;
-          clearTimeout(timer.current); // Just for safety
+          if (timer.current !== null) {
+            clearTimeout(timer.current); // Just for safety
+          }
           timer.current = setTimeout(
             updateTime.current,
             minute - (elapsedLive % minute) + 5
@@ -194,9 +196,9 @@ export default function ListItem({
   }, []);
 
   function _stopRunning() {
-    if (timer.current) {
+    if (timer.current !== null) {
       clearTimeout(timer.current);
-      timer.current = undefined;
+      timer.current = null;
     }
   }
 

@@ -36,6 +36,8 @@ Object.defineProperty(globalThis, 'matchMedia', {
     matches: false,
     media: query,
     onchange: null,
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
     dispatchEvent: () => false
   })
 });

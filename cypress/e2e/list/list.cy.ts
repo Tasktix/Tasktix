@@ -23,7 +23,7 @@ interface ApiResponseBody {
 function getIdFromPath(path: string, label: string) {
   const id = path.split('/').pop();
 
-  expect(id, `${label} should have an id segment`).to.not.equal(undefined);
+  expect(id, `${label} should have an id segment`).to.be.a('string');
   expect(id, `${label} should not be empty`).to.not.equal('');
 
   return id as string;

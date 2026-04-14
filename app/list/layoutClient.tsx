@@ -32,6 +32,55 @@ import { List as ListIcon } from 'react-bootstrap-icons';
 import Sidebar, { listReducer, ListContext } from '@/components/Sidebar';
 import List from '@/lib/model/list';
 
+function MobileSidebarHeader() {
+  return (
+    <DrawerHeader className='px-0 pb-2 pt-0 text-sm font-semibold'>
+      Navigation
+    </DrawerHeader>
+  );
+}
+
+function MobileSidebarDrawer({
+  closeDrawer,
+  isDrawerOpen,
+  lists,
+  onOpenChange
+}: {
+  closeDrawer: () => void;
+  isDrawerOpen: boolean;
+  lists: List[];
+  onOpenChange: () => void;
+}) {
+  return (
+    <Drawer
+      hideCloseButton
+      classNames={{
+        backdrop: 'md:hidden',
+        base: 'md:hidden',
+        wrapper: 'md:hidden'
+      }}
+      isOpen={isDrawerOpen}
+      placement='left'
+      scrollBehavior='inside'
+      onOpenChange={onOpenChange}
+    >
+      <DrawerContent
+        className='w-72 max-w-[85vw] rounded-none border-r border-content3 p-4 shadow-2xl'
+        id='mobile-sidebar-drawer'
+      >
+        <MobileSidebarHeader />
+        <DrawerBody className='px-0 pb-0 pt-0'>
+          <Sidebar
+            className='w-full flex-1 p-0 pr-0 shadow-none'
+            lists={lists}
+            onNavigate={closeDrawer}
+          />
+        </DrawerBody>
+      </DrawerContent>
+    </Drawer>
+  );
+}
+
 export default function LayoutClient({
   startingLists,
   children
@@ -74,35 +123,12 @@ export default function LayoutClient({
           {children}
         </div>
       </div>
-
-      <Drawer
-        hideCloseButton
-        classNames={{
-          backdrop: 'md:hidden',
-          base: 'md:hidden',
-          wrapper: 'md:hidden'
-        }}
-        isOpen={isDrawerOpen}
-        placement='left'
-        scrollBehavior='inside'
+      <MobileSidebarDrawer
+        closeDrawer={closeDrawer}
+        isDrawerOpen={isDrawerOpen}
+        lists={lists}
         onOpenChange={onOpenChange}
-      >
-        <DrawerContent
-          className='w-72 max-w-[85vw] rounded-none border-r border-content3 p-4 shadow-2xl'
-          id='mobile-sidebar-drawer'
-        >
-          <DrawerHeader className='px-0 pb-2 pt-0 text-sm font-semibold'>
-            Navigation
-          </DrawerHeader>
-          <DrawerBody className='px-0 pb-0 pt-0'>
-            <Sidebar
-              className='w-full flex-1 p-0 pr-0 shadow-none'
-              lists={lists}
-              onNavigate={closeDrawer}
-            />
-          </DrawerBody>
-        </DrawerContent>
-      </Drawer>
+      />
     </ListContext.Provider>
   );
 }

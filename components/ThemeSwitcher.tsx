@@ -49,6 +49,10 @@ export default function ThemeSwitcher() {
   const activeTheme = resolvedTheme ?? 'light';
   const nextTheme = activeTheme === 'dark' ? 'light' : 'dark';
 
+  /**
+   * Keeps the local portal target in sync with the container element so the
+   * popover stays anchored within this component subtree.
+   */
   function setContainer(node: HTMLDivElement | null) {
     containerRef.current = node;
     setPortalEl(node);
@@ -118,6 +122,80 @@ export default function ThemeSwitcher() {
     }
   }
 
+  const triggerButton = (
+    <Button
+      isIconOnly
+      aria-expanded={isOpen}
+      aria-haspopup='menu'
+      aria-label={isMobile ? 'Open theme menu' : `Switch to ${nextTheme} mode`}
+      variant='ghost'
+      onKeyDown={event => {
+        if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+          event.preventDefault();
+          setIsOpen(true);
+        }
+
+        if (event.key === 'Escape') {
+          setIsOpen(false);
+        }
+      }}
+      onMouseEnter={() => {
+        if (!isMobile) {
+          cancelPendingClose();
+          setIsOpen(true);
+        }
+      }}
+      onMouseLeave={() => {
+        if (!isMobile) {
+          scheduleClose();
+        }
+      }}
+      onPress={handlePress}
+    >
+      {activeTheme === 'dark' ? <SunFill /> : <MoonFill />}
+    </Button>
+  );
+
+  const themeOptions = (
+    <PopoverContent
+      className='p-0'
+      onMouseEnter={() => {
+        if (!isMobile) {
+          cancelPendingClose();
+          setIsOpen(true);
+        }
+      }}
+      onMouseLeave={() => {
+        if (!isMobile) {
+          scheduleClose();
+        }
+      }}
+    >
+      <Listbox
+        aria-label='Theme options'
+        selectedKeys={selectedThemeKeys}
+        selectionMode='single'
+        onSelectionChange={(keys: Selection) => {
+          if (keys === 'all') return;
+
+          const selectedKey = keys.keys().next().value;
+
+          if (selectedKey) chooseTheme(String(selectedKey));
+        }}
+      >
+        <ListboxItem key='light' startContent={<SunFill />}>
+          Light
+        </ListboxItem>
+        <ListboxItem key='dark' startContent={<MoonFill />}>
+          Dark
+        </ListboxItem>
+        <ListboxItem key='system' startContent={<Display />}>
+          System
+        </ListboxItem>
+      </Listbox>
+    </PopoverContent>
+  );
+
   return (
     <div ref={setContainer} className='flex items-center'>
       <Popover
@@ -126,78 +204,8 @@ export default function ThemeSwitcher() {
         portalContainer={portalEl ?? undefined}
         onOpenChange={handleOpenChange}
       >
-        <PopoverTrigger>
-          <Button
-            isIconOnly
-            aria-expanded={isOpen}
-            aria-haspopup='menu'
-            aria-label={
-              isMobile ? 'Open theme menu' : `Switch to ${nextTheme} mode`
-            }
-            variant='ghost'
-            onKeyDown={event => {
-              if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
-                event.preventDefault();
-                setIsOpen(true);
-              }
-
-              if (event.key === 'Escape') {
-                setIsOpen(false);
-              }
-            }}
-            onMouseEnter={() => {
-              if (!isMobile) {
-                cancelPendingClose();
-                setIsOpen(true);
-              }
-            }}
-            onMouseLeave={() => {
-              if (!isMobile) {
-                scheduleClose();
-              }
-            }}
-            onPress={handlePress}
-          >
-            {activeTheme === 'dark' ? <SunFill /> : <MoonFill />}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent
-          className='p-0'
-          onMouseEnter={() => {
-            if (!isMobile) {
-              cancelPendingClose();
-              setIsOpen(true);
-            }
-          }}
-          onMouseLeave={() => {
-            if (!isMobile) {
-              scheduleClose();
-            }
-          }}
-        >
-          <Listbox
-            aria-label='Theme options'
-            selectedKeys={selectedThemeKeys}
-            selectionMode='single'
-            onSelectionChange={(keys: Selection) => {
-              if (keys === 'all') return;
-
-              const selectedKey = keys.keys().next().value;
-
-              if (selectedKey) chooseTheme(String(selectedKey));
-            }}
-          >
-            <ListboxItem key='light' startContent={<SunFill />}>
-              Light
-            </ListboxItem>
-            <ListboxItem key='dark' startContent={<MoonFill />}>
-              Dark
-            </ListboxItem>
-            <ListboxItem key='system' startContent={<Display />}>
-              System
-            </ListboxItem>
-          </Listbox>
-        </PopoverContent>
+        <PopoverTrigger>{triggerButton}</PopoverTrigger>
+        {themeOptions}
       </Popover>
     </div>
   );
