@@ -24,6 +24,7 @@ import { getUser } from '@/lib/session';
 
 const PostBody = ZodListItem.omit({
   id: true,
+  description: true,
   status: true,
   isUnclear: true,
   elapsedMs: true,

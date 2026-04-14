@@ -35,6 +35,7 @@ import ListItem from '@/lib/model/listItem';
 
 import DateInput2 from '../DateInput2';
 import ConfirmedTextInput from '../ConfirmedTextInput';
+import ConfirmedTextarea from '../ConfirmedTextarea';
 
 import Priority from './Priority';
 import Tags from './Tags';
@@ -128,6 +129,15 @@ export default function More({
                     />
                   </span>
                 </div>
+                <ConfirmedTextarea
+                  disabled={isComplete}
+                  label='Description'
+                  maxRows={3}
+                  minRows={1}
+                  value={item.description}
+                  variant='underlined'
+                  onValueChange={itemHandlers.setDescription}
+                />
                 <div className='flex gap-4 items-center'>
                   <Priority
                     className='w-full'
