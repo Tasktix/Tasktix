@@ -72,7 +72,7 @@ export default function ListSettings({
     <>
       <Button
         isIconOnly
-        aria-label='List settings'
+        aria-label='Open list settings'
         className='bg-content1 shadow-lg shadow-content2'
         size='lg'
         variant='ghost'
