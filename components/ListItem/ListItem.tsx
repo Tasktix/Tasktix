@@ -86,13 +86,6 @@ export default function ListItem({
       (item.dateStarted ? Date.now() - item.dateStarted.getTime() : 0)
   );
 
-  const stopRunning = () => {
-    if (timer.current !== null) {
-      clearTimeout(timer.current);
-      timer.current = null;
-    }
-  };
-
   const itemHandlers = itemHandlerFactory(
     item.id,
     sectionId,
@@ -100,7 +93,7 @@ export default function ListItem({
       timer,
       lastTime,
       setElapsedLive,
-      stopRunning
+      stopRunning: _stopRunning
     },
     tagsAvailable,
     dispatchItemChange
@@ -146,7 +139,7 @@ export default function ListItem({
           status: 'Paused'
         })
         .then(() => {
-          stopRunning();
+          _stopRunning();
 
           // Ensure time is accurate since user stopped time before POST request
           setElapsedLive(newElapsed);
@@ -165,7 +158,7 @@ export default function ListItem({
           elapsedMs: 0
         })
         .then(() => {
-          stopRunning();
+          _stopRunning();
 
           // Clear timer
           setElapsedLive(0);
@@ -201,6 +194,13 @@ export default function ListItem({
     // Dependencies intentionally excluded to only trigger this when the component is first rendered
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  function _stopRunning() {
+    if (timer.current !== null) {
+      clearTimeout(timer.current);
+      timer.current = null;
+    }
+  }
 
   return (
     <div

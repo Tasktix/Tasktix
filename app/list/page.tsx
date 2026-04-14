@@ -25,9 +25,6 @@ import {
 import { getListItemsByUser } from '@/lib/database/listItem';
 import { getUser } from '@/lib/session';
 
-/**
- * Shows the signed-in user's aggregated task view across all lists.
- */
 export default async function Page() {
   const user = await getUser();
 
