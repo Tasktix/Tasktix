@@ -27,6 +27,9 @@ import List from '@/components/List';
 import { getUser } from '@/lib/session';
 import { getAvailableRoles } from '@/lib/database/user';
 
+/**
+ * Loads a specific list page after verifying the current user can access it.
+ */
 export default async function Page({
   params
 }: {

@@ -39,6 +39,71 @@ import GeneralSettings from './GeneralSettings';
 import MemberSettings from './MemberSettings';
 import TagSettings from './TagSettings';
 
+const SettingsTabs = ({
+  addNewTag,
+  dispatchList,
+  hasDueDates,
+  hasTimeTracking,
+  isAutoOrdered,
+  listColor,
+  listId,
+  listName,
+  members,
+  roles,
+  setListName,
+  tagsAvailable
+}: Readonly<{
+  addNewTag: (name: string, color: NamedColor) => Promise<string>;
+  dispatchList: ActionDispatch<[action: ListAction]>;
+  hasDueDates: boolean;
+  hasTimeTracking: boolean;
+  isAutoOrdered: boolean;
+  listColor: NamedColor;
+  listId: string;
+  listName: string;
+  members: ListMember[];
+  roles: Map<string, MemberRole>;
+  setListName: (name: string) => unknown;
+  tagsAvailable: Tag[];
+}>) => (
+  <Tabs aria-label='Options' variant='underlined'>
+    <Tab className='flex flex-col gap-4 grow justify-between' title='General'>
+      <GeneralSettings
+        hasDueDates={hasDueDates}
+        hasTimeTracking={hasTimeTracking}
+        isAutoOrdered={isAutoOrdered}
+        listColor={listColor}
+        listId={listId}
+        listName={listName}
+        setListName={setListName}
+      />
+    </Tab>
+    <Tab
+      className='flex flex-col gap-6 grow shrink justify-between overflow-clip'
+      title='Members'
+    >
+      <MemberSettings
+        listId={listId}
+        members={members}
+        roles={roles}
+        setMembers={members => dispatchList({ type: 'SetMembers', members })}
+      />
+    </Tab>
+    <Tab
+      className='flex flex-col gap-6 grow shrink justify-between overflow-clip'
+      title='Tags'
+    >
+      <TagSettings
+        addNewTag={addNewTag}
+        setTagsAvailable={tags =>
+          dispatchList({ type: 'SetTagsAvailable', tags })
+        }
+        tagsAvailable={tagsAvailable}
+      />
+    </Tab>
+  </Tabs>
+);
+
 /**
  * Displays and allows a variety of list-wide settings to be changed, including the list
  * name, whether certain features are enabled, members with access to the list and their
@@ -110,47 +175,20 @@ export default function ListSettings({
             List Settings
           </ModalHeader>
           <ModalBody className='overflow-clip'>
-            <Tabs aria-label='Options' variant='underlined'>
-              <Tab
-                className='flex flex-col gap-4 grow justify-between'
-                title='General'
-              >
-                <GeneralSettings
-                  hasDueDates={hasDueDates}
-                  hasTimeTracking={hasTimeTracking}
-                  isAutoOrdered={isAutoOrdered}
-                  listColor={listColor}
-                  listId={listId}
-                  listName={listName}
-                  setListName={setListName}
-                />
-              </Tab>
-              <Tab
-                className='flex flex-col gap-6 grow shrink justify-between overflow-clip'
-                title='Members'
-              >
-                <MemberSettings
-                  listId={listId}
-                  members={members}
-                  roles={roles}
-                  setMembers={members =>
-                    dispatchList({ type: 'SetMembers', members })
-                  }
-                />
-              </Tab>
-              <Tab
-                className='flex flex-col gap-6 grow shrink justify-between overflow-clip'
-                title='Tags'
-              >
-                <TagSettings
-                  addNewTag={addNewTag}
-                  setTagsAvailable={tags =>
-                    dispatchList({ type: 'SetTagsAvailable', tags })
-                  }
-                  tagsAvailable={tagsAvailable}
-                />
-              </Tab>
-            </Tabs>
+            <SettingsTabs
+              addNewTag={addNewTag}
+              dispatchList={dispatchList}
+              hasDueDates={hasDueDates}
+              hasTimeTracking={hasTimeTracking}
+              isAutoOrdered={isAutoOrdered}
+              listColor={listColor}
+              listId={listId}
+              listName={listName}
+              members={members}
+              roles={roles}
+              setListName={setListName}
+              tagsAvailable={tagsAvailable}
+            />
           </ModalBody>
         </ModalContent>
       </Modal>
