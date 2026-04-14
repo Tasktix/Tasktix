@@ -16,102 +16,187 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Color } from '@/lib/model/color';
+import { Color, NamedColor } from '@/lib/model/color';
+import { DayOfWeek, WithUndefined } from '@/lib/types';
 
-export type FilterType =
-  | {
-      type: 'text';
-      label: string;
-    }
-  | {
-      type: 'number';
-      label: string;
-    }
-  | {
-      type: 'option';
-      label: string;
-      options: { name: string; color?: Color }[];
-    }
-  | {
-      type: 'multi-option';
-      label: string;
-      options: { name: string; color?: Color }[];
-    }
-  | {
-      type: 'color';
-      label: string;
-    }
-  | {
-      type: 'date';
-      label: string;
-    }
-  | {
-      type: 'time';
-      label: string;
-    };
+export type ColorFilterConfig = {
+  label: string;
+};
 
-export type FilterInputState =
-  | { id: number; type: 'undefined' }
-  | ({ id: number; label: string } & (
-      | {
-          type: 'text';
-          operator: TextFilterOperator;
-          value: string;
-        }
-      | {
-          type: 'number';
-          operator: ComparableFilterOperator;
-          value: number;
-        }
-      | ({
-          type: 'option';
-        } & (
-          | {
-              operator:
-                | OptionFilterOperator.Equal
-                | OptionFilterOperator.NotEqual;
-              value: string;
-            }
-          | {
-              operator: OptionFilterOperator.In | OptionFilterOperator.NotIn;
-              value: string[];
-            }
-        ))
-      | {
-          type: 'multi-option';
-          operator: MultiOptionFilterOperator;
-          value: string[];
-        }
-      | ({
-          type: 'color';
-          operator: OptionFilterOperator;
-        } & (
-          | {
-              operator:
-                | OptionFilterOperator.Equal
-                | OptionFilterOperator.NotEqual;
-              value: Color;
-            }
-          | {
-              operator: OptionFilterOperator.In | OptionFilterOperator.NotIn;
-              value: Color[];
-            }
-        ))
-      | {
-          type: 'date';
-          operator: DateFilterOperator;
-          value: Date;
-        }
-      | {
-          type: 'time';
-          operator: ComparableFilterOperator;
-          value: number;
-        }
-    ));
+export type ColorFilter = {
+  label: string;
+  operator: ColorFilterOperator;
+  value: NamedColor;
+};
 
-export type FilterState = {
-  id: number;
-  filters: (FilterState | FilterInputState)[];
+export type ColorFilterInput = WithUndefined<ColorFilter, 'operator' | 'value'>;
+
+export type DateFilterConfig = {
+  label: string;
+};
+
+export type DateFilter = {
+  label: string;
+} & (
+  | {
+      operator: Exclude<
+        DateFilterOperator,
+        DateFilterOperator.DayOfWeek | DateFilterOperator.NotDayOfWeek
+      >;
+      value: Date;
+    }
+  | {
+      operator: DateFilterOperator.DayOfWeek | DateFilterOperator.NotDayOfWeek;
+      value: DayOfWeek;
+    }
+);
+
+export type DateFilterInput = {
+  label: string;
+} & (
+  | {
+      operator:
+        | Exclude<
+            DateFilterOperator,
+            DateFilterOperator.DayOfWeek | DateFilterOperator.NotDayOfWeek
+          >
+        | undefined;
+      value: Date | undefined;
+    }
+  | {
+      operator: DateFilterOperator.DayOfWeek | DateFilterOperator.NotDayOfWeek;
+      value: DayOfWeek | undefined;
+    }
+);
+
+export type MultiOptionFilterConfig = {
+  label: string;
+  options: { name: string; color?: Color }[];
+};
+
+export type MultiOptionFilter = {
+  label: string;
+  operator: MultiOptionFilterOperator;
+  value: string[];
+};
+
+export type MultiOptionFilterInput = WithUndefined<
+  MultiOptionFilter,
+  'operator' | 'value'
+>;
+
+export type NumberFilterConfig = {
+  type: 'number';
+  label: string;
+};
+
+export type NumberFilter = {
+  label: string;
+  operator: ComparableFilterOperator;
+  value: number;
+};
+
+export type NumberFilterInput = WithUndefined<
+  NumberFilter,
+  'operator' | 'value'
+>;
+
+export type OptionFilterConfig = {
+  type: 'option';
+  label: string;
+  options: { name: string; color?: Color }[];
+};
+
+export type OptionFilter = {
+  label: string;
+} & (
+  | {
+      operator: OptionFilterOperator.Equal | OptionFilterOperator.NotEqual;
+      value: string;
+    }
+  | {
+      operator: OptionFilterOperator.In | OptionFilterOperator.NotIn;
+      value: string[];
+    }
+);
+
+export type OptionFilterInput = {
+  label: string;
+} & (
+  | {
+      operator:
+        | OptionFilterOperator.Equal
+        | OptionFilterOperator.NotEqual
+        | undefined;
+      value: string | undefined;
+    }
+  | {
+      operator: OptionFilterOperator.In | OptionFilterOperator.NotIn;
+      value: string[];
+    }
+);
+
+export type TextFilterConfig = {
+  type: 'text';
+  label: string;
+};
+
+export type TextFilter = {
+  label: string;
+  operator: TextFilterOperator;
+  value: string;
+};
+
+export type TextFilterInput = WithUndefined<TextFilter, 'operator' | 'value'>;
+
+export type TimeFilterConfig = {
+  label: string;
+};
+
+export type TimeFilter = {
+  label: string;
+  operator: ComparableFilterOperator;
+  value: number;
+};
+
+export type TimeFilterInput = WithUndefined<TimeFilter, 'operator' | 'value'>;
+
+export type FilterConfig =
+  | (TextFilterConfig & { type: 'text' })
+  | (NumberFilterConfig & { type: 'number' })
+  | (OptionFilterConfig & { type: 'option' })
+  | (MultiOptionFilterConfig & { type: 'multi-option' })
+  | (ColorFilterConfig & { type: 'color' })
+  | (DateFilterConfig & { type: 'date' })
+  | (TimeFilterConfig & { type: 'time' });
+
+export type Filter = { id: number } & (
+  | (TextFilter & { type: 'text' })
+  | (NumberFilter & { type: 'number' })
+  | (OptionFilter & { type: 'option' })
+  | (MultiOptionFilter & { type: 'multi-option' })
+  | (ColorFilter & { type: 'color' })
+  | (DateFilter & { type: 'date' })
+  | (TimeFilter & { type: 'time' })
+);
+
+export type FilterInput = { id: number } & (
+  | (TextFilterInput & { type: 'text' })
+  | (NumberFilterInput & { type: 'number' })
+  | (OptionFilterInput & { type: 'option' })
+  | (MultiOptionFilterInput & { type: 'multi-option' })
+  | (ColorFilterInput & { type: 'color' })
+  | (DateFilterInput & { type: 'date' })
+  | (TimeFilterInput & { type: 'time' })
+  | { type: 'undefined' }
+);
+
+export type FilterGroup = {
+  filters: (FilterGroup | Filter)[];
+} & ({ operator: 'And' } | { operator: 'Or' });
+
+export type FilterInputGroup = {
+  filters: (FilterGroup | FilterInput)[];
 } & ({ operator: 'And' } | { operator: 'Or' });
 
 export enum TextFilterOperator {
@@ -135,6 +220,11 @@ export enum MultiOptionFilterOperator {
   NotEqual = '!=',
   Includes = '=|',
   NotIncludes = '!=|'
+}
+
+export enum ColorFilterOperator {
+  Equal = '=',
+  NotEqual = '!='
 }
 
 export enum ComparableFilterOperator {
