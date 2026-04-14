@@ -37,7 +37,7 @@ beforeEach(() => {
 describe('Edit Tags', () => {
   it('Propagates color change on tag color change submit', async () => {
     const user = userEvent.setup();
-    const setTagsAvailableMock = vi.fn();
+    const onTagEvent = vi.fn();
 
     vi.mocked(api.patch).mockResolvedValue({
       code: 200,
@@ -47,11 +47,13 @@ describe('Edit Tags', () => {
     const { getByLabelText } = render(
       <TagSettings
         addNewTag={vi.fn()}
-        setTagsAvailable={setTagsAvailableMock}
-        tagsAvailable={[
-          new Tag('tag1', 'Red', 'id-tag1'),
-          new Tag('tag2', 'Blue', 'id-tag2')
-        ]}
+        tags={
+          new Map([
+            ['id-tag1', new Tag('tag1', 'Red', 'id-tag1')],
+            ['id-tag2', new Tag('tag2', 'Blue', 'id-tag2')]
+          ])
+        }
+        onTagEvent={onTagEvent}
       />
     );
 
@@ -67,24 +69,26 @@ describe('Edit Tags', () => {
       color: 'Green'
     });
 
-    expect(setTagsAvailableMock).toHaveBeenCalledWith(
-      expect.arrayContaining([
-        expect.objectContaining({ id: 'id-tag1', color: 'Green' })
-      ])
-    );
+    expect(onTagEvent).toHaveBeenCalledWith({
+      type: 'UpdateTagColor',
+      id: 'id-tag1',
+      color: 'Green'
+    });
   });
 
   it('Does not propagate color changes if color is cleared', async () => {
     const user = userEvent.setup();
-    const setTagsAvailableMock = vi.fn();
+    const onTagEvent = vi.fn();
     const { getByLabelText } = render(
       <TagSettings
         addNewTag={vi.fn()}
-        setTagsAvailable={setTagsAvailableMock}
-        tagsAvailable={[
-          new Tag('tag1', 'Red', 'id-tag1'),
-          new Tag('tag2', 'Blue', 'id-tag2')
-        ]}
+        tags={
+          new Map([
+            ['id-tag1', new Tag('tag1', 'Red', 'id-tag1')],
+            ['id-tag2', new Tag('tag2', 'Blue', 'id-tag2')]
+          ])
+        }
+        onTagEvent={onTagEvent}
       />
     );
 
@@ -97,12 +101,12 @@ describe('Edit Tags', () => {
     await user.click(closeColorWidget);
 
     expect(api.patch).not.toHaveBeenCalled();
-    expect(setTagsAvailableMock).not.toHaveBeenCalled();
+    expect(onTagEvent).not.toHaveBeenCalled();
   });
 
   it('Propagates name changes on tag name change submit', async () => {
     const user = userEvent.setup();
-    const setTagsAvailableMock = vi.fn();
+    const onTagEvent = vi.fn();
 
     vi.mocked(api.patch).mockResolvedValue({
       code: 200,
@@ -112,11 +116,13 @@ describe('Edit Tags', () => {
     const { getByLabelText } = render(
       <TagSettings
         addNewTag={vi.fn()}
-        setTagsAvailable={setTagsAvailableMock}
-        tagsAvailable={[
-          new Tag('tag1', 'Red', 'id-tag1'),
-          new Tag('tag2', 'Blue', 'id-tag2')
-        ]}
+        tags={
+          new Map([
+            ['id-tag1', new Tag('tag1', 'Red', 'id-tag1')],
+            ['id-tag2', new Tag('tag2', 'Blue', 'id-tag2')]
+          ])
+        }
+        onTagEvent={onTagEvent}
       />
     );
 
@@ -130,17 +136,15 @@ describe('Edit Tags', () => {
     expect(api.patch).toHaveBeenCalledWith('/tag/id-tag1', {
       name: 'tag1-renamed'
     });
-    expect(setTagsAvailableMock).toHaveBeenCalledWith(
-      expect.arrayContaining([
-        expect.objectContaining({ id: 'id-tag1', name: 'tag1-renamed' })
-      ])
+    expect(onTagEvent).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'id-tag1', name: 'tag1-renamed' })
     );
   });
 });
 describe('Removing Tags', () => {
   it('Deletes tag on delete buton press', async () => {
     const user = userEvent.setup();
-    const setTagsAvailableMock = vi.fn();
+    const onTagEvent = vi.fn();
     const confirmSpy = vi
       .spyOn(window, 'confirm')
       .mockImplementation(() => true);
@@ -153,11 +157,13 @@ describe('Removing Tags', () => {
     const { getByLabelText } = render(
       <TagSettings
         addNewTag={vi.fn()}
-        setTagsAvailable={setTagsAvailableMock}
-        tagsAvailable={[
-          new Tag('tag1', 'Red', 'id-tag1'),
-          new Tag('tag2', 'Blue', 'id-tag2')
-        ]}
+        tags={
+          new Map([
+            ['id-tag1', new Tag('tag1', 'Red', 'id-tag1')],
+            ['id-tag2', new Tag('tag2', 'Blue', 'id-tag2')]
+          ])
+        }
+        onTagEvent={onTagEvent}
       />
     );
 
@@ -169,14 +175,14 @@ describe('Removing Tags', () => {
     expect(confirmSpy).toHaveBeenCalled();
 
     expect(api.delete).toHaveBeenCalledWith('/tag/id-tag1');
-    expect(setTagsAvailableMock).toHaveBeenCalledWith([
-      expect.objectContaining({ id: 'id-tag2' })
-    ]);
+    expect(onTagEvent).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'id-tag1' })
+    );
   });
 
   it('Does not delete tag if not confirmed', async () => {
     const user = userEvent.setup();
-    const setTagsAvailableMock = vi.fn();
+    const onTagEvent = vi.fn();
     const confirmSpy = vi
       .spyOn(window, 'confirm')
       .mockImplementation(() => false);
@@ -189,11 +195,13 @@ describe('Removing Tags', () => {
     const { getByLabelText } = render(
       <TagSettings
         addNewTag={vi.fn()}
-        setTagsAvailable={setTagsAvailableMock}
-        tagsAvailable={[
-          new Tag('tag1', 'Red', 'id-tag1'),
-          new Tag('tag2', 'Blue', 'id-tag2')
-        ]}
+        tags={
+          new Map([
+            ['id-tag1', new Tag('tag1', 'Red', 'id-tag1')],
+            ['id-tag2', new Tag('tag2', 'Blue', 'id-tag2')]
+          ])
+        }
+        onTagEvent={onTagEvent}
       />
     );
 
@@ -205,6 +213,6 @@ describe('Removing Tags', () => {
     expect(confirmSpy).toHaveBeenCalled();
 
     expect(api.delete).not.toHaveBeenCalled();
-    expect(setTagsAvailableMock).not.toHaveBeenCalled();
+    expect(onTagEvent).not.toHaveBeenCalled();
   });
 });

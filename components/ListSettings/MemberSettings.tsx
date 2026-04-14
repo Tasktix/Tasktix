@@ -36,6 +36,7 @@ import { sortRolesByPermissions } from '@/lib/sort';
 import { addToastForError } from '@/lib/error';
 
 import ConfirmModal from '../ConfirmModal';
+import { FullState, ListMemberState, MemberAction } from '../List/types';
 
 /**
  * Displays all list members and their permissions. Allows adding new members and updating
@@ -43,36 +44,30 @@ import ConfirmModal from '../ConfirmModal';
  *
  * @param listId The list the members are for
  * @param members All members of the list
- * @param setMembers A callback for updating React state with changes to the members
+ * @param onMemberEvent A callback for updating React state with changes to the members
  */
 export default function MemberSettings({
   listId,
   members,
   roles,
-  setMembers
+  onMemberEvent
 }: Readonly<{
   listId: string;
-  members: ListMember[];
+  members: FullState['members'];
   roles: Map<string, MemberRole>;
-  setMembers: (members: ListMember[]) => unknown;
+  onMemberEvent: (event: MemberAction) => unknown;
 }>) {
   return (
     <span className='flex flex-col gap-4 shrink overflow-y-auto'>
-      <NewMember
-        listId={listId}
-        members={members}
-        roles={roles}
-        setMembers={setMembers}
-      />
+      <NewMember listId={listId} roles={roles} onMemberEvent={onMemberEvent} />
 
-      {members.map(member => (
+      {members.values().map(member => (
         <Member
           key={member.user.id}
           listId={listId}
           member={member}
-          members={members}
           roles={roles}
-          setMembers={setMembers}
+          onMemberEvent={onMemberEvent}
         />
       ))}
     </span>
@@ -82,13 +77,11 @@ export default function MemberSettings({
 function NewMember({
   roles,
   listId,
-  members,
-  setMembers
+  onMemberEvent
 }: {
   roles: Map<string, MemberRole>;
   listId: string;
-  members: ListMember[];
-  setMembers: (members: ListMember[]) => unknown;
+  onMemberEvent: (event: MemberAction) => unknown;
 }) {
   const [newMemberEmail, setNewMemberEmail] = useState('');
   const [newRole, setNewRole] = useState(roles.keys().next().value as string);
@@ -115,12 +108,15 @@ function NewMember({
       .then(res => {
         if (!res.content) throw new Error('User added, but unable to display');
 
-        const listMember = JSON.parse(res.content) as ListMember;
+        const member = JSON.parse(res.content) as ListMember;
 
-        listMember.user.createdAt = new Date(listMember.user.createdAt);
-        listMember.user.updatedAt = new Date(listMember.user.updatedAt);
+        member.user.createdAt = new Date(member.user.createdAt);
+        member.user.updatedAt = new Date(member.user.updatedAt);
 
-        setMembers([...members, listMember]);
+        onMemberEvent({
+          type: 'AddMember',
+          member: { ...member, role: member.role.id }
+        });
       })
       .catch(addToastForError);
   }
@@ -162,15 +158,13 @@ function NewMember({
 function Member({
   listId,
   member,
-  members,
   roles,
-  setMembers
+  onMemberEvent
 }: {
   listId: string;
-  member: ListMember;
-  members: ListMember[];
+  member: ListMemberState;
   roles: Map<string, MemberRole>;
-  setMembers: (members: ListMember[]) => unknown;
+  onMemberEvent: (event: MemberAction) => unknown;
 }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
@@ -189,11 +183,11 @@ function Member({
         // which `trueRoleId` is one, is generated based on the `roles`
         const role = roles.get(trueRoleId) as MemberRole;
 
-        setMembers(
-          members.map(m =>
-            m.user.id === member.user.id ? new ListMember(m.user, role) : m
-          )
-        );
+        onMemberEvent({
+          type: 'UpdateMemberPermissions',
+          id: member.user.id,
+          role: role.id
+        });
       })
       .catch(addToastForError);
   }
@@ -202,7 +196,7 @@ function Member({
     api
       .delete(`/list/${listId}/member/${member.user.id}`)
       .then(() => {
-        setMembers(members.filter(m => m.user.id !== member.user.id));
+        onMemberEvent({ type: 'DeleteMember', id: member.user.id });
       })
       .catch(addToastForError);
   }
@@ -221,11 +215,13 @@ function Member({
         />
         <Select
           aria-label={`${member.user.username ?? member.user.name} Role`}
-          selectedKeys={[member.role.id]}
+          selectedKeys={[member.role]}
           variant='underlined'
           onSelectionChange={handleUpdatePermissions}
         >
-          {Array.from(roles.values())
+          {roles
+            .values()
+            .toArray()
             .sort(sortRolesByPermissions)
             .map(role => (
               <SelectItem key={role.id} description={role.description}>

@@ -143,7 +143,7 @@ describe('Body', () => {
       </HeroUIProvider>
     );
 
-    const avatar = getByLabelText('Profile Actions Dropdown');
+    const avatar = getByLabelText('Profile actions');
 
     expect(avatar).toHaveClass('bg-pink-500');
   });
@@ -193,7 +193,7 @@ describe('Sign Out Process', () => {
       </HeroUIProvider>
     );
 
-    const avatar = getByLabelText('Profile Actions Dropdown');
+    const avatar = getByLabelText('Profile actions');
 
     fireEvent.click(avatar);
 

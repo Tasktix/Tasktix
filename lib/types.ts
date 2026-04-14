@@ -16,29 +16,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-'use client';
+export type DayOfWeek =
+  | 'Sunday'
+  | 'Monday'
+  | 'Tuesday'
+  | 'Wednesday'
+  | 'Thursday'
+  | 'Friday'
+  | 'Saturday';
 
-import { useAuth } from '@/components/AuthProvider';
-
-import UserProperties from './components/UserProperties';
-import AuthSettings from './components/AuthSettings';
-
-/**
- * Gets current user information and sends it to UserProperties
- *
- */
-export default function Page() {
-  // Nothing substantial to test here - skipcq: TCV-001
-
-  const { loggedInUser } = useAuth();
-
-  return (
-    <main className='flex p-6 justify-center grow'>
-      <div className='border-2 border-content3 bg-content1 shadow-lg shadow-content2 w-130 m-4 rounded-lg px-4 h-full'>
-        <h1 className='text-2xl p-4'>Profile</h1>
-        <UserProperties user={JSON.stringify(loggedInUser)} />
-        {loggedInUser && <AuthSettings user={loggedInUser} />}
-      </div>
-    </main>
-  );
-}
+export type WithUndefined<T, K extends keyof T> = Omit<T, K> & {
+  [P in K]: T[P] | undefined;
+};
