@@ -20,8 +20,8 @@ import { formatTime } from '@/lib/date';
 
 import {
   DateFilterOperator,
-  FilterInputState,
-  FilterState,
+  Filter,
+  FilterGroup,
   OptionFilterOperator
 } from './types';
 
@@ -35,7 +35,7 @@ export const STRING_COLOR = 'text-warning-700 dark:text-warning-200' as const;
  *
  * @param filters The filters to pretty-print
  */
-export default function FilterText({ filters }: { filters: FilterState }) {
+export default function FilterText({ filters }: { filters: FilterGroup }) {
   return (
     <span className='font-mono'>
       {filters.filters.map((f, i) => (
@@ -43,7 +43,7 @@ export default function FilterText({ filters }: { filters: FilterState }) {
           {f && 'filters' in f ? (
             <>
               {'( '}
-              <FilterText key={f.id} filters={f} />
+              <FilterText filters={f} />
               {' )'}
             </>
           ) : (
@@ -68,9 +68,7 @@ export default function FilterText({ filters }: { filters: FilterState }) {
  *
  * @param filter The filter to pretty-print
  */
-export function FilterInputText({ filter }: { filter: FilterInputState }) {
-  if (filter.type === 'undefined') return <span />;
-
+export function FilterInputText({ filter }: { filter: Filter }) {
   const operator = filter.operator.replace('@dow', '=');
   let value = <span />;
 
@@ -87,8 +85,15 @@ export function FilterInputText({ filter }: { filter: FilterInputState }) {
       value = <span className={PRIMITIVE_COLOR}>{filter.value}</span>;
       break;
 
-    case 'option':
     case 'color':
+      value = (
+        <span className={STRING_COLOR}>
+          &quot;{filter.value.replaceAll('"', '\\"')}&quot;
+        </span>
+      );
+      break;
+
+    case 'option':
       if (
         filter.operator === OptionFilterOperator.Equal ||
         filter.operator === OptionFilterOperator.NotEqual
@@ -98,6 +103,9 @@ export function FilterInputText({ filter }: { filter: FilterInputState }) {
             &quot;{filter.value.replaceAll('"', '\\"')}&quot;
           </span>
         );
+
+      // Have to use another `if` here instead of `else` because TS is failing to
+      // recognize the `operator` enum as a complete discriminant for type narrowing
       if (
         filter.operator === OptionFilterOperator.In ||
         filter.operator === OptionFilterOperator.NotIn
@@ -126,12 +134,18 @@ export function FilterInputText({ filter }: { filter: FilterInputState }) {
         filter.operator === DateFilterOperator.DayOfWeek ||
         filter.operator === DateFilterOperator.NotDayOfWeek
       )
-        value = (
-          <span className={PRIMITIVE_COLOR}>
-            {filter.value.toLocaleDateString(undefined, { weekday: 'long' })}
-          </span>
-        );
-      else
+        value = <span className={PRIMITIVE_COLOR}>{filter.value}</span>;
+
+      // Have to use another `if` here instead of `else` because TS is failing to
+      // recognize the `operator` enum as a complete discriminant for type narrowing
+      if (
+        filter.operator === DateFilterOperator.Equal ||
+        filter.operator === DateFilterOperator.NotEqual ||
+        filter.operator === DateFilterOperator.GreaterThan ||
+        filter.operator === DateFilterOperator.GreaterThanEqual ||
+        filter.operator === DateFilterOperator.LessThan ||
+        filter.operator === DateFilterOperator.LessThanEqual
+      )
         value = (
           <span className={PRIMITIVE_COLOR}>
             {filter.value.toLocaleDateString()}

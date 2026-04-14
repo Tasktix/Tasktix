@@ -72,6 +72,11 @@ export type SectionAction =
  */
 export type ItemAction =
   | { type: 'SetItemName'; id: string; name: ListItem['name'] }
+  | {
+      type: 'SetItemDescription';
+      id: string;
+      description: ListItem['description'];
+    }
   | { type: 'SetItemDueDate'; id: string; date: ListItem['dateDue'] }
   | { type: 'SetItemPriority'; id: string; priority: ListItem['priority'] }
   | { type: 'SetItemIncomplete'; id: string }

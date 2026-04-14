@@ -16,15 +16,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-export { default } from './FilterText';
+export type DayOfWeek =
+  | 'Sunday'
+  | 'Monday'
+  | 'Tuesday'
+  | 'Wednesday'
+  | 'Thursday'
+  | 'Friday'
+  | 'Saturday';
 
-export {
-  type FilterConfig,
-  type FilterGroup,
-  type Filter,
-  ComparableFilterOperator,
-  DateFilterOperator,
-  MultiOptionFilterOperator,
-  OptionFilterOperator,
-  TextFilterOperator
-} from './types';
+export type WithUndefined<T, K extends keyof T> = Omit<T, K> & {
+  [P in K]: T[P] | undefined;
+};

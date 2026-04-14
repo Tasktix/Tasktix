@@ -16,15 +16,23 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-export { default } from './FilterText';
+describe('Home List', () => {
+  beforeEach(() => {
+    cy.exec('npm run testdb:reset');
+    cy.exec('npm run testdb:seed');
 
-export {
-  type FilterConfig,
-  type FilterGroup,
-  type Filter,
-  ComparableFilterOperator,
-  DateFilterOperator,
-  MultiOptionFilterOperator,
-  OptionFilterOperator,
-  TextFilterOperator
-} from './types';
+    cy.visit('/');
+  });
+
+  it('Signs in and redirects to /list', () => {
+    cy.contains('Sign In').click();
+
+    cy.findByLabelText('Username').type('newUser');
+    cy.findByLabelText('Password').type('password123');
+
+    cy.findByRole('form').contains('Sign In').click();
+
+    cy.location('pathname').should('eq', '/list');
+    cy.findByLabelText('Profile actions');
+  });
+});

@@ -76,6 +76,32 @@ describe('PATCH', () => {
     );
   });
 
+  test('Updates item description when provided & requestor has permissions', async () => {
+    vi.mocked(getUser).mockResolvedValue(MOCK_USER);
+    vi.mocked(getListItemById).mockResolvedValue(MOCK_ITEM);
+    vi.mocked(getRoleByItem).mockResolvedValue(
+      new MemberRole('ItemUpdater', 'Updates items and does nothing else', {
+        canUpdateItems: true
+      })
+    );
+    vi.mocked(updateListItem).mockResolvedValue(true);
+
+    const response = await PATCH(
+      new Request(ITEM_PATH, {
+        method: 'patch',
+        body: JSON.stringify({ description: 'New item description' })
+      }),
+      {
+        params: Promise.resolve({ id: MOCK_ITEM.id })
+      }
+    );
+
+    expect(response.status).toBe(200);
+    expect(updateListItem).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({ description: 'New item description' })
+    );
+  });
+
   describe('Errors', () => {
     test('Rejects unauthenticated users', async () => {
       vi.mocked(getUser).mockResolvedValue(false);
