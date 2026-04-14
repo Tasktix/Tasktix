@@ -69,13 +69,13 @@ export default function ConfirmModal({
   isOpen,
   onConfirm,
   onOpenChange
-}: {
+}: Readonly<{
   title: string;
   description: string;
   isOpen: boolean;
   onConfirm: () => unknown;
   onOpenChange: (isOpen: boolean) => unknown;
-}) {
+}>) {
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
       <ModalContent>

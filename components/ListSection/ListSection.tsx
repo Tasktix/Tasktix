@@ -181,7 +181,9 @@ export default function ListSection({
   );
 }
 
-function SectionActionMenu({ onDelete }: { onDelete: () => unknown }) {
+function SectionActionMenu({
+  onDelete
+}: Readonly<{ onDelete: () => unknown }>) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   return (

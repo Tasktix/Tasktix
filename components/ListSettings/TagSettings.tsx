@@ -62,10 +62,10 @@ export default function TagSettings({
 function TagDetails({
   tag,
   onTagEvent
-}: {
+}: Readonly<{
   tag: Tag;
   onTagEvent: (event: TagAction) => unknown;
-}) {
+}>) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   function updateTagName(name: string) {
