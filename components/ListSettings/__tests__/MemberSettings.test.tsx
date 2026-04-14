@@ -188,6 +188,38 @@ describe('Adding members', () => {
     });
     expect(onMemberEvent).not.toHaveBeenCalled();
   });
+
+  it('Does not allow new member role to be empty', async () => {
+    const oldMember = { user: users[0], role: MOCK_ROLE_CAN_VIEW.id };
+
+    const user = userEvent.setup();
+
+    const { getByLabelText, getByRole } = render(
+      // NOTE: must disable ripple to avoid dynamic import via ESM `import()`
+      <HeroUIProvider disableRipple>
+        <MemberSettings
+          listId='list-id'
+          members={new Map([[oldMember.user.id, oldMember]])}
+          roles={
+            new Map([
+              [
+                'viewer',
+                new MemberRole('viewer', 'Definitely not a superuser', {
+                  id: 'viewer'
+                })
+              ]
+            ])
+          }
+          onMemberEvent={vi.fn()}
+        />
+      </HeroUIProvider>
+    );
+
+    await user.click(getByLabelText('New member role'));
+    await user.click(getByRole('option', { name: 'viewer' }));
+
+    expect(getByLabelText('New member role')).toHaveTextContent('viewer');
+  });
 });
 
 describe('Updating permissions', () => {
@@ -304,4 +336,27 @@ describe('Updating permissions', () => {
 
     expect(onMemberEvent).not.toHaveBeenCalled();
   });
+});
+
+test("Shows a user's name if they don't have a username", () => {
+  const oldMember = {
+    user: { ...users[0], username: null, name: 'SomethingElse' },
+    role: MOCK_ROLE_CAN_VIEW.id
+  };
+
+  const { getByLabelText, getByText } = render(
+    // NOTE: must disable ripple to avoid dynamic import via ESM `import()`
+    <HeroUIProvider disableRipple>
+      <MemberSettings
+        listId='list-id'
+        members={new Map([[oldMember.user.id, oldMember]])}
+        roles={new Map()}
+        onMemberEvent={vi.fn()}
+      />
+    </HeroUIProvider>
+  );
+
+  expect(getByText('SomethingElse')).toBeVisible();
+  expect(getByLabelText('SomethingElse Role')).toBeVisible();
+  expect(getByLabelText('Remove SomethingElse')).toBeVisible();
 });

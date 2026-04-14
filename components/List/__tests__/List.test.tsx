@@ -299,6 +299,40 @@ describe('List member changes', () => {
       expect(getByLabelText('Test user Role')).toHaveTextContent('Adder')
     );
   });
+
+  test('Allows users to be removed', async () => {
+    const user = userEvent.setup();
+
+    vi.mocked(api.delete).mockResolvedValue({
+      code: 200,
+      message: 'Success',
+      content: undefined
+    });
+
+    const { getByLabelText, getByText, queryByLabelText } = render(
+      <HeroUIProvider disableRipple>
+        <List
+          startingList={JSON.stringify({ ...MOCK_LIST, isAutoOrdered: true })}
+          startingRoles={JSON.stringify([VIEWER_ROLE, ADDER_ROLE])}
+        />
+      </HeroUIProvider>
+    );
+
+    await user.click(getByLabelText('Settings'));
+    await waitFor(() => expect(getByText('List Settings')).toBeVisible());
+    await user.click(getByText('Members'));
+    await waitFor(() => expect(getByText('Test user')).toBeVisible());
+
+    await user.click(getByLabelText('Remove Test user'));
+    await user.click(getByText('Confirm'));
+
+    await waitFor(() =>
+      expect(queryByLabelText('Remove Test user')).not.toBeInTheDocument()
+    );
+    expect(api.delete).toHaveBeenCalledExactlyOnceWith(
+      `/list/${MOCK_LIST.id}/member/${MOCK_USER.id}`
+    );
+  });
 });
 
 describe('Tag changes', () => {

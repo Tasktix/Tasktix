@@ -92,7 +92,8 @@ function NewMember({
     // strings
     const trueRoleId = (roleId as Set<string>).keys().next().value;
 
-    if (!trueRoleId) return; // User tried to clear selection
+    // Purposeless to clear selection, so prevent to fix type issue
+    if (!trueRoleId) return;
 
     setNewRole(trueRoleId);
   }
