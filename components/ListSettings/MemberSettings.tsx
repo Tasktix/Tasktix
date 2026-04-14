@@ -78,11 +78,11 @@ function NewMember({
   roles,
   listId,
   onMemberEvent
-}: {
+}: Readonly<{
   roles: Map<string, MemberRole>;
   listId: string;
   onMemberEvent: (event: MemberAction) => unknown;
-}) {
+}>) {
   const [newMemberEmail, setNewMemberEmail] = useState('');
   const [newRole, setNewRole] = useState(roles.keys().next().value as string);
 
@@ -162,12 +162,12 @@ function Member({
   member,
   roles,
   onMemberEvent
-}: {
+}: Readonly<{
   listId: string;
   member: ListMemberState;
   roles: Map<string, MemberRole>;
   onMemberEvent: (event: MemberAction) => unknown;
-}) {
+}>) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   function handleUpdatePermissions(roleId: Selection) {
