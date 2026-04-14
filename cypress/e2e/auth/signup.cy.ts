@@ -36,6 +36,7 @@ describe('Sign up', () => {
     cy.findByRole('form').contains('Sign Up').click();
 
     cy.location('pathname').should('eq', '/list');
+    cy.findByLabelText('Profile actions');
   });
 
   it('Rejects Passwords that have been compromised', () => {

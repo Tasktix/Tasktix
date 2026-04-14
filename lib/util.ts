@@ -16,29 +16,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-'use client';
-
-import { useAuth } from '@/components/AuthProvider';
-
-import UserProperties from './components/UserProperties';
-import AuthSettings from './components/AuthSettings';
-
 /**
- * Gets current user information and sends it to UserProperties
+ * Catches any errors thrown by the given function and retries it to resolve ephemeral
+ * errors
  *
+ * @param fn The function to retry
+ * @param attempts The maximum number of times to retry the function
  */
-export default function Page() {
-  // Nothing substantial to test here - skipcq: TCV-001
+export function retry<T>(fn: () => T, attempts = 3): T | undefined {
+  for (let i = 1; i <= attempts; i++)
+    try {
+      return fn();
+    } catch {
+      /* Don't need to do anything; already retrying in loop */
+    }
 
-  const { loggedInUser } = useAuth();
-
-  return (
-    <main className='flex p-6 justify-center grow'>
-      <div className='border-2 border-content3 bg-content1 shadow-lg shadow-content2 w-130 m-4 rounded-lg px-4 h-full'>
-        <h1 className='text-2xl p-4'>Profile</h1>
-        <UserProperties user={JSON.stringify(loggedInUser)} />
-        {loggedInUser && <AuthSettings user={loggedInUser} />}
-      </div>
-    </main>
-  );
+  return undefined;
 }

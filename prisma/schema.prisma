@@ -33,6 +33,7 @@ model ListSection {
 model Item {
   id            String         @id @db.Char(16)
   name          String         @db.VarChar(128)
+  description   String         @default("") @db.Text
   status        Status         @default(Unstarted)
   priority      Priority       @default(Low)
   isUnclear     Boolean        @default(false)

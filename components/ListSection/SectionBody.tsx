@@ -19,9 +19,6 @@
 import { Reorder } from 'framer-motion';
 import { ActionDispatch, useState } from 'react';
 
-import ListItemModel from '@/lib/model/listItem';
-import ListMember from '@/lib/model/listMember';
-import Tag from '@/lib/model/tag';
 import {
   ListItem,
   ReorderableListItem,
@@ -30,7 +27,11 @@ import {
 import { Filters } from '@/components/SearchBar/types';
 import { NamedColor } from '@/lib/model/color';
 import { sortItems, sortItemsByCompleted, sortItemsByOrder } from '@/lib/sort';
+import ListItemModel from '@/lib/model/listItem';
+import ListMember from '@/lib/model/listMember';
+import Tag from '@/lib/model/tag';
 
+import { ListItemState } from '../List/types';
 import { ItemAction } from '../List';
 
 /**
@@ -48,36 +49,36 @@ import { ItemAction } from '../List';
  * @param hasTimeTracking Whether time tracking is enabled in the list's settings
  * @param hasDueDates Whether due dates are enabled in the list's settings
  * @param isAutoOrdered Whether auto-ordering is enabled in the list's settings
- * @param dispatchItemChange Callback for updating an item's state
- * @param reorderItem Callback for finalizing the new order of items and updating React
- *  state
  * @param addNewTag Callback to propagate state changes when a new tag is created from the
  *  "add tag" menu
+ * @param onItemEvent Callback for updating an item's state
+ * @param onItemReorder Callback for finalizing the new order of items and updating React
+ *  state
  */
 export default function SectionBody({
   sectionId,
   items,
   filters,
   members,
-  tagsAvailable,
+  tags,
   hasTimeTracking,
   hasDueDates,
   isAutoOrdered,
-  dispatchItemChange,
-  reorderItem,
-  addNewTag
+  addNewTag,
+  onItemEvent,
+  onItemReorder
 }: {
   sectionId: string;
-  items: Map<string, ListItemModel>;
+  items: ListItemModel[];
   filters: Filters;
   members: ListMember[];
-  tagsAvailable: Tag[];
+  tags: Tag[];
   hasTimeTracking: boolean;
   hasDueDates: boolean;
   isAutoOrdered: boolean;
-  dispatchItemChange: ActionDispatch<[action: ItemAction]>;
-  reorderItem: (item: ListItemModel, newIndex: number) => unknown;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
+  onItemEvent: ActionDispatch<[action: ItemAction]>;
+  onItemReorder: (item: ListItemState, newIndex: number) => unknown;
 }) {
   /**
    * Provides a visual index for each list item for use with dragging. This number
@@ -125,8 +126,8 @@ export default function SectionBody({
     item,
     members,
     sectionId,
-    tagsAvailable,
-    dispatchItemChange
+    tags,
+    onItemEvent
   }));
 
   return isAutoOrdered ? (
@@ -156,7 +157,7 @@ export default function SectionBody({
               throw new Error(
                 `Unable to find index for item with ID ${params.item.id}`
               );
-            reorderItem(params.item, index);
+            onItemReorder(params.item, index);
           }}
         />
       ))}
@@ -203,17 +204,16 @@ function compareFilter(
     case 'tag':
       return (
         value instanceof Set &&
-        item.tags
-          .map(curr => value.has(curr.name))
-          .reduce((prev: boolean, curr: boolean) => prev || curr, false)
+        item.tags.reduce((prev, tag) => prev || value.has(tag.name), false)
       );
 
     case 'user':
       return (
         value instanceof Set &&
-        item.assignees
-          .map(curr => value.has(curr.user.username))
-          .reduce((prev: boolean, curr: boolean) => prev || curr, false)
+        item.assignees.reduce(
+          (prev, assignee) => prev || value.has(assignee.user.id),
+          false
+        )
       );
 
     case 'status':

@@ -16,29 +16,23 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-'use client';
+describe('Home List', () => {
+  beforeEach(() => {
+    cy.exec('npm run testdb:reset');
+    cy.exec('npm run testdb:seed');
 
-import { useAuth } from '@/components/AuthProvider';
+    cy.visit('/');
+  });
 
-import UserProperties from './components/UserProperties';
-import AuthSettings from './components/AuthSettings';
+  it('Signs in and redirects to /list', () => {
+    cy.contains('Sign In').click();
 
-/**
- * Gets current user information and sends it to UserProperties
- *
- */
-export default function Page() {
-  // Nothing substantial to test here - skipcq: TCV-001
+    cy.findByLabelText('Username').type('newUser');
+    cy.findByLabelText('Password').type('password123');
 
-  const { loggedInUser } = useAuth();
+    cy.findByRole('form').contains('Sign In').click();
 
-  return (
-    <main className='flex p-6 justify-center grow'>
-      <div className='border-2 border-content3 bg-content1 shadow-lg shadow-content2 w-130 m-4 rounded-lg px-4 h-full'>
-        <h1 className='text-2xl p-4'>Profile</h1>
-        <UserProperties user={JSON.stringify(loggedInUser)} />
-        {loggedInUser && <AuthSettings user={loggedInUser} />}
-      </div>
-    </main>
-  );
-}
+    cy.location('pathname').should('eq', '/list');
+    cy.findByLabelText('Profile actions');
+  });
+});
