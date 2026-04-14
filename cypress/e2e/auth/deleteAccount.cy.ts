@@ -93,7 +93,7 @@ describe('delete account', () => {
 
     cy.createList('dummyList');
 
-    cy.findByLabelText('Profile Actions Dropdown').click();
+    cy.findByLabelText('Profile actions').click();
     cy.findByLabelText('Profile').should('be.visible').click();
 
     cy.findByLabelText('Delete Account').click();
