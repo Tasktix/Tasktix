@@ -180,13 +180,13 @@ it('uses read-only task name text on mobile and keeps inline editing desktop-onl
     <HeroUIProvider disableRipple>
       <ListItem
         addNewTag={vi.fn()}
-        dispatchItemChange={vi.fn()}
         hasDueDates={false}
         hasTimeTracking={false}
         item={new ListItemModel('Test item', {})}
         members={[]}
         sectionId='section-id'
-        tagsAvailable={[]}
+        tags={[]}
+        onItemEvent={vi.fn()}
       />
     </HeroUIProvider>
   );
