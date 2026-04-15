@@ -18,9 +18,9 @@
 
 'use client';
 
-import { ThemeProvider } from 'next-themes';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
+import { ThemeProvider } from 'next-themes';
 
 import AuthProvider from '@/components/AuthProvider';
 import User from '@/lib/model/user';

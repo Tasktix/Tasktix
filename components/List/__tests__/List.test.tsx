@@ -95,7 +95,7 @@ describe('List state changes', () => {
       </HeroUIProvider>
     );
 
-    await user.click(getByLabelText('Settings'));
+    await user.click(getByLabelText('Open list settings'));
     await waitFor(() => expect(getByText('List Settings')).toBeVisible());
 
     expect(getByDisplayValue('New list name')).toBeVisible();
@@ -119,7 +119,7 @@ describe('List state changes', () => {
       </HeroUIProvider>
     );
 
-    await user.click(getByLabelText('Settings'));
+    await user.click(getByLabelText('Open list settings'));
     await waitFor(() => expect(getByText('List Settings')).toBeVisible());
 
     expect(getByLabelText('Pick color')).toHaveClass('bg-blue-500');
@@ -143,7 +143,7 @@ describe('List state changes', () => {
       </HeroUIProvider>
     );
 
-    await user.click(getByLabelText('Settings'));
+    await user.click(getByLabelText('Open list settings'));
     await waitFor(() => expect(getByText('List Settings')).toBeVisible());
 
     expect(getByLabelText('Track due dates')).not.toBeChecked();
@@ -167,7 +167,7 @@ describe('List state changes', () => {
       </HeroUIProvider>
     );
 
-    await user.click(getByLabelText('Settings'));
+    await user.click(getByLabelText('Open list settings'));
     await waitFor(() => expect(getByText('List Settings')).toBeVisible());
 
     expect(getByLabelText('Track completion time')).not.toBeChecked();
@@ -191,7 +191,7 @@ describe('List state changes', () => {
       </HeroUIProvider>
     );
 
-    await user.click(getByLabelText('Settings'));
+    await user.click(getByLabelText('Open list settings'));
     await waitFor(() => expect(getByText('List Settings')).toBeVisible());
 
     expect(getByLabelText('Auto-order list items')).not.toBeChecked();
@@ -252,7 +252,7 @@ describe('List member changes', () => {
       </HeroUIProvider>
     );
 
-    await user.click(getByLabelText('Settings'));
+    await user.click(getByLabelText('Open list settings'));
     await waitFor(() => expect(getByText('List Settings')).toBeVisible());
     await user.click(getByText('Members'));
     await waitFor(() => expect(getByText('Test user')).toBeVisible());
@@ -284,7 +284,7 @@ describe('List member changes', () => {
       </HeroUIProvider>
     );
 
-    await user.click(getByLabelText('Settings'));
+    await user.click(getByLabelText('Open list settings'));
     await waitFor(() => expect(getByText('List Settings')).toBeVisible());
     await user.click(getByText('Members'));
     await waitFor(() => expect(getByText('Test user')).toBeVisible());
@@ -330,7 +330,7 @@ describe('Tag changes', () => {
         </HeroUIProvider>
       );
 
-    await user.click(getByLabelText('Settings'));
+    await user.click(getByLabelText('Open list settings'));
     await waitFor(() => expect(getByText('List Settings')).toBeVisible());
     await user.click(getByText('Tags'));
     await waitFor(() => expect(getByDisplayValue('Test tag')).toBeVisible());
@@ -370,7 +370,7 @@ describe('Tag changes', () => {
       </HeroUIProvider>
     );
 
-    await user.click(getByLabelText('Settings'));
+    await user.click(getByLabelText('Open list settings'));
     await waitFor(() => expect(getByText('List Settings')).toBeVisible());
     await user.click(getByText('Tags'));
     await waitFor(() => expect(getByDisplayValue('Test tag')).toBeVisible());
@@ -404,7 +404,7 @@ describe('Tag changes', () => {
       </HeroUIProvider>
     );
 
-    await user.click(getByLabelText('Settings'));
+    await user.click(getByLabelText('Open list settings'));
     await waitFor(() => expect(getByText('List Settings')).toBeVisible());
     await user.click(getByText('Tags'));
     await waitFor(() => expect(getByDisplayValue('Test tag')).toBeVisible());
@@ -1250,8 +1250,8 @@ describe('ListItem state propagation', () => {
       expect(popoverElement).toHaveAccessibleName('Elapsed 00:02');
     });
 
-    // TODO: Need tests for timers actually incrementing after @testing-library/user-event
-    // supports Vitest fake timers:
+    // Timer increment behavior still needs dedicated coverage once @testing-library/user-event
+    // fully supports Vitest fake timers:
     // https://github.com/testing-library/react-testing-library/issues/1197
   });
 
