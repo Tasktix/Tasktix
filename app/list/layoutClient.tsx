@@ -32,6 +32,9 @@ import { List as ListIcon } from 'react-bootstrap-icons';
 import Sidebar, { listReducer, ListContext } from '@/components/Sidebar';
 import List from '@/lib/model/list';
 
+/**
+ * Renders the title area for the mobile navigation drawer.
+ */
 function MobileSidebarHeader() {
   return (
     <DrawerHeader className='px-0 pb-2 pt-0 text-sm font-semibold'>
@@ -40,6 +43,38 @@ function MobileSidebarHeader() {
   );
 }
 
+/**
+ * Renders the button that opens the mobile navigation drawer.
+ */
+function MobileSidebarToggle({
+  hamburgerRef,
+  isDrawerOpen,
+  onOpen
+}: {
+  hamburgerRef: React.RefObject<HTMLButtonElement | null>;
+  isDrawerOpen: boolean;
+  onOpen: () => void;
+}) {
+  return (
+    <header className='sticky top-0 z-20 flex items-center border-b border-content3 bg-content1/90 p-3 backdrop-blur md:hidden'>
+      <Button
+        ref={hamburgerRef}
+        isIconOnly
+        aria-controls='mobile-sidebar-drawer'
+        aria-expanded={isDrawerOpen}
+        aria-label='Open navigation menu'
+        variant='ghost'
+        onPress={onOpen}
+      >
+        <ListIcon size={20} />
+      </Button>
+    </header>
+  );
+}
+
+/**
+ * Renders the mobile drawer variant of the list navigation.
+ */
 function MobileSidebarDrawer({
   closeDrawer,
   isDrawerOpen,
@@ -106,20 +141,11 @@ export default function LayoutClient({
         <Sidebar className='hidden md:flex' lists={lists} />
 
         <div className='flex min-w-0 grow flex-col'>
-          <header className='sticky top-0 z-20 flex items-center border-b border-content3 bg-content1/90 p-3 backdrop-blur md:hidden'>
-            <Button
-              ref={hamburgerRef}
-              isIconOnly
-              aria-controls='mobile-sidebar-drawer'
-              aria-expanded={isDrawerOpen}
-              aria-label='Open navigation menu'
-              variant='ghost'
-              onPress={onOpen}
-            >
-              <ListIcon size={20} />
-            </Button>
-          </header>
-
+          <MobileSidebarToggle
+            hamburgerRef={hamburgerRef}
+            isDrawerOpen={isDrawerOpen}
+            onOpen={onOpen}
+          />
           {children}
         </div>
       </div>

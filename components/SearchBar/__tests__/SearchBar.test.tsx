@@ -48,4 +48,33 @@ describe('SearchBar', () => {
 
     await waitFor(() => expect(onValueChange).toHaveBeenCalled());
   });
+
+  it('clears active filters and restores the placeholder', async () => {
+    const user = userEvent.setup();
+    const onValueChange = vi.fn();
+
+    render(
+      <HeroUIProvider disableRipple>
+        <SearchBar
+          inputOptions={[
+            {
+              label: 'General',
+              options: [{ type: 'String', label: 'Title' }]
+            }
+          ]}
+          onValueChange={onValueChange}
+        />
+      </HeroUIProvider>
+    );
+
+    await user.type(screen.getByPlaceholderText('Filter...'), 'Title:');
+    await user.click(
+      await screen.findByRole('button', { name: 'Clear filter' })
+    );
+
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText('Filter...')).toBeInTheDocument();
+      expect(onValueChange).toHaveBeenCalledTimes(2);
+    });
+  });
 });
