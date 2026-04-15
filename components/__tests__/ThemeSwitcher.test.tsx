@@ -390,4 +390,65 @@ describe('ThemeSwitcher', () => {
     });
     expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
   });
+
+  test('cancels a pending close when the trigger is hovered again', () => {
+    vi.useFakeTimers();
+    const setTheme = vi.fn();
+    const clearTimeoutSpy = vi.spyOn(globalThis, 'clearTimeout');
+
+    vi.mocked(useTheme).mockReturnValue({
+      theme: 'light',
+      resolvedTheme: 'light',
+      themes: ['light', 'dark', 'system'],
+      setTheme
+    });
+
+    render(
+      <HeroUIProvider disableRipple>
+        <ThemeSwitcher />
+      </HeroUIProvider>
+    );
+
+    const button = screen.getByLabelText('Switch to dark mode');
+
+    fireEvent.mouseEnter(button);
+    expect(screen.getByRole('listbox')).toBeInTheDocument();
+
+    fireEvent.mouseLeave(button);
+    fireEvent.mouseEnter(button);
+
+    act(() => {
+      vi.advanceTimersByTime(100);
+    });
+
+    expect(clearTimeoutSpy).toHaveBeenCalled();
+    expect(screen.getByRole('listbox')).toBeInTheDocument();
+  });
+
+  test('clears a pending close timeout on unmount', () => {
+    vi.useFakeTimers();
+    const setTheme = vi.fn();
+    const clearTimeoutSpy = vi.spyOn(globalThis, 'clearTimeout');
+
+    vi.mocked(useTheme).mockReturnValue({
+      theme: 'light',
+      resolvedTheme: 'light',
+      themes: ['light', 'dark', 'system'],
+      setTheme
+    });
+
+    const { unmount } = render(
+      <HeroUIProvider disableRipple>
+        <ThemeSwitcher />
+      </HeroUIProvider>
+    );
+
+    const button = screen.getByLabelText('Switch to dark mode');
+
+    fireEvent.mouseEnter(button);
+    fireEvent.mouseLeave(button);
+    unmount();
+
+    expect(clearTimeoutSpy).toHaveBeenCalled();
+  });
 });

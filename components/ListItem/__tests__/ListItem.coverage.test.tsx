@@ -26,6 +26,8 @@ import { HeroUIProvider } from '@heroui/react';
 import api from '@/lib/api';
 import ListItemModel from '@/lib/model/listItem';
 
+import { itemHandlerFactory } from '../handlerFactory';
+
 vi.mock(import('framer-motion'), async importOriginal => ({
   ...(await importOriginal()),
   LazyMotion: ({ children }) => <div>{children}</div>
@@ -133,6 +135,34 @@ beforeEach(() => {
 afterAll(() => vi.unstubAllEnvs());
 
 describe('ListItem focused coverage', () => {
+  it('covers the priority handler dispatch path directly', async () => {
+    const dispatchItemChange = vi.fn();
+    const handlers = itemHandlerFactory(
+      'item-id',
+      'section-id',
+      {
+        timer: { current: null },
+        lastTime: { current: new Date('2026-01-01T00:00:00.000Z') },
+        setElapsedLive: vi.fn(),
+        stopRunning: vi.fn()
+      },
+      dispatchItemChange
+    );
+
+    handlers.setPriority('High');
+
+    await waitFor(() => {
+      expect(api.patch).toHaveBeenCalledWith('/item/item-id', {
+        priority: 'High'
+      });
+      expect(dispatchItemChange).toHaveBeenCalledWith({
+        type: 'SetItemPriority',
+        id: 'item-id',
+        priority: 'High'
+      });
+    });
+  });
+
   it('covers the priority update success path', async () => {
     const user = userEvent.setup();
     const { onItemEvent } = renderListItem(
@@ -176,6 +206,30 @@ describe('ListItem focused coverage', () => {
         id: 'item-id'
       });
       expect(setTimeoutSpy).toHaveBeenCalled();
+    });
+  });
+
+  it('clears an existing timer before starting again', async () => {
+    const user = userEvent.setup();
+    const clearTimeoutSpy = vi.spyOn(globalThis, 'clearTimeout');
+    const setTimeoutSpy = vi.spyOn(globalThis, 'setTimeout');
+    const { onItemEvent } = renderListItem(
+      new ListItemModel('Restart item', {
+        id: 'item-id',
+        status: 'In_Progress',
+        elapsedMs: 2 * 60 * 1000
+      })
+    );
+
+    await user.click(screen.getByRole('button', { name: 'start-running' }));
+
+    await waitFor(() => {
+      expect(clearTimeoutSpy).toHaveBeenCalled();
+      expect(setTimeoutSpy).toHaveBeenCalled();
+      expect(onItemEvent).toHaveBeenCalledWith({
+        type: 'StartItemTime',
+        id: 'item-id'
+      });
     });
   });
 
