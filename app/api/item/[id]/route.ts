@@ -59,7 +59,7 @@ export async function PATCH(
 
   const requestBody = parseResult.data;
 
-  if (requestBody.sectionId !== undefined) {
+  if (requestBody.sectionId) {
     const allowed = await querySectionInList(
       item.listId,
       requestBody.sectionId

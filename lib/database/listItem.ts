@@ -220,7 +220,7 @@ export async function updateItemSection(
   try {
     await prisma.$transaction(
       async tx => {
-        const targetSectionCount = await tx.item.count({
+        const targetSectionItems = await tx.item.count({
           where: { sectionId }
         });
         const originalIndex = item.sectionIndex;
@@ -229,7 +229,7 @@ export async function updateItemSection(
           where: { id: item.id },
           data: {
             sectionId,
-            sectionIndex: targetSectionCount + 1
+          sectionIndex: targetSectionItems + 1
           }
         });
         await tx.item.updateMany({
