@@ -72,7 +72,7 @@ function createRouterMock(): AppRouterInstance & {
   return {
     back: vi.fn(),
     forward: vi.fn(),
-    prefetch: vi.fn().mockResolvedValue(undefined),
+    prefetch: vi.fn(),
     push: vi.fn(),
     refresh: vi.fn(),
     replace: vi.fn()

@@ -20,7 +20,7 @@
 
 import { setTimeout } from 'timers';
 
-import { ReactNode, useContext, useState } from 'react';
+import { ReactNode, useContext, useEffect, useRef, useState } from 'react';
 import { addToast, Button, Input, Link } from '@heroui/react';
 import { Check, Plus } from 'react-bootstrap-icons';
 import { usePathname, useRouter } from 'next/navigation';
@@ -166,6 +166,9 @@ function AddList({ addList }: { addList: () => unknown }) {
   );
 }
 
+/**
+ * Renders the temporary input row used while creating a new list.
+ */
 function NewItem({
   finalize,
   remove
@@ -174,10 +177,18 @@ function NewItem({
   remove: () => unknown;
 }) {
   const [name, setName] = useState('');
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
+  /**
+   * Sanitizes and stores the proposed list name as the user types.
+   */
   function updateName(name: string) {
     setName(validateListName(name)[1]);
   }
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
 
   return (
     <form
@@ -188,7 +199,7 @@ function NewItem({
       }}
     >
       <Input
-        autoFocus
+        ref={inputRef}
         color='primary'
         placeholder='List name'
         size='sm'

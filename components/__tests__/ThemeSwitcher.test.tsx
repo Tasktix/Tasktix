@@ -22,7 +22,13 @@ import type { ReactNode } from 'react';
 
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor
+} from '@testing-library/react';
 import { HeroUIProvider } from '@heroui/react';
 import { useTheme } from 'next-themes';
 
@@ -39,16 +45,30 @@ vi.mock('@heroui/react', async importOriginal => {
 
   const Popover = (({
     children,
-    isOpen
+    isOpen,
+    onOpenChange
   }: {
     children: ReactNode;
     isOpen?: boolean;
+    onOpenChange?: (nextOpen: boolean) => void;
   }) => {
     const [trigger, content] = React.Children.toArray(children);
 
     return (
       <div>
         {trigger}
+        <button
+          aria-label='request-open-change'
+          onClick={() => onOpenChange?.(true)}
+        >
+          Request open
+        </button>
+        <button
+          aria-label='request-close-change'
+          onClick={() => onOpenChange?.(false)}
+        >
+          Request close
+        </button>
         {isOpen ? content : null}
       </div>
     );
@@ -58,8 +78,18 @@ vi.mock('@heroui/react', async importOriginal => {
     <div>{children}</div>
   )) as unknown as typeof originalModule.PopoverTrigger;
 
-  const PopoverContent = (({ children }: { children: ReactNode }) => (
-    <div>{children}</div>
+  const PopoverContent = (({
+    children,
+    onMouseEnter,
+    onMouseLeave
+  }: {
+    children: ReactNode;
+    onMouseEnter?: () => void;
+    onMouseLeave?: () => void;
+  }) => (
+    <div onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
+      {children}
+    </div>
   )) as unknown as typeof originalModule.PopoverContent;
 
   const Listbox = (({
@@ -272,5 +302,92 @@ describe('ThemeSwitcher', () => {
     fireEvent.click(screen.getByLabelText('Switch to light mode'));
 
     expect(setTheme).toHaveBeenCalledWith('light');
+  });
+
+  test('opens and closes the menu from keyboard controls on desktop', () => {
+    const setTheme = vi.fn();
+
+    vi.mocked(useTheme).mockReturnValue({
+      theme: 'light',
+      resolvedTheme: 'light',
+      themes: ['light', 'dark', 'system'],
+      setTheme
+    });
+
+    render(
+      <HeroUIProvider disableRipple>
+        <ThemeSwitcher />
+      </HeroUIProvider>
+    );
+
+    const button = screen.getByLabelText('Switch to dark mode');
+
+    fireEvent.keyDown(button, { key: 'ArrowDown' });
+    expect(screen.getByRole('listbox')).toBeInTheDocument();
+
+    fireEvent.keyDown(button, { key: 'Escape' });
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+  });
+
+  test('ignores HeroUI open requests on desktop but accepts close requests', () => {
+    const setTheme = vi.fn();
+
+    vi.mocked(useTheme).mockReturnValue({
+      theme: 'light',
+      resolvedTheme: 'light',
+      themes: ['light', 'dark', 'system'],
+      setTheme
+    });
+
+    render(
+      <HeroUIProvider disableRipple>
+        <ThemeSwitcher />
+      </HeroUIProvider>
+    );
+
+    fireEvent.click(screen.getByLabelText('request-open-change'));
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+
+    const button = screen.getByLabelText('Switch to dark mode');
+
+    fireEvent.keyDown(button, { key: 'ArrowDown' });
+    expect(screen.getByRole('listbox')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByLabelText('request-close-change'));
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+  });
+
+  test('opens and closes on desktop hover transitions', () => {
+    vi.useFakeTimers();
+    const setTheme = vi.fn();
+
+    vi.mocked(useTheme).mockReturnValue({
+      theme: 'light',
+      resolvedTheme: 'light',
+      themes: ['light', 'dark', 'system'],
+      setTheme
+    });
+
+    render(
+      <HeroUIProvider disableRipple>
+        <ThemeSwitcher />
+      </HeroUIProvider>
+    );
+
+    const button = screen.getByLabelText('Switch to dark mode');
+
+    fireEvent.mouseEnter(button);
+    expect(screen.getByRole('listbox')).toBeInTheDocument();
+
+    const popoverContent = screen.getByRole('listbox').parentElement;
+
+    fireEvent.mouseEnter(popoverContent!);
+    expect(screen.getByRole('listbox')).toBeInTheDocument();
+
+    fireEvent.mouseLeave(popoverContent!);
+    act(() => {
+      vi.advanceTimersByTime(100);
+    });
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
   });
 });
