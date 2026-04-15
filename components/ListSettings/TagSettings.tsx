@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Button } from '@heroui/react';
+import { Button, useDisclosure } from '@heroui/react';
 import { TrashFill } from 'react-bootstrap-icons';
 
 import ColorPicker from '@/components/ColorPicker';
@@ -27,6 +27,7 @@ import api from '@/lib/api';
 import { NamedColor } from '@/lib/model/color';
 import { addToastForError } from '@/lib/error';
 
+import ConfirmModal from '../ConfirmModal';
 import { FullState, TagAction } from '../List/types';
 
 /**
@@ -46,14 +47,35 @@ export default function TagSettings({
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
   onTagEvent: (event: TagAction) => unknown;
 }>) {
-  function updateTagName(tag: Tag, name: string) {
+  return (
+    <>
+      <span className='flex flex-col gap-4 shrink overflow-y-auto'>
+        {tags.values().map(tag => (
+          <TagDetails key={tag.id} tag={tag} onTagEvent={onTagEvent} />
+        ))}
+      </span>
+      <TagInput onTagCreated={addNewTag} />
+    </>
+  );
+}
+
+function TagDetails({
+  tag,
+  onTagEvent
+}: Readonly<{
+  tag: Tag;
+  onTagEvent: (event: TagAction) => unknown;
+}>) {
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
+  function updateTagName(name: string) {
     api
       .patch(`/tag/${tag.id}`, { name })
       .then(() => onTagEvent({ type: 'UpdateTagName', id: tag.id, name }))
       .catch(addToastForError);
   }
 
-  function updateTagColor(tag: Tag, color: NamedColor | null) {
+  function updateTagColor(color: NamedColor | null) {
     if (color)
       api
         .patch(`/tag/${tag.id}`, { color })
@@ -61,50 +83,47 @@ export default function TagSettings({
         .catch(addToastForError);
   }
 
-  function deleteTag(id: string) {
-    if (
-      !confirm(
-        'This tag will be deleted from all items that currently have it. Are you sure you want to delete the tag?'
-      )
-    )
-      return;
-
+  function deleteTag() {
     api
-      .delete(`/tag/${id}`)
-      .then(() => onTagEvent({ type: 'DeleteTag', id }))
+      .delete(`/tag/${tag.id}`)
+      .then(() => {
+        onTagEvent({ type: 'DeleteTag', id: tag.id });
+      })
       .catch(addToastForError);
   }
 
   return (
     <>
-      <span className='flex flex-col gap-4 shrink overflow-y-auto'>
-        {tags.values().map(tag => (
-          <span key={tag.id} className='flex gap-2 items-center'>
-            <ConfirmedTextInput
-              showUnderline
-              aria-label={`rename tag: ${tag.name}`}
-              updateValue={updateTagName.bind(null, tag)}
-              value={tag.name}
-            />
-            <ColorPicker
-              label={`edit color: ${tag.name}`}
-              value={tag.color}
-              onValueChange={updateTagColor.bind(null, tag)}
-            />
-            <Button
-              isIconOnly
-              aria-label={`delete tag: ${tag.name}`}
-              color='danger'
-              size='sm'
-              variant='ghost'
-              onPress={deleteTag.bind(null, tag.id)}
-            >
-              <TrashFill />
-            </Button>
-          </span>
-        ))}
+      <span key={tag.id} className='flex gap-2 items-center'>
+        <ConfirmedTextInput
+          showUnderline
+          aria-label={`rename tag: ${tag.name}`}
+          updateValue={updateTagName}
+          value={tag.name}
+        />
+        <ColorPicker
+          label={`edit color: ${tag.name}`}
+          value={tag.color}
+          onValueChange={updateTagColor}
+        />
+        <Button
+          isIconOnly
+          aria-label={`delete tag: ${tag.name}`}
+          color='danger'
+          size='sm'
+          variant='ghost'
+          onPress={onOpen}
+        >
+          <TrashFill />
+        </Button>
       </span>
-      <TagInput onTagCreated={addNewTag} />
+      <ConfirmModal
+        description='This will also remove this tag from all items that currently have it.'
+        isOpen={isOpen}
+        title='Permanently delete tag?'
+        onConfirm={deleteTag}
+        onOpenChange={onOpenChange}
+      />
     </>
   );
 }

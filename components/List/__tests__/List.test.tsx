@@ -420,8 +420,6 @@ describe('Tag changes', () => {
   test('Allows tags to be deleted', async () => {
     const user = userEvent.setup();
 
-    vi.spyOn(window, 'confirm').mockImplementation(() => true);
-
     vi.mocked(api.delete).mockResolvedValue({
       code: 200,
       message: 'Success',
@@ -431,6 +429,7 @@ describe('Tag changes', () => {
     const {
       getByDisplayValue,
       getByLabelText,
+      getByRole,
       getByText,
       queryByDisplayValue
     } = render(
@@ -447,6 +446,7 @@ describe('Tag changes', () => {
     const deleteTag = getByLabelText('delete tag: Test tag');
 
     await user.click(deleteTag);
+    await user.click(getByRole('button', { name: 'Confirm' }));
 
     await waitFor(() =>
       expect(queryByDisplayValue('Test tag')).not.toBeInTheDocument()
@@ -513,6 +513,7 @@ describe('List section changes', () => {
       expect(getByRole('menuitem', { name: 'Delete' })).toBeVisible()
     );
     await user.click(getByRole('menuitem', { name: 'Delete' }));
+    await user.click(getByRole('button', { name: 'Confirm' }));
 
     await waitFor(() => expect(sectionName).not.toBeInTheDocument());
   });
