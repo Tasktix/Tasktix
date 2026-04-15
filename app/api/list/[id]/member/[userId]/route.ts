@@ -16,7 +16,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { getIsListMember, updateListMember } from '@/lib/database/list';
+import {
+  deleteListMember,
+  getIsListMember,
+  updateListMember
+} from '@/lib/database/list';
 import { getRoleByList } from '@/lib/database/user';
 import { ZodListMember } from '@/lib/model/listMember';
 import { ClientError, ServerError, Success } from '@/lib/Response';
@@ -62,4 +66,36 @@ export async function PATCH(
   if (!result) return ServerError.Internal('Could not update member');
 
   return Success.OK('Member updated');
+}
+
+/**
+ * Remove a member's access to a specific list
+ *
+ * @param params.id The list to remove the member from
+ * @param params.userId The user to remove
+ */
+export async function DELETE(
+  _: Request,
+  { params }: { params: Promise<{ id: string; userId: string }> }
+) {
+  const { id, userId } = await params;
+  const user = await getUser();
+
+  if (!user) return ClientError.Unauthenticated('Not logged in');
+
+  const role = await getRoleByList(user.id, id);
+
+  if (!role) return ClientError.NotFound('List not found');
+  if (!role.canManageMembers)
+    return ClientError.Forbidden('Insufficient permissions to remove member');
+
+  const isMember = await getIsListMember(userId, id);
+
+  if (!isMember) return ClientError.NotFound('Member not found');
+
+  const result = await deleteListMember(id, userId);
+
+  if (!result) return ServerError.Internal('Could not remove member');
+
+  return Success.OK('Member removed');
 }

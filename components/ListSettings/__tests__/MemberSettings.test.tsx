@@ -102,10 +102,10 @@ describe('Adding members', () => {
     );
 
     expect(getByLabelText('New member email')).toBeVisible();
-    expect(getByText('Send Invite')).toBeVisible();
+    expect(getByText('Add Member')).toBeVisible();
 
     await user.type(getByLabelText('New member email'), 'user2');
-    await user.click(getByText('Send Invite'));
+    await user.click(getByText('Add Member'));
 
     expect(getByLabelText('New member email')).toHaveValue('');
     expect(onMemberEvent).toHaveBeenCalledTimes(1);
@@ -137,10 +137,10 @@ describe('Adding members', () => {
     );
 
     expect(getByLabelText('New member email')).toBeVisible();
-    expect(getByText('Send Invite')).toBeVisible();
+    expect(getByText('Add Member')).toBeVisible();
 
     await user.type(getByLabelText('New member email'), 'user2');
-    await user.click(getByText('Send Invite'));
+    await user.click(getByText('Add Member'));
 
     expect(getByLabelText('New member email')).toHaveValue('');
     expect(addToast).toHaveBeenCalledTimes(1);
@@ -175,10 +175,10 @@ describe('Adding members', () => {
     );
 
     expect(getByLabelText('New member email')).toBeVisible();
-    expect(getByText('Send Invite')).toBeVisible();
+    expect(getByText('Add Member')).toBeVisible();
 
     await user.type(getByLabelText('New member email'), 'user2');
-    await user.click(getByText('Send Invite'));
+    await user.click(getByText('Add Member'));
 
     expect(getByLabelText('New member email')).toHaveValue('');
     expect(addToast).toHaveBeenCalledTimes(1);
@@ -187,6 +187,38 @@ describe('Adding members', () => {
       title: 'User added, but unable to display'
     });
     expect(onMemberEvent).not.toHaveBeenCalled();
+  });
+
+  it('New-user role picker does not allow user to select an empty role', async () => {
+    const oldMember = { user: users[0], role: MOCK_ROLE_CAN_VIEW.id };
+
+    const user = userEvent.setup();
+
+    const { getByLabelText, getByRole } = render(
+      // NOTE: must disable ripple to avoid dynamic import via ESM `import()`
+      <HeroUIProvider disableRipple>
+        <MemberSettings
+          listId='list-id'
+          members={new Map([[oldMember.user.id, oldMember]])}
+          roles={
+            new Map([
+              [
+                'viewer',
+                new MemberRole('viewer', 'Definitely not a superuser', {
+                  id: 'viewer'
+                })
+              ]
+            ])
+          }
+          onMemberEvent={vi.fn()}
+        />
+      </HeroUIProvider>
+    );
+
+    await user.click(getByLabelText('New member role'));
+    await user.click(getByRole('option', { name: 'viewer' }));
+
+    expect(getByLabelText('New member role')).toHaveTextContent('viewer');
   });
 });
 
@@ -304,4 +336,27 @@ describe('Updating permissions', () => {
 
     expect(onMemberEvent).not.toHaveBeenCalled();
   });
+});
+
+test("Shows a user's name if they don't have a username", () => {
+  const oldMember = {
+    user: { ...users[0], username: null, name: 'SomethingElse' },
+    role: MOCK_ROLE_CAN_VIEW.id
+  };
+
+  const { getByLabelText, getByText } = render(
+    // NOTE: must disable ripple to avoid dynamic import via ESM `import()`
+    <HeroUIProvider disableRipple>
+      <MemberSettings
+        listId='list-id'
+        members={new Map([[oldMember.user.id, oldMember]])}
+        roles={new Map()}
+        onMemberEvent={vi.fn()}
+      />
+    </HeroUIProvider>
+  );
+
+  expect(getByText('SomethingElse')).toBeVisible();
+  expect(getByLabelText('SomethingElse Role')).toBeVisible();
+  expect(getByLabelText('Remove SomethingElse')).toBeVisible();
 });

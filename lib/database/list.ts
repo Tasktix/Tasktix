@@ -379,3 +379,51 @@ export async function deleteTag(id: string): Promise<boolean> {
 
   return true;
 }
+
+/**
+ * Revokes a list member's access and unassigns them from all items in the list
+ *
+ * @param listId The list to remove a member from
+ * @param userId The user to revoke access for
+ * @returns Whether the database accepted the update
+ */
+export async function deleteListMember(
+  listId: string,
+  userId: string
+): Promise<boolean> {
+  try {
+    await prisma.$transaction(
+      async tx => {
+        // Prevent race conditions removing all admins by locking admin rows for
+        // full transaction duration
+        await tx.$queryRaw`
+          SELECT \`userId\` FROM \`ListMember\`
+            INNER JOIN \`MemberRole\` ON \`ListMember\`.\`roleId\` = \`MemberRole\`.\`id\`
+          WHERE \`ListMember\`.\`listId\` = ${listId} AND \`MemberRole\`.\`name\` = 'Admin'
+          FOR UPDATE;
+        `;
+
+        await tx.listMember.delete({
+          where: { userId_listId: { userId, listId } }
+        });
+
+        const admins = await tx.listMember.count({
+          where: { listId, role: { name: 'Admin' } }
+        });
+
+        if (admins < 1) throw new Error('Must have an admin for the list');
+      },
+      { isolationLevel: Prisma.TransactionIsolationLevel.ReadCommitted }
+    );
+
+    await prisma.itemAssignee.deleteMany({
+      where: { item: { section: { listId } }, userId }
+    });
+  } catch (error) {
+    console.log(error);
+
+    return false;
+  }
+
+  return true;
+}

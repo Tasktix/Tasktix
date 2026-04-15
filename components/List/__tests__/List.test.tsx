@@ -261,7 +261,7 @@ describe('List member changes', () => {
     await user.click(getByLabelText('New member role'));
     await waitFor(() => expect(getByLabelText('Adder')).toBeVisible());
     await user.click(getByLabelText('Adder'));
-    await user.click(getByRole('button', { name: 'Send Invite' }));
+    await user.click(getByRole('button', { name: 'Add Member' }));
 
     await waitFor(() => expect(getByText('New user')).toBeVisible());
   });
@@ -297,6 +297,40 @@ describe('List member changes', () => {
 
     await waitFor(() =>
       expect(getByLabelText('Test user Role')).toHaveTextContent('Adder')
+    );
+  });
+
+  test('Allows users to be removed', async () => {
+    const user = userEvent.setup();
+
+    vi.mocked(api.delete).mockResolvedValue({
+      code: 200,
+      message: 'Success',
+      content: undefined
+    });
+
+    const { getByLabelText, getByText, queryByLabelText } = render(
+      <HeroUIProvider disableRipple>
+        <List
+          startingList={JSON.stringify({ ...MOCK_LIST, isAutoOrdered: true })}
+          startingRoles={JSON.stringify([VIEWER_ROLE, ADDER_ROLE])}
+        />
+      </HeroUIProvider>
+    );
+
+    await user.click(getByLabelText('Settings'));
+    await waitFor(() => expect(getByText('List Settings')).toBeVisible());
+    await user.click(getByText('Members'));
+    await waitFor(() => expect(getByText('Test user')).toBeVisible());
+
+    await user.click(getByLabelText('Remove Test user'));
+    await user.click(getByText('Confirm'));
+
+    await waitFor(() =>
+      expect(queryByLabelText('Remove Test user')).not.toBeInTheDocument()
+    );
+    expect(api.delete).toHaveBeenCalledExactlyOnceWith(
+      `/list/${MOCK_LIST.id}/member/${MOCK_USER.id}`
     );
   });
 });
