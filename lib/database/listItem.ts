@@ -54,10 +54,10 @@ export async function getListItemById(
   });
 
   if (!result) return false;
-
+  const {section, ...item} = result;
   return {
-    ...result,
-    listId: result.section.listId
+    ...item,
+    listId: section.listId
   };
 }
 
@@ -120,7 +120,8 @@ export async function updateListItem(
         sectionId: undefined
       }
     });
-  } catch {
+  } catch (err){
+    console.log(err)
     return false;
   }
 
