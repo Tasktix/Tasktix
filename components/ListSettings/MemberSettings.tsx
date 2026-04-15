@@ -27,6 +27,7 @@ import {
 } from '@heroui/react';
 import { PersonPlusFill, PersonXFill } from 'react-bootstrap-icons';
 import { FormEvent, useState } from 'react';
+import { useRouter } from 'next/router';
 
 import { getBackgroundColor } from '@/lib/color';
 import ListMember from '@/lib/model/listMember';
@@ -34,9 +35,11 @@ import MemberRole from '@/lib/model/memberRole';
 import api from '@/lib/api';
 import { sortRolesByPermissions } from '@/lib/sort';
 import { addToastForError } from '@/lib/error';
+import UserModel from '@/lib/model/user';
 
 import ConfirmModal from '../ConfirmModal';
 import { FullState, ListMemberState, MemberAction } from '../List/types';
+import { useAuth } from '../AuthProvider';
 
 /**
  * Displays all list members and their permissions. Allows adding new members and updating
@@ -169,6 +172,8 @@ function Member({
   onMemberEvent: (event: MemberAction) => unknown;
 }>) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const { loggedInUser } = useAuth() as { loggedInUser: UserModel };
+  const { replace } = useRouter();
 
   function handleUpdatePermissions(roleId: Selection) {
     // roleId is always `Set<string>`: can't be `"all"` because the `<Select>` is
@@ -197,8 +202,13 @@ function Member({
   function handleRemoveMember() {
     api
       .delete(`/list/${listId}/member/${member.user.id}`)
-      .then(() => {
-        onMemberEvent({ type: 'DeleteMember', id: member.user.id });
+      .then(async () => {
+        if (member.user.id === loggedInUser.id) {
+          await replace('/list');
+        } else {
+          onMemberEvent({ type: 'DeleteMember', id: member.user.id });
+          onOpenChange(); // Closes the confirmation modal
+        }
       })
       .catch(addToastForError);
   }
@@ -238,7 +248,7 @@ function Member({
         </Button>
       </div>
       <ConfirmModal
-        description='This action will unassign them from all tasks and revoke their access. Cannot be done if this would leave the list without an admin.'
+        description='This action will unassign them from all tasks and revoke their access. This cannot be done if it would leave the list without an admin.'
         isOpen={isOpen}
         title={`Permanently remove ${member.user.name}?`}
         onConfirm={handleRemoveMember}

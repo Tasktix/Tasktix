@@ -189,7 +189,7 @@ describe('Adding members', () => {
     expect(onMemberEvent).not.toHaveBeenCalled();
   });
 
-  it('Does not allow new member role to be empty', async () => {
+  it('New-user role picker does not allow user to select an empty role', async () => {
     const oldMember = { user: users[0], role: MOCK_ROLE_CAN_VIEW.id };
 
     const user = userEvent.setup();
