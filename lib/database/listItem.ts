@@ -208,7 +208,7 @@ export async function unlinkAssignee(
 }
 
 /**
- *  Move a List Item from its current section to a new section given by sectionId.
+ * Move a List Item from its current section to a new section given by sectionId.
  * The selected item is appended to the end of that new section.
  * @param item The ListItem to change the section of
  * @param sectionId The sectionId of the target Section
@@ -229,7 +229,7 @@ export async function updateItemSection(
           where: { id: item.id },
           data: {
             sectionId,
-          sectionIndex: targetSectionItems + 1
+          sectionIndex: targetSectionItems
           }
         });
         await tx.item.updateMany({
