@@ -378,3 +378,19 @@ export async function deleteTag(id: string): Promise<boolean> {
 
   return true;
 }
+
+/**
+ * Queries if a sectionId is in a listId
+ * @param listId The list to query sections of
+ * @param sectionId The target section to find
+ */
+export async function querySectionInList(
+  listId: string,
+  sectionId: string
+): Promise<boolean> {
+  const result = await prisma.listSection.findUnique({
+    where: { id: sectionId, listId }
+  });
+
+  return Boolean(result);
+}

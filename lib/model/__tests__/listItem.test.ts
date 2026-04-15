@@ -33,21 +33,23 @@ beforeEach(() => {
 
 describe('ListItem constructor', () => {
   test('Generates an id if none provided', () => {
-    const listItem = new ListItem('testListItem', {});
+    const listItem = new ListItem('testListItem', 'section-id', {});
 
     expect(listItem.id).toBe('mock-generated-id');
     expect(generateId).toHaveBeenCalled();
   });
 
   test('Uses the provided id', () => {
-    const listItem = new ListItem('testListItem', { id: 'provided-id' });
+    const listItem = new ListItem('testListItem', 'section-id', {
+      id: 'provided-id'
+    });
 
     expect(listItem.id).toBe('provided-id');
     expect(generateId).not.toHaveBeenCalled();
   });
 
   test('Uses sane defaults for a new item when properties are unspecified', () => {
-    const listItem = new ListItem('testListItem', {});
+    const listItem = new ListItem('testListItem', 'section-id', {});
 
     expect(listItem.status).toBe('Unstarted');
     expect(listItem.priority).toBe('Low');
@@ -79,7 +81,7 @@ describe('ListItem constructor', () => {
     ];
     const tags = [new Tag('tag1', 'Amber'), new Tag('tag2', 'Cyan')];
 
-    const listItem = new ListItem('testListItem', {
+    const listItem = new ListItem('testListItem', 'section-id', {
       status: 'Completed',
       priority: 'High',
       isUnclear: true,
