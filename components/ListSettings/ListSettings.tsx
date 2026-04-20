@@ -118,7 +118,6 @@ export default function ListSettings({
                   hasDueDates={hasDueDates}
                   hasTimeTracking={hasTimeTracking}
                   isAutoOrdered={isAutoOrdered}
-                  isKanban={false}
                   listColor={listColor}
                   listId={listId}
                   listName={listName}

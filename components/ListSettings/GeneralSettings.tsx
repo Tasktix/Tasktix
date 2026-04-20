@@ -18,7 +18,7 @@
 
 import { addToast, Button, Switch } from '@heroui/react';
 import { TrashFill } from 'react-bootstrap-icons';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import ColorPicker from '@/components/ColorPicker';
@@ -47,7 +47,6 @@ export default function GeneralSettings({
   hasDueDates,
   hasTimeTracking,
   isAutoOrdered,
-  isKanban,
   setListName
 }: Readonly<{
   listId: string;
@@ -56,11 +55,25 @@ export default function GeneralSettings({
   isAutoOrdered: boolean;
   hasDueDates: boolean;
   hasTimeTracking: boolean;
-  isKanban: boolean;
   setListName: (name: string) => unknown;
 }>) {
   const router = useRouter();
   const dispatchEvent = useContext(ListContext);
+
+  //Get Kanban preference
+  let kanbanPref = localStorage.getItem('KanbanPreference');
+  if(kanbanPref == null){
+    kanbanPref = '[]';
+  }
+
+  let kanbanPrefParsed = JSON.parse(kanbanPref);
+  let kanbanPrefMap = new Map<string, boolean>(kanbanPrefParsed);
+  if(!kanbanPrefMap.has(listId)){
+    kanbanPrefMap.set(listId, false);
+    localStorage.setItem('KanbanPreference', JSON.stringify(Array.from(kanbanPrefMap.entries())));
+  }
+  
+  const [isKanban, setIsKanban] = useState(kanbanPrefMap.get(listId))
 
   function updateHasTimeTracking(value: boolean) {
     if (value === hasTimeTracking) return;
@@ -110,6 +123,24 @@ export default function GeneralSettings({
       .catch(addToastForError);
   }
 
+  function updateKanban(value: boolean) {
+    if (value === isKanban) return;
+
+    let kanbanPref = localStorage.getItem('KanbanPreference');
+    //If no kanban preference exists
+    if(kanbanPref == null){
+      kanbanPref = '[]';
+    }
+
+    let kanbanPrefParsed = JSON.parse(kanbanPref);
+    let kanbanPrefMap = new Map<string, boolean>(kanbanPrefParsed);
+    kanbanPrefMap.set(listId, value);
+
+    //Save as an array
+    localStorage.setItem('KanbanPreference', JSON.stringify(Array.from(kanbanPrefMap.entries())));
+    setIsKanban(value);
+  }
+
   return (
     <>
       <span className='flex flex-col gap-4 overflow-y-scroll'>
@@ -122,9 +153,7 @@ export default function GeneralSettings({
           />
           <ColorPicker value={listColor} onValueChange={updateColor} />
         </span>
-        {/* <span className={'grid grid-cols-2'}> */}
         <Switch
-          // className={'my-2'}
           isSelected={hasTimeTracking}
           size='sm'
           onValueChange={updateHasTimeTracking}
@@ -132,7 +161,6 @@ export default function GeneralSettings({
           Track completion time
         </Switch>
         <Switch
-          //className={'my-2'}
           isSelected={hasDueDates}
           size='sm'
           onValueChange={updateHasDueDates}
@@ -140,7 +168,6 @@ export default function GeneralSettings({
           Track due dates
         </Switch>
         <Switch
-          //className={'my-2'}
           isSelected={isAutoOrdered}
           size='sm'
           onValueChange={updateIsAutoOrdered}
@@ -148,13 +175,12 @@ export default function GeneralSettings({
           Auto-order list items
         </Switch>
         <Switch
-          //className={'my-2'}
           isSelected={isKanban}
           size='sm'
+          onValueChange={updateKanban}
         >
           View in Kanban Mode
         </Switch>
-        {/* </span> */}
       </span>
       <span className='flex justify-end'>
         <Button
