@@ -380,6 +380,7 @@ describe('ThemeSwitcher', () => {
     expect(screen.getByRole('listbox')).toBeInTheDocument();
 
     const popoverContent = screen.getByRole('listbox').parentElement;
+
     expect(popoverContent).not.toBeNull();
     if (!popoverContent) throw new Error('Expected popover content wrapper');
 

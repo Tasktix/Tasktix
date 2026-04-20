@@ -83,7 +83,7 @@ test('Pressing custom SSO Button attempts OAuth Login', () => {
   expect(handleOAuth).toHaveBeenCalled();
 });
 
-test('GitHub login not rendered if not configured on server ', () => {
+test('GitHub login not rendered if not configured on server', () => {
   const { getByText, queryByLabelText } = render(
     <HeroUIProvider disableRipple>
       <AuthProvider
@@ -106,7 +106,7 @@ test('GitHub login not rendered if not configured on server ', () => {
   expect(githubButton).not.toBeInTheDocument();
 });
 
-test('Custom SSO login not rendered if not configured on server ', () => {
+test('Custom SSO login not rendered if not configured on server', () => {
   const { getByText, queryByLabelText } = render(
     <HeroUIProvider disableRipple>
       <AuthProvider
@@ -128,7 +128,7 @@ test('Custom SSO login not rendered if not configured on server ', () => {
   expect(ssoButton).not.toBeInTheDocument();
 });
 
-test('Nothing rendered if all not configured on server ', () => {
+test('Nothing rendered if all not configured on server', () => {
   const { queryByText, queryByLabelText } = render(
     <HeroUIProvider disableRipple>
       <AuthProvider
