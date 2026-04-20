@@ -386,7 +386,7 @@ describe('Tag changes', () => {
   test('Allows tags to be deleted', async () => {
     const user = userEvent.setup();
 
-    vi.spyOn(window, 'confirm').mockImplementation(() => true);
+    vi.spyOn(globalThis, 'confirm').mockImplementation(() => true);
 
     vi.mocked(api.delete).mockResolvedValue({
       code: 200,

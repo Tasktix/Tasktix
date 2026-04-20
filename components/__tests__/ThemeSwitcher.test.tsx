@@ -87,9 +87,9 @@ vi.mock('@heroui/react', async importOriginal => {
     onMouseEnter?: () => void;
     onMouseLeave?: () => void;
   }) => (
-    <div onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
+    <dialog open onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
       {children}
-    </div>
+    </dialog>
   )) as unknown as typeof originalModule.PopoverContent;
 
   const Listbox = (({
@@ -380,11 +380,13 @@ describe('ThemeSwitcher', () => {
     expect(screen.getByRole('listbox')).toBeInTheDocument();
 
     const popoverContent = screen.getByRole('listbox').parentElement;
+    expect(popoverContent).not.toBeNull();
+    if (!popoverContent) throw new Error('Expected popover content wrapper');
 
-    fireEvent.mouseEnter(popoverContent!);
+    fireEvent.mouseEnter(popoverContent);
     expect(screen.getByRole('listbox')).toBeInTheDocument();
 
-    fireEvent.mouseLeave(popoverContent!);
+    fireEvent.mouseLeave(popoverContent);
     act(() => {
       vi.advanceTimersByTime(100);
     });

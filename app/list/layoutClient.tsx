@@ -50,11 +50,11 @@ function MobileSidebarToggle({
   hamburgerRef,
   isDrawerOpen,
   onOpen
-}: {
+}: Readonly<{
   hamburgerRef: React.RefObject<HTMLButtonElement | null>;
   isDrawerOpen: boolean;
   onOpen: () => void;
-}) {
+}>) {
   return (
     <header className='sticky top-0 z-20 flex items-center border-b border-content3 bg-content1/90 p-3 backdrop-blur md:hidden'>
       <Button
@@ -80,12 +80,12 @@ function MobileSidebarDrawer({
   isDrawerOpen,
   lists,
   onOpenChange
-}: {
+}: Readonly<{
   closeDrawer: () => void;
   isDrawerOpen: boolean;
   lists: List[];
   onOpenChange: () => void;
-}) {
+}>) {
   return (
     <Drawer
       hideCloseButton
@@ -100,11 +100,11 @@ function MobileSidebarDrawer({
       onOpenChange={onOpenChange}
     >
       <DrawerContent
-        className='w-72 max-w-[85vw] rounded-none border-r border-content3 p-4 shadow-2xl'
+        className='flex h-dvh max-h-dvh w-72 max-w-[85vw] flex-col rounded-none border-r border-content3 p-4 shadow-2xl'
         id='mobile-sidebar-drawer'
       >
         <MobileSidebarHeader />
-        <DrawerBody className='px-0 pb-0 pt-0'>
+        <DrawerBody className='flex-1 px-0 pb-0 pt-0'>
           <Sidebar
             className='w-full flex-1 p-0 pr-0 shadow-none'
             lists={lists}
