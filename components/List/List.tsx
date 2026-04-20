@@ -95,49 +95,92 @@ export default function List({
 
   useEffect(() => subscribe([list.id], dispatchList), [list.id]);
 
-  return (
-    <>
-      <span className='flex gap-4 items-center'>
-        <SearchBar inputOptions={filterOptions} onValueChange={setFilters} />
-        <ListSettings
-          addNewTag={listHandlers.addNewTag}
-          dispatchList={dispatchList}
-          hasDueDates={list.hasDueDates}
-          hasTimeTracking={list.hasTimeTracking}
-          isAutoOrdered={list.isAutoOrdered}
-          listColor={list.color}
-          listId={list.id}
-          listName={list.name}
-          members={list.members}
-          roles={builtRoles}
-          setListName={listHandlers.setName}
-          tagsAvailable={tagsAvailable}
-        />
-      </span>
+  //Get Kanban preference
+  let kanbanPref = localStorage.getItem('KanbanPreference');
+  if(kanbanPref == null){
+    kanbanPref = '[]';
+  }
+  let kanbanPrefParsed = JSON.parse(kanbanPref);
+  let kanbanPrefMap = new Map<string, boolean>(kanbanPrefParsed);
+  if(!kanbanPrefMap.has(list.id)){
+    kanbanPrefMap.set(list.id, false);
+    localStorage.setItem('KanbanPreference', JSON.stringify(Array.from(kanbanPrefMap.entries())));
+  }
+  
+  const [isKanban, setIsKanban] = useState<boolean>(kanbanPrefMap.get(list.id) ?? false)
 
-      {Array.from(list.sections.values()).map(section => (
-        <ListSection
-          key={section.id}
-          dispatchItemChange={dispatchList}
-          dispatchSectionChange={dispatchList}
-          filters={filters}
-          hasDueDates={list.hasDueDates}
-          hasTimeTracking={list.hasTimeTracking}
-          isAutoOrdered={list.isAutoOrdered}
-          listId={list.id}
-          members={list.members}
-          section={section}
-          tagsAvailable={tagsAvailable}
-          onTagCreate={listHandlers.addNewTag}
-        />
-      ))}
+  if(isKanban){
+    return (
+      <>
+        <span className='flex gap-4 items-center'>
+          <SearchBar inputOptions={filterOptions} onValueChange={setFilters} />
+          <ListSettings
+            addNewTag={listHandlers.addNewTag}
+            dispatchList={dispatchList}
+            hasDueDates={list.hasDueDates}
+            hasTimeTracking={list.hasTimeTracking}
+            isAutoOrdered={list.isAutoOrdered}
+            isKanban={isKanban}
+            listColor={list.color}
+            listId={list.id}
+            listName={list.name}
+            members={list.members}
+            roles={builtRoles}
+            setListName={listHandlers.setName}
+            setIsKanban={setIsKanban}
+            tagsAvailable={tagsAvailable}
+          />
+        </span>
+      </>
+    );
+  }
+  else{
+    return (
+      <>
+        <span className='flex gap-4 items-center'>
+          <SearchBar inputOptions={filterOptions} onValueChange={setFilters} />
+          <ListSettings
+            addNewTag={listHandlers.addNewTag}
+            dispatchList={dispatchList}
+            hasDueDates={list.hasDueDates}
+            hasTimeTracking={list.hasTimeTracking}
+            isAutoOrdered={list.isAutoOrdered}
+            isKanban={isKanban}
+            listColor={list.color}
+            listId={list.id}
+            listName={list.name}
+            members={list.members}
+            roles={builtRoles}
+            setListName={listHandlers.setName}
+            setIsKanban={setIsKanban}
+            tagsAvailable={tagsAvailable}
+          />
+        </span>
 
-      <AddListSection
-        listId={list.id}
-        onSectionAdded={section =>
-          dispatchList({ type: 'AddSection', section })
-        }
-      />
-    </>
-  );
+        {Array.from(list.sections.values()).map(section => (
+          <ListSection
+            key={section.id}
+            dispatchItemChange={dispatchList}
+            dispatchSectionChange={dispatchList}
+            filters={filters}
+            hasDueDates={list.hasDueDates}
+            hasTimeTracking={list.hasTimeTracking}
+            isAutoOrdered={list.isAutoOrdered}
+            listId={list.id}
+            members={list.members}
+            section={section}
+            tagsAvailable={tagsAvailable}
+            onTagCreate={listHandlers.addNewTag}
+          />
+        ))}
+
+        <AddListSection
+          listId={list.id}
+          onSectionAdded={section =>
+            dispatchList({ type: 'AddSection', section })
+          }
+        />
+      </>
+    );
+  }
 }

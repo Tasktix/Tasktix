@@ -47,7 +47,9 @@ export default function GeneralSettings({
   hasDueDates,
   hasTimeTracking,
   isAutoOrdered,
-  setListName
+  isKanban,
+  setListName,
+  setIsKanban
 }: Readonly<{
   listId: string;
   listName: string;
@@ -55,25 +57,12 @@ export default function GeneralSettings({
   isAutoOrdered: boolean;
   hasDueDates: boolean;
   hasTimeTracking: boolean;
+  isKanban: boolean;
   setListName: (name: string) => unknown;
+  setIsKanban: (value: boolean) => unknown;
 }>) {
   const router = useRouter();
   const dispatchEvent = useContext(ListContext);
-
-  //Get Kanban preference
-  let kanbanPref = localStorage.getItem('KanbanPreference');
-  if(kanbanPref == null){
-    kanbanPref = '[]';
-  }
-
-  let kanbanPrefParsed = JSON.parse(kanbanPref);
-  let kanbanPrefMap = new Map<string, boolean>(kanbanPrefParsed);
-  if(!kanbanPrefMap.has(listId)){
-    kanbanPrefMap.set(listId, false);
-    localStorage.setItem('KanbanPreference', JSON.stringify(Array.from(kanbanPrefMap.entries())));
-  }
-  
-  const [isKanban, setIsKanban] = useState(kanbanPrefMap.get(listId))
 
   function updateHasTimeTracking(value: boolean) {
     if (value === hasTimeTracking) return;

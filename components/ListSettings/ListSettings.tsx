@@ -72,10 +72,12 @@ export default function ListSettings({
   tagsAvailable,
   hasTimeTracking,
   isAutoOrdered,
+  isKanban,
   hasDueDates,
   dispatchList,
   addNewTag,
-  setListName
+  setListName,
+  setIsKanban
 }: Readonly<{
   listId: string;
   members: ListMember[];
@@ -86,9 +88,11 @@ export default function ListSettings({
   hasTimeTracking: boolean;
   hasDueDates: boolean;
   isAutoOrdered: boolean;
+  isKanban: boolean;
   dispatchList: ActionDispatch<[action: ListAction]>;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
   setListName: (name: string) => unknown;
+  setIsKanban: (value: boolean) => unknown;
 }>) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
@@ -118,10 +122,12 @@ export default function ListSettings({
                   hasDueDates={hasDueDates}
                   hasTimeTracking={hasTimeTracking}
                   isAutoOrdered={isAutoOrdered}
+                  isKanban={isKanban}
                   listColor={listColor}
                   listId={listId}
                   listName={listName}
                   setListName={setListName}
+                  setIsKanban={setIsKanban}
                 />
               </Tab>
               <Tab
