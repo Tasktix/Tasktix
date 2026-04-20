@@ -83,7 +83,7 @@ test('Section can be deleted and propagates that event', async () => {
 
   const dispatchSectionChange = vi.fn();
 
-  const { findByLabelText, getByLabelText } = render(
+  const { findByLabelText, findByRole, getByLabelText } = render(
     <ListSection
       hasDueDates
       hasTimeTracking
@@ -102,6 +102,7 @@ test('Section can be deleted and propagates that event', async () => {
 
   await user.click(getByLabelText('Show section actions'));
   await user.click(await findByLabelText('Delete section'));
+  await user.click(await findByRole('button', { name: 'Confirm' }));
 
   expect(dispatchSectionChange).toHaveBeenCalledTimes(1);
   expect(dispatchSectionChange).toHaveBeenCalledWith(

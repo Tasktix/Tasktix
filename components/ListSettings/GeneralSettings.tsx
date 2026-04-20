@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { addToast, Button, Switch } from '@heroui/react';
+import { addToast, Button, Switch, useDisclosure } from '@heroui/react';
 import { TrashFill } from 'react-bootstrap-icons';
 import { useContext } from 'react';
 import { useRouter } from 'next/navigation';
@@ -27,6 +27,8 @@ import { NamedColor } from '@/lib/model/color';
 import api from '@/lib/api';
 import { ListContext } from '@/components/Sidebar';
 import { addToastForError } from '@/lib/error';
+
+import ConfirmModal from '../ConfirmModal';
 
 /**
  * Displays list settings such as its name, whether due dates are enabled, etc. Allows
@@ -57,6 +59,7 @@ export default function GeneralSettings({
   hasTimeTracking: boolean;
   setListName: (name: string) => unknown;
 }>) {
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const router = useRouter();
   const dispatchEvent = useContext(ListContext);
 
@@ -91,13 +94,6 @@ export default function GeneralSettings({
   }
 
   function deleteList() {
-    if (
-      !confirm(
-        'Are you sure you want to delete this list? This action is irreversible.'
-      )
-    )
-      return;
-
     api
       .delete(`/list/${listId}`)
       .then(res => {
@@ -147,11 +143,18 @@ export default function GeneralSettings({
           color='danger'
           startContent={<TrashFill />}
           variant='ghost'
-          onPress={deleteList}
+          onPress={onOpen}
         >
           Delete list
         </Button>
       </span>
+      <ConfirmModal
+        description='This will delete all data associated with this list.'
+        isOpen={isOpen}
+        title='Permanently delete list?'
+        onConfirm={deleteList}
+        onOpenChange={onOpenChange}
+      />
     </>
   );
 }

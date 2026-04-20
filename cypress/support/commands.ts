@@ -73,11 +73,22 @@ Cypress.Commands.add('login', (username: string, password: string) => {
     .and('not.be.null');
 });
 
+Cypress.Commands.add('createList', (listName: string) => {
+  cy.visit('/list');
+
+  cy.findByLabelText('Create new list').click();
+  cy.findByPlaceholderText('List name').type(listName);
+  cy.findByLabelText('Submit list').click();
+
+  cy.location('pathname').should('match', /^\/list\/[a-zA-Z0-9]{16}$/);
+});
+
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Cypress {
     interface Chainable {
       login(email: string, password: string): Chainable<void>;
+      createList(listName: string): Chainable<void>;
     }
   }
 }

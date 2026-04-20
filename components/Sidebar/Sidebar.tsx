@@ -156,6 +156,7 @@ function AddList({ addList }: { addList: () => unknown }) {
   return (
     <Button
       isIconOnly
+      aria-label='Create new list'
       className='border-0 text-foreground rounded-lg w-8 h-8 min-w-8 min-h-8'
       color='primary'
       variant='ghost'
@@ -210,6 +211,7 @@ function NewItem({
       />
       <Button
         isIconOnly
+        aria-label='Submit list'
         className='rounded-lg w-8 h-8 min-w-8 min-h-8'
         color='primary'
         type='submit'

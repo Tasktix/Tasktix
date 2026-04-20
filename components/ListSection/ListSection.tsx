@@ -28,7 +28,8 @@ import {
   Dropdown,
   DropdownItem,
   DropdownMenu,
-  DropdownTrigger
+  DropdownTrigger,
+  useDisclosure
 } from '@heroui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 
@@ -43,6 +44,7 @@ import ListItem from '@/lib/model/listItem';
 import { ItemAction, SectionAction } from '../List';
 import { Filters } from '../SearchBar/types';
 import ConfirmedTextInput from '../ConfirmedTextInput';
+import ConfirmModal from '../ConfirmModal';
 
 import SectionBody from './SectionBody';
 import sectionHandlerFactory from './handlerFactory';
@@ -139,33 +141,11 @@ export default function ListSection({
             nextIndex={items.length}
             sectionId={section.id}
           />
-          <Dropdown placement='bottom'>
-            <DropdownTrigger>
-              <Button
-                isIconOnly
-                aria-label='Show section actions'
-                className='border-2 border-content4 hover:bg-content4!'
-                variant='light'
-              >
-                <ThreeDots />
-              </Button>
-            </DropdownTrigger>
-            <DropdownMenu
-              onAction={() =>
-                onSectionChange({ type: 'DeleteSection', id: section.id })
-              }
-            >
-              <DropdownItem
-                key='delete'
-                aria-label='Delete section'
-                className='text-danger'
-                color='danger'
-                startContent={<TrashFill />}
-              >
-                Delete
-              </DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
+          <SectionActionMenu
+            onDelete={() =>
+              onSectionChange({ type: 'DeleteSection', id: section.id })
+            }
+          />
         </span>
       </div>
       <AnimatePresence initial={isCollapsed}>
@@ -198,5 +178,46 @@ export default function ListSection({
         )}
       </AnimatePresence>
     </div>
+  );
+}
+
+function SectionActionMenu({
+  onDelete
+}: Readonly<{ onDelete: () => unknown }>) {
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
+  return (
+    <>
+      <Dropdown placement='bottom'>
+        <DropdownTrigger>
+          <Button
+            isIconOnly
+            aria-label='Show section actions'
+            className='border-2 border-content4 hover:bg-content4!'
+            variant='light'
+          >
+            <ThreeDots />
+          </Button>
+        </DropdownTrigger>
+        <DropdownMenu onAction={onOpen}>
+          <DropdownItem
+            key='delete'
+            aria-label='Delete section'
+            className='text-danger'
+            color='danger'
+            startContent={<TrashFill />}
+          >
+            Delete
+          </DropdownItem>
+        </DropdownMenu>
+      </Dropdown>
+      <ConfirmModal
+        description='This will also delete all items in this section.'
+        isOpen={isOpen}
+        title='Permanently delete section?'
+        onConfirm={onDelete}
+        onOpenChange={onOpenChange}
+      />
+    </>
   );
 }
