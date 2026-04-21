@@ -40,11 +40,12 @@ export default function Page() {
   return (
     <main className='grow mx-auto max-w-6xl px-4 md:px-6 py-12 space-y-24'>
       <header className='text-center mb-12'>
-        <h1 className='text-3xl md:text-4xl font-extralight'>
+        <h1 className='text-3xl md:text-4xl font-bold'>
           Tasktix — Smarter Task Tracking
         </h1>
         <p className='mt-3 text-lg'>
-          Stay organized with time tracking, tagging, and smart filtering.
+          Organize tasks from all realms of life with time tracking, tagging,
+          and smart filtering. For free. Always.
         </p>
       </header>
 

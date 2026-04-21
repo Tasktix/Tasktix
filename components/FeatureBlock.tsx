@@ -73,9 +73,8 @@ export default function FeatureBlock({
     >
       <div className='w-full md:w-1/2'>
         <HeroImage
-          isBlurred
           alt={`${title} screenshot`}
-          className='object-contain'
+          className='object-contain shadow-lg shadow-content2'
           src={themedSrc}
         />
       </div>
