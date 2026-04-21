@@ -20,9 +20,7 @@ interface ApiResponseBody {
   content: string;
 }
 
-export {};
-
-function getIdFromPath(path: string, label: string) {
+function getListSpecIdFromPath(path: string, label: string) {
   const id = path.split('/').pop();
 
   expect(id, `${label} should have an id segment`).to.be.a('string');
@@ -53,12 +51,12 @@ describe('Home List', () => {
       color: 'Amber'
     }).then(({ body }: { body: ApiResponseBody }) => {
       const listPath = body.content;
-      const listId = getIdFromPath(listPath, 'list path');
+      const listId = getListSpecIdFromPath(listPath, 'list path');
 
       cy.request('POST', `/api/list/${listId}/section`, {
         name: 'Today Section'
       }).then(({ body }: { body: ApiResponseBody }) => {
-        const sectionId = getIdFromPath(body.content, 'section path');
+        const sectionId = getListSpecIdFromPath(body.content, 'section path');
 
         cy.request('POST', '/api/item', {
           name: 'Cypress task',
@@ -68,7 +66,7 @@ describe('Home List', () => {
           dateDue: new Date('2026-03-09T23:59:59.000Z').toISOString(),
           expectedMs: 60000
         }).then(({ body }: { body: ApiResponseBody }) => {
-          const itemId = getIdFromPath(body.content, 'item path');
+          const itemId = getListSpecIdFromPath(body.content, 'item path');
 
           cy.intercept('PATCH', `/api/item/${itemId}`).as('completeItem');
           cy.visit(listPath);

@@ -20,9 +20,7 @@ interface ApiResponseBody {
   content: string;
 }
 
-export {};
-
-function getIdFromPath(path: string, label: string) {
+function getResponsiveSpecIdFromPath(path: string, label: string) {
   const id = path.split('/').pop();
 
   expect(id, `${label} should have an id segment`).to.be.a('string');
@@ -46,7 +44,7 @@ describe('Responsive shell', () => {
       color: 'Blue'
     }).then(({ body }: { body: ApiResponseBody }) => {
       const listPath = body.content;
-      const listId = getIdFromPath(listPath, 'list path');
+      const listId = getResponsiveSpecIdFromPath(listPath, 'list path');
 
       cy.visit('/list');
       cy.findByRole('button', { name: 'Open navigation menu' })
