@@ -125,7 +125,7 @@ describe('Section expansion/collapse', () => {
           items: new Map([
             [
               'aaaaaaaaaaaaaaaa',
-              new ListItem('Item 1', {
+              new ListItem('Item 1', 'section-id', {
                 id: 'aaaaaaaaaaaaaaaa',
                 status: 'Unstarted'
               })
@@ -158,7 +158,7 @@ describe('Section expansion/collapse', () => {
           items: new Map([
             [
               'aaaaaaaaaaaaaaaa',
-              new ListItem('Item 1', {
+              new ListItem('Item 1', 'section-id', {
                 id: 'aaaaaaaaaaaaaaaa',
                 status: 'Completed',
                 dateCompleted: new Date()
@@ -215,7 +215,7 @@ describe('Section expansion/collapse', () => {
           items: new Map([
             [
               'aaaaaaaaaaaaaaaa',
-              new ListItem('Item 1', {
+              new ListItem('Item 1', 'section-id', {
                 id: 'aaaaaaaaaaaaaaaa',
                 status: 'Completed',
                 dateCompleted: new Date()
@@ -253,7 +253,7 @@ describe('Section expansion/collapse', () => {
           items: new Map([
             [
               'aaaaaaaaaaaaaaaa',
-              new ListItem('Item 1', {
+              new ListItem('Item 1', 'section-id', {
                 id: 'aaaaaaaaaaaaaaaa',
                 status: 'Unstarted'
               })
