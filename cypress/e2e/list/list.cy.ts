@@ -20,6 +20,8 @@ interface ApiResponseBody {
   content: string;
 }
 
+export {};
+
 function getIdFromPath(path: string, label: string) {
   const id = path.split('/').pop();
 
