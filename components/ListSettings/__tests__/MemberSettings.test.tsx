@@ -34,7 +34,22 @@ vi.mock(import('@heroui/react'), async importOriginal => ({
   ...(await importOriginal()),
   addToast: vi.fn()
 }));
+vi.mock(import('next/navigation'), async importOriginal => ({
+  ...(await importOriginal()),
+  useRouter: vi.fn()
+}));
 vi.mock('@/lib/api');
+vi.mock(import('@/components/AuthProvider'), async importOriginal => ({
+  ...(await importOriginal()),
+  useAuth: vi.fn(
+    () =>
+      ({
+        loggedInUser: false,
+        setLoggedInUser: vi.fn(),
+        oauthConfig: { githubEnabled: false, customEnabled: false }
+      }) as const
+  )
+}));
 
 beforeEach(() => {
   vi.resetAllMocks();

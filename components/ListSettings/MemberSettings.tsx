@@ -27,7 +27,7 @@ import {
 } from '@heroui/react';
 import { PersonPlusFill, PersonXFill } from 'react-bootstrap-icons';
 import { FormEvent, useState } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 
 import { getBackgroundColor } from '@/lib/color';
 import ListMember from '@/lib/model/listMember';
@@ -173,7 +173,7 @@ function Member({
 }>) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const { loggedInUser } = useAuth() as { loggedInUser: UserModel };
-  const { replace } = useRouter();
+  const router = useRouter();
 
   function handleUpdatePermissions(roleId: Selection) {
     // roleId is always `Set<string>`: can't be `"all"` because the `<Select>` is
@@ -202,9 +202,9 @@ function Member({
   function handleRemoveMember() {
     api
       .delete(`/list/${listId}/member/${member.user.id}`)
-      .then(async () => {
+      .then(() => {
         if (member.user.id === loggedInUser.id) {
-          await replace('/list');
+          router.replace('/list');
         } else {
           onMemberEvent({ type: 'DeleteMember', id: member.user.id });
           onOpenChange(); // Closes the confirmation modal

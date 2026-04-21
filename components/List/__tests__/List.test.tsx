@@ -41,6 +41,17 @@ vi.mock(import('next/navigation'), async importOriginal => ({
 }));
 vi.mock('@/lib/api');
 vi.mock('@/lib/sse/client');
+vi.mock(import('@/components/AuthProvider'), async importOriginal => ({
+  ...(await importOriginal()),
+  useAuth: vi.fn(
+    () =>
+      ({
+        loggedInUser: false,
+        setLoggedInUser: vi.fn(),
+        oauthConfig: { githubEnabled: false, customEnabled: false }
+      }) as const
+  )
+}));
 
 beforeAll(() => {
   vi.stubEnv('TZ', 'UTC');
