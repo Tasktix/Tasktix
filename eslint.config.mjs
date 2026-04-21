@@ -144,7 +144,7 @@ export default defineConfig([
     extends: [tseslint.configs.disableTypeChecked]
   },
   {
-    files: ['**/*.test.ts'],
+    files: ['**/*.test.{ts,tsx}'],
     ...vitest.configs.recommended
   },
   {
