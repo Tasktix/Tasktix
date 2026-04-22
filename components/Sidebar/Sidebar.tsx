@@ -61,11 +61,11 @@ export default function Sidebar({ lists }: { lists: List[] }) {
   const dispatchEvent = useContext(ListContext);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-  function submitNewList(name: string) {
+  function submitNewList(name: string, repoId?: number) {
     const color = randomNamedColor();
 
     api
-      .post('/list', { name, color })
+      .post('/list', { name, color, repoId })
       .then(res => {
         const id = res.content?.split('/').at(-1);
 
@@ -174,11 +174,12 @@ function CreateListModal({
   isGithubConfigured
 }: Readonly<{
   isOpen: boolean;
-  submitList: (name: string) => void;
+  submitList: (name: string, repoId?: number) => void;
   onOpenChange: (isOpen: boolean) => unknown;
   isGithubConfigured: boolean;
 }>) {
   const [listName, setListName] = useState('');
+  const [selectedRepoId, setSelectedRepoId] = useState<number | undefined>();
 
   const handleSubmitList = (
     e: FormEvent<HTMLFormElement>,
@@ -187,7 +188,7 @@ function CreateListModal({
     e.preventDefault();
 
     if (listName.trim()) {
-      submitList(listName);
+      submitList(listName, selectedRepoId);
       setListName('');
       onClose();
     } else {
@@ -213,7 +214,11 @@ function CreateListModal({
                   variant='underlined'
                   onValueChange={setListName}
                 />
-                {isGithubConfigured && <GithubListConfig />}
+                {isGithubConfigured && (
+                  <GithubListConfig
+                    onRepoSelection={id => setSelectedRepoId(Number(id))}
+                  />
+                )}
                 <div className='flex p-4 justify-end w-full gap-6'>
                   <Button variant='light' onPress={onClose}>
                     Cancel
@@ -235,7 +240,11 @@ function CreateListModal({
   );
 }
 
-function GithubListConfig() {
+function GithubListConfig({
+  onRepoSelection
+}: {
+  onRepoSelection: (id: number) => void;
+}) {
   const { loggedInUser } = useAuth();
 
   const [availableRepos, setAvailableRepos] = useState<SimplifiedRepo[]>([]);
@@ -274,6 +283,9 @@ function GithubListConfig() {
           aria-label='Select github repository'
           label='Select Repository'
           variant='underlined'
+          onSelectionChange={keys =>
+            onRepoSelection(Array.from(keys)[0] as number)
+          }
         >
           {availableRepos.map(repo => (
             <SelectItem key={repo.id} description={repo.description}>
@@ -283,12 +295,7 @@ function GithubListConfig() {
         </Select>
         <p className='py-4'>
           To access more repositories{' '}
-          <Link
-            isExternal
-            showAnchorIcon
-            href='https://github.com/apps/tasktix-dev'
-            underline='hover'
-          >
+          <Link isExternal showAnchorIcon href='asdf' underline='hover'>
             configure your Tasktix App Installation
           </Link>
         </p>

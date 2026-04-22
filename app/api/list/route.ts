@@ -23,7 +23,13 @@ import List, { ZodList } from '@/lib/model/list';
 import ListMember from '@/lib/model/listMember';
 import { getUser } from '@/lib/session';
 
-const PostBody = ZodList.pick({ name: true, color: true });
+const PostBody = ZodList.pick({
+  name: true,
+  color: true,
+  repoId: true
+}).extend({
+  repoId: ZodList.shape.repoId.optional()
+});
 
 export async function POST(request: Request) {
   const user = await getUser();
@@ -40,9 +46,20 @@ export async function POST(request: Request) {
   const name = requestBody.name;
   const color = requestBody.color;
   const role = await getAdminRole();
+  const repoId = requestBody.repoId;
 
   const listMember = new ListMember(user, role);
-  const list = new List(name, color, [listMember], [], [], true, true, true);
+  const list = new List(
+    name,
+    color,
+    [listMember],
+    [],
+    [],
+    true,
+    true,
+    true,
+    repoId
+  );
 
   const result = await createList(list);
 

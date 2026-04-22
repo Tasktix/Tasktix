@@ -31,7 +31,8 @@ export const ZodList = z.strictObject({
   color: z.enum(namedColors),
   hasTimeTracking: z.boolean(),
   hasDueDates: z.boolean(),
-  isAutoOrdered: z.boolean()
+  isAutoOrdered: z.boolean(),
+  repoId: z.int()
 });
 
 export default class List {
@@ -44,6 +45,7 @@ export default class List {
   members: ListMember[];
   sections: ListSection[];
   tags: Tag[];
+  repoId: number | null;
 
   constructor(
     name: string,
@@ -54,6 +56,7 @@ export default class List {
     hasTimeTracking: boolean,
     hasDueDates: boolean,
     isAutoOrdered: boolean,
+    repoId?: number,
     id?: string
   ) {
     if (!id) id = generateId();
@@ -67,5 +70,6 @@ export default class List {
     this.members = members;
     this.sections = sections;
     this.tags = tags;
+    this.repoId = repoId ?? null;
   }
 }
