@@ -56,8 +56,13 @@ export default class List {
     hasTimeTracking: boolean,
     hasDueDates: boolean,
     isAutoOrdered: boolean,
-    repoId?: number,
-    id?: string
+    {
+      repoId,
+      id
+    }: {
+      repoId?: number;
+      id?: string;
+    } = {}
   ) {
     if (!id) id = generateId();
 

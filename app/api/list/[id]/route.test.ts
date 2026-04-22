@@ -53,17 +53,9 @@ const MOCK_ROLE_CANNOT_UPDATE_LIST = new MemberRole(
     canDeleteList: true
   }
 );
-const MOCK_LIST = new List(
-  'List name',
-  'Amber',
-  [],
-  [],
-  [],
-  true,
-  true,
-  true,
-  'list-id'
-);
+const MOCK_LIST = new List('List name', 'Amber', [], [], [], true, true, true, {
+  id: 'list-id'
+});
 
 const LIST_PATH = `http://localhost/api/list/${MOCK_LIST.id}` as const;
 

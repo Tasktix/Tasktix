@@ -77,7 +77,7 @@ describe('List state changes', () => {
     true,
     true,
     true,
-    'list-id'
+    { id: 'list-id' }
   );
 
   test('List name updates when event received', async () => {
@@ -221,7 +221,7 @@ describe('List member changes', () => {
     true,
     true,
     true,
-    'list-id'
+    { id: 'list-id' }
   );
 
   test('Allows users to be added', async () => {
@@ -311,7 +311,7 @@ describe('Tag changes', () => {
     true,
     true,
     true,
-    'list-id'
+    { id: 'list-id' }
   );
 
   test('Allows tag names to be changed', async () => {
@@ -430,7 +430,7 @@ describe('List section changes', () => {
     false,
     false,
     false,
-    'list-id'
+    { id: 'list-id' }
   );
 
   test('Allows sections to be added', async () => {
@@ -538,7 +538,7 @@ describe('ListItem state propagation', () => {
               true,
               true,
               true,
-              'list-id'
+              { id: 'list-id' }
             )
           )}
           startingRoles='[]'
@@ -596,7 +596,7 @@ describe('ListItem state propagation', () => {
               true,
               true,
               true,
-              'list-id'
+              { id: 'list-id' }
             )
           )}
           startingRoles='[]'
@@ -658,7 +658,7 @@ describe('ListItem state propagation', () => {
               true,
               true,
               true,
-              'list-id'
+              { id: 'list-id' }
             )
           )}
           startingRoles='[]'
@@ -709,7 +709,7 @@ describe('ListItem state propagation', () => {
               true,
               true,
               true,
-              'list-id'
+              { id: 'list-id' }
             )
           )}
           startingRoles='[]'
@@ -764,7 +764,7 @@ describe('ListItem state propagation', () => {
               true,
               true,
               true,
-              'list-id'
+              { id: 'list-id' }
             )
           )}
           startingRoles='[]'
@@ -822,7 +822,7 @@ describe('ListItem state propagation', () => {
               true,
               true,
               true,
-              'list-id'
+              { id: 'list-id' }
             )
           )}
           startingRoles='[]'
@@ -880,7 +880,7 @@ describe('ListItem state propagation', () => {
               true,
               true,
               true,
-              'list-id'
+              { id: 'list-id' }
             )
           )}
           startingRoles='[]'
@@ -943,7 +943,7 @@ describe('ListItem state propagation', () => {
               true,
               true,
               true,
-              'list-id'
+              { id: 'list-id' }
             )
           )}
           startingRoles='[]'
@@ -1009,7 +1009,7 @@ describe('ListItem state propagation', () => {
               true,
               true,
               true,
-              'list-id'
+              { id: 'list-id' }
             )
           )}
           startingRoles='[]'
@@ -1062,7 +1062,7 @@ describe('ListItem state propagation', () => {
               true,
               true,
               true,
-              'list-id'
+              { id: 'list-id' }
             )
           )}
           startingRoles='[]'
@@ -1110,7 +1110,7 @@ describe('ListItem state propagation', () => {
               true,
               true,
               true,
-              'list-id'
+              { id: 'list-id' }
             )
           )}
           startingRoles='[]'
@@ -1168,7 +1168,7 @@ describe('ListItem state propagation', () => {
                 true,
                 true,
                 true,
-                'list-id'
+                { id: 'list-id' }
               )
             )}
             startingRoles='[]'
@@ -1224,7 +1224,7 @@ describe('ListItem state propagation', () => {
                 true,
                 true,
                 true,
-                'list-id'
+                { id: 'list-id' }
               )
             )}
             startingRoles='[]'
@@ -1285,7 +1285,7 @@ describe('ListItem state propagation', () => {
               true,
               true,
               true,
-              'list-id'
+              { id: 'list-id' }
             )
           )}
           startingRoles='[]'
@@ -1339,7 +1339,7 @@ describe('ListItem state propagation', () => {
               true,
               true,
               true,
-              'list-id'
+              { id: 'list-id' }
             )
           )}
           startingRoles='[]'

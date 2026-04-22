@@ -49,17 +49,9 @@ export async function POST(request: Request) {
   const repoId = requestBody.repoId;
 
   const listMember = new ListMember(user, role);
-  const list = new List(
-    name,
-    color,
-    [listMember],
-    [],
-    [],
-    true,
-    true,
-    true,
+  const list = new List(name, color, [listMember], [], [], true, true, true, {
     repoId
-  );
+  });
 
   const result = await createList(list);
 
