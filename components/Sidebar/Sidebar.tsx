@@ -18,10 +18,13 @@
 
 'use client';
 
-import { FormEvent, ReactNode, useContext, useState } from 'react';
+import { FormEvent, ReactNode, useContext, useEffect, useState } from 'react';
 import {
+  Accordion,
+  AccordionItem,
   addToast,
   Button,
+  Chip,
   Form,
   Input,
   Link,
@@ -29,6 +32,8 @@ import {
   ModalBody,
   ModalContent,
   ModalHeader,
+  Select,
+  SelectItem,
   useDisclosure
 } from '@heroui/react';
 import { Plus } from 'react-bootstrap-icons';
@@ -38,6 +43,9 @@ import { default as api } from '@/lib/api';
 import List from '@/lib/model/list';
 import { randomNamedColor } from '@/lib/color';
 import { addToastForError } from '@/lib/error';
+import { SimplifiedRepo } from '@/lib/github/types';
+
+import { useAuth } from '../AuthProvider';
 
 import { ListContext } from './listContext';
 
@@ -49,6 +57,7 @@ import { ListContext } from './listContext';
  */
 export default function Sidebar({ lists }: { lists: List[] }) {
   const router = useRouter();
+  const { oauthConfig } = useAuth();
   const dispatchEvent = useContext(ListContext);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
@@ -82,6 +91,7 @@ export default function Sidebar({ lists }: { lists: List[] }) {
           ))}
       </NavSection>
       <CreateListModal
+        isGithubConfigured={oauthConfig.githubEnabled}
         isOpen={isOpen}
         submitList={submitNewList}
         onOpenChange={onOpenChange}
@@ -154,16 +164,19 @@ function AddList({ openListDialog }: { openListDialog: () => unknown }) {
  * @param isOpen The `isOpen` parameter from HeroUI's `useDisclosure`
  * @param onOpenChange The `onOpenChange` parameter from HeroUI's `useDisclosure`
  * @param submitList A handler function used to submit the list to the API
+ * @param isGithubConfigured Bool representing if github integration is configured
  * @returns
  */
 function CreateListModal({
   isOpen,
   submitList,
-  onOpenChange
+  onOpenChange,
+  isGithubConfigured
 }: Readonly<{
   isOpen: boolean;
   submitList: (name: string) => void;
   onOpenChange: (isOpen: boolean) => unknown;
+  isGithubConfigured: boolean;
 }>) {
   const [listName, setListName] = useState('');
 
@@ -200,11 +213,16 @@ function CreateListModal({
                   variant='underlined'
                   onValueChange={setListName}
                 />
+                {isGithubConfigured && <GithubListConfig />}
                 <div className='flex p-4 justify-end w-full gap-6'>
                   <Button variant='light' onPress={onClose}>
                     Cancel
                   </Button>
-                  <Button color='primary' type='submit' aria-label='Submit list'>
+                  <Button
+                    aria-label='Submit list'
+                    color='primary'
+                    type='submit'
+                  >
                     Confirm
                   </Button>
                 </div>
@@ -214,5 +232,67 @@ function CreateListModal({
         )}
       </ModalContent>
     </Modal>
+  );
+}
+
+function GithubListConfig() {
+  const { loggedInUser } = useAuth();
+
+  const [availableRepos, setAvailableRepos] = useState<SimplifiedRepo[]>([]);
+
+  useEffect(() => {
+    if (!loggedInUser) return;
+
+    api
+      .get(`/user/${loggedInUser.id}/github/`)
+      .then(res => {
+        if (!res.content) {
+          addToast({ title: 'No Repositories returned', color: 'danger' });
+
+          return;
+        }
+        const data: SimplifiedRepo[] = JSON.parse(res.content);
+
+        setAvailableRepos(data);
+      })
+      .catch(addToastForError);
+  }, [loggedInUser]);
+
+  return (
+    <Accordion className='my-2' variant='shadow'>
+      <AccordionItem
+        key='1'
+        aria-label='Open Github Drawer'
+        startContent={
+          <Chip color='secondary' variant='faded'>
+            Preview
+          </Chip>
+        }
+        title='Link to Github Repository'
+      >
+        <Select
+          aria-label='Select github repository'
+          label='Select Repository'
+          variant='underlined'
+        >
+          {availableRepos.map(repo => (
+            <SelectItem key={repo.id} description={repo.description}>
+              {repo.name}
+            </SelectItem>
+          ))}
+        </Select>
+        <p className='py-4'>
+          To access more repositories{' '}
+          <Link
+            isExternal
+            showAnchorIcon
+            href='https://github.com/apps/tasktix-dev'
+            underline='hover'
+          >
+            configure your Tasktix App Installation
+          </Link>
+        </p>
+      </AccordionItem>
+    </Accordion>
   );
 }
