@@ -46,15 +46,7 @@ export default function FilterRow({
   onFilterChange
 }: FilterRowProps) {
   return (
-    <div
-      style={{
-        alignItems: 'center',
-        display: 'flex',
-        gap: '5px',
-        flexDirection: 'row',
-        paddingBottom: '5px'
-      }}
-    >
+    <div className='flex flex-row justify-center gap-2'>
       <Select className='propertyInput' placeholder='Field'>
         {filterOptions.map(option => (
           <SelectItem

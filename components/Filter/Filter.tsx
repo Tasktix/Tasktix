@@ -45,7 +45,6 @@ export default function Filter({ filterOptions }: FilterProps) {
   // States
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [filterState, setFilterState] = useState<FilterState>({
-    id: 0,
     operator: 'And',
     filters: []
   });

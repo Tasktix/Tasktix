@@ -69,10 +69,9 @@ export function FilterModal({
             </ModalHeader>
             <ModalBody>
               <FilterGroup
-                key={filterState.id}
                 filterOptions={filterOptions}
                 filters={filterState}
-                index={0}
+                ids={[]}
                 onFilterChange={setFilterState}
               />
             </ModalBody>

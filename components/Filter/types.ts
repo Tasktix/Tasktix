@@ -110,7 +110,6 @@ export type FilterInputState =
     ));
 
 export type FilterState = {
-  id: number;
   filters: (FilterState | FilterInputState)[];
 } & ({ operator: 'And' } | { operator: 'Or' });
 
