@@ -33,6 +33,9 @@ RUN npm run local:build && npm prune --omit=dev
 
 # Production image, copy all the files and run next
 FROM base AS runner
+LABEL org.opencontainers.image.source=https://github.com/Tasktix/Tasktix
+LABEL org.opencontainers.image.description="A powerful and flexible task-tracking tool for all."
+LABEL org.opencontainers.image.licenses=AGPL-3.0-or-later
 WORKDIR /app
 
 ENV NODE_ENV=production
@@ -44,7 +47,8 @@ RUN addgroup --system --gid 1001 nodejs && \
 COPY --from=builder /app/public ./public
 
 # Set permissions for prerender cache
-RUN mkdir .next
+RUN mkdir .next .next/cache && \
+    chown nextjs:nodejs .next/cache
 
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing

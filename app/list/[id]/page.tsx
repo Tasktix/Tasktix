@@ -19,12 +19,13 @@
 import { redirect } from 'next/navigation';
 
 import {
-  getIsListAssignee,
+  getIsListMember,
   getListById,
   getTagsByListId
 } from '@/lib/database/list';
 import List from '@/components/List';
 import { getUser } from '@/lib/session';
+import { getAvailableRoles } from '@/lib/database/user';
 
 export default async function Page({
   params
@@ -34,12 +35,13 @@ export default async function Page({
   const { id } = await params;
   const list = await getListById(id);
   const tagsAvailable = await getTagsByListId(id);
+  const roles = await getAvailableRoles();
 
   const user = await getUser();
 
   if (!list || !user) redirect('/list');
 
-  const isMember = await getIsListAssignee(user.id, list.id);
+  const isMember = await getIsListMember(user.id, list.id);
 
   if (!isMember) redirect('/list');
 
@@ -48,6 +50,7 @@ export default async function Page({
       {list && (
         <List
           startingList={JSON.stringify(list)}
+          startingRoles={JSON.stringify(roles || [])}
           startingTagsAvailable={JSON.stringify(tagsAvailable || [])}
         />
       )}

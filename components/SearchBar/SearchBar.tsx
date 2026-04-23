@@ -53,7 +53,7 @@ export default function SearchBar({
   for (const key in filters) {
     const option = _options.find(option => option.label === key);
 
-    if (!option) return;
+    if (!option) throw new Error(`Option ${key} not found`);
 
     inputFields.push(
       <InputElement

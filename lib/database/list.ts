@@ -18,6 +18,8 @@
 
 'use server';
 
+import { Prisma } from '@prisma/client';
+
 import List from '@/lib/model/list';
 import ListMember from '@/lib/model/listMember';
 import Tag from '@/lib/model/tag';
@@ -35,9 +37,8 @@ export async function createList(
         members: {
           createMany: {
             data: list.members.map(m => ({
-              ...m,
-              user: undefined,
-              userId: m.user.id
+              userId: m.user.id,
+              roleId: m.role.id
             }))
           }
         }
@@ -66,7 +67,7 @@ export async function createListMember(
 ): Promise<boolean> {
   try {
     await prisma.listMember.create({
-      data: { listId, ...member, user: undefined, userId: member.user.id }
+      data: { listId, roleId: member.role.id, userId: member.user.id }
     });
   } catch {
     return false;
@@ -79,7 +80,7 @@ export async function getListById(id: string): Promise<List | false> {
   const result = await prisma.list.findUnique({
     where: { id },
     include: {
-      members: { include: { user: true } },
+      members: { include: { user: true, role: true } },
       sections: {
         include: {
           items: {
@@ -101,7 +102,7 @@ export async function getListBySectionId(id: string): Promise<List | false> {
   const result = await prisma.list.findFirst({
     where: { sections: { some: { id } } },
     include: {
-      members: { include: { user: true } },
+      members: { include: { user: true, role: true } },
       sections: {
         include: {
           items: {
@@ -133,7 +134,8 @@ export async function getListMembersByUser(
   userId: string
 ): Promise<{ [id: string]: Omit<ListMember, 'user'>[] }> {
   const result = await prisma.listMember.findMany({
-    where: { userId }
+    where: { userId },
+    include: { role: true }
   });
 
   const returnVal: { [id: string]: Omit<ListMember, 'user'>[] } = {};
@@ -146,34 +148,13 @@ export async function getListMembersByUser(
   return returnVal;
 }
 
-export async function getListMember(
-  userId: string,
-  listId: string
-): Promise<Omit<ListMember, 'user'> | false> {
-  const result = await prisma.listMember.findUnique({
-    where: { userId_listId: { userId, listId } }
-  });
-
-  return result ?? false;
-}
-
-export async function getListMemberByItem(
-  userId: string,
-  itemId: string
-): Promise<Omit<ListMember, 'user'> | false> {
-  const result = await prisma.listMember.findFirst({
-    where: {
-      userId,
-      list: {
-        sections: { some: { items: { some: { id: itemId } } } }
-      }
-    }
-  });
-
-  return result ?? false;
-}
-
-export async function getIsListAssignee(
+/**
+ * Checks whether the given user is a member of the given list
+ *
+ * @param userId The user to check
+ * @param listId The list to check membership on
+ */
+export async function getIsListMember(
   userId: string,
   listId: string
 ): Promise<boolean> {
@@ -184,7 +165,30 @@ export async function getIsListAssignee(
   return result > 0;
 }
 
-export async function getIsListAssigneeByItem(
+/**
+ * Checks whether the user is a member of all given lists
+ *
+ * @param userId The user to check
+ * @param listIds The lists to check membership on
+ */
+export async function getIsAllListsMember(
+  userId: string,
+  listIds: string[]
+): Promise<boolean> {
+  const result = await prisma.list.count({
+    where: { id: { in: listIds }, members: { some: { userId } } }
+  });
+
+  return result === listIds.length;
+}
+
+/**
+ * Checks whether the given user is a member of the list that the given item belongs to
+ *
+ * @param userId The user to check
+ * @param itemId The item in the list to check membership on
+ */
+export async function getIsListMemberByItem(
   userId: string,
   itemId: string
 ): Promise<boolean> {
@@ -198,6 +202,11 @@ export async function getIsListAssigneeByItem(
   return result > 0;
 }
 
+/**
+ * Gets a tag's data from its ID, if there's a tag with that ID in the database
+ *
+ * @param id The ID of the tag to fetch
+ */
 export async function getTagById(id: string): Promise<Tag | false> {
   const result = await prisma.tag.findUnique({
     where: { id }
@@ -206,6 +215,13 @@ export async function getTagById(id: string): Promise<Tag | false> {
   return result ?? false;
 }
 
+/**
+ * Gets all tags for all lists that the user is a member of
+ *
+ * @param userId The user to fetch tags for
+ * @returns An object of all tags, where each key is a list ID and its value is an array
+ *  of all tags belonging to that list
+ */
 export async function getTagsByUser(
   userId: string
 ): Promise<{ [id: string]: Tag[] } | false> {
@@ -225,6 +241,11 @@ export async function getTagsByUser(
   return returnVal;
 }
 
+/**
+ * Gets all tags for a specific list, if the list exists
+ *
+ * @param id The list to get tags for
+ */
 export async function getTagsByListId(id: string): Promise<Tag[] | false> {
   const result = await prisma.tag.findMany({
     where: { listId: id },
@@ -234,6 +255,12 @@ export async function getTagsByListId(id: string): Promise<Tag[] | false> {
   return result ?? false;
 }
 
+/**
+ * Updates a list's metadata to match the given list object
+ *
+ * @param list The new list data
+ * @returns Whether the database accepted the update
+ */
 export async function updateList(
   list: Omit<List, 'members' | 'sections'>
 ): Promise<boolean> {
@@ -254,6 +281,12 @@ export async function updateList(
   return true;
 }
 
+/**
+ * Updates a tag's data to match the given tag object
+ *
+ * @param tag The new tag data
+ * @returns Whether the database accepted the update
+ */
 export async function updateTag(tag: Tag): Promise<boolean> {
   try {
     await prisma.tag.update({
@@ -267,16 +300,43 @@ export async function updateTag(tag: Tag): Promise<boolean> {
   return true;
 }
 
+/**
+ * Updates a list member's permissions to match the given object
+ *
+ * @param listId The list to update the membership permissions on
+ * @param userId The user to update the membership permissions of
+ * @param member The new membership permissions
+ * @returns Whether the database accepted the update
+ */
 export async function updateListMember(
   listId: string,
   userId: string,
-  member: Omit<ListMember, 'user'>
+  roleId: string
 ): Promise<boolean> {
   try {
-    await prisma.listMember.update({
-      where: { userId_listId: { userId, listId } },
-      data: { ...member }
-    });
+    await prisma.$transaction(
+      async tx => {
+        // Prevent race conditions removing all admins by locking admin rows for
+        // full transaction duration
+        await tx.$queryRaw`
+          SELECT \`userId\` FROM \`ListMember\`
+          WHERE \`listId\` = ${listId} AND \`name\` = 'Admin'
+          FOR UPDATE;
+        `;
+
+        await tx.listMember.update({
+          where: { userId_listId: { userId, listId } },
+          data: { roleId }
+        });
+
+        const admins = await tx.listMember.count({
+          where: { listId, role: { name: 'Admin' } }
+        });
+
+        if (admins < 1) throw new Error('Must have an admin for the list');
+      },
+      { isolationLevel: Prisma.TransactionIsolationLevel.ReadCommitted }
+    );
   } catch {
     return false;
   }
@@ -284,6 +344,12 @@ export async function updateListMember(
   return true;
 }
 
+/**
+ * Deletes the given list and all of its data
+ *
+ * @param id The list to delete
+ * @returns Whether the database accepted the deletion
+ */
 export async function deleteList(id: string): Promise<boolean> {
   try {
     await prisma.list.delete({ where: { id } });
@@ -294,6 +360,12 @@ export async function deleteList(id: string): Promise<boolean> {
   return true;
 }
 
+/**
+ * Deletes a given tag and all links of that tag to items
+ *
+ * @param id The tag to delete
+ * @returns Whether the database accepted the deletion
+ */
 export async function deleteTag(id: string): Promise<boolean> {
   try {
     await prisma.tag.delete({ where: { id } });

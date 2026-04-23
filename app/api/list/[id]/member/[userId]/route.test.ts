@@ -16,224 +16,69 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {
-  getIsListAssignee,
-  getListMember,
-  updateListMember
-} from '@/lib/database/list';
+import { getIsListMember, updateListMember } from '@/lib/database/list';
 import User from '@/lib/model/user';
 import { getUser } from '@/lib/session';
-import ListMember from '@/lib/model/listMember';
+import { getRoleByList } from '@/lib/database/user';
+import MemberRole from '@/lib/model/memberRole';
 
 import { PATCH } from './route';
 
-const MOCK_MEMBER = new ListMember(
-  new User(
-    'username',
-    'email@example.com',
-    'password',
-    new Date(),
-    new Date(),
-    { color: 'Amber' }
-  ),
-  true,
+const MOCK_USER = new User(
+  'abcdefg',
+  'username',
+  'email@example.com',
   false,
-  true,
-  false
+  new Date(),
+  new Date(),
+  { color: 'Amber' }
+);
+const MOCK_ROLE_CAN_MANAGE_MEMBERS = new MemberRole(
+  'MemberManager',
+  ' Manages members and nothing else',
+  { canManageMembers: true }
 );
 const MEMBER_PATH =
-  `http://localhost/api/list/some-list-id/member/${MOCK_MEMBER.user.id}` as const;
+  `http://localhost/api/list/some-list-id/member/${MOCK_USER.id}` as const;
 
-jest.mock('@/lib/session');
-jest.mock('@/lib/database/list');
+vi.mock('@/lib/session');
+vi.mock('@/lib/database/list');
+vi.mock('@/lib/database/user');
 
 beforeEach(() => {
-  jest.resetAllMocks();
+  vi.resetAllMocks();
 });
 
 describe('PATCH', () => {
-  test('Allows updating canAdd without altering other fields', async () => {
-    (getUser as jest.Mock).mockReturnValue(MOCK_MEMBER.user);
-    (getIsListAssignee as jest.Mock).mockReturnValue(true);
-    (getListMember as jest.Mock).mockReturnValue(structuredClone(MOCK_MEMBER));
-    (updateListMember as jest.Mock).mockReturnValue(true);
+  test('Allows updating the role a member has', async () => {
+    vi.mocked(getUser).mockResolvedValue(MOCK_USER);
+    vi.mocked(getRoleByList).mockResolvedValue(MOCK_ROLE_CAN_MANAGE_MEMBERS);
+    vi.mocked(getIsListMember).mockResolvedValue(true);
+    vi.mocked(updateListMember).mockResolvedValue(true);
 
     const response = await PATCH(
       new Request(MEMBER_PATH, {
         method: 'patch',
-        body: JSON.stringify({ canAdd: false })
+        body: JSON.stringify({ roleId: 'a-16-chr-test-id' })
       }),
       {
         params: Promise.resolve({
           id: 'some-list-id',
-          userId: MOCK_MEMBER.user.id
+          userId: MOCK_USER.id
         })
       }
     );
 
     expect(response.status).toBe(200);
-    expect(updateListMember).toHaveBeenCalledTimes(1);
-    expect(updateListMember).toHaveBeenCalledWith(
+    expect(updateListMember).toHaveBeenCalledExactlyOnceWith(
       'some-list-id',
-      MOCK_MEMBER.user.id,
-      expect.anything()
-    );
-    const options = (updateListMember as jest.Mock).mock.calls[0][2];
-
-    expect(options).toEqual(expect.objectContaining({ canAdd: false }));
-    expect(options).not.toEqual(expect.objectContaining({ canRemove: true }));
-    expect(options).not.toEqual(
-      expect.objectContaining({ canComplete: false })
-    );
-    expect(options).not.toEqual(expect.objectContaining({ canAssign: true }));
-  });
-
-  test('Allows updating canRemove without altering other fields', async () => {
-    (getUser as jest.Mock).mockReturnValue(MOCK_MEMBER.user);
-    (getIsListAssignee as jest.Mock).mockReturnValue(true);
-    (getListMember as jest.Mock).mockReturnValue(structuredClone(MOCK_MEMBER));
-    (updateListMember as jest.Mock).mockReturnValue(true);
-
-    const response = await PATCH(
-      new Request(MEMBER_PATH, {
-        method: 'patch',
-        body: JSON.stringify({ canRemove: true })
-      }),
-      {
-        params: Promise.resolve({
-          id: 'some-list-id',
-          userId: MOCK_MEMBER.user.id
-        })
-      }
-    );
-
-    expect(response.status).toBe(200);
-    expect(updateListMember).toHaveBeenCalledTimes(1);
-    expect(updateListMember).toHaveBeenCalledWith(
-      'some-list-id',
-      MOCK_MEMBER.user.id,
-      expect.anything()
-    );
-    const options = (updateListMember as jest.Mock).mock.calls[0][2];
-
-    expect(options).toEqual(expect.objectContaining({ canRemove: true }));
-    expect(options).not.toEqual(expect.objectContaining({ canAdd: false }));
-    expect(options).not.toEqual(
-      expect.objectContaining({ canComplete: false })
-    );
-    expect(options).not.toEqual(expect.objectContaining({ canAssign: true }));
-  });
-
-  test('Allows updating canComplete without altering other fields', async () => {
-    (getUser as jest.Mock).mockReturnValue(MOCK_MEMBER.user);
-    (getIsListAssignee as jest.Mock).mockReturnValue(true);
-    (getListMember as jest.Mock).mockReturnValue(structuredClone(MOCK_MEMBER));
-    (updateListMember as jest.Mock).mockReturnValue(true);
-
-    const response = await PATCH(
-      new Request(MEMBER_PATH, {
-        method: 'patch',
-        body: JSON.stringify({ canComplete: false })
-      }),
-      {
-        params: Promise.resolve({
-          id: 'some-list-id',
-          userId: MOCK_MEMBER.user.id
-        })
-      }
-    );
-
-    expect(response.status).toBe(200);
-    expect(updateListMember).toHaveBeenCalledTimes(1);
-    expect(updateListMember).toHaveBeenCalledWith(
-      'some-list-id',
-      MOCK_MEMBER.user.id,
-      expect.anything()
-    );
-    const options = (updateListMember as jest.Mock).mock.calls[0][2];
-
-    expect(options).toEqual(expect.objectContaining({ canComplete: false }));
-    expect(options).not.toEqual(expect.objectContaining({ canAdd: false }));
-    expect(options).not.toEqual(expect.objectContaining({ canRemove: true }));
-    expect(options).not.toEqual(expect.objectContaining({ canAssign: true }));
-  });
-
-  test('Allows updating canAssign without altering other fields', async () => {
-    (getUser as jest.Mock).mockReturnValue(MOCK_MEMBER.user);
-    (getIsListAssignee as jest.Mock).mockReturnValue(true);
-    (getListMember as jest.Mock).mockReturnValue(structuredClone(MOCK_MEMBER));
-    (updateListMember as jest.Mock).mockReturnValue(true);
-
-    const response = await PATCH(
-      new Request(MEMBER_PATH, {
-        method: 'patch',
-        body: JSON.stringify({ canAssign: true })
-      }),
-      {
-        params: Promise.resolve({
-          id: 'some-list-id',
-          userId: MOCK_MEMBER.user.id
-        })
-      }
-    );
-
-    expect(response.status).toBe(200);
-    expect(updateListMember).toHaveBeenCalledTimes(1);
-    expect(updateListMember).toHaveBeenCalledWith(
-      'some-list-id',
-      MOCK_MEMBER.user.id,
-      expect.anything()
-    );
-    const options = (updateListMember as jest.Mock).mock.calls[0][2];
-
-    expect(options).toEqual(expect.objectContaining({ canAssign: true }));
-    expect(options).not.toEqual(expect.objectContaining({ canAdd: false }));
-    expect(options).not.toEqual(expect.objectContaining({ canRemove: true }));
-    expect(options).not.toEqual(
-      expect.objectContaining({ canComplete: false })
-    );
-  });
-
-  test('Allows multiple field updates at the same time', async () => {
-    (getUser as jest.Mock).mockReturnValue(MOCK_MEMBER.user);
-    (getIsListAssignee as jest.Mock).mockReturnValue(true);
-    (getListMember as jest.Mock).mockReturnValue(structuredClone(MOCK_MEMBER));
-    (updateListMember as jest.Mock).mockReturnValue(true);
-
-    const response = await PATCH(
-      new Request(MEMBER_PATH, {
-        method: 'patch',
-        body: JSON.stringify({
-          canAdd: false,
-          canRemove: true,
-          canComplete: false,
-          canAssign: true
-        })
-      }),
-      {
-        params: Promise.resolve({
-          id: 'some-list-id',
-          userId: MOCK_MEMBER.user.id
-        })
-      }
-    );
-
-    expect(response.status).toBe(200);
-    expect(updateListMember).toHaveBeenCalledTimes(1);
-    expect(updateListMember).toHaveBeenCalledWith(
-      'some-list-id',
-      MOCK_MEMBER.user.id,
-      expect.objectContaining({
-        canAdd: false,
-        canRemove: true,
-        canComplete: false,
-        canAssign: true
-      })
+      MOCK_USER.id,
+      'a-16-chr-test-id'
     );
   });
 
   test('Rejects unauthenticated users', async () => {
-    (getUser as jest.Mock).mockReturnValue(false);
+    vi.mocked(getUser).mockResolvedValue(false);
 
     const response = await PATCH(
       new Request(MEMBER_PATH, {
@@ -243,7 +88,7 @@ describe('PATCH', () => {
       {
         params: Promise.resolve({
           id: 'some-list-id',
-          userId: MOCK_MEMBER.user.id
+          userId: MOCK_USER.id
         })
       }
     );
@@ -253,18 +98,18 @@ describe('PATCH', () => {
   });
 
   test('Rejects requests to modify lists not a member of', async () => {
-    (getUser as jest.Mock).mockReturnValue(MOCK_MEMBER.user);
-    (getIsListAssignee as jest.Mock).mockReturnValue(false);
+    vi.mocked(getUser).mockResolvedValue(MOCK_USER);
+    vi.mocked(getRoleByList).mockResolvedValue(false);
 
     const response = await PATCH(
       new Request(MEMBER_PATH, {
         method: 'patch',
-        body: JSON.stringify({ canAdd: false })
+        body: JSON.stringify({ roleId: 'a-16-chr-test-id' })
       }),
       {
         params: Promise.resolve({
           id: 'some-list-id',
-          userId: MOCK_MEMBER.user.id
+          userId: MOCK_USER.id
         })
       }
     );
@@ -274,19 +119,19 @@ describe('PATCH', () => {
   });
 
   test('Rejects requests to modify members not part of the list', async () => {
-    (getUser as jest.Mock).mockReturnValue(MOCK_MEMBER.user);
-    (getIsListAssignee as jest.Mock).mockReturnValue(true);
-    (getListMember as jest.Mock).mockReturnValue(false);
+    vi.mocked(getUser).mockResolvedValue(MOCK_USER);
+    vi.mocked(getRoleByList).mockResolvedValue(MOCK_ROLE_CAN_MANAGE_MEMBERS);
+    vi.mocked(getIsListMember).mockResolvedValue(false);
 
     const response = await PATCH(
       new Request(MEMBER_PATH, {
         method: 'patch',
-        body: JSON.stringify({ canAdd: false })
+        body: JSON.stringify({ roleId: 'a-16-chr-test-id' })
       }),
       {
         params: Promise.resolve({
           id: 'some-list-id',
-          userId: MOCK_MEMBER.user.id
+          userId: MOCK_USER.id
         })
       }
     );
@@ -296,9 +141,9 @@ describe('PATCH', () => {
   });
 
   test('Rejects requests with malformed bodies', async () => {
-    (getUser as jest.Mock).mockReturnValue(MOCK_MEMBER.user);
-    (getIsListAssignee as jest.Mock).mockReturnValue(true);
-    (getListMember as jest.Mock).mockReturnValue(structuredClone(MOCK_MEMBER));
+    vi.mocked(getUser).mockResolvedValue(MOCK_USER);
+    vi.mocked(getRoleByList).mockResolvedValue(MOCK_ROLE_CAN_MANAGE_MEMBERS);
+    vi.mocked(getIsListMember).mockResolvedValue(true);
 
     const response = await PATCH(
       new Request(MEMBER_PATH, {
@@ -308,7 +153,7 @@ describe('PATCH', () => {
       {
         params: Promise.resolve({
           id: 'some-list-id',
-          userId: MOCK_MEMBER.user.id
+          userId: MOCK_USER.id
         })
       }
     );
@@ -318,20 +163,20 @@ describe('PATCH', () => {
   });
 
   test('Warns the user if updating the member failed', async () => {
-    (getUser as jest.Mock).mockReturnValue(MOCK_MEMBER.user);
-    (getIsListAssignee as jest.Mock).mockReturnValue(true);
-    (getListMember as jest.Mock).mockReturnValue(structuredClone(MOCK_MEMBER));
-    (updateListMember as jest.Mock).mockReturnValue(false);
+    vi.mocked(getUser).mockResolvedValue(MOCK_USER);
+    vi.mocked(getRoleByList).mockResolvedValue(MOCK_ROLE_CAN_MANAGE_MEMBERS);
+    vi.mocked(getIsListMember).mockResolvedValue(true);
+    vi.mocked(updateListMember).mockResolvedValue(false);
 
     const response = await PATCH(
       new Request(MEMBER_PATH, {
         method: 'patch',
-        body: JSON.stringify({ canAdd: false })
+        body: JSON.stringify({ roleId: 'a-16-chr-test-id' })
       }),
       {
         params: Promise.resolve({
           id: 'some-list-id',
-          userId: MOCK_MEMBER.user.id
+          userId: MOCK_USER.id
         })
       }
     );

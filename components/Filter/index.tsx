@@ -16,6 +16,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-'use client';
+export { default } from './FilterText';
 
-export { default as default } from './Filter';
+export {
+  type FilterConfig,
+  type FilterGroup,
+  type Filter,
+  ComparableFilterOperator,
+  DateFilterOperator,
+  MultiOptionFilterOperator,
+  OptionFilterOperator,
+  TextFilterOperator
+} from './types';

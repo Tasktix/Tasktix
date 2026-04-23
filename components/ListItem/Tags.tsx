@@ -50,10 +50,21 @@ export default function Tags({
   className?: string;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
   linkTag: (id: string) => unknown;
-  linkNewTag?: (id: string, name: string, color: NamedColor) => unknown;
+  linkNewTag?: (
+    id: string,
+    name: string,
+    color: NamedColor
+  ) => Promise<unknown>;
   unlinkTag: (id: string) => unknown;
 }) {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+
+  const tagsMap = Object.fromEntries((tagsAvailable ?? []).map(t => [t.id, t]));
+
+  const displayTags = tags
+    .map(tag => tagsMap[tag.id])
+    .filter(Boolean)
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   return (
     <Popover
@@ -66,27 +77,27 @@ export default function Tags({
     >
       <PopoverTrigger>
         <Button
+          aria-label='Update tags'
           className={`px-4 basis-1/6 grow shrink flex flex-row items-center justify-start overflow-hidden flex-nowrap h-10 shadow-none cursor-pointer bg-transparent ${isComplete ? 'opacity-50 cursor-default' : 'hover:bg-foreground/10 focus:z-10 focus:outline-2 focus:outline-focus focus:outline-offset-2'} ${className}`}
+          isDisabled={isComplete}
           tabIndex={isComplete ? 1 : 0}
         >
           <TagsIcon className='shrink-0' />
           <span className='ml-2 flex flex-row items-center justify-start overflow-hidden flex-nowrap'>
-            {tags
-              .sort((a, b) => (a.name > b.name ? 1 : -1))
-              .map(tag => (
-                <Chip
-                  key={tag.id}
-                  classNames={{
-                    dot: getBackgroundColor(tag.color),
-                    base: 'border-0',
-                    content: getTextColor(tag.color)
-                  }}
-                  size='sm'
-                  variant='dot'
-                >
-                  {tag.name}
-                </Chip>
-              ))}
+            {displayTags.map(tagDetail => (
+              <Chip
+                key={tagDetail.id}
+                classNames={{
+                  dot: getBackgroundColor(tagDetail.color),
+                  base: 'border-0',
+                  content: getTextColor(tagDetail.color)
+                }}
+                size='sm'
+                variant='dot'
+              >
+                {tagDetail.name}
+              </Chip>
+            ))}
           </span>
         </Button>
       </PopoverTrigger>
@@ -101,6 +112,7 @@ export default function Tags({
               {tag.name}
               <Button
                 isIconOnly
+                aria-label={`Remove ${tag.name} from item`}
                 className='rounded-lg w-8 h-8 min-w-8 min-h-8'
                 color='danger'
                 variant='flat'
@@ -124,6 +136,7 @@ export default function Tags({
                       {tag.name}
                       <Button
                         isIconOnly
+                        aria-label={`Add ${tag.name} to item`}
                         className='rounded-lg w-8 h-8 min-w-8 min-h-8'
                         color='primary'
                         variant='flat'
@@ -136,10 +149,13 @@ export default function Tags({
               })
           : null}
         <TagInput
-          addNewTag={addNewTag}
           className='p-1.5 pl-1'
           classNames={{ name: 'w-24' }}
-          linkNewTag={linkNewTag}
+          onTagCreated={async (name, color) => {
+            const id = await addNewTag(name, color);
+
+            if (linkNewTag) await linkNewTag(id, name, color);
+          }}
         />
       </PopoverContent>
     </Popover>

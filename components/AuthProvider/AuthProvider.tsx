@@ -20,6 +20,9 @@
 
 import { useState, ReactNode, useMemo } from 'react';
 
+import User from '@/lib/model/user';
+import { OAuthConfig } from '@/lib/auth';
+
 import { AuthContext } from './authContext';
 
 /**
@@ -27,20 +30,26 @@ import { AuthContext } from './authContext';
  * in the top-level Next.js layout file.
  *
  * @param children The React tree that should be able to use the auth context
- * @param isLoggedInAtStart Whether the user is logged in on first render
+ * @param loggedInUserAtStart The logged in user, if any, on first render
+ * @param oauthConfig The OAuth providers that the server has configured
  */
 export default function AuthProvider({
   children,
-  isLoggedInAtStart
+  loggedInUserAtStart,
+  oauthConfig
 }: {
   children: ReactNode;
-  isLoggedInAtStart: boolean;
+  loggedInUserAtStart: User | false;
+  oauthConfig: OAuthConfig;
 }) {
-  const [isLoggedIn, setIsLoggedIn] = useState(isLoggedInAtStart);
+  const [loggedInUser, setLoggedInUser] = useState(loggedInUserAtStart);
 
   return (
     <AuthContext.Provider
-      value={useMemo(() => ({ isLoggedIn, setIsLoggedIn }), [isLoggedIn])}
+      value={useMemo(
+        () => ({ loggedInUser, setLoggedInUser, oauthConfig }),
+        [loggedInUser, oauthConfig]
+      )}
     >
       {children}
     </AuthContext.Provider>

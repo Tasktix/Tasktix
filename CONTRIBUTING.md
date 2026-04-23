@@ -67,10 +67,14 @@ the leading verb in your title:
 - `fix`: A bug is resolved
 - `perf`: Only performance improvements; no external/user impact (besides quicker responses)
 - `docs`: Only documentation changes; no external/user impact
-- `style`: Only stylistic changes; no external/user impact
+- `style`: Only UI stylistic changes; no external/user impact
 - `refactor`: Only code structure changes; no external/user impact
 - `test`: Only test coverage improvements; no external/user impact
 - `chore`: Misc. changes that don't fit other categories; no external/user impact
+
+This should be followed by an exclamation point (`!`) if your PR introduces breaking (i.e.
+non-backward compatible) changes. In all cases, this prefix should then be followed by a
+colon and space (`: `) and a title explaining the purpose of the PR.
 
 ### Documentation
 
@@ -101,18 +105,35 @@ run all tests on the repo to validate your PR will pass testing, simply use:
 npm test
 ```
 
-- **Jest** should be used for unit tests. To run just Jest tests, run:
+- **Vitest** should be used for unit tests. To run just Vitest tests, run:
   ```bash
-  npm run test:jest
+  npm run test:vi
   ```
 - **Cypress** should be used for end-to-end tests. To view Cypress tests live for easy
   development/iteration, run:
+
+  > [!NOTE]
+  >
+  > Cypress **does not** work in dev containers.
+  >
+  > - If you are using a local dev container: simply open a terminal in the directory
+  >   where the project lives on your host machine to run these commands. (Note that this
+  >   will tear down your dev container while the tests are running. If you are iterating
+  >   on tests, it is likely best to open the project in an IDE on your host machine
+  >   rather than the dev container.)
+  > - If you are using GitHub Codespaces: clone the repo, check out your branch, and
+  >   change the [base URL in Cypress' config](./cypress.config.ts#L26) to match the
+  >   website preview URL from the codespace. Then run `npm run cy:open` on your host
+  >   machine to open Cypress and run tests against the Codespace.
+
   ```bash
   npm run start:test
   npm run cy:open
   npm run stop:test
   ```
+
   Or, for quick runs, run:
+
   ```bash
   npm run test:cy
   ```

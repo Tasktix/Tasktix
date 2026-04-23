@@ -1,0 +1,166 @@
+/**
+ * Tasktix: A powerful and flexible task-tracking tool for all.
+ * Copyright (C) 2025 Nate Baird & other Tasktix contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+import { formatTime } from '@/lib/date';
+
+import {
+  DateFilterOperator,
+  Filter,
+  FilterGroup,
+  OptionFilterOperator
+} from './types';
+
+export const LABEL_COLOR = 'text-primary-600' as const;
+export const OPERATOR_COLOR = 'text-primary' as const;
+export const PRIMITIVE_COLOR = 'text-green-800 dark:text-green-200' as const;
+export const STRING_COLOR = 'text-warning-700 dark:text-warning-200' as const;
+
+/**
+ * Pretty-prints the filter state as syntax-highlighted query language
+ *
+ * @param filters The filters to pretty-print
+ */
+export default function FilterText({ filters }: { filters: FilterGroup }) {
+  return (
+    <span className='font-mono'>
+      {filters.filters.map((f, i) => (
+        <>
+          {f && 'filters' in f ? (
+            <>
+              {'( '}
+              <FilterText filters={f} />
+              {' )'}
+            </>
+          ) : (
+            <FilterInputText key={f.id} filter={f} />
+          )}
+          {i < filters.filters.length - 1 && (
+            <>
+              {' '}
+              <span className={OPERATOR_COLOR}>
+                {filters.operator.toUpperCase()}
+              </span>{' '}
+            </>
+          )}
+        </>
+      ))}
+    </span>
+  );
+}
+
+/**
+ * Pretty-prints the filter as syntax-highlighted query language
+ *
+ * @param filter The filter to pretty-print
+ */
+export function FilterInputText({ filter }: { filter: Filter }) {
+  const operator = filter.operator.replace('@dow', '=');
+  let value = <span />;
+
+  switch (filter.type) {
+    case 'text':
+      value = (
+        <span className={STRING_COLOR}>
+          &quot;{filter.value.replaceAll('"', '\\"')}&quot;
+        </span>
+      );
+      break;
+
+    case 'number':
+      value = <span className={PRIMITIVE_COLOR}>{filter.value}</span>;
+      break;
+
+    case 'color':
+      value = (
+        <span className={STRING_COLOR}>
+          &quot;{filter.value.replaceAll('"', '\\"')}&quot;
+        </span>
+      );
+      break;
+
+    case 'option':
+      if (
+        filter.operator === OptionFilterOperator.Equal ||
+        filter.operator === OptionFilterOperator.NotEqual
+      )
+        value = (
+          <span className={STRING_COLOR}>
+            &quot;{filter.value.replaceAll('"', '\\"')}&quot;
+          </span>
+        );
+      if (
+        filter.operator === OptionFilterOperator.In ||
+        filter.operator === OptionFilterOperator.NotIn
+      )
+        value = (
+          <span className={STRING_COLOR}>
+            &#123;&quot;
+            {filter.value.map(v => v.replaceAll('"', '\\"')).join('", "')}
+            &quot;&#125;
+          </span>
+        );
+      break;
+
+    case 'multi-option':
+      value = (
+        <span className={STRING_COLOR}>
+          &#123;&quot;
+          {filter.value.map(v => v.replaceAll('"', '\\"')).join('", "')}
+          &quot;&#125;
+        </span>
+      );
+      break;
+
+    case 'date':
+      if (
+        filter.operator === DateFilterOperator.DayOfWeek ||
+        filter.operator === DateFilterOperator.NotDayOfWeek
+      )
+        value = <span className={PRIMITIVE_COLOR}>{filter.value}</span>;
+
+      if (
+        filter.operator === DateFilterOperator.Equal ||
+        filter.operator === DateFilterOperator.NotEqual ||
+        filter.operator === DateFilterOperator.GreaterThan ||
+        filter.operator === DateFilterOperator.GreaterThanEqual ||
+        filter.operator === DateFilterOperator.LessThan ||
+        filter.operator === DateFilterOperator.LessThanEqual
+      )
+        value = (
+          <span className={PRIMITIVE_COLOR}>
+            {filter.value.toLocaleDateString()}
+          </span>
+        );
+      break;
+
+    case 'time':
+      value = (
+        <span className={PRIMITIVE_COLOR}>
+          {formatTime(filter.value * 1000)}
+        </span>
+      );
+      break;
+  }
+
+  return (
+    <span className='whitespace-nowrap'>
+      <span className={LABEL_COLOR}>{filter.label}</span>{' '}
+      <span className={OPERATOR_COLOR}>{operator}</span> {value}
+    </span>
+  );
+}

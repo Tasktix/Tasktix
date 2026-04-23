@@ -18,18 +18,22 @@
 
 'use client';
 
-import { useReducer } from 'react';
+import { useEffect, useReducer, useState } from 'react';
+import { MemberRole } from '@prisma/client';
 
 import AddListSection from '@/components/AddListSection';
 import Filter from '@/components/Filter';
 import ListSettings from '@/components/ListSettings';
 import ListModel from '@/lib/model/list';
 import Tag from '@/lib/model/tag';
+import ListItem from '@/lib/model/listItem';
+import { subscribe } from '@/lib/sse/client';
 
 import ListSection from '../ListSection/ListSection';
 
 import listReducer from './listReducer';
 import { listHandlerFactory } from './handlerFactory';
+import { ListState } from './types';
 
 /**
  * This component provides the full list GUI: filters, settings, each section and its
@@ -47,15 +51,23 @@ import { listHandlerFactory } from './handlerFactory';
  */
 export default function List({
   startingList,
-  startingTagsAvailable
+  startingTagsAvailable,
+  startingRoles
 }: {
   startingList: string;
   startingTagsAvailable: string;
+  startingRoles: string;
 }) {
   const builtList = JSON.parse(startingList) as ListModel;
+  const builtSections: ListState['list']['sections'] = new Map();
+  const builtRoles = new Map(
+    (JSON.parse(startingRoles) as MemberRole[]).map(role => [role.id, role])
+  );
 
-  // Rebuild Date objects turned to JSON strings
+  // Rebuild Date objects turned to JSON strings & convert arrays to Maps
   for (const section of builtList.sections) {
+    const builtItems: Map<string, ListItem> = new Map();
+
     for (const item of section.items) {
       item.dateCreated = new Date(item.dateCreated);
       item.dateDue = item.dateDue ? new Date(item.dateDue) : null;
@@ -63,15 +75,20 @@ export default function List({
       item.dateCompleted = item.dateCompleted
         ? new Date(item.dateCompleted)
         : null;
+
+      builtItems.set(item.id, item);
     }
+    builtSections.set(section.id, { ...section, items: builtItems });
   }
 
   const [{ list, tagsAvailable }, dispatchList] = useReducer(listReducer, {
-    list: builtList,
+    list: { ...builtList, sections: builtSections },
     tagsAvailable: JSON.parse(startingTagsAvailable) as Tag[]
   });
 
   const listHandlers = listHandlerFactory(list.id, dispatchList);
+
+  useEffect(() => subscribe([list.id], dispatchList), [list.id]);
 
   return (
     <>
@@ -87,34 +104,34 @@ export default function List({
           listId={list.id}
           listName={list.name}
           members={list.members}
+          roles={builtRoles}
           setListName={listHandlers.setName}
           tagsAvailable={tagsAvailable}
         />
       </span>
 
-      {list.sections.map(section => (
+      {Array.from(list.sections.values()).map(section => (
         <ListSection
           key={section.id}
-          addNewTag={listHandlers.addNewTag}
-          deleteSection={listHandlers.deleteListSection.bind(null, section.id)}
-          filters={{}}
+          dispatchItemChange={dispatchList}
+          dispatchSectionChange={dispatchList}
+          filters={filters}
           hasDueDates={list.hasDueDates}
           hasTimeTracking={list.hasTimeTracking}
-          id={section.id}
           isAutoOrdered={list.isAutoOrdered}
           listId={list.id}
           members={list.members}
-          name={section.name}
-          startingItems={section.items}
+          section={section}
           tagsAvailable={tagsAvailable}
+          onTagCreate={listHandlers.addNewTag}
         />
       ))}
 
       <AddListSection
-        addListSection={section =>
+        listId={list.id}
+        onSectionAdded={section =>
           dispatchList({ type: 'AddSection', section })
         }
-        listId={list.id}
       />
     </>
   );

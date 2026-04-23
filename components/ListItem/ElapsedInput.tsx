@@ -34,18 +34,12 @@ export default function ElapsedInput({
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <Popover
-      isOpen={isOpen}
-      placement='bottom'
-      onOpenChange={open => {
-        if (!disabled) setIsOpen(open);
-      }}
-    >
+    <Popover isOpen={isOpen} placement='bottom' onOpenChange={setIsOpen}>
       <PopoverTrigger className='-mx-2 -px-2'>
         <Button
           isIconOnly
-          className={`w-fit !px-2 bg-transparent p-0 ${disabled ? '' : 'hover:bg-foreground/10'}`}
-          disabled={disabled}
+          className='w-fit !px-2 bg-transparent p-0'
+          isDisabled={disabled}
           tabIndex={0}
         >
           <Time label='Elapsed' ms={ms} />

@@ -18,26 +18,20 @@
 
 'use server';
 
+import MemberRole from '@/lib/model/memberRole';
 import User from '@/lib/model/user';
 
 import { prisma } from './db_connect';
 
-export async function createUser(user: User): Promise<boolean> {
-  try {
-    await prisma.user.create({
-      data: user
-    });
-  } catch {
-    return false;
-  }
-
-  return true;
-}
-
-export async function updateUser(user: User): Promise<boolean> {
+/**
+ * Updates a user Color in the database
+ * Custom implementation necessary because BetterAuth doesn't provide API for modifying custom Fields
+ * @param user the user to update the color of. the new Color should be set on this User object
+ */
+export async function updateUserColor(user: User): Promise<boolean> {
   const result = await prisma.user.update({
     where: { id: user.id },
-    data: user
+    data: { color: user.color }
   });
 
   return Boolean(result);
@@ -57,21 +51,117 @@ export async function getUserByUsername(
   return result ?? false;
 }
 
+/**
+ * Returns a User object associated with email
+ * Custom Implementation as querying an email is not supported by betterauth
+ * @param email The email to query for
+ */
 export async function getUserByEmail(email: string): Promise<User | false> {
   const result = await prisma.user.findUnique({ where: { email } });
 
   return result ?? false;
 }
 
-export async function getUserBySessionId(id: string): Promise<User | false> {
-  const result = await prisma.session.findUnique({
-    where: { id },
-    include: { user: true }
+/**
+ * Gets all roles a member can have
+ */
+export async function getAvailableRoles(): Promise<MemberRole[] | false> {
+  const result = await prisma.memberRole.findMany();
+
+  return result ?? false;
+}
+
+/**
+ * Gets a specific member role's details
+ *
+ * @param id The ID of the role to get
+ */
+export async function getRole(id: string): Promise<MemberRole | false> {
+  const result = await prisma.memberRole.findUnique({ where: { id } });
+
+  return result ?? false;
+}
+
+/**
+ * Gets the Admin role (fully-permissioned user hardcoded into migrations)
+ */
+export async function getAdminRole(): Promise<MemberRole> {
+  return await prisma.memberRole.findUniqueOrThrow({
+    where: { name: 'Admin' }
+  });
+}
+
+/**
+ * Gets the given user's role (permissions) for the list that the given item belongs to
+ *
+ * @param userId The user to retrieve the role for
+ * @param itemId The item to find the list to retrieve the role for
+ */
+export async function getRoleByItem(
+  userId: string,
+  itemId: string
+): Promise<MemberRole | false> {
+  const result = await prisma.memberRole.findFirst({
+    where: {
+      listMembers: {
+        some: {
+          userId,
+          list: {
+            sections: { some: { items: { some: { id: itemId } } } }
+          }
+        }
+      }
+    }
   });
 
-  if (!result) return false;
+  return result ?? false;
+}
 
-  if (result.dateExpire.getTime() < Date.now()) return false;
+/**
+ * Gets the given user's role (permissions) for the list that the given tag belongs to
+ *
+ * @param userId The user to retrieve the role for
+ * @param tagId The tag to find the list to retrieve the role for
+ */
+export async function getRoleByTag(
+  userId: string,
+  tagId: string
+): Promise<MemberRole | false> {
+  const result = await prisma.memberRole.findFirst({
+    where: {
+      listMembers: {
+        some: {
+          userId,
+          list: {
+            sections: {
+              some: { items: { some: { tags: { some: { id: tagId } } } } }
+            }
+          }
+        }
+      }
+    }
+  });
 
-  return result.user;
+  return result ?? false;
+}
+
+/**
+ * Gets the given user's role (permissions) for the given list
+ *
+ * @param userId The user to retrieve the role for
+ * @param listId The list to retrieve the role for
+ */
+export async function getRoleByList(
+  userId: string,
+  listId: string
+): Promise<MemberRole | false> {
+  const result = await prisma.memberRole.findFirst({
+    where: {
+      listMembers: {
+        some: { userId, list: { id: listId } }
+      }
+    }
+  });
+
+  return result ?? false;
 }

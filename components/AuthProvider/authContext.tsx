@@ -18,11 +18,16 @@
 
 import { createContext } from 'react';
 
+import User from '@/lib/model/user';
+import { OAuthConfig } from '@/lib/auth';
+
 interface AuthContextType {
-  isLoggedIn: boolean;
-  setIsLoggedIn: (_: boolean) => void;
+  loggedInUser: User | false;
+  setLoggedInUser: (_: User | false) => void;
+  oauthConfig: OAuthConfig;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(
+  // Typescript compiler requires default value skipcq: JS-W1042
   undefined
 );

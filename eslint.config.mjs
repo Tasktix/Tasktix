@@ -21,10 +21,10 @@ import nextCoreWebVitals from 'eslint-config-next/core-web-vitals';
 import nextTypescript from 'eslint-config-next/typescript';
 import headers from 'eslint-plugin-headers';
 import _import from 'eslint-plugin-import';
-import jest from 'eslint-plugin-jest';
 import prettier from 'eslint-plugin-prettier/recommended';
 import unusedImports from 'eslint-plugin-unused-imports';
 import tseslint from 'typescript-eslint';
+import vitest from '@vitest/eslint-plugin';
 
 export default defineConfig([
   ...nextCoreWebVitals,
@@ -104,11 +104,6 @@ export default defineConfig([
           next: ['const', 'let', 'var']
         }
       ],
-      '@typescript-eslint/no-unsafe-assignment': 'warn', // Creating problems for Jest mocks
-      '@typescript-eslint/no-unsafe-member-access': 'warn', // Creating problems for Jest mocks
-      '@typescript-eslint/no-unsafe-argument': 'warn', // Creating problems for Jest mocks
-      '@typescript-eslint/no-unsafe-return': 'warn', // Creating problems for Jest mocks
-      '@typescript-eslint/no-unsafe-call': 'warn', // Creating problems for Jest mocks
       '@typescript-eslint/no-unused-vars': [
         'error',
         {
@@ -118,6 +113,12 @@ export default defineConfig([
         }
       ],
       '@typescript-eslint/switch-exhaustiveness-check': 'error'
+    }
+  },
+  {
+    files: ['app/api/**/*.ts', 'lib/database/**/*.ts'],
+    rules: {
+      'no-console': 'off' // Allow  console.log statements when running on server only
     }
   },
   {
@@ -144,7 +145,7 @@ export default defineConfig([
   },
   {
     files: ['**/*.test.ts'],
-    ...jest.configs['flat/recommended']
+    ...vitest.configs.recommended
   },
   {
     ...prettier,

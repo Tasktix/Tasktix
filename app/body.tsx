@@ -33,21 +33,30 @@ import {
   Avatar
 } from '@heroui/react';
 import { useRouter } from 'next/navigation';
-import { ReactNode } from 'react';
+import { ReactNode, startTransition } from 'react';
 import Image from 'next/image';
+import { DoorClosedFill, PersonFill } from 'react-bootstrap-icons';
 
-import { default as api } from '@/lib/api';
 import ThemeSwitcher from '@/components/ThemeSwitcher';
 import { useAuth } from '@/components/AuthProvider';
+import { getBackgroundColor } from '@/lib/color';
+import { authClient } from '@/lib/auth-client';
 
+/**
+ * Main Layout of Tasktix Application
+ * @param children - main page content to be rendered
+ */
 export default function Body({ children }: Readonly<{ children: ReactNode }>) {
+  const { loggedInUser } = useAuth();
+  const logoHref = loggedInUser ? '/list' : '/about';
+
   return (
     <div className='flex flex-col h-screen'>
       <Navbar maxWidth='full'>
         <NavbarBrand
           as={Link}
           className='flex flex-row justify-left items-center gap-2'
-          href='/'
+          href={logoHref}
         >
           <Image
             priority
@@ -99,22 +108,35 @@ export default function Body({ children }: Readonly<{ children: ReactNode }>) {
   );
 }
 
+/**
+ * Renders Account Icon in Tasktix Navbar
+ */
 function AccountButton() {
-  const { isLoggedIn, setIsLoggedIn } = useAuth();
+  const { loggedInUser, setLoggedInUser } = useAuth();
 
   const router = useRouter();
 
+  /**
+   * Handles clicking of Logout button on Profile Icon dropdown
+   * Sings out user, redirects to Home/About page and suppreses errors
+   */
   function handleClick() {
-    api
-      .delete('/session')
-      .catch(_ => {})
-      .finally(() => {
-        setIsLoggedIn(false);
-        router.replace('/');
+    startTransition(async () => {
+      await authClient.signOut({
+        fetchOptions: {
+          onSuccess: () => {
+            setLoggedInUser(false);
+            router.push('/');
+          },
+          onError: () => {
+            /* suppress errors on logout */
+          }
+        }
       });
+    });
   }
 
-  if (!isLoggedIn)
+  if (!loggedInUser)
     return (
       <Button
         key='signIn'
@@ -126,18 +148,35 @@ function AccountButton() {
         Sign In
       </Button>
     );
-  //TODO: Set the profile color to 'user.color'. This will be changed when we implement user-set colors.
 
   return (
-    <Dropdown>
+    <Dropdown aria-label='Profile Dropdown'>
       <DropdownTrigger>
-        <Avatar key='profile' color='primary' />
+        <Avatar
+          key='profile'
+          isIconOnly
+          aria-label='Profile Actions Dropdown'
+          as={Button}
+          className={getBackgroundColor(loggedInUser.color)}
+          name={loggedInUser.username ?? loggedInUser.name}
+          src={loggedInUser.image ?? undefined}
+        />
       </DropdownTrigger>
-      <DropdownMenu aria-label='Static Actions' color='primary'>
-        <DropdownItem key='settings' href='/profile'>
+      <DropdownMenu aria-label='User Actions'>
+        <DropdownItem
+          key='settings'
+          href='/profile'
+          startContent={<PersonFill />}
+        >
           Profile
         </DropdownItem>
-        <DropdownItem key='signOut' onPress={handleClick}>
+        <DropdownItem
+          key='signOut'
+          className='text-danger'
+          color='danger'
+          startContent={<DoorClosedFill />}
+          onPress={handleClick}
+        >
           Log Out
         </DropdownItem>
       </DropdownMenu>

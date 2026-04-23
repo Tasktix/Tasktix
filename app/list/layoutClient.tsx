@@ -21,6 +21,7 @@
 import { ReactNode, useReducer } from 'react';
 
 import Sidebar, { listReducer, ListContext } from '@/components/Sidebar';
+import List from '@/lib/model/list';
 
 export default function LayoutClient({
   startingLists,
@@ -31,7 +32,7 @@ export default function LayoutClient({
 }) {
   const [lists, dispatchEvent] = useReducer(
     listReducer,
-    JSON.parse(startingLists)
+    JSON.parse(startingLists) as List[]
   );
 
   return (

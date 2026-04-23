@@ -38,19 +38,19 @@ import { Check } from 'react-bootstrap-icons';
  */
 export default function ConfirmedTextInput({
   value,
+  'aria-label': ariaLabel,
   label,
-  showLabel,
   labelPlacement,
   showUnderline,
   disabled,
   className,
   classNames,
-  variant,
+  variant = 'underlined',
   updateValue
 }: {
   value: string;
+  'aria-label'?: string;
   label?: string;
-  showLabel?: boolean;
   labelPlacement?: InputProps['labelPlacement'];
   showUnderline?: boolean;
   disabled?: boolean;
@@ -63,30 +63,31 @@ export default function ConfirmedTextInput({
 
   return (
     <form
-      className='flex grow shrink w-full'
-      data-testid={`confirmed-input-${label ?? 'value'}`}
+      className='flex grow shrink w-full items-end'
+      data-testid={`confirmed-input-${label ?? ariaLabel ?? 'value'}`}
       onSubmit={e => {
         e.preventDefault();
         updateValue(newValue);
       }}
     >
       <Input
+        aria-label={ariaLabel}
         className={`${disabled && 'opacity-50'} ${className}`}
         classNames={{
-          inputWrapper: `${showLabel || showUnderline || 'border-transparent'}`,
-          input: `${showLabel || showUnderline || '-mb-2'} ${classNames?.input}`
+          inputWrapper: `${label !== undefined || showUnderline || 'border-transparent'}`,
+          input: `${label !== undefined || showUnderline || '-mb-2'} ${classNames?.input}`
         }}
         disabled={disabled}
-        label={showLabel && (label ?? 'Name')}
+        label={label}
         labelPlacement={labelPlacement}
         size='sm'
         value={newValue}
-        variant={variant ?? 'underlined'}
+        variant={variant}
         onValueChange={setNewValue}
       />
       <Button
         isIconOnly
-        className={`rounded-lg w-8 h-8 min-w-8 min-h-8 ${newValue === value ? 'hidden' : ''} ${showLabel ? 'mt-4' : ''} ${classNames?.button}`}
+        className={`rounded-lg w-8 h-8 min-w-8 min-h-8 ${newValue === value ? 'hidden' : ''} ${label !== undefined ? 'mt-4' : ''} ${classNames?.button}`}
         color='primary'
         type='submit'
       >

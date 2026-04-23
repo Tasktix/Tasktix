@@ -16,8 +16,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-// Imports
-
 import {
   PaletteFill as ColorFilterIcon,
   Icon123 as NumberFilterIcon,
@@ -28,64 +26,108 @@ import {
   InputCursorText as TextFilterIcon,
   StopwatchFill as TimeFilterIcon
 } from 'react-bootstrap-icons';
-import { Button, Input, Select, SelectItem } from '@heroui/react';
+import { Button, Select, Selection, SelectItem } from '@heroui/react';
+import { JSX } from 'react';
 
-import { FilterInputState, FilterType } from './types';
+import { FilterInput, FilterConfig } from './types';
+import TypeInput from './filterTypes/TypeInputs';
 
-// Input type for filter row
-export type FilterRowProps = {
-  filterInput: FilterInputState;
-  filterOptions: FilterType[];
-  onFilterChange: (f: FilterInputState) => unknown;
+export type FilterRowProps = Readonly<{
+  filterInput: FilterInput;
+  filterConfigs: FilterConfig[];
+  onFilterChange: (f: FilterInput) => unknown;
+  onFilterDelete: () => unknown;
+}>;
+
+const iconMap: Record<FilterConfig['type'], JSX.Element> = {
+  text: <TextFilterIcon />,
+  number: <NumberFilterIcon />,
+  option: <OptionFilterInput />,
+  'multi-option': <MultiOptionFilterIcon />,
+  color: <ColorFilterIcon />,
+  date: <DateFilterIcon />,
+  time: <TimeFilterIcon />
 };
 
-// Filter row implementation
 export default function FilterRow({
   filterInput,
-  filterOptions,
-  onFilterChange
+  filterConfigs,
+  onFilterChange,
+  onFilterDelete
 }: FilterRowProps) {
+  const filterName = filterInput.type === 'undefined' ? '' : filterInput.label;
+  const filterConfig = filterConfigs.find(
+    option => option.label === filterName
+  );
+
+  function handleFieldChange(keys: Selection) {
+    if (keys === 'all') throw new Error('Unexpected "all" key');
+
+    const key = keys.values().next().value as string | undefined;
+
+    if (!key) {
+      onFilterChange({ id: filterInput.id, type: 'undefined' });
+
+      return;
+    }
+
+    const value = filterConfigs.find(option => option.label === key)!;
+
+    onFilterChange({
+      id: filterInput.id,
+      type: value.type,
+      label: value.label,
+      operator: undefined,
+      value: undefined
+    });
+  }
+
+  function handleOtherChange(
+    data: Exclude<FilterInput, { type: 'undefined' }>
+  ) {
+    if (
+      data.id !== filterInput.id ||
+      data.type !== filterInput.type ||
+      data.label !== filterInput.label
+    )
+      throw new Error(
+        'Operator/value change also mutated other filter input components'
+      );
+
+    onFilterChange(data);
+  }
+
   return (
     <div className='flex flex-row justify-center gap-2'>
-      <Select className='propertyInput' placeholder='Field'>
-        {filterOptions.map(option => (
-          <SelectItem
-            key={option.label}
-            startContent={getFilterIcon(option.type)}
-          >
+      <Select
+        className='propertyInput'
+        placeholder='Field'
+        selectedKeys={[filterName]}
+        onSelectionChange={handleFieldChange}
+      >
+        {filterConfigs.map(option => (
+          <SelectItem key={option.label} startContent={iconMap[option.type]}>
             {option.label}
           </SelectItem>
         ))}
       </Select>
+      <TypeInput
+        filterData={
+          { ...filterInput, ...filterConfig } as
+            | (FilterInput & FilterConfig)
+            | { type: 'undefined' }
+        }
+        onChange={handleOtherChange}
+      />
       <Button
         isIconOnly
         aria-label='Delete filter row'
-        variant='light'
         className='text-content1-foreground'
-        onPress={() => {}}
+        variant='light'
+        onPress={onFilterDelete}
       >
         <DeleteRowIcon />
       </Button>
     </div>
   );
-}
-
-// Function to hold all icons
-function getFilterIcon(type: FilterType['type']) {
-  switch (type) {
-    case 'text':
-      return <TextFilterIcon />;
-    case 'number':
-      return <NumberFilterIcon />;
-    case 'option':
-      return <OptionFilterInput />;
-    case 'multi-option':
-      return <MultiOptionFilterIcon />;
-    case 'color':
-      return <ColorFilterIcon />;
-    case 'date':
-      return <DateFilterIcon />;
-    case 'time':
-      return <TimeFilterIcon />;
-  }
 }
