@@ -18,11 +18,11 @@
 
 // Imports
 import {
-  NodePlusFill as AddGroupIcon,
-  Plus as AddRowIcon
+  NodePlusFill as AddRowIcon,
+  Plus as AddGroupIcon
 } from 'react-bootstrap-icons';
 import { useRef } from 'react';
-import { Button } from '@heroui/react';
+import { Button, Select, SelectItem } from '@heroui/react';
 
 import FilterRow from './FilterRow';
 import { FilterState, FilterInputState, FilterType } from './types';
@@ -87,9 +87,35 @@ export default function FilterGroup({
   // DOM structure for filter group component
   return (
     <>
-      <div className='relative'>
-        {ids.length == 0 && <>Where:</>}
-        <div className='pl-12'>
+      {ids.length == 0 && <>Where:</>}
+      <div className='flex'>
+        <div
+          className={`flex ${filters.filters.length > 1 ? 'pt-4 pb-5' : 'py-2'} relative`}
+        >
+          <div className='flex flex-row'>
+            <div className='w-6' />
+            <div
+              className={`h-full w-6 border-content3-foreground border-r-0 rounded-l-lg ${filters.filters.length ? 'border-2' : ''}`}
+            />
+          </div>
+        </div>
+        <div className='w-full flex flex-col gap-2'>
+          {filters.filters.length != 0 && (
+            <Select
+              isRequired
+              className='w-24'
+              classNames={{ mainWrapper: 'bg-content1' }}
+              color='success'
+              //disabledKeys={[filters.operator]}
+              //selectedKeys={[filters.operator]}
+              size='sm'
+              //onSelectionChange={() => {}}
+              variant='flat'
+            >
+              <SelectItem key='AND'>AND</SelectItem>
+              <SelectItem key='OR'>OR</SelectItem>
+            </Select>
+          )}
           {filters.filters.map((filter, i) => {
             if ('filters' in filter) {
               // Render a filterGroup component
@@ -114,19 +140,19 @@ export default function FilterGroup({
               );
             }
           })}
+          <div className='flex flex-row gap-2'>
+            <Button onPress={addRow}>
+              <AddRowIcon />
+              Add Filter Row
+            </Button>
+            {ids.length < 3 && (
+              <Button onPress={addGroup}>
+                <AddGroupIcon />
+                Add Filter Group
+              </Button>
+            )}
+          </div>
         </div>
-      </div>
-      <div style={{ display: 'flex', flexDirection: 'row', gap: '5px' }}>
-        <Button onPress={addRow}>
-          <AddRowIcon />
-          Add Filter Row
-        </Button>
-        {ids.length < 3 && (
-          <Button onPress={addGroup}>
-            <AddGroupIcon />
-            Add Filter Group
-          </Button>
-        )}
       </div>
     </>
   );

@@ -69,6 +69,7 @@ export default function FilterRow({
         isIconOnly
         aria-label='Delete filter row'
         variant='light'
+        className='text-content1-foreground'
         onPress={() => {}}
       >
         <DeleteRowIcon />
