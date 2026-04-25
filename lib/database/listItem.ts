@@ -30,7 +30,13 @@ export async function createListItem(
 ): Promise<boolean> {
   try {
     await prisma.item.create({
-      data: { ...item, assignees: undefined, tags: undefined, sectionId }
+      data: {
+        ...item,
+        section: { connect: { id: sectionId } },
+        listId: undefined,
+        assignees: undefined,
+        tags: undefined
+      }
     });
   } catch {
     return false;

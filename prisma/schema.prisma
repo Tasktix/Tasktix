@@ -27,6 +27,7 @@ model ListSection {
   items  Item[]
   list   List   @relation(fields: [listId], references: [id], onDelete: Cascade)
 
+  @@unique([id, listId]) // Required for Prisma validation of composite foreign key in Item
   @@index([listId])
 }
 
@@ -41,6 +42,7 @@ model Item {
   elapsedMs     Int            @default(0)
   parentId      String?        @db.Char(16)
   sectionId     String         @db.Char(16)
+  listId        String         @db.Char(16)
   sectionIndex  Int            @default(0)
   dateCreated   DateTime       @default(now()) @db.DateTime(0)
   dateDue       DateTime?      @db.DateTime(0)
@@ -48,11 +50,12 @@ model Item {
   dateCompleted DateTime?      @db.DateTime(0)
   parent        Item?          @relation("family", fields: [parentId], references: [id], onDelete: Cascade)
   children      Item[]         @relation("family")
-  section       ListSection    @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  section       ListSection    @relation(fields: [sectionId, listId], references: [id, listId], onDelete: Cascade)
   assignees     ItemAssignee[]
   tags          Tag[]          @relation("ItemToTag")
 
   @@unique([sectionId, parentId, sectionIndex])
+  @@unique([id, listId]) // Required for Prisma validation of composite foreign key in ItemAssignee
   @@index([sectionId])
   @@index([parentId])
 }
@@ -101,7 +104,7 @@ model ItemAssignee {
   listId     String     @db.Char(16)
   itemId     String     @db.Char(16)
   role       String     @db.VarChar(64)
-  item       Item       @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  item       Item       @relation(fields: [itemId, listId], references: [id, listId], onDelete: Cascade)
   listMember ListMember @relation(fields: [userId, listId], references: [userId, listId], onDelete: Cascade)
   user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
