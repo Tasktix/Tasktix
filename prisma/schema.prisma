@@ -69,12 +69,13 @@ model Tag {
 }
 
 model ListMember {
-  userId String     @db.VarChar(191)
-  listId String     @db.Char(16)
-  roleId String     @db.Char(16)
-  list   List       @relation(fields: [listId], references: [id], onDelete: Cascade)
-  user   User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  role   MemberRole @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  userId        String         @db.VarChar(191)
+  listId        String         @db.Char(16)
+  roleId        String         @db.Char(16)
+  list          List           @relation(fields: [listId], references: [id], onDelete: Cascade)
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role          MemberRole     @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  itemAssignees ItemAssignee[]
 
   @@id([userId, listId])
   @@index([listId])
@@ -96,13 +97,15 @@ model MemberRole {
 }
 
 model ItemAssignee {
-  userId String @db.VarChar(191)
-  itemId String @db.Char(16)
-  role   String @db.VarChar(64)
-  item   Item   @relation(fields: [itemId], references: [id], onDelete: Cascade)
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String     @db.VarChar(191)
+  listId     String     @db.Char(16)
+  itemId     String     @db.Char(16)
+  role       String     @db.VarChar(64)
+  item       Item       @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  listMember ListMember @relation(fields: [userId, listId], references: [userId, listId], onDelete: Cascade)
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@id([userId, itemId])
+  @@id([userId, listId, itemId])
   @@index([itemId])
 }
 

@@ -80,13 +80,13 @@ export async function linkAssignee(
   role: string
 ): Promise<boolean> {
   try {
-    await prisma.itemAssignee.create({
-      data: {
-        itemId,
-        userId,
-        role
-      }
-    });
+    await prisma.$executeRaw`
+      INSERT INTO \`ItemAssignee\` (\`itemId\`, \`userId\`, \`role\`, \`listId\`)
+      SELECT \`i\`.\`id\`, ${userId}, ${role}, \`s\`.\`listId\`
+        FROM \`Item\` \`i\`
+          JOIN \`ListSection\` \`s\` ON \`i\`.\`sectionId\` = \`s\`.\`id\`
+        WHERE \`i\`.\`id\` = ${itemId};
+    `;
   } catch {
     return false;
   }
@@ -184,8 +184,15 @@ export async function unlinkAssignee(
   userId: string
 ): Promise<boolean> {
   try {
-    await prisma.itemAssignee.delete({
-      where: { userId_itemId: { itemId, userId } }
+    // `deleteMany` is only needed because `listId` is omitted from the data but is part
+    // of the table's primary key. Only 1 row will ever be deleted because every item has
+    // a unique ID, so there cannot be >1 List with a given item ID
+    await prisma.itemAssignee.deleteMany({
+      where: {
+        itemId,
+        userId
+        // listId omitted despite being part of primary key because Item is M:1 with List
+      }
     });
   } catch {
     return false;

@@ -415,10 +415,6 @@ export async function deleteListMember(
       },
       { isolationLevel: Prisma.TransactionIsolationLevel.ReadCommitted }
     );
-
-    await prisma.itemAssignee.deleteMany({
-      where: { item: { section: { listId } }, userId }
-    });
   } catch (error) {
     console.log(error);
 
