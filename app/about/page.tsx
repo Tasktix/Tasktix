@@ -22,6 +22,8 @@
 import features from '@/public/data/features.json';
 import FeatureBlock from '@/components/FeatureBlock';
 
+export const dynamic = 'force-static';
+
 /**
  *  Renders the public-facing marketing homepage at `/about`.
  *
@@ -40,7 +42,7 @@ import FeatureBlock from '@/components/FeatureBlock';
  */
 export default function Page() {
   return (
-    <main className='grow mx-auto max-w-6xl px-4 md:px-6 py-12 space-y-24 h-full'>
+    <main className='grow mx-auto max-w-6xl px-4 md:px-6 py-12 space-y-24'>
       <header className='text-center mb-12'>
         <h1 className='text-3xl md:text-4xl font-bold'>
           Tasktix — Smarter Task Tracking
@@ -55,7 +57,7 @@ export default function Page() {
           muted
           playsInline
           aria-label='Video showing Tasktix in use'
-          className='grow m-4'
+          className='grow my-16'
           poster='/screenshots/usage-preview.jpg'
           preload='metadata'
         >
