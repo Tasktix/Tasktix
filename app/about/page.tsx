@@ -17,6 +17,8 @@
  *
  */
 
+'use client';
+
 import features from '@/public/data/features.json';
 import FeatureBlock from '@/components/FeatureBlock';
 
@@ -38,7 +40,7 @@ import FeatureBlock from '@/components/FeatureBlock';
  */
 export default function Page() {
   return (
-    <main className='grow mx-auto max-w-6xl px-4 md:px-6 py-12 space-y-24'>
+    <main className='grow mx-auto max-w-6xl px-4 md:px-6 py-12 space-y-24 h-full'>
       <header className='text-center mb-12'>
         <h1 className='text-3xl md:text-4xl font-bold'>
           Tasktix — Smarter Task Tracking
@@ -47,6 +49,18 @@ export default function Page() {
           Organize tasks from all realms of life with time tracking, tagging,
           and smart filtering. For free. Always.
         </p>
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          aria-label='Video showing Tasktix in use'
+          className='grow m-4'
+          poster='/screenshots/usage-preview.jpg'
+          preload='metadata'
+        >
+          <source src='/screenshots/usage.mp4' type='video/mp4' />
+        </video>
       </header>
 
       {features.map((f, i) => (
