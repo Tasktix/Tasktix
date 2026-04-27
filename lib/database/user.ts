@@ -194,3 +194,14 @@ export async function getIsOnlyAdminOnSharedList(
 
   return Boolean(orphanedList);
 }
+
+export async function getIsAccountLinkedToGithub(userId:string): Promise<boolean> {
+
+  const result = await prisma.account.findFirst({
+    where: {
+      userId,
+      providerId: 'github'
+    }
+  })
+  return Boolean(result)
+}

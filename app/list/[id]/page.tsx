@@ -34,8 +34,6 @@ export default async function Page({
 
   const user = await getUser();
 
-  console.log('user', user);
-  console.log('list', list);
   if (!list || !user) redirect('/list');
 
   const isMember = await getIsListMember(user.id, list.id);

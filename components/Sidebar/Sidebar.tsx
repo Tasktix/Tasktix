@@ -264,7 +264,7 @@ function GithubListConfig({
 
         setAvailableRepos(data);
       })
-      .catch(addToastForError);
+      .catch(/* Fail Silently to be seamless for non-github linked accounts */);
   }, [loggedInUser]);
 
   return (

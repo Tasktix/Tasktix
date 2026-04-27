@@ -22,6 +22,7 @@ import { auth } from '@/lib/auth';
 import { getAccessibleRepositories } from '@/lib/github/account';
 import { ClientError, ServerError, Success } from '@/lib/Response';
 import { getUser } from '@/lib/session';
+import { getIsAccountLinkedToGithub } from '@/lib/database/user';
 
 export const dynamic = 'force-dynamic'; // defaults to auto
 
@@ -37,14 +38,15 @@ export async function GET(
 
   if (user.id !== id) return ClientError.Forbidden('Insufficient permissions');
 
+  const isLinked = await getIsAccountLinkedToGithub(user.id);
+  if(!isLinked) return ClientError.BadRequest('Account not linked to Github');
   const result = await auth.api.getAccessToken({
     body: {
       providerId: 'github'
     },
     headers: await headers()
   });
-
-  if (!result) return ClientError.BadRequest('Account not linked to Github');
+  if (!result) return ServerError.Internal('Failed to find a Github Access Token');
 
   const repositories = await getAccessibleRepositories(result.accessToken);
 
