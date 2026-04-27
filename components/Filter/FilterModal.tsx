@@ -29,26 +29,26 @@ import {
 import { useState } from 'react';
 
 import FilterGroup from './FilterGroup';
-import { FilterState, FilterType } from './types';
+import { FilterInputGroup, FilterConfig } from './types';
 
 // Input type for the filter modal
 type FilterModalProps = {
-  filters: FilterState;
-  filterOptions: FilterType[];
+  filters: FilterInputGroup;
+  filterConfig: FilterConfig[];
   isOpen: boolean;
-  onFilterSave: (f: FilterState) => void;
+  onFilterSave: (f: FilterInputGroup) => void;
   onOpenChange: (isOpen: boolean) => void;
 };
 
 // Filter modal implementation
 export function FilterModal({
   filters,
-  filterOptions,
+  filterConfig,
   isOpen,
   onFilterSave,
   onOpenChange
 }: FilterModalProps) {
-  const [filterState, setFilterState] = useState<FilterState>(filters);
+  const [filterState, setFilterState] = useState<FilterInputGroup>(filters);
 
   return (
     <Modal isOpen={isOpen} size={'2xl'} onOpenChange={onOpenChange}>
@@ -69,7 +69,7 @@ export function FilterModal({
             </ModalHeader>
             <ModalBody>
               <FilterGroup
-                filterOptions={filterOptions}
+                filterConfig={filterConfig}
                 filters={filterState}
                 ids={[]}
                 onFilterChange={setFilterState}

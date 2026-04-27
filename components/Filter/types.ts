@@ -196,7 +196,7 @@ export type FilterGroup = {
 } & ({ operator: 'And' } | { operator: 'Or' });
 
 export type FilterInputGroup = {
-  filters: (FilterGroup | FilterInput)[];
+  filters: (FilterInputGroup | FilterInput)[];
 } & ({ operator: 'And' } | { operator: 'Or' });
 
 export enum TextFilterOperator {

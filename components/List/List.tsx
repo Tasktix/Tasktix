@@ -22,7 +22,7 @@ import { useEffect, useReducer, useState } from 'react';
 import { MemberRole } from '@prisma/client';
 
 import AddListSection from '@/components/AddListSection';
-import Filter from '@/components/Filter';
+import Filter, { FilterConfig } from '@/components/Filter';
 import ListSettings from '@/components/ListSettings';
 import ListModel from '@/lib/model/list';
 import Tag from '@/lib/model/tag';
@@ -93,7 +93,7 @@ export default function List({
   return (
     <>
       <span className='flex gap-4 items-center'>
-        <Filter filterOptions={[]} />
+        <Filter filterConfig={filterConfig} />
         <ListSettings
           addNewTag={listHandlers.addNewTag}
           dispatchList={dispatchList}
@@ -115,7 +115,7 @@ export default function List({
           key={section.id}
           dispatchItemChange={dispatchList}
           dispatchSectionChange={dispatchList}
-          filters={filters}
+          filters={{}}
           hasDueDates={list.hasDueDates}
           hasTimeTracking={list.hasTimeTracking}
           isAutoOrdered={list.isAutoOrdered}
@@ -136,3 +136,40 @@ export default function List({
     </>
   );
 }
+
+const filterConfig: FilterConfig[] = [
+  { type: 'text', label: 'name' },
+  {
+    type: 'option',
+    label: 'priority',
+    options: [
+      { name: 'High', color: 'danger' },
+      { name: 'Medium', color: 'warning' },
+      { name: 'Low', color: 'success' }
+    ]
+  },
+  {
+    type: 'multi-option',
+    label: 'tag',
+    options: [
+      { name: 'Bug', color: 'Red' },
+      { name: 'Feature', color: 'Blue' }
+    ]
+  },
+  {
+    type: 'date',
+    label: 'due'
+  },
+  {
+    type: 'number',
+    label: 'assignee_count'
+  },
+  {
+    type: 'color',
+    label: 'tag_color'
+  },
+  {
+    type: 'time',
+    label: 'expected_time'
+  }
+];

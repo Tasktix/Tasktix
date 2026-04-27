@@ -25,21 +25,21 @@ import { useRef } from 'react';
 import { Button, Select, SelectItem } from '@heroui/react';
 
 import FilterRow from './FilterRow';
-import { FilterState, FilterInputState, FilterType } from './types';
+import { FilterInputGroup, FilterInput, FilterConfig } from './types';
 
 // Input type for the filter modal
 type FilterGroupProps = {
   ids: number[];
-  filters: FilterState;
-  filterOptions: FilterType[];
-  onFilterChange: (f: FilterState) => unknown;
+  filters: FilterInputGroup;
+  filterConfig: FilterConfig[];
+  onFilterChange: (f: FilterInputGroup) => unknown;
 };
 
 // Filter group implementation
 export default function FilterGroup({
   ids,
   filters,
-  filterOptions,
+  filterConfig,
   onFilterChange
 }: FilterGroupProps) {
   // Set a reference
@@ -70,8 +70,8 @@ export default function FilterGroup({
 
   // Function for child change
   function handleChildChange(
-    filter: FilterState | FilterInputState,
-    newFilter: FilterState | FilterInputState
+    filter: FilterInputGroup | FilterInput,
+    newFilter: FilterInputGroup | FilterInput
   ) {
     const tempFilters = structuredClone(filters);
 
@@ -122,7 +122,7 @@ export default function FilterGroup({
               return (
                 <FilterGroup
                   key={[...ids, i].join('.')}
-                  filterOptions={filterOptions}
+                  filterConfig={filterConfig}
                   filters={filter}
                   ids={[...ids, i]}
                   onFilterChange={handleChildChange.bind(null, filter)}
@@ -133,9 +133,10 @@ export default function FilterGroup({
               return (
                 <FilterRow
                   key={[...ids, i].join('.')}
+                  filterConfigs={filterConfig}
                   filterInput={filter}
-                  filterOptions={filterOptions}
                   onFilterChange={handleChildChange.bind(null, filter)}
+                  onFilterDelete={() => alert('Deleting row')}
                 />
               );
             }

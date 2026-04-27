@@ -33,18 +33,18 @@ import {
 import { useState } from 'react';
 
 import { FilterModal } from './FilterModal';
-import { FilterType, FilterState } from './types';
+import { FilterConfig, FilterInputGroup } from './types';
 
 // Props for the filter component
 type FilterProps = {
-  filterOptions: FilterType[];
+  filterConfig: FilterConfig[];
 };
 
 // Filter bar implementation
-export default function Filter({ filterOptions }: FilterProps) {
+export default function Filter({ filterConfig }: FilterProps) {
   // States
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [filterState, setFilterState] = useState<FilterState>({
+  const [filterState, setFilterState] = useState<FilterInputGroup>({
     operator: 'And',
     filters: []
   });
@@ -78,7 +78,7 @@ export default function Filter({ filterOptions }: FilterProps) {
       </span>
       {isOpen && (
         <FilterModal
-          filterOptions={filterOptions}
+          filterConfig={filterConfig}
           filters={filterState}
           isOpen={isOpen}
           onFilterSave={setFilterState}
