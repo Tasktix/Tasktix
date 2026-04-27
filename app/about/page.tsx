@@ -21,6 +21,7 @@
 
 import features from '@/public/data/features.json';
 import FeatureBlock from '@/components/FeatureBlock';
+import ThemedVideo from '@/components/ThemedVideo';
 
 export const dynamic = 'force-static';
 
@@ -51,18 +52,7 @@ export default function Page() {
           Organize tasks from all realms of life with time tracking, tagging,
           and smart filtering. For free. Always.
         </p>
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          aria-label='Video showing Tasktix in use'
-          className='grow my-16'
-          poster='/screenshots/usage-preview.jpg'
-          preload='metadata'
-        >
-          <source src='/screenshots/usage.mp4' type='video/mp4' />
-        </video>
+        <ThemedVideo posterBaseName='usage-preview' videoBaseName='usage' />
       </header>
 
       {features.map((f, i) => (

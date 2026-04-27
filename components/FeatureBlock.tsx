@@ -18,8 +18,7 @@
 
 'use client';
 
-import { Image as HeroImage } from '@heroui/image';
-import { useTheme } from 'next-themes';
+import ThemedImage from './ThemedImage';
 
 type FeatureBlockProps = Readonly<{
   title: string;
@@ -56,22 +55,16 @@ export default function FeatureBlock({
   hideImageBorder = false,
   align = 'default'
 }: FeatureBlockProps) {
-  const { resolvedTheme } = useTheme();
-  const themedSrc =
-    resolvedTheme === 'dark'
-      ? `/screenshots/${imageBaseName}.dark.png`
-      : `/screenshots/${imageBaseName}.light.png`;
-
   return (
     <section
       className={`flex flex-col items-center gap-8 md:gap-16
         md:flex-row ${align === 'flipped' ? 'md:flex-row-reverse' : ''}`}
     >
       <div className='w-full md:w-1/2'>
-        <HeroImage
+        <ThemedImage
           alt={`${title} screenshot`}
-          className={`object-contain ${hideImageBorder || 'shadow-lg shadow-content2'}`}
-          src={themedSrc}
+          hideImageBorder={hideImageBorder}
+          imageBaseName={imageBaseName}
         />
       </div>
 
