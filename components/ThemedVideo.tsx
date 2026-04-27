@@ -51,6 +51,7 @@ export default function ThemedVideo({
 
   return (
     <video
+      key={posterSrc}
       autoPlay
       loop
       muted
