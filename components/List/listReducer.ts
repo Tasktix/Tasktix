@@ -79,6 +79,10 @@ export default function listReducer( // skipcq: JS-0045, JS-R1005
       break;
     }
 
+    case 'DeleteMember':
+      newState.members.delete(action.id);
+      break;
+
     case 'AddTag':
       newState.tags.set(action.tag.id, action.tag);
       break;
