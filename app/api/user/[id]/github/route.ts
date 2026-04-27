@@ -39,14 +39,17 @@ export async function GET(
   if (user.id !== id) return ClientError.Forbidden('Insufficient permissions');
 
   const isLinked = await getIsAccountLinkedToGithub(user.id);
-  if(!isLinked) return ClientError.BadRequest('Account not linked to Github');
+
+  if (!isLinked) return ClientError.BadRequest('Account not linked to Github');
   const result = await auth.api.getAccessToken({
     body: {
       providerId: 'github'
     },
     headers: await headers()
   });
-  if (!result) return ServerError.Internal('Failed to find a Github Access Token');
+
+  if (!result)
+    return ServerError.Internal('Failed to find a Github Access Token');
 
   const repositories = await getAccessibleRepositories(result.accessToken);
 

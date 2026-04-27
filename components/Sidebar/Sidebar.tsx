@@ -260,11 +260,12 @@ function GithubListConfig({
 
           return;
         }
-        const data: SimplifiedRepo[] = JSON.parse(res.content);
+        const data = JSON.parse(res.content) as SimplifiedRepo[];
 
         setAvailableRepos(data);
       })
-      .catch(/* Fail Silently to be seamless for non-github linked accounts */);
+      /* Fail Silently to be seamless for non-github linked accounts */
+      .catch(() => {});
   }, [loggedInUser]);
 
   return (
