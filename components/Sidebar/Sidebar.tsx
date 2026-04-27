@@ -61,6 +61,12 @@ export default function Sidebar({ lists }: { lists: List[] }) {
   const dispatchEvent = useContext(ListContext);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
+  /**
+   * Finalizes submitting a list via the API. Adds a randomly generated color 
+   * along with provided list name and optional Github Repo ID
+   * @param name 
+   * @param repoId 
+   */
   function submitNewList(name: string, repoId?: number) {
     const color = randomNamedColor();
 
@@ -181,6 +187,12 @@ function CreateListModal({
   const [listName, setListName] = useState('');
   const [selectedRepoId, setSelectedRepoId] = useState<number | undefined>();
 
+  /**
+   * Submits a list name and repoId for creation, handles client side error 
+   * notification if a user submit's the form with empty input
+   * @param e Form Event Data
+   * @param onClose Modal closing handle function from useDisclosure
+   */
   const handleSubmitList = (
     e: FormEvent<HTMLFormElement>,
     onClose: () => void
@@ -197,6 +209,7 @@ function CreateListModal({
   };
 
   return (
+    // JSX depth already abstracted to reasonable level skipcq: JS-0415
     <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
       <ModalContent>
         {onClose => (
@@ -264,7 +277,7 @@ function GithubListConfig({
 
         setAvailableRepos(data);
       })
-      /* Fail Silently to be seamless for non-github linked accounts */
+      /* Fail Silently to be seamless for non-github linked accounts skipcq: JS-0321*/
       .catch(() => {});
   }, [loggedInUser]);
 
