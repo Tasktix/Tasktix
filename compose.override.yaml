@@ -16,6 +16,9 @@ services:
         - path: ./lib
           action: sync
           target: /app/lib
+        - path: ./public
+          action: sync
+          target: /app/public
         - action: rebuild
           path: package.json
         - action: rebuild
