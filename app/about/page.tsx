@@ -54,6 +54,7 @@ export default function Page() {
           key={f.title}
           align={i % 2 === 0 ? 'default' : 'flipped'}
           description={f.description}
+          hideImageBorder={f.hideImageBorder as boolean} // Type analysis of optional JSON field is insufficient, hence the explicit cast
           imageBaseName={f.imageBaseName}
           title={f.title}
         />

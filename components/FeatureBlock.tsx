@@ -21,19 +21,11 @@
 import { Image as HeroImage } from '@heroui/image';
 import { useTheme } from 'next-themes';
 
-/**
- * Props for the FeatureBlock component.
- *
- * @property title - The name of the feature being showcased.
- * @property description - A short explanation of what the feature does.
- * @property imageBaseName - Base filename used to load themed screenshots
- * (e.g. "priority" → "priority.light.png" and "priority.dark.png").
- * @property align - Determines whether the image is placed on the left or right.
- */
 type FeatureBlockProps = Readonly<{
   title: string;
   description: string;
   imageBaseName: string;
+  hideImageBorder: boolean;
   align?: 'default' | 'flipped';
 }>;
 
@@ -51,6 +43,9 @@ type FeatureBlockProps = Readonly<{
  * screenshot. For example, an `imageBaseName` of `"timeTracking"` will load
  * `"public/screenshots/timeTracking.light.png"` in light mode and
  * `"public/screenshots/timeTracking.dark.png"` in dark mode.
+ * @param hideImageBorder - Whether to show a border/shadow around the feature's image.
+ * For use with images that include multiple components and an additional full-image
+ * shadow doesn't look right.
  * @param align - Controls whether the image appears before (`default`) or after
  * (`flipped`) the text content.
  */
@@ -58,6 +53,7 @@ export default function FeatureBlock({
   title,
   description,
   imageBaseName,
+  hideImageBorder = false,
   align = 'default'
 }: FeatureBlockProps) {
   const { resolvedTheme } = useTheme();
@@ -74,7 +70,7 @@ export default function FeatureBlock({
       <div className='w-full md:w-1/2'>
         <HeroImage
           alt={`${title} screenshot`}
-          className='object-contain shadow-lg shadow-content2'
+          className={`object-contain ${hideImageBorder || 'shadow-lg shadow-content2'}`}
           src={themedSrc}
         />
       </div>
