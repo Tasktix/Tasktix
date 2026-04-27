@@ -24,7 +24,7 @@ type FeatureBlockProps = Readonly<{
   title: string;
   description: string;
   imageBaseName: string;
-  hideImageBorder: boolean;
+  hideImageBorder?: boolean;
   align?: 'default' | 'flipped';
 }>;
 

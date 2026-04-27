@@ -35,15 +35,15 @@ import { useTheme } from 'next-themes';
 export default function ThemedImage({
   alt,
   imageBaseName,
-  hideImageBorder
+  hideImageBorder = false
 }: {
   alt: string;
   imageBaseName: string;
-  hideImageBorder: boolean;
+  hideImageBorder?: boolean;
 }) {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const imageSrc =
-    theme === 'dark'
+    resolvedTheme === 'dark'
       ? `/screenshots/${imageBaseName}.dark.png`
       : `/screenshots/${imageBaseName}.light.png`;
 

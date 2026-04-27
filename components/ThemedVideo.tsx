@@ -39,13 +39,13 @@ export default function ThemedVideo({
   videoBaseName: string;
   posterBaseName: string;
 }) {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const videoSrc =
-    theme === 'dark'
+    resolvedTheme === 'dark'
       ? `/screenshots/${videoBaseName}.dark.mp4`
       : `/screenshots/${videoBaseName}.light.mp4`;
   const posterSrc =
-    theme === 'dark'
+    resolvedTheme === 'dark'
       ? `/screenshots/${posterBaseName}.dark.jpg`
       : `/screenshots/${posterBaseName}.light.jpg`;
 
@@ -57,6 +57,7 @@ export default function ThemedVideo({
       playsInline
       aria-label='Video showing Tasktix in use'
       className='grow my-16'
+      data-testid={`video-${videoBaseName}`}
       poster={posterSrc}
       preload='metadata'
     >
