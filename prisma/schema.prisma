@@ -18,6 +18,7 @@ model List {
   members         ListMember[]
   sections        ListSection[]
   tags            Tag[]
+  repoId          Int?
 }
 
 model ListSection {
