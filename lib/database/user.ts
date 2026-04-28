@@ -197,10 +197,10 @@ export async function getIsOnlyAdminOnSharedList(
 
 /**
  * Determines whether a user has an account linked to github. This is necessary
- * as BetterAuth does not provide a clean way to determine this from the server. 
+ * as BetterAuth does not provide a clean way to determine this from the server.
  * (The only solution i've found is to try and fetch the access token, but it
  * fails loudly)
- * @param userId 
+ * @param userId
  */
 export async function getIsAccountLinkedToGithub(
   userId: string

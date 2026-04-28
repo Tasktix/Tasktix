@@ -62,10 +62,10 @@ export default function Sidebar({ lists }: { lists: List[] }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   /**
-   * Finalizes submitting a list via the API. Adds a randomly generated color 
+   * Finalizes submitting a list via the API. Adds a randomly generated color
    * along with provided list name and optional Github Repo ID
-   * @param name 
-   * @param repoId 
+   * @param name
+   * @param repoId
    */
   function submitNewList(name: string, repoId?: number) {
     const color = randomNamedColor();
@@ -188,7 +188,7 @@ function CreateListModal({
   const [selectedRepoId, setSelectedRepoId] = useState<number | undefined>();
 
   /**
-   * Submits a list name and repoId for creation, handles client side error 
+   * Submits a list name and repoId for creation, handles client side error
    * notification if a user submit's the form with empty input
    * @param e Form Event Data
    * @param onClose Modal closing handle function from useDisclosure
@@ -209,10 +209,10 @@ function CreateListModal({
   };
 
   return (
-    // JSX depth already abstracted to reasonable level skipcq: JS-0415
     <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
       <ModalContent>
         {onClose => (
+          // JSX depth already abstracted to reasonable level skipcq: JS-0415
           <>
             <ModalHeader className='flex gap-2 items-center'>
               Create New List
@@ -252,7 +252,12 @@ function CreateListModal({
     </Modal>
   );
 }
-
+/**
+ * Renders the Configuration Accordion Menu for linking a new list to a Github
+ * Repository. Does not show error toasts to cleanly handle users who don't
+ * have github linked account.
+ * @param onRepoSelection callback to update the selected repositoryID
+ */
 function GithubListConfig({
   onRepoSelection
 }: {

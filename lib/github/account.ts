@@ -23,11 +23,11 @@ type ListRepositoriesResponse =
   Endpoints['GET /user/installations/{installation_id}/repositories']['response']['data'];
 
 /**
- * Fetches the repositories made available to a Github App installation by a 
- * User Access Token. This function returns the full object provided by the 
- * Github REST API, which should often be filtered as it contains far more 
+ * Fetches the repositories made available to a Github App installation by a
+ * User Access Token. This function returns the full object provided by the
+ * Github REST API, which should often be filtered as it contains far more
  * information than needed for any Tasktix use case.
- * @param accessToken  
+ * @param accessToken
  */
 export async function getAccessibleRepositories(
   accessToken: string
