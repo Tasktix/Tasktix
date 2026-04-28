@@ -206,22 +206,13 @@ export default function ListItem({
 
   
     const changeItemSection = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    // let targetSection = list.sections.find(section => section.name == e.target.value);
-    // let pastSection = list.sections.find(section => section.name == pastSectionString);
-    // let targetItem = pastSection?.items.find(item => item.name == targetItemString);
-
-    // if(targetSection && pastSection && targetItem){
-    //   addToast({ title: targetSection.name + ", " + pastSection.name + ", " + targetItem.name, color: 'success' });
-
-    //   targetSection.items.push(targetItem);
-    //   pastSection.items = pastSection.items.filter(item => item !== targetItem);
-    //   location.reload();
-    // }
-    // else{
-    //   addToast({ title: "Section not found", color: 'danger' });
-    // }
-
-    dispatchItemChange({ type: 'ChangeItemSection', pastSectionId: sectionId, targetSectionId: e.target.value, targetItem: item });
+    api
+      .patch(`/item/${item.id}`, { sectionId: e.target.value })
+      .then(() => {
+        // Update the internal state
+        dispatchItemChange({ type: 'ChangeItemSection', pastSectionId: sectionId, targetSectionId: e.target.value, targetItem: item });
+      })
+      .catch(addToastForError);
   };
 
   return (
