@@ -88,7 +88,7 @@ describe('POST', () => {
       expect(createList).not.toHaveBeenCalled();
     });
 
-    test('Rejects requests with insufficent parameters', async () => {
+    test('Properly alerts for server errors', async () => {
       vi.mocked(getUser).mockResolvedValue(MOCK_USER);
       vi.mocked(createList).mockResolvedValue(false);
       const response = await POST(

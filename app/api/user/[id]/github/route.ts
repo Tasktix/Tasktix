@@ -16,8 +16,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { headers } from 'next/headers';
-
 import { auth } from '@/lib/auth';
 import { getAccessibleRepositories } from '@/lib/integration/github/account';
 import { ClientError, ServerError, Success } from '@/lib/Response';
@@ -41,20 +39,27 @@ export async function GET(
   const isLinked = await getIsAccountLinkedToGithub(user.id);
 
   if (!isLinked) return ClientError.BadRequest('Account not linked to Github');
-  const result = await auth.api.getAccessToken({
-    body: {
-      providerId: 'github'
-    },
-    headers: await headers()
-  });
+  let accessToken: string | undefined;
 
-  if (!result)
-    return ServerError.Internal('Failed to find a Github Access Token');
+  try {
+    const response = await auth.api.getAccessToken({
+      body: {
+        providerId: 'github'
+      },
+      headers: request.headers
+    });
 
-  const repositories = await getAccessibleRepositories(result.accessToken);
+    accessToken = response.accessToken;
+  } catch (error) {
+    console.error('BetterAuth API Error:', error);
+
+    return ServerError.Internal('Failed to fetch valid Access Token');
+  }
+  const repositories = await getAccessibleRepositories(accessToken);
 
   if (!repositories)
     return ServerError.Internal('Failed to fetch accessible repositories');
+
   const simplifiedRepos = repositories.map(repo => ({
     id: repo.id,
     name: repo.full_name,

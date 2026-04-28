@@ -18,6 +18,7 @@
 
 import { Octokit } from 'octokit';
 import { Endpoints } from '@octokit/types';
+import 'server-only';
 
 type ListRepositoriesResponse =
   Endpoints['GET /user/installations/{installation_id}/repositories']['response']['data'];
@@ -34,28 +35,37 @@ export async function getAccessibleRepositories(
 ): Promise<ListRepositoriesResponse['repositories'] | false> {
   const octokit = new Octokit({ auth: accessToken });
 
-  const installations = await octokit.request('GET /user/installations', {
-    headers: {
-      'X-GitHub-Api-Version': '2026-03-10'
-    }
-  });
-
-  if (
-    installations.status !== 200 ||
-    installations.data.installations.length < 1
-  )
-    return false;
-
-  const installationId = installations.data.installations[0].id;
-  const repos = await octokit.request(
-    'GET /user/installations/{installation_id}/repositories',
-    {
-      installation_id: installationId,
+  try {
+    const installations = await octokit.request('GET /user/installations', {
       headers: {
         'X-GitHub-Api-Version': '2026-03-10'
       }
-    }
-  );
+    });
 
-  return repos.data.repositories ?? false;
+    if (
+      installations.status !== 200 ||
+      installations.data.installations.length < 1
+    ) {
+      return false;
+    }
+
+    // Only Fetch repositories for installation 0, this should handle most use
+    // cases, without n+1 network requests
+    const installationId = installations.data.installations[0].id;
+    const repos = await octokit.request(
+      'GET /user/installations/{installation_id}/repositories',
+      {
+        installation_id: installationId,
+        headers: {
+          'X-GitHub-Api-Version': '2026-03-10'
+        }
+      }
+    );
+
+    return repos.data.repositories ?? false;
+  } catch (error) {
+    console.error('GitHub API Error:', error);
+
+    return false;
+  }
 }
