@@ -131,6 +131,34 @@ export default function List({
             tagsAvailable={tagsAvailable}
           />
         </span>
+
+        <span className='flex gap-4 items-center overflow-x-scroll justify-between'>
+          {Array.from(list.sections.values()).map(section => (
+            <div className='w-100'>
+              <ListSection
+                key={section.id}
+                dispatchItemChange={dispatchList}
+                dispatchSectionChange={dispatchList}
+                filters={filters}
+                hasDueDates={list.hasDueDates}
+                hasTimeTracking={list.hasTimeTracking}
+                isAutoOrdered={list.isAutoOrdered}
+                listId={list.id}
+                members={list.members}
+                section={section}
+                tagsAvailable={tagsAvailable}
+                onTagCreate={listHandlers.addNewTag}
+              />
+            </div>
+          ))}
+        </span>
+
+        <AddListSection
+          listId={list.id}
+          onSectionAdded={section =>
+            dispatchList({ type: 'AddSection', section })
+          }
+        />
       </>
     );
   }
