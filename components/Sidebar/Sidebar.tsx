@@ -43,7 +43,7 @@ import { default as api } from '@/lib/api';
 import List from '@/lib/model/list';
 import { randomNamedColor } from '@/lib/color';
 import { addToastForError } from '@/lib/error';
-import { SimplifiedRepo } from '@/lib/github/types';
+import { SimplifiedRepo } from '@/lib/integration/github/types';
 
 import { useAuth } from '../AuthProvider';
 

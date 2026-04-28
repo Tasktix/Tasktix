@@ -19,7 +19,7 @@
 import { headers } from 'next/headers';
 
 import { auth } from '@/lib/auth';
-import { getAccessibleRepositories } from '@/lib/github/account';
+import { getAccessibleRepositories } from '@/lib/integration/github/account';
 import { ClientError, ServerError, Success } from '@/lib/Response';
 import { getUser } from '@/lib/session';
 import { getIsAccountLinkedToGithub } from '@/lib/database/user';
