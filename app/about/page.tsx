@@ -17,10 +17,16 @@
  *
  */
 
+'use client';
+
 import features from '@/public/data/features.json';
 import FeatureBlock from '@/components/FeatureBlock';
+import ThemedVideo from '@/components/ThemedVideo';
 
-/* Renders the public-facing marketing homepage at `/about`.
+export const dynamic = 'force-static';
+
+/**
+ *  Renders the public-facing marketing homepage at `/about`.
  *
  * This page displays a hero section followed by a series of feature
  * showcase blocks. Feature content is loaded from
@@ -39,12 +45,14 @@ export default function Page() {
   return (
     <main className='grow mx-auto max-w-6xl px-4 md:px-6 py-12 space-y-24'>
       <header className='text-center mb-12'>
-        <h1 className='text-3xl md:text-4xl font-extrabold'>
+        <h1 className='text-3xl md:text-4xl font-bold'>
           Tasktix — Smarter Task Tracking
         </h1>
         <p className='mt-3 text-lg'>
-          Stay organized with time tracking, tagging, and smart filtering.
+          Organize tasks from all realms of life with time tracking, tagging,
+          and smart filtering. For free. Always.
         </p>
+        <ThemedVideo posterBaseName='usage-preview' videoBaseName='usage' />
       </header>
 
       {features.map((f, i) => (
@@ -52,6 +60,7 @@ export default function Page() {
           key={f.title}
           align={i % 2 === 0 ? 'default' : 'flipped'}
           description={f.description}
+          hideImageBorder={f.hideImageBorder as boolean} // Type analysis of optional JSON field is insufficient, hence the explicit cast
           imageBaseName={f.imageBaseName}
           title={f.title}
         />
