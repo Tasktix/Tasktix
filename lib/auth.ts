@@ -29,6 +29,7 @@ import { getIsOnlyAdminOnSharedList } from './database/user';
 import { prisma } from './database/db_connect';
 
 export type OAuthConfig = {
+  localEnabled: boolean;
   githubEnabled: boolean;
 } & (
   | { customEnabled: false }
@@ -58,6 +59,7 @@ export const getOAuthConfig = () => {
     );
   }
 
+  const localEnabled = Boolean(process.env.ENABLE_LOCAL_AUTH);
   const githubEnabled =
     Boolean(process.env.GITHUB_CLIENT_ID) &&
     Boolean(process.env.GITHUB_CLIENT_SECRET);
@@ -65,14 +67,17 @@ export const getOAuthConfig = () => {
     Boolean(process.env.OAUTH_PROVIDER_ID) &&
     Boolean(process.env.OAUTH_CLIENT_ID);
 
-  const config: OAuthConfig = customEnabled
-    ? {
-        githubEnabled,
-        customEnabled,
-        customProviderId: process.env.OAUTH_PROVIDER_ID as string,
-        customProviderScope: scopes
-      }
-    : { githubEnabled, customEnabled };
+  const config: OAuthConfig = {
+    localEnabled,
+    githubEnabled,
+    ...(customEnabled
+      ? {
+          customEnabled: true,
+          customProviderId: process.env.OAUTH_PROVIDER_ID as string,
+          customProviderScope: scopes
+        }
+      : { customEnabled: false })
+  };
 
   return config;
 };
@@ -138,7 +143,7 @@ export const auth = betterAuth({
     tableName: 'Verification'
   },
   emailAndPassword: {
-    enabled: true,
+    enabled: Boolean(process.env.ENABLE_LOCAL_AUTH),
     minPasswordLength: 10
   },
   socialProviders: {
