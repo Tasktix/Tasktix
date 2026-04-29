@@ -27,6 +27,7 @@ import { genericOAuth, haveIBeenPwned, username } from 'better-auth/plugins';
 import { namedColors } from './model/color';
 import { getIsOnlyAdminOnSharedList } from './database/user';
 import { prisma } from './database/db_connect';
+import { parseBoolean } from './util';
 
 export type OAuthConfig = {
   localEnabled: boolean;
@@ -59,7 +60,7 @@ export const getOAuthConfig = () => {
     );
   }
 
-  const localEnabled = Boolean(process.env.ENABLE_LOCAL_AUTH);
+  const localEnabled = parseBoolean(process.env.ENABLE_LOCAL_AUTH);
   const githubEnabled =
     Boolean(process.env.GITHUB_CLIENT_ID) &&
     Boolean(process.env.GITHUB_CLIENT_SECRET);
@@ -143,7 +144,7 @@ export const auth = betterAuth({
     tableName: 'Verification'
   },
   emailAndPassword: {
-    enabled: Boolean(process.env.ENABLE_LOCAL_AUTH),
+    enabled: parseBoolean(process.env.ENABLE_LOCAL_AUTH),
     minPasswordLength: 10
   },
   socialProviders: {
