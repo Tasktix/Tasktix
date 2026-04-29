@@ -56,6 +56,7 @@ beforeEach(() => {
 });
 
 const MOCK_AUTH_CONFIG = {
+  localEnabled: true,
   githubEnabled: true,
   customEnabled: false
 } as const;
@@ -197,7 +198,7 @@ describe('Sign Out Process', () => {
 
     fireEvent.click(avatar);
 
-    const signOut = screen.getByText('Log Out');
+    const signOut = screen.getByText('Sign Out');
 
     fireEvent.click(signOut);
 
