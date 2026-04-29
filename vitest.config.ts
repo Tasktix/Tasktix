@@ -33,7 +33,7 @@ export default defineConfig({
         'components/**/*.{ts,tsx}',
         'lib/**/*.{ts,tsx}'
       ],
-      exclude: ['node_modules/', 'lib/database/*.ts', 'lib/integration/*.ts']
+      exclude: ['node_modules/', 'lib/database/*.ts', 'lib/integration/**/*.ts']
     },
     globals: true
   }
