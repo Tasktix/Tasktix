@@ -1,4 +1,4 @@
-name: End-to_End Test
+name: End-to-End Test
 
 on: [pull_request]
 
@@ -37,6 +37,7 @@ jobs:
       - name: Test
         run: npm run test:cy
       - name: Save artifacts from failed tests
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: e2e-videos
