@@ -177,7 +177,7 @@ function AccountButton() {
           startContent={<DoorClosedFill />}
           onPress={handleClick}
         >
-          Log Out
+          Sign Out
         </DropdownItem>
       </DropdownMenu>
     </Dropdown>

@@ -33,3 +33,18 @@ export function retry<T>(fn: () => T, attempts = 3): T | undefined {
 
   return undefined;
 }
+
+/**
+ * Checks a string to determine whether it represents a `true` or `false` value. Unlike
+ * JavaScript's built-in `Boolean()`, this is smart enough to treat the strings `"no"` and
+ * `"false"` as `false`.
+ *
+ * @param input The string to check for truthiness
+ */
+export function parseBoolean(input: string | undefined): boolean {
+  return (
+    Boolean(input) &&
+    input?.toLowerCase() !== 'false' &&
+    input?.toLowerCase() !== 'no'
+  );
+}

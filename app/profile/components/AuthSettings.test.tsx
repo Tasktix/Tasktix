@@ -82,7 +82,7 @@ describe('Linking/Unlinking Github', () => {
     vi.mocked(useAuth).mockReturnValue({
       loggedInUser: MOCK_USER,
       setLoggedInUser: vi.fn(),
-      oauthConfig: { githubEnabled: false, customEnabled: false }
+      authConfig: { githubEnabled: false, customEnabled: false }
     });
     vi.mocked(authClient.listAccounts).mockReturnValue({});
     const { queryByTestId } = render(
@@ -99,7 +99,7 @@ describe('Linking/Unlinking Github', () => {
     vi.mocked(useAuth).mockReturnValue({
       loggedInUser: MOCK_USER,
       setLoggedInUser: vi.fn(),
-      oauthConfig: { githubEnabled: true, customEnabled: false }
+      authConfig: { githubEnabled: true, customEnabled: false }
     });
     vi.mocked(authClient.listAccounts).mockReturnValue({});
     const { getByTestId } = render(
@@ -119,7 +119,7 @@ describe('Linking/Unlinking Github', () => {
     vi.mocked(useAuth).mockReturnValue({
       loggedInUser: MOCK_USER,
       setLoggedInUser: vi.fn(),
-      oauthConfig: { githubEnabled: true, customEnabled: false }
+      authConfig: { githubEnabled: true, customEnabled: false }
     });
 
     vi.mocked(authClient.listAccounts).mockResolvedValue({
@@ -155,7 +155,7 @@ describe('Linking/Unlinking Github', () => {
     vi.mocked(useAuth).mockReturnValue({
       loggedInUser: MOCK_USER,
       setLoggedInUser: vi.fn(),
-      oauthConfig: { githubEnabled: true, customEnabled: false }
+      authConfig: { githubEnabled: true, customEnabled: false }
     });
 
     vi.mocked(authClient.listAccounts).mockResolvedValue({
@@ -202,7 +202,7 @@ describe('Linking/Unlinking Github', () => {
     vi.mocked(useAuth).mockReturnValue({
       loggedInUser: MOCK_USER,
       setLoggedInUser: vi.fn(),
-      oauthConfig: { githubEnabled: true, customEnabled: false }
+      authConfig: { githubEnabled: true, customEnabled: false }
     });
 
     const exampleError = {
@@ -260,7 +260,7 @@ describe('Linking/Unlinking Github', () => {
     vi.mocked(useAuth).mockReturnValue({
       loggedInUser: MOCK_USER,
       setLoggedInUser: vi.fn(),
-      oauthConfig: { githubEnabled: true, customEnabled: false }
+      authConfig: { githubEnabled: true, customEnabled: false }
     });
 
     render(
@@ -280,7 +280,7 @@ describe('Account Deletion', () => {
     vi.mocked(useAuth).mockReturnValue({
       loggedInUser: MOCK_USER,
       setLoggedInUser: vi.fn(),
-      oauthConfig: { githubEnabled: true, customEnabled: false }
+      authConfig: { githubEnabled: true, customEnabled: false }
     });
     vi.mocked(authClient.listAccounts).mockReturnValue({});
     const { getByLabelText } = render(
@@ -317,7 +317,7 @@ describe('Account Deletion', () => {
     vi.mocked(useAuth).mockReturnValue({
       loggedInUser: MOCK_USER,
       setLoggedInUser: setLoggedInUserMock,
-      oauthConfig: { githubEnabled: true, customEnabled: false }
+      authConfig: { githubEnabled: true, customEnabled: false }
     });
 
     const routerMock = {
@@ -382,7 +382,7 @@ describe('Account Deletion', () => {
     vi.mocked(useAuth).mockReturnValue({
       loggedInUser: MOCK_USER,
       setLoggedInUser: setLoggedInUserMock,
-      oauthConfig: { githubEnabled: true, customEnabled: false }
+      authConfig: { githubEnabled: true, customEnabled: false }
     });
 
     vi.mocked(addToastForError);

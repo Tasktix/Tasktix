@@ -16,16 +16,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { getOAuthConfig } from '../auth';
+import { getAuthConfig } from '../auth';
 
 beforeEach(vi.unstubAllEnvs);
 
-describe('getOAuthConfig', () => {
+describe('getAuthConfig', () => {
   test('Marks GitHub enabled if client ID and secret environment variables are set', () => {
     vi.stubEnv('GITHUB_CLIENT_ID', 'github-id');
     vi.stubEnv('GITHUB_CLIENT_SECRET', 'github-secret');
 
-    const config = getOAuthConfig();
+    const config = getAuthConfig();
 
     expect(config).toMatchObject({
       githubEnabled: true
@@ -36,7 +36,7 @@ describe('getOAuthConfig', () => {
     vi.stubEnv('OAUTH_PROVIDER_ID', 'OAuth Provider');
     vi.stubEnv('OAUTH_CLIENT_ID', 'client-id');
 
-    const config = getOAuthConfig();
+    const config = getAuthConfig();
 
     expect(config).toMatchObject({
       customEnabled: true,
@@ -48,7 +48,7 @@ describe('getOAuthConfig', () => {
     vi.stubEnv('GITHUB_CLIENT_ID', 'github-id');
     vi.stubEnv('GITHUB_CLIENT_SECRET', undefined); // TS requires 2 args - skipcq: JS-W1042
 
-    let config = getOAuthConfig();
+    let config = getAuthConfig();
 
     expect(config).toMatchObject({
       githubEnabled: false
@@ -57,7 +57,7 @@ describe('getOAuthConfig', () => {
     vi.stubEnv('GITHUB_CLIENT_ID', undefined); // TS requires 2 args - skipcq: JS-W1042
     vi.stubEnv('GITHUB_CLIENT_SECRET', 'github-secret');
 
-    config = getOAuthConfig();
+    config = getAuthConfig();
 
     expect(config).toMatchObject({
       githubEnabled: false
@@ -68,7 +68,7 @@ describe('getOAuthConfig', () => {
     vi.stubEnv('OAUTH_PROVIDER_ID', 'OAuth Provider');
     vi.stubEnv('OAUTH_CLIENT_ID', undefined); // TS requires 2 args - skipcq: JS-W1042
 
-    let config = getOAuthConfig();
+    let config = getAuthConfig();
 
     expect(config).toMatchObject({
       customEnabled: false
@@ -77,7 +77,7 @@ describe('getOAuthConfig', () => {
     vi.stubEnv('OAUTH_PROVIDER_ID', undefined); // TS requires 2 args - skipcq: JS-W1042
     vi.stubEnv('OAUTH_CLIENT_ID', 'client-id');
 
-    config = getOAuthConfig();
+    config = getAuthConfig();
 
     expect(config).toMatchObject({
       customEnabled: false
@@ -89,7 +89,7 @@ describe('getOAuthConfig', () => {
     vi.stubEnv('OAUTH_PROVIDER_ID', 'customProvider');
     vi.stubEnv('OAUTH_CLIENT_ID', 'customProvider');
 
-    const config = getOAuthConfig();
+    const config = getAuthConfig();
 
     expect(config).toMatchObject({
       customProviderScope: ['oauth', 'password']
@@ -101,7 +101,7 @@ describe('getOAuthConfig', () => {
     vi.stubEnv('OAUTH_CLIENT_ID', 'not undefined');
     vi.stubEnv('OAUTH_SCOPES', undefined); // TS requires 2 args - skipcq: JS-W1042
 
-    const config = getOAuthConfig();
+    const config = getAuthConfig();
 
     expect(config).toMatchObject({ customProviderScope: undefined });
   });
@@ -110,7 +110,7 @@ describe('getOAuthConfig', () => {
     vi.stubEnv('OAUTH_SCOPES', 'oauth password');
     const consoleSpy = vi.spyOn(console, 'error');
 
-    getOAuthConfig();
+    getAuthConfig();
 
     expect(consoleSpy).toHaveBeenCalled();
   });
