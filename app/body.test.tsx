@@ -83,15 +83,16 @@ describe('Body', () => {
     render(
       <HeroUIProvider disableRipple>
         <Body>
-          <div>child</div>
+          <main className='grow'>child</main>
         </Body>
       </HeroUIProvider>
     );
 
     const main = screen.getByRole('main');
 
+    expect(screen.getAllByRole('main')).toHaveLength(1);
     expect(main.parentElement).toHaveClass('flex', 'min-h-dvh', 'flex-col');
-    expect(main).toHaveClass('flex-1');
+    expect(main).toHaveClass('grow');
     expect(
       screen.getByText(/Tasktix is licensed under the GNU AGPL v3/i)
     ).toHaveClass('mt-auto');

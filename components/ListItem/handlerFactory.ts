@@ -40,7 +40,7 @@ export function itemHandlerFactory(
   itemId: string,
   sectionId: string,
   timerData: {
-    timer: RefObject<NodeJS.Timeout | null>;
+    timer: RefObject<NodeJS.Timeout | undefined>;
     lastTime: RefObject<Date>;
     setElapsedLive: Dispatch<SetStateAction<number>>;
     stopRunning: () => unknown;

@@ -158,20 +158,52 @@ vi.mock(import('next-themes'), async importOriginal => {
   };
 });
 
-beforeEach(() => {
-  vi.resetAllMocks();
-
+function mockMatchMedia(matches: boolean) {
   Object.defineProperty(globalThis, 'matchMedia', {
+    configurable: true,
     writable: true,
     value: vi.fn().mockImplementation(() => ({
-      matches: false,
+      matches,
+      media: '',
+      onchange: null,
       addEventListener: vi.fn(),
-      removeEventListener: vi.fn()
+      removeEventListener: vi.fn(),
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      dispatchEvent: vi.fn()
     }))
   });
+}
+
+beforeEach(() => {
+  vi.resetAllMocks();
+  Reflect.deleteProperty(globalThis, 'matchMedia');
 });
 
 describe('ThemeSwitcher', () => {
+  test('falls back to desktop behavior when matchMedia is unavailable', () => {
+    const setTheme = vi.fn();
+
+    vi.mocked(useTheme).mockReturnValue({
+      theme: 'light',
+      resolvedTheme: 'light',
+      themes: ['light', 'dark', 'system'],
+      setTheme
+    });
+
+    expect(globalThis.matchMedia).toBeUndefined();
+
+    render(
+      <HeroUIProvider disableRipple>
+        <ThemeSwitcher />
+      </HeroUIProvider>
+    );
+
+    fireEvent.click(screen.getByLabelText('Switch to dark mode'));
+
+    expect(setTheme).toHaveBeenCalledWith('dark');
+  });
+
   test('toggles between light and dark themes on click', () => {
     const setTheme = vi.fn();
 
@@ -247,16 +279,7 @@ describe('ThemeSwitcher', () => {
     const user = userEvent.setup();
     const setTheme = vi.fn();
 
-    vi.mocked(globalThis.matchMedia).mockImplementation(() => ({
-      matches: true,
-      media: '',
-      onchange: null,
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      addListener: vi.fn(), // deprecated but required for type
-      removeListener: vi.fn(), // deprecated but required for type
-      dispatchEvent: vi.fn()
-    }));
+    mockMatchMedia(true);
 
     vi.mocked(useTheme).mockReturnValue({
       theme: 'light',

@@ -386,8 +386,6 @@ describe('Tag changes', () => {
   test('Allows tags to be deleted', async () => {
     const user = userEvent.setup();
 
-    vi.spyOn(globalThis, 'confirm').mockImplementation(() => true);
-
     vi.mocked(api.delete).mockResolvedValue({
       code: 200,
       message: 'Success',
@@ -1252,8 +1250,8 @@ describe('ListItem state propagation', () => {
       expect(popoverElement).toHaveAccessibleName('Elapsed 00:02');
     });
 
-    // Timer increment behavior still needs dedicated coverage once @testing-library/user-event
-    // fully supports Vitest fake timers:
+    // TODO: Need tests for timers actually incrementing after @testing-library/user-event
+    // supports Vitest fake timers:
     // https://github.com/testing-library/react-testing-library/issues/1197
   });
 

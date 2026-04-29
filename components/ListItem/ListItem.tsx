@@ -78,7 +78,7 @@ export default function ListItem({
   addNewTag,
   onItemEvent
 }: ListItemParams) {
-  const timer = useRef<NodeJS.Timeout | null>(null);
+  const timer = useRef<NodeJS.Timeout>(undefined);
   const updateTime = useRef(() => {});
   const lastTime = useRef(new Date());
   const [elapsedLive, setElapsedLive] = useState(
@@ -113,9 +113,7 @@ export default function ListItem({
         .then(() => {
           // Update the timer
           lastTime.current = startedDate;
-          if (timer.current !== null) {
-            clearTimeout(timer.current); // Just for safety
-          }
+          clearTimeout(timer.current); // Just for safety
           timer.current = setTimeout(
             updateTime.current,
             minute - (elapsedLive % minute) + 5
@@ -194,9 +192,9 @@ export default function ListItem({
   }, []);
 
   function _stopRunning() {
-    if (timer.current !== null) {
+    if (timer.current) {
       clearTimeout(timer.current);
-      timer.current = null;
+      timer.current = undefined;
     }
   }
 
@@ -236,7 +234,7 @@ export default function ListItem({
             ) : (
               <>
                 <span
-                  className={`min-w-0 text-sm text-foreground truncate md:hidden ${hasDueDates ? '' : 'mt-1'}`}
+                  className={`text-sm text-foreground truncate md:hidden ${hasDueDates ? '' : 'mt-1'}`}
                 >
                   {item.name}
                 </span>
@@ -291,7 +289,7 @@ export default function ListItem({
           )}
         </span>
       </span>
-      <span className='flex gap-4 items-center justify-between w-3/5 max-w-fit lg:max-w-full'>
+      <span className='flex gap-4 items-center justify-between w-3/5'>
         <Priority
           isComplete={item.status === 'Completed'}
           priority={item.priority}

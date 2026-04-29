@@ -59,21 +59,22 @@ export default function ThemeSwitcher() {
   }
 
   useEffect(() => {
-    const mediaQuery = globalThis.matchMedia(
-      '(hover: none), (pointer: coarse)'
-    );
+    const mediaQuery =
+      typeof globalThis.matchMedia === 'function'
+        ? globalThis.matchMedia('(hover: none), (pointer: coarse)')
+        : null;
 
     // Keep hover-only behavior disabled on touch-oriented devices.
     function updateIsMobile(event?: MediaQueryListEvent) {
-      setIsMobile(event?.matches ?? mediaQuery.matches);
+      setIsMobile(event?.matches ?? mediaQuery?.matches ?? false);
       setIsOpen(false);
     }
 
     updateIsMobile();
-    mediaQuery.addEventListener('change', updateIsMobile);
+    mediaQuery?.addEventListener('change', updateIsMobile);
 
     return () => {
-      mediaQuery.removeEventListener('change', updateIsMobile);
+      mediaQuery?.removeEventListener('change', updateIsMobile);
 
       if (closeTimeoutRef.current) {
         clearTimeout(closeTimeoutRef.current);

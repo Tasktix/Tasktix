@@ -18,7 +18,7 @@
 
 'use client';
 
-import { ReactNode, useReducer, useRef } from 'react';
+import { ReactNode, useReducer } from 'react';
 import {
   Button,
   Drawer,
@@ -31,90 +31,6 @@ import { List as ListIcon } from 'react-bootstrap-icons';
 
 import Sidebar, { listReducer, ListContext } from '@/components/Sidebar';
 import List from '@/lib/model/list';
-
-/**
- * Renders the title area for the mobile navigation drawer.
- */
-function MobileSidebarHeader() {
-  return (
-    <DrawerHeader className='px-0 pb-2 pt-0 text-sm font-semibold'>
-      Navigation
-    </DrawerHeader>
-  );
-}
-
-/**
- * Renders the button that opens the mobile navigation drawer.
- */
-function MobileSidebarToggle({
-  hamburgerRef,
-  isDrawerOpen,
-  onOpen
-}: Readonly<{
-  hamburgerRef: React.RefObject<HTMLButtonElement | null>;
-  isDrawerOpen: boolean;
-  onOpen: () => void;
-}>) {
-  return (
-    <header className='sticky top-0 z-20 flex items-center border-b border-content3 bg-content1/90 p-3 backdrop-blur md:hidden'>
-      <Button
-        ref={hamburgerRef}
-        isIconOnly
-        aria-controls='mobile-sidebar-drawer'
-        aria-expanded={isDrawerOpen}
-        aria-label='Open navigation menu'
-        variant='ghost'
-        onPress={onOpen}
-      >
-        <ListIcon size={20} />
-      </Button>
-    </header>
-  );
-}
-
-/**
- * Renders the mobile drawer variant of the list navigation.
- */
-function MobileSidebarDrawer({
-  closeDrawer,
-  isDrawerOpen,
-  lists,
-  onOpenChange
-}: Readonly<{
-  closeDrawer: () => void;
-  isDrawerOpen: boolean;
-  lists: List[];
-  onOpenChange: () => void;
-}>) {
-  return (
-    <Drawer
-      hideCloseButton
-      classNames={{
-        backdrop: 'md:hidden',
-        base: 'md:hidden',
-        wrapper: 'md:hidden'
-      }}
-      isOpen={isDrawerOpen}
-      placement='left'
-      scrollBehavior='inside'
-      onOpenChange={onOpenChange}
-    >
-      <DrawerContent
-        className='flex h-dvh max-h-dvh w-72 max-w-[85vw] flex-col rounded-none border-r border-content3 p-4 shadow-2xl'
-        id='mobile-sidebar-drawer'
-      >
-        <MobileSidebarHeader />
-        <DrawerBody className='flex-1 px-0 pb-0 pt-0'>
-          <Sidebar
-            className='w-full flex-1 p-0 pr-0 shadow-none'
-            lists={lists}
-            onNavigate={closeDrawer}
-          />
-        </DrawerBody>
-      </DrawerContent>
-    </Drawer>
-  );
-}
 
 export default function LayoutClient({
   startingLists,
@@ -133,7 +49,6 @@ export default function LayoutClient({
     listReducer,
     JSON.parse(startingLists) as List[]
   );
-  const hamburgerRef = useRef<HTMLButtonElement>(null);
 
   return (
     <ListContext.Provider value={dispatchEvent}>
@@ -141,20 +56,49 @@ export default function LayoutClient({
         <Sidebar className='hidden md:flex' lists={lists} />
 
         <div className='flex min-w-0 grow flex-col'>
-          <MobileSidebarToggle
-            hamburgerRef={hamburgerRef}
-            isDrawerOpen={isDrawerOpen}
-            onOpen={onOpen}
-          />
+          <header className='sticky top-0 z-20 flex items-center border-b border-content3 bg-content1/90 p-3 backdrop-blur md:hidden'>
+            <Button
+              isIconOnly
+              aria-controls='mobile-sidebar-drawer'
+              aria-expanded={isDrawerOpen}
+              aria-label='Open navigation menu'
+              variant='ghost'
+              onPress={onOpen}
+            >
+              <ListIcon size={20} />
+            </Button>
+          </header>
           {children}
         </div>
       </div>
-      <MobileSidebarDrawer
-        closeDrawer={closeDrawer}
-        isDrawerOpen={isDrawerOpen}
-        lists={lists}
+      <Drawer
+        hideCloseButton
+        classNames={{
+          backdrop: 'md:hidden',
+          base: 'md:hidden',
+          wrapper: 'md:hidden'
+        }}
+        isOpen={isDrawerOpen}
+        placement='left'
+        scrollBehavior='inside'
         onOpenChange={onOpenChange}
-      />
+      >
+        <DrawerContent
+          className='flex h-dvh max-h-dvh w-72 max-w-[85vw] flex-col rounded-none border-r border-content3 p-4 shadow-2xl'
+          id='mobile-sidebar-drawer'
+        >
+          <DrawerHeader className='px-0 pb-2 pt-0 text-sm font-semibold'>
+            Navigation
+          </DrawerHeader>
+          <DrawerBody className='flex-1 px-0 pb-0 pt-0'>
+            <Sidebar
+              className='w-full flex-1 p-0 pr-0 shadow-none'
+              lists={lists}
+              onNavigate={closeDrawer}
+            />
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
     </ListContext.Provider>
   );
 }

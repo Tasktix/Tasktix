@@ -38,7 +38,7 @@ describe('itemHandlerFactory', () => {
       'item-id',
       'section-id',
       {
-        timer: { current: null },
+        timer: { current: undefined },
         lastTime: { current: new Date('2026-01-01T00:00:00.000Z') },
         setElapsedLive: vi.fn(),
         stopRunning: vi.fn()

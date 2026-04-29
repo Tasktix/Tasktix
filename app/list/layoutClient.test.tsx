@@ -19,15 +19,27 @@
  */
 
 import { createContext } from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within
+} from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 import LayoutClient from '@/app/list/layoutClient';
 
 vi.mock('@/components/Sidebar', () => ({
-  default: ({ className = '' }: { className?: string }) => (
+  default: ({
+    className = '',
+    onNavigate
+  }: {
+    className?: string;
+    onNavigate?: () => void;
+  }) => (
     <aside className={className} data-testid='sidebar'>
-      Sidebar
+      <button onClick={onNavigate}>Navigate</button>
     </aside>
   ),
   listReducer: (state: unknown[]) => state,
@@ -35,7 +47,7 @@ vi.mock('@/components/Sidebar', () => ({
 }));
 
 describe('LayoutClient mobile drawer', () => {
-  it('opens the drawer when hamburger is clicked on a small window', async () => {
+  it('opens the drawer and closes it when navigation is triggered', async () => {
     render(
       <LayoutClient startingLists='[]'>
         <main>Content</main>
@@ -52,9 +64,18 @@ describe('LayoutClient mobile drawer', () => {
     fireEvent.click(hamburger);
 
     expect(hamburger).toHaveAttribute('aria-expanded', 'true');
+    const dialog = await screen.findByRole('dialog');
+
     await waitFor(() => {
-      expect(screen.getByRole('dialog')).toBeVisible();
+      expect(dialog).toBeVisible();
       expect(screen.getByText('Navigation')).toBeVisible();
+    });
+
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Navigate' }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+      expect(hamburger).toHaveAttribute('aria-expanded', 'false');
     });
   });
 });

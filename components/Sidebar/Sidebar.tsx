@@ -18,9 +18,7 @@
 
 'use client';
 
-import { setTimeout } from 'timers';
-
-import { ReactNode, useContext, useEffect, useRef, useState } from 'react';
+import { ReactNode, useContext, useState } from 'react';
 import { addToast, Button, Input, Link } from '@heroui/react';
 import { Check, Plus } from 'react-bootstrap-icons';
 import { usePathname, useRouter } from 'next/navigation';
@@ -178,7 +176,6 @@ function NewItem({
   remove: () => unknown;
 }) {
   const [name, setName] = useState('');
-  const inputRef = useRef<HTMLInputElement | null>(null);
 
   /**
    * Sanitizes and stores the proposed list name as the user types.
@@ -186,10 +183,6 @@ function NewItem({
   function updateName(name: string) {
     setName(validateListName(name)[1]);
   }
-
-  useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
 
   return (
     <form
@@ -200,7 +193,7 @@ function NewItem({
       }}
     >
       <Input
-        ref={inputRef}
+        autoFocus
         color='primary'
         placeholder='List name'
         size='sm'
