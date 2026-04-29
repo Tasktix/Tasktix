@@ -49,7 +49,7 @@ export default function SignUp() {
     password: InputMessage;
   }
 
-  const { setLoggedInUser, authConfig: authConfig } = useAuth();
+  const { setLoggedInUser, authConfig } = useAuth();
   const defaultMessage: InputMessage = { message: '', color: 'default' };
 
   const [inputs, setInputs] = useState({
