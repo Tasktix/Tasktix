@@ -57,9 +57,9 @@ export default function Page() {
       toast for errors
     */
     if (authConfig.githubEnabled)
-      void handleOAuth('github', setLoggedInUser, authConfig);
+      void handleOAuth('github', setLoggedInUser, authConfig); // skipcq: JS-0098
     if (authConfig.customEnabled)
-      void handleOAuth('custom', setLoggedInUser, authConfig);
+      void handleOAuth('custom', setLoggedInUser, authConfig); // skipcq: JS-0098
 
     return (
       <main className='flex grow justify-center items-start mt-40 w-xl mx-auto'>
