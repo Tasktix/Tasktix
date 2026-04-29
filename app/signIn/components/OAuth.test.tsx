@@ -39,7 +39,7 @@ test('Pressing Github Button attempts OAuth Login', () => {
     <HeroUIProvider disableRipple>
       <AuthProvider
         loggedInUserAtStart={false}
-        oauthConfig={{
+        authConfig={{
           githubEnabled: true,
           customEnabled: false
         }}
@@ -63,7 +63,7 @@ test('Pressing custom SSO Button attempts OAuth Login', () => {
     <HeroUIProvider disableRipple>
       <AuthProvider
         loggedInUserAtStart={false}
-        oauthConfig={{
+        authConfig={{
           githubEnabled: false,
           customEnabled: true,
           customProviderId: 'SSO'
@@ -88,7 +88,7 @@ test('GitHub login not rendered if not configured on server ', () => {
     <HeroUIProvider disableRipple>
       <AuthProvider
         loggedInUserAtStart={false}
-        oauthConfig={{
+        authConfig={{
           githubEnabled: false,
           customEnabled: true,
           customProviderId: 'SSO'
@@ -111,7 +111,7 @@ test('Custom SSO login not rendered if not configured on server ', () => {
     <HeroUIProvider disableRipple>
       <AuthProvider
         loggedInUserAtStart={false}
-        oauthConfig={{
+        authConfig={{
           githubEnabled: true,
           customEnabled: false
         }}
@@ -133,7 +133,7 @@ test('Nothing rendered if all not configured on server ', () => {
     <HeroUIProvider disableRipple>
       <AuthProvider
         loggedInUserAtStart={false}
-        oauthConfig={{
+        authConfig={{
           githubEnabled: false,
           customEnabled: false
         }}

@@ -22,7 +22,7 @@ import { Button } from '@heroui/react';
 import { Github, ShieldLockFill } from 'react-bootstrap-icons';
 import { startTransition } from 'react';
 
-import { OAuthConfig } from '@/lib/auth';
+import { AuthConfig } from '@/lib/auth';
 import User from '@/lib/model/user';
 
 import { handleOAuth } from '../oauth';
@@ -35,46 +35,46 @@ import { handleOAuth } from '../oauth';
  * @component
  * @param props - The OAuth controller props
  * @param props.setLoggedInUser - Callback function to set the logged-in user state
- * @param props.oauthConfig - Supported Oauth Providers configuration
+ * @param props.authConfig - Supported Oauth Providers configuration
  *
  * @example
  * <OAuth setLoggedInUser={setUser} router={router} />
  */
 export default function OAuth({
   setLoggedInUser,
-  oauthConfig
+  authConfig
 }: Readonly<{
   setLoggedInUser: (user: User) => void;
-  oauthConfig: OAuthConfig;
+  authConfig: AuthConfig;
 }>) {
   return (
     <div className='flex flex-col items-center gap-4'>
-      {oauthConfig.githubEnabled && (
+      {authConfig.githubEnabled && (
         <Button
           aria-label='sign in with github'
           startContent={<Github />}
           variant='bordered'
           onPress={() =>
             startTransition(() =>
-              handleOAuth('github', setLoggedInUser, oauthConfig)
+              handleOAuth('github', setLoggedInUser, authConfig)
             )
           }
         >
           Continue with Github
         </Button>
       )}
-      {oauthConfig.customEnabled && (
+      {authConfig.customEnabled && (
         <Button
-          aria-label={`sign in with ${oauthConfig.customProviderId}`}
+          aria-label={`sign in with ${authConfig.customProviderId}`}
           startContent={<ShieldLockFill />}
           variant='bordered'
           onPress={() =>
             startTransition(() =>
-              handleOAuth('custom', setLoggedInUser, oauthConfig)
+              handleOAuth('custom', setLoggedInUser, authConfig)
             )
           }
         >
-          Continue with {oauthConfig.customProviderId}
+          Continue with {authConfig.customProviderId}
         </Button>
       )}
     </div>

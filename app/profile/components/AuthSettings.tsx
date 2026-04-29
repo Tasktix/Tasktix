@@ -65,7 +65,7 @@ export default function AuthSettings({ user }: { user: User }) {
   const [accounts, setAccounts] = useState<FilteredAccount[]>([]);
   const router = useRouter();
   const queryParams = useSearchParams();
-  const { setLoggedInUser, oauthConfig } = useAuth();
+  const { setLoggedInUser, authConfig } = useAuth();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   useEffect(() => {
@@ -169,7 +169,7 @@ export default function AuthSettings({ user }: { user: User }) {
   }
 
   const methods = [
-    oauthConfig.githubEnabled && {
+    authConfig.githubEnabled && {
       title: 'Github',
       description: isGithubLinked
         ? `Linked to ${user.name}`

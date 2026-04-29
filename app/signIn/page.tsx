@@ -28,12 +28,12 @@ import OAuth from './components/OAuth';
 import { handleOAuth } from './oauth';
 
 export default function Page() {
-  const { setLoggedInUser, oauthConfig } = useAuth();
+  const { setLoggedInUser, authConfig } = useAuth();
 
   if (
-    !oauthConfig.localEnabled &&
-    !oauthConfig.githubEnabled &&
-    !oauthConfig.customEnabled
+    !authConfig.localEnabled &&
+    !authConfig.githubEnabled &&
+    !authConfig.customEnabled
   ) {
     return (
       <main className='flex grow justify-center items-start mt-40 w-xl mx-auto'>
@@ -48,18 +48,18 @@ export default function Page() {
   }
 
   if (
-    !oauthConfig.localEnabled &&
-    oauthConfig.githubEnabled !== oauthConfig.customEnabled
+    !authConfig.localEnabled &&
+    authConfig.githubEnabled !== authConfig.customEnabled
   ) {
     /*
       Local auth disabled and only one 3rd-party auth provider configured, so redirect
       straight to it. Promises explicitly ignored because `handleOAuth` already creates a
       toast for errors
     */
-    if (oauthConfig.githubEnabled)
-      void handleOAuth('github', setLoggedInUser, oauthConfig);
-    if (oauthConfig.customEnabled)
-      void handleOAuth('custom', setLoggedInUser, oauthConfig);
+    if (authConfig.githubEnabled)
+      void handleOAuth('github', setLoggedInUser, authConfig);
+    if (authConfig.customEnabled)
+      void handleOAuth('custom', setLoggedInUser, authConfig);
 
     return (
       <main className='flex grow justify-center items-start mt-40 w-xl mx-auto'>
@@ -76,7 +76,7 @@ export default function Page() {
     <main className='flex grow justify-center items-start mt-40'>
       <Card className='w-96 py-2 px-4'>
         <CardBody>
-          {oauthConfig.localEnabled && (
+          {authConfig.localEnabled && (
             <Tabs className='flex justify-center' variant='underlined'>
               <Tab key='signIn' className='text-xl' title='Sign In'>
                 <SignIn />
@@ -87,8 +87,8 @@ export default function Page() {
             </Tabs>
           )}
 
-          {oauthConfig.localEnabled &&
-          (oauthConfig.githubEnabled || oauthConfig.customEnabled) ? (
+          {authConfig.localEnabled &&
+          (authConfig.githubEnabled || authConfig.customEnabled) ? (
             <div className='flex items-center gap-4 my-6'>
               <Divider className='flex-1' />
               <p className='text-tiny text-default-500 shrink-0'>OR</p>
@@ -96,11 +96,8 @@ export default function Page() {
             </div>
           ) : null}
 
-          {(oauthConfig.githubEnabled || oauthConfig.customEnabled) && (
-            <OAuth
-              oauthConfig={oauthConfig}
-              setLoggedInUser={setLoggedInUser}
-            />
+          {(authConfig.githubEnabled || authConfig.customEnabled) && (
+            <OAuth authConfig={authConfig} setLoggedInUser={setLoggedInUser} />
           )}
         </CardBody>
       </Card>

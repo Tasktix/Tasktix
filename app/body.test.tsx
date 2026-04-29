@@ -55,7 +55,7 @@ beforeEach(() => {
   vi.resetAllMocks();
 });
 
-const MOCK_OAUTH_CONFIG = {
+const MOCK_AUTH_CONFIG = {
   githubEnabled: true,
   customEnabled: false
 } as const;
@@ -63,7 +63,7 @@ const MOCK_OAUTH_CONFIG = {
 describe('Body', () => {
   it('links logo to /list when logged in', () => {
     vi.mocked(useAuth).mockReturnValue({
-      oauthConfig: MOCK_OAUTH_CONFIG,
+      authConfig: MOCK_AUTH_CONFIG,
       loggedInUser: new User(
         'userid',
         'username',
@@ -94,7 +94,7 @@ describe('Body', () => {
 
   it('links logo to /about when logged out', () => {
     vi.mocked(useAuth).mockReturnValue({
-      oauthConfig: MOCK_OAUTH_CONFIG,
+      authConfig: MOCK_AUTH_CONFIG,
       loggedInUser: false,
       setLoggedInUser: vi.fn()
     });
@@ -127,7 +127,7 @@ describe('Body', () => {
     );
 
     vi.mocked(useAuth).mockReturnValue({
-      oauthConfig: MOCK_OAUTH_CONFIG,
+      authConfig: MOCK_AUTH_CONFIG,
       loggedInUser: oldUser,
       setLoggedInUser: vi.fn()
     });
@@ -135,8 +135,8 @@ describe('Body', () => {
     const { getByLabelText } = render(
       <HeroUIProvider disableRipple>
         <AuthProvider
+          authConfig={MOCK_AUTH_CONFIG}
           loggedInUserAtStart={oldUser}
-          oauthConfig={MOCK_OAUTH_CONFIG}
         >
           <Body>contents...</Body>
         </AuthProvider>
@@ -163,7 +163,7 @@ describe('Sign Out Process', () => {
     const setLoggedInUserMock = vi.fn();
 
     vi.mocked(useAuth).mockReturnValue({
-      oauthConfig: MOCK_OAUTH_CONFIG,
+      authConfig: MOCK_AUTH_CONFIG,
       loggedInUser: mock_user,
       setLoggedInUser: setLoggedInUserMock
     });
@@ -185,8 +185,8 @@ describe('Sign Out Process', () => {
     const { getByLabelText } = render(
       <HeroUIProvider disableRipple>
         <AuthProvider
+          authConfig={MOCK_AUTH_CONFIG}
           loggedInUserAtStart={mock_user}
-          oauthConfig={MOCK_OAUTH_CONFIG}
         >
           <Body>contents...</Body>
         </AuthProvider>
