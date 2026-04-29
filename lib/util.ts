@@ -33,3 +33,11 @@ export function retry<T>(fn: () => T, attempts = 3): T | undefined {
 
   return undefined;
 }
+
+export function parseBoolean(input: string | undefined): boolean {
+  return (
+    Boolean(input) &&
+    input?.toLowerCase() !== 'false' &&
+    input?.toLowerCase() !== 'no'
+  );
+}

@@ -18,7 +18,7 @@
 
 'use client';
 
-import { Button, Divider } from '@heroui/react';
+import { Button } from '@heroui/react';
 import { Github, ShieldLockFill } from 'react-bootstrap-icons';
 import { startTransition } from 'react';
 
@@ -47,47 +47,36 @@ export default function OAuth({
   setLoggedInUser: (user: User) => void;
   oauthConfig: OAuthConfig;
 }>) {
-  if (!oauthConfig?.githubEnabled && !oauthConfig?.customEnabled) {
-    return null;
-  }
-
   return (
-    <div>
-      <div className='flex items-center gap-4 my-6'>
-        <Divider className='flex-1' />
-        <p className='text-tiny text-default-500 shrink-0'>OR</p>
-        <Divider className='flex-1' />
-      </div>
-      <div className='flex flex-col items-center gap-4'>
-        {oauthConfig.githubEnabled && (
-          <Button
-            aria-label='sign in with github'
-            startContent={<Github />}
-            variant='bordered'
-            onPress={() =>
-              startTransition(() =>
-                handleOAuth('github', setLoggedInUser, oauthConfig)
-              )
-            }
-          >
-            Continue with Github
-          </Button>
-        )}
-        {oauthConfig.customEnabled && (
-          <Button
-            aria-label={`sign in with ${oauthConfig.customProviderId}`}
-            startContent={<ShieldLockFill />}
-            variant='bordered'
-            onPress={() =>
-              startTransition(() =>
-                handleOAuth('custom', setLoggedInUser, oauthConfig)
-              )
-            }
-          >
-            Continue with {oauthConfig.customProviderId}
-          </Button>
-        )}
-      </div>
+    <div className='flex flex-col items-center gap-4'>
+      {oauthConfig.githubEnabled && (
+        <Button
+          aria-label='sign in with github'
+          startContent={<Github />}
+          variant='bordered'
+          onPress={() =>
+            startTransition(() =>
+              handleOAuth('github', setLoggedInUser, oauthConfig)
+            )
+          }
+        >
+          Continue with Github
+        </Button>
+      )}
+      {oauthConfig.customEnabled && (
+        <Button
+          aria-label={`sign in with ${oauthConfig.customProviderId}`}
+          startContent={<ShieldLockFill />}
+          variant='bordered'
+          onPress={() =>
+            startTransition(() =>
+              handleOAuth('custom', setLoggedInUser, oauthConfig)
+            )
+          }
+        >
+          Continue with {oauthConfig.customProviderId}
+        </Button>
+      )}
     </div>
   );
 }

@@ -18,7 +18,7 @@
 
 'use client';
 
-import { Card, CardBody, Tabs, Tab, Alert } from '@heroui/react';
+import { Card, CardBody, Tabs, Tab, Alert, Divider } from '@heroui/react';
 
 import { useAuth } from '@/components/AuthProvider';
 
@@ -36,8 +36,9 @@ export default function Page() {
     !oauthConfig.customEnabled
   ) {
     return (
-      <main className='flex grow justify-center items-start mt-40'>
+      <main className='flex grow justify-center items-start mt-40 w-xl mx-auto'>
         <Alert
+          color='danger'
           description='Please talk to your administrator about enabling local, GitHub, or OIDC authentication'
           title='No authentication providers configured'
           variant='flat'
@@ -59,21 +60,48 @@ export default function Page() {
       void handleOAuth('github', setLoggedInUser, oauthConfig);
     if (oauthConfig.customEnabled)
       void handleOAuth('custom', setLoggedInUser, oauthConfig);
+
+    return (
+      <main className='flex grow justify-center items-start mt-40 w-xl mx-auto'>
+        <Alert
+          color='success'
+          title='Redirecting for SSO sign in...'
+          variant='flat'
+        />
+      </main>
+    );
   }
 
   return (
     <main className='flex grow justify-center items-start mt-40'>
       <Card className='w-96 py-2 px-4'>
         <CardBody>
-          <Tabs className='flex justify-center' variant='underlined'>
-            <Tab key='signIn' className='text-xl' title='Sign In'>
-              <SignIn />
-            </Tab>
-            <Tab key='signUp' className='text-xl' title='Sign Up'>
-              <SignUp />
-            </Tab>
-          </Tabs>
-          <OAuth oauthConfig={oauthConfig} setLoggedInUser={setLoggedInUser} />
+          {oauthConfig.localEnabled && (
+            <Tabs className='flex justify-center' variant='underlined'>
+              <Tab key='signIn' className='text-xl' title='Sign In'>
+                <SignIn />
+              </Tab>
+              <Tab key='signUp' className='text-xl' title='Sign Up'>
+                <SignUp />
+              </Tab>
+            </Tabs>
+          )}
+
+          {oauthConfig.localEnabled &&
+          (oauthConfig.githubEnabled || oauthConfig.customEnabled) ? (
+            <div className='flex items-center gap-4 my-6'>
+              <Divider className='flex-1' />
+              <p className='text-tiny text-default-500 shrink-0'>OR</p>
+              <Divider className='flex-1' />
+            </div>
+          ) : null}
+
+          {(oauthConfig.githubEnabled || oauthConfig.customEnabled) && (
+            <OAuth
+              oauthConfig={oauthConfig}
+              setLoggedInUser={setLoggedInUser}
+            />
+          )}
         </CardBody>
       </Card>
     </main>
