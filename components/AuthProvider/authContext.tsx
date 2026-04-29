@@ -19,12 +19,12 @@
 import { createContext } from 'react';
 
 import User from '@/lib/model/user';
-import { OAuthConfig } from '@/lib/auth';
+import { AuthConfig } from '@/lib/auth';
 
 interface AuthContextType {
   loggedInUser: User | false;
   setLoggedInUser: (_: User | false) => void;
-  oauthConfig: OAuthConfig;
+  authConfig: AuthConfig;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(

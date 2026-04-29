@@ -29,7 +29,7 @@ import { getIsOnlyAdminOnSharedList } from './database/user';
 import { prisma } from './database/db_connect';
 import { parseBoolean } from './util';
 
-export type OAuthConfig = {
+export type AuthConfig = {
   localEnabled: boolean;
   githubEnabled: boolean;
 } & (
@@ -47,7 +47,7 @@ export type OAuthConfig = {
  *
  * @returns Object containing all supported oauth providers and whether they have been configured
  */
-export const getOAuthConfig = () => {
+export const getAuthConfig = () => {
   let scopes;
 
   try {
@@ -68,7 +68,7 @@ export const getOAuthConfig = () => {
     Boolean(process.env.OAUTH_PROVIDER_ID) &&
     Boolean(process.env.OAUTH_CLIENT_ID);
 
-  const config: OAuthConfig = {
+  const config: AuthConfig = {
     localEnabled,
     githubEnabled,
     ...(customEnabled
@@ -148,7 +148,7 @@ export const auth = betterAuth({
     minPasswordLength: 10
   },
   socialProviders: {
-    ...(getOAuthConfig().githubEnabled
+    ...(getAuthConfig().githubEnabled
       ? {
           github: {
             clientId: process.env.GITHUB_CLIENT_ID as string,
@@ -167,7 +167,7 @@ export const auth = betterAuth({
           })
         ]
       : []),
-    ...(getOAuthConfig().customEnabled
+    ...(getAuthConfig().customEnabled
       ? [
           genericOAuth({
             config: [
