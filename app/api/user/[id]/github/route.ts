@@ -20,10 +20,14 @@ import { auth } from '@/lib/auth';
 import { getAccessibleRepositories } from '@/lib/integration/github/account';
 import { ClientError, ServerError, Success } from '@/lib/Response';
 import { getUser } from '@/lib/session';
-import { getIsAccountLinkedToGithub } from '@/lib/database/user';
 
 export const dynamic = 'force-dynamic'; // defaults to auto
 
+/**
+ * Fetches the Github repositories available for a given user who has linked
+ * their account with Github. Will automatically refresh an access Token via
+ * BetterAuth methods if it has expired and we have a valid refreshToken
+ */
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -36,9 +40,6 @@ export async function GET(
 
   if (user.id !== id) return ClientError.Forbidden('Insufficient permissions');
 
-  const isLinked = await getIsAccountLinkedToGithub(user.id);
-
-  if (!isLinked) return ClientError.BadRequest('Account not linked to Github');
   let accessToken: string | undefined;
 
   try {
@@ -53,18 +54,12 @@ export async function GET(
   } catch (error) {
     console.error('BetterAuth API Error:', error);
 
-    return ServerError.Internal('Failed to fetch valid Access Token');
+    return ClientError.NotFound('Failed to fetch valid GitHub Access Token');
   }
   const repositories = await getAccessibleRepositories(accessToken);
 
   if (!repositories)
-    return ServerError.Internal('Failed to fetch accessible repositories');
+    return ServerError.BadGateway('Failed to fetch accessible repositories');
 
-  const simplifiedRepos = repositories.map(repo => ({
-    id: repo.id,
-    name: repo.full_name,
-    description: repo.description
-  }));
-
-  return Success.OK('Fetched Repositories', JSON.stringify(simplifiedRepos));
+  return Success.OK('Fetched Repositories', JSON.stringify(repositories));
 }

@@ -32,7 +32,7 @@ export const ZodList = z.strictObject({
   hasTimeTracking: z.boolean(),
   hasDueDates: z.boolean(),
   isAutoOrdered: z.boolean(),
-  repoId: z.int()
+  repoId: z.int().optional()
 });
 
 export default class List {

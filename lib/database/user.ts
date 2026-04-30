@@ -194,23 +194,3 @@ export async function getIsOnlyAdminOnSharedList(
 
   return Boolean(orphanedList);
 }
-
-/**
- * Determines whether a user has an account linked to github. This is necessary
- * as BetterAuth does not provide a clean way to determine this from the server.
- * (The only solution i've found is to try and fetch the access token, but it
- * fails loudly)
- * @param userId
- */
-export async function getIsAccountLinkedToGithub(
-  userId: string
-): Promise<boolean> {
-  const result = await prisma.account.findFirst({
-    where: {
-      userId,
-      providerId: 'github'
-    }
-  });
-
-  return Boolean(result);
-}

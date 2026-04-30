@@ -27,8 +27,6 @@ const PostBody = ZodList.pick({
   name: true,
   color: true,
   repoId: true
-}).extend({
-  repoId: ZodList.shape.repoId.optional()
 });
 
 export async function POST(request: Request) {

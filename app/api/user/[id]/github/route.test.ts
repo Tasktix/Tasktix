@@ -20,7 +20,6 @@ import { error } from 'better-auth/api';
 
 import User from '@/lib/model/user';
 import { getUser } from '@/lib/session';
-import { getIsAccountLinkedToGithub } from '@/lib/database/user';
 import { getAccessibleRepositories } from '@/lib/integration/github/account';
 import { auth } from '@/lib/auth';
 
@@ -56,7 +55,6 @@ beforeEach(() => {
 describe('GET', () => {
   test('Fetches Repositories when requestor has is linked to Github', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
-    vi.mocked(getIsAccountLinkedToGithub).mockResolvedValue(true);
     vi.mocked(auth.api.getAccessToken).mockResolvedValue({
       accessToken: 'mocktoken',
       accessTokenExpiresAt: undefined,
@@ -73,9 +71,6 @@ describe('GET', () => {
     );
 
     expect(response.status).toBe(200);
-    expect(getIsAccountLinkedToGithub).toHaveBeenCalledExactlyOnceWith(
-      MOCK_USER.id
-    );
     expect(auth.api.getAccessToken).toHaveBeenCalled();
     expect(getAccessibleRepositories).toHaveBeenCalledExactlyOnceWith(
       'mocktoken'
@@ -85,8 +80,12 @@ describe('GET', () => {
   describe('Errors', () => {
     test('Rejects unauthenticated users', async () => {
       vi.mocked(getUser).mockResolvedValue(false);
-      vi.mocked(getIsAccountLinkedToGithub).mockResolvedValue(false);
-
+      vi.mocked(auth.api.getAccessToken).mockResolvedValue({
+        accessToken: 'mocktoken',
+        accessTokenExpiresAt: undefined,
+        scopes: ['none'],
+        idToken: 'otherToken'
+      });
       const response = await GET(
         new Request(requestURL, {
           method: 'GET'
@@ -95,27 +94,11 @@ describe('GET', () => {
       );
 
       expect(response.status).toBe(401);
-      expect(getIsAccountLinkedToGithub).not.toHaveBeenCalled();
+      expect(auth.api.getAccessToken).not.toHaveBeenCalled();
     });
 
     test('Rejects requests for different users', async () => {
       vi.mocked(getUser).mockResolvedValue(MOCK_USER);
-      vi.mocked(getIsAccountLinkedToGithub).mockResolvedValue(false);
-
-      const response = await GET(
-        new Request(requestURL, {
-          method: 'GET'
-        }),
-        { params: Promise.resolve({ id: 'differentId' }) }
-      );
-
-      expect(response.status).toBe(403);
-      expect(getIsAccountLinkedToGithub).not.toHaveBeenCalled();
-    });
-
-    test('Rejects requests from non-github linked users', async () => {
-      vi.mocked(getUser).mockResolvedValue(MOCK_USER);
-      vi.mocked(getIsAccountLinkedToGithub).mockResolvedValue(false);
       vi.mocked(auth.api.getAccessToken).mockResolvedValue({
         accessToken: 'mocktoken',
         accessTokenExpiresAt: undefined,
@@ -127,17 +110,15 @@ describe('GET', () => {
         new Request(requestURL, {
           method: 'GET'
         }),
-        { params: Promise.resolve({ id: MOCK_USER.id }) }
+        { params: Promise.resolve({ id: 'differentId' }) }
       );
 
-      expect(response.status).toBe(400);
-      expect(getIsAccountLinkedToGithub).toHaveBeenCalled();
+      expect(response.status).toBe(403);
       expect(auth.api.getAccessToken).not.toHaveBeenCalled();
     });
 
-    test('Alerts for server errors from BetterAuth', async () => {
+    test('Alerts Not Found error for failures from BetterAuth accessToken fetching', async () => {
       vi.mocked(getUser).mockResolvedValue(MOCK_USER);
-      vi.mocked(getIsAccountLinkedToGithub).mockResolvedValue(true);
       vi.mocked(auth.api.getAccessToken).mockRejectedValue(error);
       vi.mocked(getAccessibleRepositories).mockResolvedValue(false);
 
@@ -148,17 +129,13 @@ describe('GET', () => {
         { params: Promise.resolve({ id: MOCK_USER.id }) }
       );
 
-      expect(response.status).toBe(500);
-      expect(getIsAccountLinkedToGithub).toHaveBeenCalledExactlyOnceWith(
-        MOCK_USER.id
-      );
+      expect(response.status).toBe(404);
       expect(auth.api.getAccessToken).toHaveBeenCalled();
       expect(getAccessibleRepositories).not.toHaveBeenCalled();
     });
 
-    test('Alerts for server errors from Github/Octokit', async () => {
+    test('Alerts with BadGateway Error propogated from Github/Octokit', async () => {
       vi.mocked(getUser).mockResolvedValue(MOCK_USER);
-      vi.mocked(getIsAccountLinkedToGithub).mockResolvedValue(true);
       vi.mocked(auth.api.getAccessToken).mockResolvedValue({
         accessToken: 'mocktoken',
         accessTokenExpiresAt: undefined,
@@ -174,10 +151,7 @@ describe('GET', () => {
         { params: Promise.resolve({ id: MOCK_USER.id }) }
       );
 
-      expect(response.status).toBe(500);
-      expect(getIsAccountLinkedToGithub).toHaveBeenCalledExactlyOnceWith(
-        MOCK_USER.id
-      );
+      expect(response.status).toBe(502);
       expect(auth.api.getAccessToken).toHaveBeenCalled();
       expect(getAccessibleRepositories).toHaveBeenCalledExactlyOnceWith(
         'mocktoken'
