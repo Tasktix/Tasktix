@@ -77,7 +77,7 @@ Cypress.Commands.add('createList', (listName: string) => {
   cy.visit('/list');
 
   cy.findByLabelText('Create new list').click();
-  cy.findByPlaceholderText('List name').type(listName);
+  cy.findByLabelText('List name').type(listName);
   cy.findByLabelText('Submit list').click();
 
   cy.location('pathname').should('match', /^\/list\/[a-zA-Z0-9]{16}$/);

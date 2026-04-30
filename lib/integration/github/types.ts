@@ -16,25 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { defineConfig } from 'vitest/config';
-import react from '@vitejs/plugin-react';
-import tsconfigPaths from 'vite-tsconfig-paths';
-
-export default defineConfig({
-  plugins: [tsconfigPaths(), react()],
-  resolve: { alias: { 'server-only': 'data:text/javascript,export {}' } },
-  test: {
-    coverage: {
-      enabled: true,
-      provider: 'v8',
-      reportsDirectory: 'coverage',
-      include: [
-        'app/**/*.{ts,tsx}',
-        'components/**/*.{ts,tsx}',
-        'lib/**/*.{ts,tsx}'
-      ],
-      exclude: ['node_modules/', 'lib/database/*.ts', 'lib/integration/**/*.ts']
-    },
-    globals: true
-  }
-});
+export interface SimplifiedRepo {
+  id: number;
+  name: string;
+  description: string | null;
+}
