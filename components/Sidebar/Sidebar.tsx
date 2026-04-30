@@ -39,11 +39,11 @@ import { ListContext } from './listContext';
  */
 export default function Sidebar({
   lists,
-  className = '',
+  inDrawer = false,
   onNavigate
 }: {
   lists: List[];
-  className?: string;
+  inDrawer?: boolean;
   onNavigate?: () => void;
 }) {
   const [addingList, setAddingList] = useState(false);
@@ -80,7 +80,7 @@ export default function Sidebar({
 
   return (
     <aside
-      className={`w-48 bg-transparent shadow-l-lg shadow-content4 p-4 pr-0 flex flex-col gap-4 overflow-auto ${className}`}
+      className={`bg-transparent flex flex-col gap-4 overflow-auto ${inDrawer ? 'w-full p-0 shadow-none' : 'hidden w-48 p-4 pr-0 shadow-l-lg shadow-content4 md:flex'}`}
     >
       <NavItem link='/list' name='Today' onNavigate={onNavigate} />
       <NavSection

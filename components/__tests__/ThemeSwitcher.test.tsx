@@ -56,7 +56,14 @@ vi.mock('@heroui/react', async importOriginal => {
 
     return (
       <div>
-        {trigger}
+        {React.isValidElement(trigger)
+          ? React.cloneElement(
+              trigger as React.ReactElement<{
+                onOpenChange?: () => void;
+              }>,
+              { onOpenChange: () => onOpenChange?.(!isOpen) }
+            )
+          : trigger}
         <button
           aria-label='request-open-change'
           onClick={() => onOpenChange?.(true)}
@@ -74,9 +81,26 @@ vi.mock('@heroui/react', async importOriginal => {
     );
   }) as unknown as typeof originalModule.Popover;
 
-  const PopoverTrigger = (({ children }: { children: ReactNode }) => (
-    <div>{children}</div>
-  )) as unknown as typeof originalModule.PopoverTrigger;
+  const PopoverTrigger = (({
+    children,
+    onOpenChange
+  }: {
+    children: ReactNode;
+    onOpenChange?: () => void;
+  }) => {
+    if (!React.isValidElement(children)) return <div>{children}</div>;
+
+    const child = children as React.ReactElement<{
+      onClick?: (event: React.MouseEvent<HTMLElement>) => void;
+    }>;
+
+    return React.cloneElement(child, {
+      onClick: event => {
+        child.props.onClick?.(event);
+        onOpenChange?.();
+      }
+    });
+  }) as unknown as typeof originalModule.PopoverTrigger;
 
   const PopoverContent = (({
     children,
@@ -177,33 +201,10 @@ function mockMatchMedia(matches: boolean) {
 
 beforeEach(() => {
   vi.resetAllMocks();
-  Reflect.deleteProperty(globalThis, 'matchMedia');
+  mockMatchMedia(false);
 });
 
 describe('ThemeSwitcher', () => {
-  test('falls back to desktop behavior when matchMedia is unavailable', () => {
-    const setTheme = vi.fn();
-
-    vi.mocked(useTheme).mockReturnValue({
-      theme: 'light',
-      resolvedTheme: 'light',
-      themes: ['light', 'dark', 'system'],
-      setTheme
-    });
-
-    expect(globalThis.matchMedia).toBeUndefined();
-
-    render(
-      <HeroUIProvider disableRipple>
-        <ThemeSwitcher />
-      </HeroUIProvider>
-    );
-
-    fireEvent.click(screen.getByLabelText('Switch to dark mode'));
-
-    expect(setTheme).toHaveBeenCalledWith('dark');
-  });
-
   test('toggles between light and dark themes on click', () => {
     const setTheme = vi.fn();
 

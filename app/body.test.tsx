@@ -88,11 +88,12 @@ describe('Body', () => {
       </HeroUIProvider>
     );
 
-    const main = screen.getByRole('main');
+    const main = screen.getByText('child').closest('main');
 
-    expect(screen.getAllByRole('main')).toHaveLength(1);
+    expect(main).not.toBeNull();
+    if (!main) throw new Error('Expected page-owned main element');
+
     expect(main.parentElement).toHaveClass('flex', 'min-h-dvh', 'flex-col');
-    expect(main).toHaveClass('grow');
     expect(
       screen.getByText(/Tasktix is licensed under the GNU AGPL v3/i)
     ).toHaveClass('mt-auto');

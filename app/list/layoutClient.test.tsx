@@ -32,13 +32,13 @@ import LayoutClient from '@/app/list/layoutClient';
 
 vi.mock('@/components/Sidebar', () => ({
   default: ({
-    className = '',
+    inDrawer = false,
     onNavigate
   }: {
-    className?: string;
+    inDrawer?: boolean;
     onNavigate?: () => void;
   }) => (
-    <aside className={className} data-testid='sidebar'>
+    <aside data-in-drawer={String(inDrawer)} data-testid='sidebar'>
       <button onClick={onNavigate}>Navigate</button>
     </aside>
   ),

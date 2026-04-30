@@ -28,8 +28,26 @@ import {
   Selection
 } from '@heroui/react';
 import { useTheme } from 'next-themes';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useSyncExternalStore, useState } from 'react';
 import { Display, MoonFill, SunFill } from 'react-bootstrap-icons';
+
+function useIsMobile() {
+  return useSyncExternalStore(
+    onStoreChange => {
+      const mediaQuery = globalThis.matchMedia(
+        '(hover: none), (pointer: coarse)'
+      );
+
+      mediaQuery.addEventListener('change', onStoreChange);
+
+      return () => {
+        mediaQuery.removeEventListener('change', onStoreChange);
+      };
+    },
+    () => globalThis.matchMedia('(hover: none), (pointer: coarse)').matches,
+    () => false
+  );
+}
 
 /**
  * Input for switching between light, dark, and system themes. Uses a single icon
@@ -39,9 +57,7 @@ import { Display, MoonFill, SunFill } from 'react-bootstrap-icons';
 export default function ThemeSwitcher() {
   const { theme, resolvedTheme, setTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [portalEl, setPortalEl] = useState<HTMLDivElement | null>(null);
+  const isMobile = useIsMobile();
   const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const selectedTheme = theme ?? 'system';
@@ -49,33 +65,8 @@ export default function ThemeSwitcher() {
   const activeTheme = resolvedTheme ?? 'light';
   const nextTheme = activeTheme === 'dark' ? 'light' : 'dark';
 
-  /**
-   * Keeps the local portal target in sync with the container element so the
-   * popover stays anchored within this component subtree.
-   */
-  function setContainer(node: HTMLDivElement | null) {
-    containerRef.current = node;
-    setPortalEl(node);
-  }
-
   useEffect(() => {
-    const mediaQuery =
-      typeof globalThis.matchMedia === 'function'
-        ? globalThis.matchMedia('(hover: none), (pointer: coarse)')
-        : null;
-
-    // Keep hover-only behavior disabled on touch-oriented devices.
-    function updateIsMobile(event?: MediaQueryListEvent) {
-      setIsMobile(event?.matches ?? mediaQuery?.matches ?? false);
-      setIsOpen(false);
-    }
-
-    updateIsMobile();
-    mediaQuery?.addEventListener('change', updateIsMobile);
-
     return () => {
-      mediaQuery?.removeEventListener('change', updateIsMobile);
-
       if (closeTimeoutRef.current) {
         clearTimeout(closeTimeoutRef.current);
       }
@@ -105,15 +96,11 @@ export default function ThemeSwitcher() {
     }, 100);
   }
 
-  // Toggle the menu on mobile, but keep desktop click behavior as a quick theme swap.
+  // Keep desktop clicks as a quick theme swap; mobile clicks are handled by Popover.
   function handlePress() {
-    if (isMobile) {
-      setIsOpen(open => !open);
-
-      return;
+    if (!isMobile) {
+      setTheme(nextTheme);
     }
-
-    setTheme(nextTheme);
   }
 
   // Let HeroUI close the popover, while only allowing it to open itself on mobile.
@@ -123,90 +110,85 @@ export default function ThemeSwitcher() {
     }
   }
 
-  const triggerButton = (
-    <Button
-      isIconOnly
-      aria-expanded={isOpen}
-      aria-haspopup='menu'
-      aria-label={isMobile ? 'Open theme menu' : `Switch to ${nextTheme} mode`}
-      variant='ghost'
-      onKeyDown={event => {
-        if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
-          event.preventDefault();
-          setIsOpen(true);
-        }
-
-        if (event.key === 'Escape') {
-          setIsOpen(false);
-        }
-      }}
-      onMouseEnter={() => {
-        if (!isMobile) {
-          cancelPendingClose();
-          setIsOpen(true);
-        }
-      }}
-      onMouseLeave={() => {
-        if (!isMobile) {
-          scheduleClose();
-        }
-      }}
-      onPress={handlePress}
-    >
-      {activeTheme === 'dark' ? <SunFill /> : <MoonFill />}
-    </Button>
-  );
-
-  const themeOptions = (
-    <PopoverContent
-      className='p-0'
-      onMouseEnter={() => {
-        if (!isMobile) {
-          cancelPendingClose();
-          setIsOpen(true);
-        }
-      }}
-      onMouseLeave={() => {
-        if (!isMobile) {
-          scheduleClose();
-        }
-      }}
-    >
-      <Listbox
-        aria-label='Theme options'
-        selectedKeys={selectedThemeKeys}
-        selectionMode='single'
-        onSelectionChange={(keys: Selection) => {
-          if (keys === 'all') return;
-
-          const selectedKey = keys.keys().next().value;
-
-          if (selectedKey) chooseTheme(String(selectedKey));
-        }}
-      >
-        <ListboxItem key='light' startContent={<SunFill />}>
-          Light
-        </ListboxItem>
-        <ListboxItem key='dark' startContent={<MoonFill />}>
-          Dark
-        </ListboxItem>
-        <ListboxItem key='system' startContent={<Display />}>
-          System
-        </ListboxItem>
-      </Listbox>
-    </PopoverContent>
-  );
-
   return (
-    <div ref={setContainer} className='flex items-center'>
+    <div className='flex items-center'>
       <Popover
         isOpen={isOpen}
         placement='bottom-end'
-        portalContainer={portalEl ?? undefined}
         onOpenChange={handleOpenChange}
       >
-        <PopoverTrigger>{triggerButton}</PopoverTrigger>
-        {themeOptions}
+        <PopoverTrigger>
+          <Button
+            isIconOnly
+            aria-expanded={isOpen}
+            aria-haspopup='menu'
+            aria-label={
+              isMobile ? 'Open theme menu' : `Switch to ${nextTheme} mode`
+            }
+            variant='ghost'
+            onClick={handlePress}
+            onKeyDown={event => {
+              if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+                event.preventDefault();
+                setIsOpen(true);
+              }
+
+              if (event.key === 'Escape') {
+                setIsOpen(false);
+              }
+            }}
+            onMouseEnter={() => {
+              if (!isMobile) {
+                cancelPendingClose();
+                setIsOpen(true);
+              }
+            }}
+            onMouseLeave={() => {
+              if (!isMobile) {
+                scheduleClose();
+              }
+            }}
+          >
+            {activeTheme === 'dark' ? <SunFill /> : <MoonFill />}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent
+          className='p-0'
+          onMouseEnter={() => {
+            if (!isMobile) {
+              cancelPendingClose();
+              setIsOpen(true);
+            }
+          }}
+          onMouseLeave={() => {
+            if (!isMobile) {
+              scheduleClose();
+            }
+          }}
+        >
+          <Listbox
+            aria-label='Theme options'
+            selectedKeys={selectedThemeKeys}
+            selectionMode='single'
+            onSelectionChange={(keys: Selection) => {
+              if (keys === 'all') return;
+
+              const selectedKey = keys.keys().next().value;
+
+              if (selectedKey) chooseTheme(String(selectedKey));
+            }}
+          >
+            <ListboxItem key='light' startContent={<SunFill />}>
+              Light
+            </ListboxItem>
+            <ListboxItem key='dark' startContent={<MoonFill />}>
+              Dark
+            </ListboxItem>
+            <ListboxItem key='system' startContent={<Display />}>
+              System
+            </ListboxItem>
+          </Listbox>
+        </PopoverContent>
       </Popover>
     </div>
   );

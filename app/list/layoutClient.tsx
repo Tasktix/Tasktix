@@ -42,8 +42,8 @@ export default function LayoutClient({
   const {
     isOpen: isDrawerOpen,
     onClose: closeDrawer,
-    onOpen,
-    onOpenChange
+    onOpen: openDrawer,
+    onOpenChange: onDrawerOpenChange
   } = useDisclosure();
   const [lists, dispatchEvent] = useReducer(
     listReducer,
@@ -53,7 +53,7 @@ export default function LayoutClient({
   return (
     <ListContext.Provider value={dispatchEvent}>
       <div className='flex h-1/4 grow overflow-x-hidden'>
-        <Sidebar className='hidden md:flex' lists={lists} />
+        <Sidebar lists={lists} />
 
         <div className='flex min-w-0 grow flex-col'>
           <header className='sticky top-0 z-20 flex items-center border-b border-content3 bg-content1/90 p-3 backdrop-blur md:hidden'>
@@ -63,7 +63,7 @@ export default function LayoutClient({
               aria-expanded={isDrawerOpen}
               aria-label='Open navigation menu'
               variant='ghost'
-              onPress={onOpen}
+              onPress={openDrawer}
             >
               <ListIcon size={20} />
             </Button>
@@ -72,30 +72,15 @@ export default function LayoutClient({
         </div>
       </div>
       <Drawer
-        hideCloseButton
-        classNames={{
-          backdrop: 'md:hidden',
-          base: 'md:hidden',
-          wrapper: 'md:hidden'
-        }}
+        backdrop='transparent'
         isOpen={isDrawerOpen}
         placement='left'
-        scrollBehavior='inside'
-        onOpenChange={onOpenChange}
+        onOpenChange={onDrawerOpenChange}
       >
-        <DrawerContent
-          className='flex h-dvh max-h-dvh w-72 max-w-[85vw] flex-col rounded-none border-r border-content3 p-4 shadow-2xl'
-          id='mobile-sidebar-drawer'
-        >
-          <DrawerHeader className='px-0 pb-2 pt-0 text-sm font-semibold'>
-            Navigation
-          </DrawerHeader>
-          <DrawerBody className='flex-1 px-0 pb-0 pt-0'>
-            <Sidebar
-              className='w-full flex-1 p-0 pr-0 shadow-none'
-              lists={lists}
-              onNavigate={closeDrawer}
-            />
+        <DrawerContent id='mobile-sidebar-drawer'>
+          <DrawerHeader>Navigation</DrawerHeader>
+          <DrawerBody>
+            <Sidebar inDrawer lists={lists} onNavigate={closeDrawer} />
           </DrawerBody>
         </DrawerContent>
       </Drawer>
