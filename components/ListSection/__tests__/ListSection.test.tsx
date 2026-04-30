@@ -20,7 +20,7 @@
 
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
-import { render, within } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
 
 import ListItem from '@/lib/model/listItem';
 import api from '@/lib/api';
@@ -276,6 +276,8 @@ describe('Section expansion/collapse', () => {
     await user.click(getByLabelText('Collapse section'));
 
     expect(await findByLabelText('Expand section')).toBeVisible();
-    expect(queryByText('Item 1')).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(queryByText('Item 1')).not.toBeInTheDocument();
+    });
   });
 });

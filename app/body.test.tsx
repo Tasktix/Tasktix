@@ -30,6 +30,18 @@ import Body from '@/app/body';
 import { authClient } from '@/lib/auth-client';
 import AuthProvider, { useAuth } from '@/components/AuthProvider';
 
+Object.defineProperty(globalThis, 'matchMedia', {
+  writable: true,
+  value: (query: string) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: () => false
+  })
+});
+
 vi.mock(import('framer-motion'), async importOriginal => ({
   ...(await importOriginal()),
   LazyMotion: ({ children }) => <div>{children}</div>
@@ -61,6 +73,32 @@ const MOCK_OAUTH_CONFIG = {
 } as const;
 
 describe('Body', () => {
+  it('uses a full-height document flow layout with a non-sticky footer', () => {
+    vi.mocked(useAuth).mockReturnValue({
+      loggedInUser: false,
+      oauthConfig: MOCK_OAUTH_CONFIG,
+      setLoggedInUser: vi.fn()
+    });
+
+    render(
+      <HeroUIProvider disableRipple>
+        <Body>
+          <main className='grow'>child</main>
+        </Body>
+      </HeroUIProvider>
+    );
+
+    const main = screen.getByText('child').closest('main');
+
+    expect(main).not.toBeNull();
+    if (!main) throw new Error('Expected page-owned main element');
+
+    expect(main.parentElement).toHaveClass('flex', 'min-h-dvh', 'flex-col');
+    expect(
+      screen.getByText(/Tasktix is licensed under the GNU AGPL v3/i)
+    ).toHaveClass('mt-auto');
+  });
+
   it('links logo to /list when logged in', () => {
     vi.mocked(useAuth).mockReturnValue({
       oauthConfig: MOCK_OAUTH_CONFIG,
