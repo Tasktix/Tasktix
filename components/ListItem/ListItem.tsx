@@ -204,13 +204,17 @@ export default function ListItem({
     }
   }
 
-  
-    const changeItemSection = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const changeItemSection = (e: React.ChangeEvent<HTMLSelectElement>) => {
     api
       .patch(`/item/${item.id}`, { sectionId: e.target.value })
       .then(() => {
         // Update the internal state
-        dispatchItemChange({ type: 'ChangeItemSection', pastSectionId: sectionId, targetSectionId: e.target.value, targetItem: item });
+        dispatchItemChange({
+          type: 'ChangeItemSection',
+          pastSectionId: sectionId,
+          targetSectionId: e.target.value,
+          targetItem: item
+        });
       })
       .catch(addToastForError);
   };

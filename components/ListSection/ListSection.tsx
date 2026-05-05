@@ -191,9 +191,9 @@ export default function ListSection({
               items={section.items}
               members={members}
               reorderItem={sectionHandlers.reorderItem}
-              totalSections={totalSections}
               sectionId={section.id}
               tagsAvailable={tagsAvailable}
+              totalSections={totalSections}
             />
           </motion.section>
         )}

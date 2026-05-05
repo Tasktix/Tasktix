@@ -129,7 +129,6 @@ export default function List({
           members={list.members}
           section={section}
           tagsAvailable={tagsAvailable}
-          // totalSections={list.sections.map(section => section.name)}
           totalSections={Array.from(list.sections.values()).map(section => [section.id, section.name])}
           onTagCreate={listHandlers.addNewTag}
         />

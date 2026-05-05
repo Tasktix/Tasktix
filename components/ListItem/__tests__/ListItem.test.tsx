@@ -19,8 +19,8 @@
  */
 
 import '@testing-library/jest-dom';
-
-import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { render, within } from '@testing-library/react';
 import { HeroUIProvider } from '@heroui/react';
 
 import ListItemModel from '@/lib/model/listItem';
@@ -29,6 +29,7 @@ import User from '@/lib/model/user';
 import ListMember from '@/lib/model/listMember';
 import List from '@/lib/model/list';
 import MemberRole from '@/lib/model/memberRole';
+import api from '@/lib/api';
 
 import ListItem from '../ListItem';
 
@@ -161,4 +162,44 @@ it('Displays all members assigned to the item', () => {
 
   expect(getByText('UT')).toBeVisible();
   expect(getByText('UT').parentElement).toHaveClass('bg-blue-500');
+});
+
+it('Calls API when the items section changes', async () => {
+  const item = new ListItemModel('Test item', 'sectionid1', {
+    id: 'itemid'
+  });
+
+  const { getByTestId } = render(
+    <HeroUIProvider disableRipple>
+      <ListItem
+        addNewTag={vi.fn()}
+        currentSection={['sectionid1', 'section1']}
+        dispatchItemChange={vi.fn()}
+        hasDueDates={false}
+        hasTimeTracking={false}
+        item={item}
+        members={[]}
+        sectionId='sectionid1'
+        tagsAvailable={[]}
+        totalSections={[
+          ['sectionid1', 'section1'],
+          ['sectionid2', 'section2']
+        ]}
+      />
+    </HeroUIProvider>
+  );
+  const user = userEvent.setup();
+
+  await user.click(getByTestId('more-button'));
+  expect(getByTestId('item-section-select')).toHaveTextContent('section1');
+
+  await user.click(getByTestId('item-section-select'));
+  expect(getByTestId('section1-select-item')).toHaveTextContent('section1');
+  expect(getByTestId('section2-select-item')).toHaveTextContent('section2');
+
+  await user.click(getByTestId('section2-select-item'));
+  expect(api.patch).toHaveBeenCalledTimes(1);
+  expect(api.patch).toHaveBeenCalledWith(`/item/${item.id}`, {
+    sectionId: 'sectionid2'
+  });
 });

@@ -16,8 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Select, SelectItem } from "@heroui/react";
-import ListItem from '@/lib/model/listItem';
+import { Select, SelectItem } from '@heroui/react';
 
 /**
  * This is the component used for changing sections within an item's 'more' menu.
@@ -35,18 +34,32 @@ export default function ItemSection({
   totalSections: [string, string][];
   updateSection: (e: any) => unknown;
 }) {
-  const updatedTotalSections = totalSections.filter(([id, name]) => name != currentSection[1])
-  const selectItems = updatedTotalSections.map(([id, label]) => ({ id: id, label: label }))
+  const updatedTotalSections = totalSections.filter(
+    ([name]) => name != currentSection[1]
+  );
+  const selectItems = updatedTotalSections.map(([id, label]) => ({
+    id: id,
+    label: label
+  }));
 
   return (
     <div className={`-mt-2 -mb-2`}>
       <Select
         className={`w-28 grow-0 shrink-0`}
+        data-testid='item-section-select'
         items={selectItems}
         label={<span className='ml-2 text-foreground'>Section</span>}
-        placeholder={currentSection[1]} 
-        onChange={updateSection}>
-          {(selectItems) => <SelectItem key={selectItems.id}>{selectItems.label}</SelectItem>}
+        placeholder={currentSection[1]}
+        onChange={updateSection}
+      >
+        {selectItems => (
+          <SelectItem
+            key={selectItems.id}
+            data-testid={`${selectItems.label}-select-item`}
+          >
+            {selectItems.label}
+          </SelectItem>
+        )}
       </Select>
     </div>
   );

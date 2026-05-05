@@ -107,6 +107,7 @@ export default function More({
       <Button
         isIconOnly
         aria-label='More item info'
+        data-testid='more-button'
         variant='ghost'
         onPress={onOpen}
       >
@@ -159,8 +160,12 @@ export default function More({
                     />
                   ) : null}
                   <ItemSection
-                    currentSection={currentSection || ['NO ID AVAILABLE', 'NO SECTION INFO']}
-                    totalSections={totalSections || [['NO ID AVAILABLE', 'NO SECTION INFO']]}
+                    currentSection={
+                      currentSection || ['NO ID AVAILABLE', 'NO SECTION INFO']
+                    }
+                    totalSections={
+                      totalSections || [['NO ID AVAILABLE', 'NO SECTION INFO']]
+                    }
                     updateSection={updateSection}
                   />
                 </div>
