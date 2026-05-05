@@ -197,6 +197,7 @@ export default function ListItem({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  //Stops and clears timer
   function _stopRunning() {
     if (timer.current) {
       clearTimeout(timer.current);
@@ -204,6 +205,7 @@ export default function ListItem({
     }
   }
 
+  //Changes item section to specified section
   const changeItemSection = (e: React.ChangeEvent<HTMLSelectElement>) => {
     api
       .patch(`/item/${item.id}`, { sectionId: e.target.value })

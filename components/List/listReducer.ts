@@ -190,12 +190,16 @@ export default function listReducer(
       const section = newState.list.sections.get(action.targetSectionId);
 
       if (!section)
-        throw new Error(`Unable to find section with ID ${action.targetSectionId}`);
+        throw new Error(
+          `Unable to find section with ID ${action.targetSectionId}`
+        );
 
       section.items.set(action.targetItem.id, action.targetItem);
-      
+
       //Copied from 'DeleteItem'
-      newState.list.sections.get(action.pastSectionId)?.items.delete(action.targetItem.id);
+      newState.list.sections
+        .get(action.pastSectionId)
+        ?.items.delete(action.targetItem.id);
       break;
   }
 

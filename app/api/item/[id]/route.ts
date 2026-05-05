@@ -86,7 +86,7 @@ export async function PATCH(
         ? new Date(requestBody.dateCompleted)
         : null;
 
-    const {listId, ...pureItem} = item;
+    const { ...pureItem } = item;
     const result = await updateListItem(pureItem);
 
     if (!result) return ServerError.Internal('Could not update item');

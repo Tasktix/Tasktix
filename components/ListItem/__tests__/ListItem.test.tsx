@@ -20,7 +20,7 @@
 
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
-import { render, within } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { HeroUIProvider } from '@heroui/react';
 
 import ListItemModel from '@/lib/model/listItem';

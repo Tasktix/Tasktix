@@ -32,20 +32,20 @@ export default function ItemSection({
 }: {
   currentSection: [string, string];
   totalSections: [string, string][];
-  updateSection: (e: any) => unknown;
+  updateSection: (e: unknown) => unknown;
 }) {
   const updatedTotalSections = totalSections.filter(
-    ([name]) => name != currentSection[1]
+    ([name]) => name !== currentSection[1]
   );
   const selectItems = updatedTotalSections.map(([id, label]) => ({
-    id: id,
-    label: label
+    id,
+    label
   }));
 
   return (
-    <div className={`-mt-2 -mb-2`}>
+    <div className={'-mt-2 -mb-2'}>
       <Select
-        className={`w-28 grow-0 shrink-0`}
+        className={'w-28 grow-0 shrink-0'}
         data-testid='item-section-select'
         items={selectItems}
         label={<span className='ml-2 text-foreground'>Section</span>}

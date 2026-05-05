@@ -35,7 +35,6 @@ import ListSection from '../ListSection/ListSection';
 import { getFilterOptions } from './filters';
 import listReducer from './listReducer';
 import { listHandlerFactory } from './handlerFactory';
-import { addToast } from '@heroui/react';
 import { ListState } from './types';
 
 /**
@@ -93,7 +92,7 @@ export default function List({
   const filterOptions = getFilterOptions(list, tagsAvailable);
 
   const listHandlers = listHandlerFactory(list.id, dispatchList);
-  
+
   useEffect(() => subscribe([list.id], dispatchList), [list.id]);
 
   return (
