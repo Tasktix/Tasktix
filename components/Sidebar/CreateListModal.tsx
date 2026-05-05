@@ -207,7 +207,7 @@ function GithubListConfig({
           <Link
             isExternal
             showAnchorIcon
-            href='https://github.com/apps/tasktix;'
+            href='https://github.com/apps/tasktix'
             underline='hover'
           >
             configure your Tasktix App Installation

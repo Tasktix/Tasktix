@@ -60,6 +60,31 @@ describe('POST', () => {
     );
   });
 
+  test('Propogates Github Repo ID to database if provided', async () => {
+    vi.mocked(getUser).mockResolvedValue(MOCK_USER);
+    vi.mocked(createList).mockResolvedValue(true);
+
+    const response = await POST(
+      new Request(requestURL, {
+        method: 'POST',
+        body: JSON.stringify({
+          color: 'Amber',
+          name: 'list name',
+          repoId: 123456
+        })
+      })
+    );
+
+    expect(response.status).toBe(201);
+    expect(createList).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({
+        color: 'Amber',
+        name: 'list name',
+        repoId: 123456
+      })
+    );
+  });
+
   describe('Errors', () => {
     test('Rejects unauthenticated users', async () => {
       vi.mocked(getUser).mockResolvedValue(false);
