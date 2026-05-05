@@ -95,6 +95,7 @@ export default function CreateListModal({
         })
         .catch(addToastForError);
       setListName('');
+      setSelectedRepoId(undefined);
       onClose();
     } else {
       addToast({ title: 'Please provide a list name', color: 'warning' });
@@ -122,6 +123,7 @@ export default function CreateListModal({
                 />
                 {oauthConfig.githubEnabled && (
                   <GithubListConfig
+                    selectedRepoId={selectedRepoId}
                     onRepoSelection={id => setSelectedRepoId(Number(id))}
                   />
                 )}
@@ -149,9 +151,11 @@ export default function CreateListModal({
  * @param onRepoSelection callback to update the selected repositoryID
  */
 function GithubListConfig({
-  onRepoSelection
+  onRepoSelection,
+  selectedRepoId
 }: {
   onRepoSelection: (id: number) => void;
+  selectedRepoId: number | undefined;
 }) {
   const { loggedInUser } = useAuth();
 
@@ -191,10 +195,17 @@ function GithubListConfig({
         <Select
           aria-label='Select github repository'
           label='Select Repository'
-          variant='underlined'
-          onSelectionChange={keys =>
-            onRepoSelection(Array.from(keys)[0] as number)
+          selectedKeys={
+            selectedRepoId ? new Set([String(selectedRepoId)]) : new Set([''])
           }
+          variant='underlined'
+          onSelectionChange={keys => {
+            const repoId = Array.from(keys)[0];
+
+            if (repoId !== undefined) {
+              onRepoSelection(Number(repoId));
+            }
+          }}
         >
           {availableRepos.map(repo => (
             <SelectItem key={repo.id} description={repo.description}>
