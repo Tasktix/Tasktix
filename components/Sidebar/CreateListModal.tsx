@@ -95,7 +95,7 @@ export default function CreateListModal({
         })
         .catch(addToastForError);
       setListName('');
-      setSelectedRepoId(undefined);
+      setSelectedRepoId();
       onClose();
     } else {
       addToast({ title: 'Please provide a list name', color: 'warning' });
