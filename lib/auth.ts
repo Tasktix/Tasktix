@@ -159,14 +159,14 @@ export const auth = betterAuth({
   },
   plugins: [
     username(),
-    ...(process.env.ENABLE_PASSWORD_STRENGTH_CHECK === 'true'
-      ? [
+    ...(process.env.DISABLE_PASSWORD_STRENGTH_CHECK === 'true'
+      ? []
+      : [
           haveIBeenPwned({
             customPasswordCompromisedMessage:
               'Please choose a more secure password'
           })
-        ]
-      : []),
+        ]),
     ...(getAuthConfig().customEnabled
       ? [
           genericOAuth({

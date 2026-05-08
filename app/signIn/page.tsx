@@ -18,7 +18,7 @@
 
 'use client';
 
-import { Card, CardBody, Tabs, Tab, Alert, Divider } from '@heroui/react';
+import { Card, CardBody, Tabs, Tab, Alert, Divider, Link } from '@heroui/react';
 
 import { useAuth } from '@/components/AuthProvider';
 
@@ -29,6 +29,13 @@ import { handleOAuth } from './oauth';
 
 export default function Page() {
   const { setLoggedInUser, authConfig } = useAuth();
+
+  function redirect() {
+    if (authConfig.githubEnabled)
+      void handleOAuth('github', setLoggedInUser, authConfig); // skipcq: JS-0098
+    if (authConfig.customEnabled)
+      void handleOAuth('custom', setLoggedInUser, authConfig); // skipcq: JS-0098
+  }
 
   if (
     !authConfig.localEnabled &&
@@ -56,15 +63,17 @@ export default function Page() {
       straight to it. Promises explicitly ignored because `handleOAuth` already creates a
       toast for errors
     */
-    if (authConfig.githubEnabled)
-      void handleOAuth('github', setLoggedInUser, authConfig); // skipcq: JS-0098
-    if (authConfig.customEnabled)
-      void handleOAuth('custom', setLoggedInUser, authConfig); // skipcq: JS-0098
+    // redirect();
 
     return (
       <main className='flex grow justify-center items-start mt-40 w-xl mx-auto'>
         <Alert
           color='success'
+          description={
+            <Link isExternal showAnchorIcon onPress={redirect}>
+              Click here if you aren&apos;t redirected in a few seconds
+            </Link>
+          }
           title='Redirecting for SSO sign in...'
           variant='flat'
         />
