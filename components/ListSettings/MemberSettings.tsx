@@ -33,8 +33,7 @@ import MemberRole from '@/lib/model/memberRole';
 import api from '@/lib/api';
 import { sortRolesByPermissions } from '@/lib/sort';
 import { addToastForError } from '@/lib/error';
-import { ListState } from '@/lib/transformations/list/types';
-import { MemberAction } from '@/lib/transformations/list/types';
+import { MemberAction, ListState } from '@/lib/transformations/list/types';
 
 /**
  * Displays all list members and their permissions. Allows adding new members and updating

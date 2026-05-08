@@ -23,8 +23,7 @@ import api from '@/lib/api';
 import { NamedColor } from '@/lib/model/color';
 import Tag from '@/lib/model/tag';
 import { addToastForError } from '@/lib/error';
-import { SectionAction } from '@/lib/transformations/list/types';
-import { ListAction } from '@/lib/transformations/list/types';
+import { ListAction, SectionAction } from '@/lib/transformations/list/types';
 
 /**
  * Produces all functions for interacting with a specific list and its data. These

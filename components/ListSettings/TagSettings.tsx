@@ -26,8 +26,7 @@ import Tag from '@/lib/model/tag';
 import api from '@/lib/api';
 import { NamedColor } from '@/lib/model/color';
 import { addToastForError } from '@/lib/error';
-import { ListState } from '@/lib/transformations/list/types';
-import { TagAction } from '@/lib/transformations/list/types';
+import { TagAction, ListState } from '@/lib/transformations/list/types';
 
 import ConfirmModal from '../ConfirmModal';
 

@@ -29,13 +29,12 @@ import { ListState } from './types';
  * relationship of items:tags back to each items's assignees and tags nested within the
  * item object.
  *
- * @param items
- * @param itemAssignees
- * @param itemTags
- * @param allItems
- * @param allMembers
- * @param allTags
- * @returns
+ * @param items List of IDs for items to convert
+ * @param itemAssignees State indicating which members are assigned to which items
+ * @param itemTags State indicating which tags are assigned to which items
+ * @param allItems Core details (not part of a nested relationship) for all items
+ * @param allMembers Core details for all members potentially assigned to an item
+ * @param allTags Core details for all tags potentially assigned to an item
  */
 export function stateToItems(
   items: string[] | undefined,
@@ -67,7 +66,9 @@ export function stateToItems(
             .filter(e => e !== undefined) ?? []
       })) ?? []
   );
-} /**
+}
+
+/**
  * Generates a list of full ListMember objects from the normalized state data tracked for
  * lists. That is, this function converts the M:1 relationship of members:roles back to
  * each member's role nested within the member object.

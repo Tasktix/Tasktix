@@ -30,10 +30,12 @@ import { GearWideConnected } from 'react-bootstrap-icons';
 import { ActionDispatch } from 'react';
 
 import { NamedColor } from '@/lib/model/color';
-import { ListState } from '@/lib/transformations/list/types';
-import { TagAction } from '@/lib/transformations/list/types';
-import { MemberAction } from '@/lib/transformations/list/types';
-import { ListAction } from '@/lib/transformations/list/types';
+import {
+  ListAction,
+  MemberAction,
+  TagAction,
+  ListState
+} from '@/lib/transformations/list/types';
 import MemberRole from '@/lib/model/memberRole';
 
 import GeneralSettings from './GeneralSettings';
