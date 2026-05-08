@@ -24,9 +24,12 @@ import { getUserById } from '@/lib/database/user';
 import User from '@/lib/model/user';
 
 import { auth } from './auth';
+import { retry } from './util';
 
 export async function getUser(): Promise<User | false> {
-  const session = await auth.api.getSession({ headers: await headers() });
+  const session = await retry(
+    async () => await auth.api.getSession({ headers: await headers() })
+  );
 
   if (!session) return false;
 

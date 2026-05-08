@@ -59,6 +59,8 @@ export async function PATCH(
   const requestBody = parseResult.data;
 
   if (requestBody.name) item.name = requestBody.name;
+  if (requestBody.description !== undefined)
+    item.description = requestBody.description;
   if (requestBody.status) item.status = requestBody.status;
   if (requestBody.priority) item.priority = requestBody.priority;
   if (requestBody.dateDue) item.dateDue = new Date(requestBody.dateDue);

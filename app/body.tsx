@@ -150,12 +150,12 @@ function AccountButton() {
     );
 
   return (
-    <Dropdown aria-label='Profile Dropdown'>
+    <Dropdown>
       <DropdownTrigger>
         <Avatar
           key='profile'
           isIconOnly
-          aria-label='Profile Actions Dropdown'
+          aria-label='Profile actions'
           as={Button}
           className={getBackgroundColor(loggedInUser.color)}
           name={loggedInUser.username ?? loggedInUser.name}

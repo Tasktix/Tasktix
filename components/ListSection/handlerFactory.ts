@@ -20,10 +20,10 @@ import { addToast } from '@heroui/react';
 import { ActionDispatch } from 'react';
 
 import api from '@/lib/api';
-import ListItem from '@/lib/model/listItem';
 import { addToastForError } from '@/lib/error';
 
 import { SectionAction } from '../List';
+import { ListItemState } from '../List/types';
 
 /**
  * Produces all functions for interacting with a specific list section and its contents.
@@ -47,7 +47,7 @@ export default function sectionHandlerFactory(
    * @param item The item that needs to be reordered
    * @param newIndex The index to reorder the item to
    */
-  function reorderItem(item: ListItem, newIndex: number) {
+  function reorderItem(item: ListItemState, newIndex: number) {
     const oldIndex = item.sectionIndex;
 
     // `newIndex` gets updated every time the item visually swaps with another. `oldIndex`

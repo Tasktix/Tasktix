@@ -29,6 +29,7 @@ import FilterText, {
   STRING_COLOR
 } from '../FilterText';
 import {
+  ColorFilterOperator,
   ComparableFilterOperator,
   DateFilterOperator,
   MultiOptionFilterOperator,
@@ -49,7 +50,7 @@ afterAll(() => {
 describe('FilterText', () => {
   test('Displays nothing when given a filter state with no filters', () => {
     const { container } = render(
-      <FilterText filters={{ id: 1, operator: 'And', filters: [] }} />
+      <FilterText filters={{ operator: 'And', filters: [] }} />
     );
 
     expect(container.firstChild).toBeEmptyDOMElement();
@@ -59,7 +60,6 @@ describe('FilterText', () => {
     const { container } = render(
       <FilterText
         filters={{
-          id: 1,
           operator: 'And',
           filters: [
             {
@@ -81,7 +81,6 @@ describe('FilterText', () => {
     const { container } = render(
       <FilterText
         filters={{
-          id: 1,
           operator: 'And',
           filters: [
             {
@@ -95,7 +94,7 @@ describe('FilterText', () => {
               id: 2,
               type: 'color',
               label: 'theColor',
-              operator: OptionFilterOperator.NotEqual,
+              operator: ColorFilterOperator.NotEqual,
               value: 'Cyan'
             }
           ]
@@ -112,7 +111,6 @@ describe('FilterText', () => {
     const { container } = render(
       <FilterText
         filters={{
-          id: 1,
           operator: 'Or',
           filters: [
             {
@@ -126,7 +124,7 @@ describe('FilterText', () => {
               id: 2,
               type: 'color',
               label: 'theColor',
-              operator: OptionFilterOperator.NotEqual,
+              operator: ColorFilterOperator.NotEqual,
               value: 'Cyan'
             },
             {
@@ -150,7 +148,6 @@ describe('FilterText', () => {
     const { container } = render(
       <FilterText
         filters={{
-          id: 1,
           operator: 'Or',
           filters: [
             {
@@ -161,14 +158,13 @@ describe('FilterText', () => {
               value: 'theValue'
             },
             {
-              id: 2,
               operator: 'And',
               filters: [
                 {
                   id: 1,
                   type: 'color',
                   label: 'theColor',
-                  operator: OptionFilterOperator.NotEqual,
+                  operator: ColorFilterOperator.NotEqual,
                   value: 'Cyan'
                 },
                 {
@@ -194,7 +190,6 @@ describe('FilterText', () => {
     const { getByText } = render(
       <FilterText
         filters={{
-          id: 1,
           operator: 'And',
           filters: [
             {
@@ -208,7 +203,7 @@ describe('FilterText', () => {
               id: 2,
               type: 'color',
               label: 'theColor',
-              operator: OptionFilterOperator.NotEqual,
+              operator: ColorFilterOperator.NotEqual,
               value: 'Cyan'
             }
           ]
@@ -223,7 +218,6 @@ describe('FilterText', () => {
     const { container } = render(
       <FilterText
         filters={{
-          id: 1,
           operator: 'And',
           filters: [
             {
@@ -237,7 +231,7 @@ describe('FilterText', () => {
               id: 2,
               type: 'color',
               label: 'theColor',
-              operator: OptionFilterOperator.NotEqual,
+              operator: ColorFilterOperator.NotEqual,
               value: 'Cyan'
             }
           ]
@@ -250,14 +244,6 @@ describe('FilterText', () => {
 });
 
 describe('FilterInputText', () => {
-  test('Displays nothing for empty text filter inputs', () => {
-    const { container } = render(
-      <FilterInputText filter={{ id: 1, type: 'undefined' }} />
-    );
-
-    expect(container.firstChild).toBeEmptyDOMElement();
-  });
-
   describe('Displays appropriate text for text filter inputs', () => {
     test('Wraps value in quotes and escapes quotes in contents', () => {
       const { container } = render(
@@ -669,28 +655,13 @@ describe('FilterInputText', () => {
             id: 1,
             type: 'color',
             label: 'theLabel',
-            operator: OptionFilterOperator.Equal,
+            operator: ColorFilterOperator.Equal,
             value: 'Amber'
           }}
         />
       );
 
       expect(container.firstChild).toHaveTextContent(/"Amber"$/);
-    });
-    test('For "in" operator, wraps quoted values in brackets', () => {
-      const { container } = render(
-        <FilterInputText
-          filter={{
-            id: 1,
-            type: 'color',
-            label: 'theLabel',
-            operator: OptionFilterOperator.In,
-            value: ['Amber']
-          }}
-        />
-      );
-
-      expect(container.firstChild).toHaveTextContent(/{"Amber"}$/);
     });
     test('=', () => {
       const { container } = render(
@@ -699,7 +670,7 @@ describe('FilterInputText', () => {
             id: 1,
             type: 'color',
             label: 'theLabel',
-            operator: OptionFilterOperator.Equal,
+            operator: ColorFilterOperator.Equal,
             value: 'Amber'
           }}
         />
@@ -714,43 +685,13 @@ describe('FilterInputText', () => {
             id: 1,
             type: 'color',
             label: 'theLabel',
-            operator: OptionFilterOperator.NotEqual,
+            operator: ColorFilterOperator.NotEqual,
             value: 'Amber'
           }}
         />
       );
 
       expect(container.firstChild).toHaveTextContent('theLabel != "Amber"');
-    });
-    test('|=', () => {
-      const { container } = render(
-        <FilterInputText
-          filter={{
-            id: 1,
-            type: 'color',
-            label: 'theLabel',
-            operator: OptionFilterOperator.In,
-            value: ['Amber']
-          }}
-        />
-      );
-
-      expect(container.firstChild).toHaveTextContent('theLabel |= {"Amber"}');
-    });
-    test('!|=', () => {
-      const { container } = render(
-        <FilterInputText
-          filter={{
-            id: 1,
-            type: 'color',
-            label: 'theLabel',
-            operator: OptionFilterOperator.NotIn,
-            value: ['Amber']
-          }}
-        />
-      );
-
-      expect(container.firstChild).toHaveTextContent('theLabel !|= {"Amber"}');
     });
   });
 
@@ -868,7 +809,7 @@ describe('FilterInputText', () => {
             type: 'date',
             label: 'theLabel',
             operator: DateFilterOperator.DayOfWeek,
-            value: new Date('2026-01-01')
+            value: 'Thursday'
           }}
         />
       );
@@ -883,7 +824,7 @@ describe('FilterInputText', () => {
             type: 'date',
             label: 'theLabel',
             operator: DateFilterOperator.NotDayOfWeek,
-            value: new Date('2026-01-01')
+            value: 'Thursday'
           }}
         />
       );

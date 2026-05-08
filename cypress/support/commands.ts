@@ -56,35 +56,31 @@
 import '@testing-library/cypress/add-commands';
 
 Cypress.Commands.add('login', (username: string, password: string) => {
-  const REDIRECT_PATH = '/list';
+  cy.visit('/');
+  cy.contains('Sign In').click();
 
-  cy.session(
-    `login-${username}`,
-    () => {
-      cy.visit('/');
-      cy.contains('Sign In').click();
+  cy.findByLabelText('Username').type(username);
+  cy.findByLabelText('Password').type(password);
 
-      cy.findByLabelText('Username').type(username);
-      cy.findByLabelText('Password').type(password);
+  cy.findByRole('form').contains('Sign In').click();
 
-      cy.findByRole('form').contains('Sign In').click();
+  cy.location('pathname').should('eq', '/list');
 
-      // Included to make sure the request is resolved before Cypress runs the validate()
-      // function. Also needed to catch it if the redirect changes - the `REDIRECT_PATH`
-      // constant will need to be updated so the very last line of this command works.
-      cy.location('pathname').should('eq', REDIRECT_PATH);
-    },
-    {
-      cacheAcrossSpecs: true,
-      validate() {
-        cy.getCookie('better-auth.session_token').should('exist');
-        cy.request('/api/auth/get-session').its('status').should('eq', 200);
-      }
-    }
-  );
+  cy.getCookie('better-auth.session_token').should('exist');
+  cy.request('/api/auth/get-session')
+    .its('body')
+    .should('have.property', 'session')
+    .and('not.be.null');
+});
 
-  // End up on "about:blank" after cy.session(), so need to resume where logging in left off
-  cy.visit(REDIRECT_PATH);
+Cypress.Commands.add('createList', (listName: string) => {
+  cy.visit('/list');
+
+  cy.findByLabelText('Create new list').click();
+  cy.findByPlaceholderText('List name').type(listName);
+  cy.findByLabelText('Submit list').click();
+
+  cy.location('pathname').should('match', /^\/list\/[a-zA-Z0-9]{16}$/);
 });
 
 declare global {
@@ -92,6 +88,7 @@ declare global {
   namespace Cypress {
     interface Chainable {
       login(email: string, password: string): Chainable<void>;
+      createList(listName: string): Chainable<void>;
     }
   }
 }

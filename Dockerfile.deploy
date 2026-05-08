@@ -2,7 +2,7 @@ FROM node:lts-alpine
 WORKDIR /app
 
 COPY package.json package-lock.json ./
-RUN npm ci --ignore-scripts
+RUN npm ci --ignore-scripts --omit dev
 
 # Stub import of server-only, this interprets test environment as client component
 # server-only still prevents server code being run on client in development/production
@@ -12,6 +12,8 @@ COPY scripts/test_service_entry.sh ./entry.sh
 COPY tsconfig.json prisma.config.ts ./
 COPY prisma ./prisma
 COPY lib/auth.ts ./lib/auth.ts
+COPY lib/database/db_connect.ts ./lib/database/db_connect.ts
 COPY lib/model/color.ts ./lib/model/color.ts
+COPY lib/database/user.ts ./lib/database/user.ts
 
 CMD [ "sh", "entry.sh" ]

@@ -29,10 +29,13 @@ import {
 import { GearWideConnected } from 'react-bootstrap-icons';
 import { ActionDispatch } from 'react';
 
-import Tag from '@/lib/model/tag';
 import { NamedColor } from '@/lib/model/color';
-import ListMember from '@/lib/model/listMember';
-import { ListAction } from '@/components/List/types';
+import {
+  ListAction,
+  FullState,
+  MemberAction,
+  TagAction
+} from '@/components/List/types';
 import MemberRole from '@/lib/model/memberRole';
 
 import GeneralSettings from './GeneralSettings';
@@ -44,51 +47,24 @@ import TagSettings from './TagSettings';
  * name, whether certain features are enabled, members with access to the list and their
  * permissions, and tags that list items can have.
  *
- * @param listId The list the settings are for
- * @param members All members of the list
- * @param listName The list's current name
- * @param listColor The list's current color
- * @param tagsAvailable All tags currently part of the list
- * @param hasTimeTracking Whether time tracking is currently enabled for the list
- * @param isAutoOrdered Whether auto-ordering is currently enabled for the list
- * @param hasDueDates Whether due dates are currently enabled for the list
- * @param setListName A callback for updating React state with a new list name
- * @param setListColor A callback for updating React state with a new list color
- * @param setTagsAvailable A callback for updating React state with changes to the tags
- * @param setHasTimeTracking A callback for updating React state when time tracking is
- *  toggled
- * @param setHasDueDates A callback for updating React state when due dates are toggled
- * @param setIsAutoOrdered A callback for updating React state when auto-ordering is
- *  toggled
- * @param setMembers A callback for updating React state with changes to the members
+ * @param list All data for the list
  * @param addNewTag A callback for adding a tag to the list
+ * @param onListEvent A callback for updating React state with list events
+ * @param onListNameChange A callback for updating React state with a new list name,
+ *  including handling the API call
  */
 export default function ListSettings({
-  listId,
-  members,
+  list,
   roles,
-  listName,
-  listColor,
-  tagsAvailable,
-  hasTimeTracking,
-  isAutoOrdered,
-  hasDueDates,
-  dispatchList,
   addNewTag,
-  setListName
+  onListEvent,
+  onListNameChange
 }: Readonly<{
-  listId: string;
-  members: ListMember[];
+  list: Omit<FullState, 'items' | 'sections'>;
   roles: Map<string, MemberRole>;
-  listName: string;
-  listColor: NamedColor;
-  tagsAvailable: Tag[];
-  hasTimeTracking: boolean;
-  hasDueDates: boolean;
-  isAutoOrdered: boolean;
-  dispatchList: ActionDispatch<[action: ListAction]>;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
-  setListName: (name: string) => unknown;
+  onListEvent: ActionDispatch<[action: ListAction | MemberAction | TagAction]>;
+  onListNameChange: (name: string) => unknown;
 }>) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
@@ -115,13 +91,13 @@ export default function ListSettings({
                 title='General'
               >
                 <GeneralSettings
-                  hasDueDates={hasDueDates}
-                  hasTimeTracking={hasTimeTracking}
-                  isAutoOrdered={isAutoOrdered}
-                  listColor={listColor}
-                  listId={listId}
-                  listName={listName}
-                  setListName={setListName}
+                  hasDueDates={list.hasDueDates}
+                  hasTimeTracking={list.hasTimeTracking}
+                  isAutoOrdered={list.isAutoOrdered}
+                  listColor={list.color}
+                  listId={list.id}
+                  listName={list.name}
+                  setListName={onListNameChange}
                 />
               </Tab>
               <Tab
@@ -129,12 +105,10 @@ export default function ListSettings({
                 title='Members'
               >
                 <MemberSettings
-                  listId={listId}
-                  members={members}
+                  listId={list.id}
+                  members={list.members}
                   roles={roles}
-                  setMembers={members =>
-                    dispatchList({ type: 'SetMembers', members })
-                  }
+                  onMemberEvent={onListEvent}
                 />
               </Tab>
               <Tab
@@ -143,10 +117,8 @@ export default function ListSettings({
               >
                 <TagSettings
                   addNewTag={addNewTag}
-                  setTagsAvailable={tags =>
-                    dispatchList({ type: 'SetTagsAvailable', tags })
-                  }
-                  tagsAvailable={tagsAvailable}
+                  tags={list.tags}
+                  onTagEvent={onListEvent}
                 />
               </Tab>
             </Tabs>

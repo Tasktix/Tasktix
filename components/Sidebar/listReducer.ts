@@ -36,7 +36,17 @@ export default function listReducer(lists: List[], action: Action) {
 
       return [
         ...lists,
-        new List(action.name, action.color, [], [], true, true, true, action.id)
+        new List(
+          action.name,
+          action.color,
+          [],
+          [],
+          [],
+          true,
+          true,
+          true,
+          action.id
+        )
       ];
 
     case 'remove':
