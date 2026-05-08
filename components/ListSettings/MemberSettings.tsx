@@ -33,8 +33,8 @@ import MemberRole from '@/lib/model/memberRole';
 import api from '@/lib/api';
 import { sortRolesByPermissions } from '@/lib/sort';
 import { addToastForError } from '@/lib/error';
-
-import { FullState, MemberAction } from '../List/types';
+import { ListState } from '@/lib/transformations/list/types';
+import { MemberAction } from '@/lib/transformations/list/types';
 
 /**
  * Displays all list members and their permissions. Allows adding new members and updating
@@ -51,7 +51,7 @@ export default function MemberSettings({
   onMemberEvent
 }: Readonly<{
   listId: string;
-  members: FullState['members'];
+  members: ListState['members'];
   roles: Map<string, MemberRole>;
   onMemberEvent: (event: MemberAction) => unknown;
 }>) {
@@ -87,6 +87,7 @@ export default function MemberSettings({
 
         onMemberEvent({
           type: 'AddMember',
+          listId,
           member: { ...member, role: member.role.id }
         });
       })

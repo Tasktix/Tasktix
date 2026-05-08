@@ -30,12 +30,10 @@ import { GearWideConnected } from 'react-bootstrap-icons';
 import { ActionDispatch } from 'react';
 
 import { NamedColor } from '@/lib/model/color';
-import {
-  ListAction,
-  FullState,
-  MemberAction,
-  TagAction
-} from '@/components/List/types';
+import { ListState } from '@/lib/transformations/list/types';
+import { TagAction } from '@/lib/transformations/list/types';
+import { MemberAction } from '@/lib/transformations/list/types';
+import { ListAction } from '@/lib/transformations/list/types';
 import MemberRole from '@/lib/model/memberRole';
 
 import GeneralSettings from './GeneralSettings';
@@ -60,7 +58,7 @@ export default function ListSettings({
   onListEvent,
   onListNameChange
 }: Readonly<{
-  list: Omit<FullState, 'items' | 'sections'>;
+  list: Omit<ListState, 'items' | 'sections'>;
   roles: Map<string, MemberRole>;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
   onListEvent: ActionDispatch<[action: ListAction | MemberAction | TagAction]>;

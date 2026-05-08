@@ -84,7 +84,11 @@ describe('List state changes', () => {
     const user = userEvent.setup();
 
     vi.mocked(subscribe).mockImplementation((_, onMessage) => {
-      onMessage({ type: 'SetListName', name: 'New list name' });
+      onMessage({
+        type: 'SetListName',
+        id: MOCK_LIST.id,
+        name: 'New list name'
+      });
 
       return vi.fn();
     });
@@ -105,7 +109,7 @@ describe('List state changes', () => {
     const user = userEvent.setup();
 
     vi.mocked(subscribe).mockImplementation((_, onMessage) => {
-      onMessage({ type: 'SetListColor', color: 'Blue' });
+      onMessage({ type: 'SetListColor', id: MOCK_LIST.id, color: 'Blue' });
 
       return vi.fn();
     });
@@ -129,7 +133,11 @@ describe('List state changes', () => {
     const user = userEvent.setup();
 
     vi.mocked(subscribe).mockImplementation((_, onMessage) => {
-      onMessage({ type: 'SetHasDueDates', hasDueDates: false });
+      onMessage({
+        type: 'SetHasDueDates',
+        id: MOCK_LIST.id,
+        hasDueDates: false
+      });
 
       return vi.fn();
     });
@@ -153,7 +161,11 @@ describe('List state changes', () => {
     const user = userEvent.setup();
 
     vi.mocked(subscribe).mockImplementation((_, onMessage) => {
-      onMessage({ type: 'SetHasTimeTracking', hasTimeTracking: false });
+      onMessage({
+        type: 'SetHasTimeTracking',
+        id: MOCK_LIST.id,
+        hasTimeTracking: false
+      });
 
       return vi.fn();
     });
@@ -177,7 +189,11 @@ describe('List state changes', () => {
     const user = userEvent.setup();
 
     vi.mocked(subscribe).mockImplementation((_, onMessage) => {
-      onMessage({ type: 'SetIsAutoOrdered', isAutoOrdered: false });
+      onMessage({
+        type: 'SetIsAutoOrdered',
+        id: MOCK_LIST.id,
+        isAutoOrdered: false
+      });
 
       return vi.fn();
     });

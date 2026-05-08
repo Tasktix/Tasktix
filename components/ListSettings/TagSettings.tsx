@@ -26,9 +26,10 @@ import Tag from '@/lib/model/tag';
 import api from '@/lib/api';
 import { NamedColor } from '@/lib/model/color';
 import { addToastForError } from '@/lib/error';
+import { ListState } from '@/lib/transformations/list/types';
+import { TagAction } from '@/lib/transformations/list/types';
 
 import ConfirmModal from '../ConfirmModal';
-import { FullState, TagAction } from '../List/types';
 
 /**
  * Displays all tags in the List and allows tags to be added, edited, and deleted
@@ -43,7 +44,7 @@ export default function TagSettings({
   addNewTag,
   onTagEvent
 }: Readonly<{
-  tags: FullState['tags'];
+  tags: ListState['tags'];
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
   onTagEvent: (event: TagAction) => unknown;
 }>) {

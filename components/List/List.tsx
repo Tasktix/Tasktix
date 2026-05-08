@@ -28,10 +28,6 @@ import ListModel from '@/lib/model/list';
 import { subscribe } from '@/lib/sse/client';
 import MemberRole from '@/lib/model/memberRole';
 import ListSection from '@/components/ListSection/ListSection';
-
-import { getFilterOptions } from './filters';
-import listReducer from './listReducer';
-import { listHandlerFactory } from './handlerFactory';
 import {
   generateItemAssigneesState,
   generateItemsState,
@@ -39,10 +35,16 @@ import {
   generateMembersState,
   generateSectionItemsState,
   generateSectionsState,
-  generateTagsState,
-  stateToItems,
-  stateToMembers
-} from './state';
+  generateTagsState
+} from '@/lib/transformations/list/toState';
+import {
+  stateToMembers,
+  stateToItems
+} from '@/lib/transformations/list/fromState';
+import listReducer from '@/lib/transformations/list/stateToState';
+
+import { getFilterOptions } from './filters';
+import { listHandlerFactory } from './handlerFactory';
 
 /**
  * This component provides the full list GUI: filters, settings, each section and its
@@ -126,7 +128,7 @@ export default function List({
       <AddListSection
         listId={list.id}
         onSectionAdded={section =>
-          dispatchList({ type: 'AddSection', section })
+          dispatchList({ type: 'AddSection', id: list.id, section })
         }
       />
     </>

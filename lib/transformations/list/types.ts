@@ -23,24 +23,72 @@ import ListMember from '@/lib/model/listMember';
 import ListSection from '@/lib/model/listSection';
 import Tag from '@/lib/model/tag';
 
+export type ListMemberState = Omit<ListMember, 'role'> & { role: string };
+
+export type ListItemState = Omit<ListItem, 'assignees' | 'tags'>;
+
+/**
+ * The state of a list section, as defined and modified by the list reducer.
+ */
+export type ListSectionState = Omit<ListSection, 'items'>;
+
+/**
+ * The list state, as defined and modified by the list reducer.
+ */
+export type BaseListState = Omit<List, 'members' | 'sections' | 'tags'>;
+
+export type ListState = BaseListState & {
+  members: Map<string, ListMemberState>;
+  tags: Map<string, Tag>;
+  sections: Map<string, ListSectionState>;
+  items: Map<string, ListItemState>;
+
+  sectionItems: Map<string, string[]>;
+  itemAssignees: Map<string, [string, string][]>;
+  itemTags: Map<string, string[]>;
+};
+
+export type ListGroupState = {
+  lists: Map<string, BaseListState>;
+  members: Map<string, ListMemberState>;
+  tags: Map<string, Tag>;
+  sections: Map<string, ListSectionState>;
+  items: Map<string, ListItemState>;
+
+  listSections: Map<string, string[]>;
+  sectionItems: Map<string, string[]>;
+  itemAssignees: Map<string, [string, string][]>;
+  itemTags: Map<string, string[]>;
+};
+
 /**
  * Possible actions and the required data needed for updating a list with the list
  * reducer.
  */
+
 export type ListAction =
-  | { type: 'SetHasDueDates'; hasDueDates: FullState['hasDueDates'] }
+  | {
+      type: 'SetHasDueDates';
+      id: string;
+      hasDueDates: ListState['hasDueDates'];
+    }
   | {
       type: 'SetHasTimeTracking';
-      hasTimeTracking: FullState['hasTimeTracking'];
+      id: string;
+      hasTimeTracking: ListState['hasTimeTracking'];
     }
-  | { type: 'SetIsAutoOrdered'; isAutoOrdered: FullState['isAutoOrdered'] }
-  | { type: 'SetListColor'; color: FullState['color'] }
-  | { type: 'SetListName'; name: FullState['name'] }
-  | { type: 'AddTag'; tag: Tag }
-  | { type: 'AddSection'; section: ListSection };
+  | {
+      type: 'SetIsAutoOrdered';
+      id: string;
+      isAutoOrdered: ListState['isAutoOrdered'];
+    }
+  | { type: 'SetListColor'; id: string; color: ListState['color'] }
+  | { type: 'SetListName'; id: string; name: ListState['name'] }
+  | { type: 'AddTag'; id: string; tag: Tag }
+  | { type: 'AddSection'; id: string; section: ListSection };
 
 export type MemberAction =
-  | { type: 'AddMember'; member: ListMemberState }
+  | { type: 'AddMember'; listId: string; member: ListMemberState }
   | {
       type: 'UpdateMemberPermissions';
       id: string;
@@ -100,28 +148,3 @@ export type ItemAction =
     }
   | { type: 'UnlinkTagFromItem'; itemId: string; tagId: string }
   | { type: 'DeleteItem'; sectionId: string; id: string };
-
-export type ListMemberState = Omit<ListMember, 'role'> & { role: string };
-
-export type ListItemState = Omit<ListItem, 'assignees' | 'tags'>;
-
-/**
- * The state of a list section, as defined and modified by the list reducer.
- */
-export type ListSectionState = Omit<ListSection, 'items'>;
-
-/**
- * The list state, as defined and modified by the list reducer.
- */
-export type ListState = Omit<List, 'members' | 'sections' | 'tags'>;
-
-export type FullState = Omit<List, 'members' | 'sections' | 'tags'> & {
-  members: Map<string, ListMemberState>;
-  tags: Map<string, Tag>;
-  sections: Map<string, ListSectionState>;
-  items: Map<string, ListItemState>;
-
-  sectionItems: Map<string, string[]>;
-  itemAssignees: Map<string, [string, string][]>;
-  itemTags: Map<string, string[]>;
-};

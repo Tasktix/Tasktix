@@ -21,8 +21,7 @@ import { ActionDispatch } from 'react';
 
 import { NamedColor } from '@/lib/model/color';
 import List from '@/lib/model/list';
-import { ItemAction } from '@/components/List';
-import { FullState } from '@/components/List/types';
+import { ItemAction, ListState } from '@/lib/transformations/list/types';
 import ListItem from '@/lib/model/listItem';
 import Tag from '@/lib/model/tag';
 import ListMember from '@/lib/model/listMember';
@@ -38,8 +37,8 @@ export interface ListItemParams {
   list?: Pick<List, 'id' | 'color' | 'name'>;
   members: Omit<ListMember, 'role'>[];
   tags: Tag[];
-  hasTimeTracking: FullState['hasTimeTracking'];
-  hasDueDates: FullState['hasDueDates'];
+  hasTimeTracking: ListState['hasTimeTracking'];
+  hasDueDates: ListState['hasDueDates'];
   reorderControls?: DragControls;
   onItemEvent: ActionDispatch<[action: ItemAction]>;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;

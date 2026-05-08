@@ -111,6 +111,7 @@ describe('Adding members', () => {
     expect(onMemberEvent).toHaveBeenCalledTimes(1);
     expect(onMemberEvent).toHaveBeenCalledWith({
       type: 'AddMember',
+      listId: 'list-id',
       member: { ...newMember, role: MOCK_ROLE_CAN_VIEW.id }
     });
   });

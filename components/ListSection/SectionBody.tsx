@@ -30,9 +30,7 @@ import { sortItems, sortItemsByCompleted, sortItemsByOrder } from '@/lib/sort';
 import ListItemModel from '@/lib/model/listItem';
 import ListMember from '@/lib/model/listMember';
 import Tag from '@/lib/model/tag';
-
-import { ListItemState } from '../List/types';
-import { ItemAction } from '../List';
+import { ItemAction, ListItemState } from '@/lib/transformations/list/types';
 
 /**
  * A component that provides the body of the list section - i.e. just the items in it,
