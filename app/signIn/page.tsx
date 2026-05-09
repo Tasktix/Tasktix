@@ -63,7 +63,7 @@ export default function Page() {
       straight to it. Promises explicitly ignored because `handleOAuth` already creates a
       toast for errors
     */
-    // redirect();
+    redirect();
 
     return (
       <main className='flex grow justify-center items-start mt-40 w-xl mx-auto'>
