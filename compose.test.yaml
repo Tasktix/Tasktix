@@ -31,6 +31,8 @@ services:
         condition: service_healthy
     environment:
       DATABASE_URL: mysql://root:${DB_PASSWORD}@mariadb/${DB_DATABASE}
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL}
+      DISABLE_PASSWORD_STRENGTH_CHECK: true
     healthcheck:
       test: ['CMD', 'test', '-f', '/tmp/prisma-ready']
       interval: 2s
