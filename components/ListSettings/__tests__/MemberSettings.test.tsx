@@ -23,10 +23,10 @@ import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { addToast, HeroUIProvider } from '@heroui/react';
 
-import ListMember from '@/lib/model/listMember';
 import User from '@/lib/model/user';
 import api from '@/lib/api';
 import MemberRole from '@/lib/model/memberRole';
+import ListMember from '@/lib/model/listMember';
 
 import MemberSettings from '../MemberSettings';
 
@@ -78,7 +78,7 @@ const MOCK_ROLE_CAN_ADMIN = new MemberRole('Admin', 'All permissions', {
 
 describe('Adding members', () => {
   it('Allows adding new members by entering their Email', async () => {
-    const oldMember = new ListMember(users[0], MOCK_ROLE_CAN_VIEW);
+    const oldMember = { user: users[0], role: MOCK_ROLE_CAN_VIEW.id };
     const newMember = new ListMember(users[1], MOCK_ROLE_CAN_VIEW);
 
     vi.mocked(api.post).mockResolvedValue({
@@ -86,7 +86,7 @@ describe('Adding members', () => {
       message: 'Success',
       content: JSON.stringify(newMember)
     });
-    const setMembers = vi.fn();
+    const onMemberEvent = vi.fn();
     const user = userEvent.setup();
 
     const { getByLabelText, getByText } = render(
@@ -94,33 +94,34 @@ describe('Adding members', () => {
       <HeroUIProvider disableRipple>
         <MemberSettings
           listId='list-id'
-          members={[oldMember]}
+          members={new Map([[oldMember.user.id, oldMember]])}
           roles={new Map()}
-          setMembers={setMembers}
+          onMemberEvent={onMemberEvent}
         />
       </HeroUIProvider>
     );
 
-    expect(getByLabelText('Email...')).toBeVisible();
+    expect(getByLabelText('New member email')).toBeVisible();
     expect(getByText('Send Invite')).toBeVisible();
 
-    await user.type(getByLabelText('Email...'), 'user2');
+    await user.type(getByLabelText('New member email'), 'user2');
     await user.click(getByText('Send Invite'));
 
-    expect(getByLabelText('Email...')).toHaveValue('');
-    expect(setMembers).toHaveBeenCalledTimes(1);
-    expect(setMembers).toHaveBeenCalledWith(
-      expect.arrayContaining([oldMember, newMember])
-    );
+    expect(getByLabelText('New member email')).toHaveValue('');
+    expect(onMemberEvent).toHaveBeenCalledTimes(1);
+    expect(onMemberEvent).toHaveBeenCalledWith({
+      type: 'AddMember',
+      member: { ...newMember, role: MOCK_ROLE_CAN_VIEW.id }
+    });
   });
 
   it('Displays an error message after adding a member if saving the new member fails', async () => {
-    const oldMember = new ListMember(users[0], MOCK_ROLE_CAN_VIEW);
+    const oldMember = { user: users[0], role: MOCK_ROLE_CAN_VIEW.id };
 
     vi.mocked(api.post).mockRejectedValue(
       new Error('Server message about failure')
     );
-    const setMembers = vi.fn();
+    const onMemberEvent = vi.fn();
     const user = userEvent.setup();
 
     const { getByLabelText, getByText } = render(
@@ -128,37 +129,37 @@ describe('Adding members', () => {
       <HeroUIProvider disableRipple>
         <MemberSettings
           listId='list-id'
-          members={[oldMember]}
+          members={new Map([[oldMember.user.id, oldMember]])}
           roles={new Map()}
-          setMembers={setMembers}
+          onMemberEvent={onMemberEvent}
         />
       </HeroUIProvider>
     );
 
-    expect(getByLabelText('Email...')).toBeVisible();
+    expect(getByLabelText('New member email')).toBeVisible();
     expect(getByText('Send Invite')).toBeVisible();
 
-    await user.type(getByLabelText('Email...'), 'user2');
+    await user.type(getByLabelText('New member email'), 'user2');
     await user.click(getByText('Send Invite'));
 
-    expect(getByLabelText('Email...')).toHaveValue('');
+    expect(getByLabelText('New member email')).toHaveValue('');
     expect(addToast).toHaveBeenCalledTimes(1);
     expect(addToast).toHaveBeenCalledWith({
       color: 'danger',
       title: 'Server message about failure'
     });
-    expect(setMembers).not.toHaveBeenCalled();
+    expect(onMemberEvent).not.toHaveBeenCalled();
   });
 
   it("Displays an error message after adding a member if the server doesn't return the new member", async () => {
-    const oldMember = new ListMember(users[0], MOCK_ROLE_CAN_VIEW);
+    const oldMember = { user: users[0], role: MOCK_ROLE_CAN_VIEW.id };
 
     vi.mocked(api.post).mockResolvedValue({
       code: 200,
       message: 'Success',
       content: undefined
     });
-    const setMembers = vi.fn();
+    const onMemberEvent = vi.fn();
     const user = userEvent.setup();
 
     const { getByLabelText, getByText } = render(
@@ -166,26 +167,26 @@ describe('Adding members', () => {
       <HeroUIProvider disableRipple>
         <MemberSettings
           listId='list-id'
-          members={[oldMember]}
+          members={new Map([[oldMember.user.id, oldMember]])}
           roles={new Map()}
-          setMembers={setMembers}
+          onMemberEvent={onMemberEvent}
         />
       </HeroUIProvider>
     );
 
-    expect(getByLabelText('Email...')).toBeVisible();
+    expect(getByLabelText('New member email')).toBeVisible();
     expect(getByText('Send Invite')).toBeVisible();
 
-    await user.type(getByLabelText('Email...'), 'user2');
+    await user.type(getByLabelText('New member email'), 'user2');
     await user.click(getByText('Send Invite'));
 
-    expect(getByLabelText('Email...')).toHaveValue('');
+    expect(getByLabelText('New member email')).toHaveValue('');
     expect(addToast).toHaveBeenCalledTimes(1);
     expect(addToast).toHaveBeenCalledWith({
       color: 'danger',
       title: 'User added, but unable to display'
     });
-    expect(setMembers).not.toHaveBeenCalled();
+    expect(onMemberEvent).not.toHaveBeenCalled();
   });
 });
 
@@ -194,12 +195,14 @@ describe('Updating permissions', () => {
     const { getByText } = render(
       <MemberSettings
         listId='list-id'
-        members={[
-          new ListMember(users[0], MOCK_ROLE_CAN_VIEW),
-          new ListMember(users[1], MOCK_ROLE_CAN_VIEW)
-        ]}
+        members={
+          new Map([
+            [users[0].id, { user: users[0], role: MOCK_ROLE_CAN_VIEW.id }],
+            [users[1].id, { user: users[1], role: MOCK_ROLE_CAN_VIEW.id }]
+          ])
+        }
         roles={new Map()}
-        setMembers={vi.fn()}
+        onMemberEvent={vi.fn()}
       />
     );
 
@@ -211,17 +214,19 @@ describe('Updating permissions', () => {
     const { getByLabelText } = render(
       <MemberSettings
         listId='list-id'
-        members={[
-          new ListMember(users[0], MOCK_ROLE_CAN_VIEW),
-          new ListMember(users[1], MOCK_ROLE_CAN_ADMIN)
-        ]}
+        members={
+          new Map([
+            [users[0].id, { user: users[0], role: MOCK_ROLE_CAN_VIEW.id }],
+            [users[1].id, { user: users[1], role: MOCK_ROLE_CAN_ADMIN.id }]
+          ])
+        }
         roles={
           new Map([
             [MOCK_ROLE_CAN_VIEW.id, MOCK_ROLE_CAN_VIEW],
             [MOCK_ROLE_CAN_ADMIN.id, MOCK_ROLE_CAN_ADMIN]
           ])
         }
-        setMembers={vi.fn()}
+        onMemberEvent={vi.fn()}
       />
     );
 
@@ -237,59 +242,66 @@ describe('Updating permissions', () => {
       message: 'Success',
       content: undefined
     });
-    const setMembers = vi.fn();
+    const onMemberEvent = vi.fn();
     const user = userEvent.setup();
 
     const { getByLabelText } = render(
       <MemberSettings
         listId='list-id'
-        members={[
-          new ListMember(users[0], MOCK_ROLE_CAN_VIEW),
-          new ListMember(users[1], MOCK_ROLE_CAN_VIEW)
-        ]}
+        members={
+          new Map([
+            [users[0].id, { user: users[0], role: MOCK_ROLE_CAN_VIEW.id }],
+            [users[1].id, { user: users[1], role: MOCK_ROLE_CAN_VIEW.id }]
+          ])
+        }
         roles={
           new Map([
             [MOCK_ROLE_CAN_VIEW.id, MOCK_ROLE_CAN_VIEW],
             [MOCK_ROLE_CAN_ADMIN.id, MOCK_ROLE_CAN_ADMIN]
           ])
         }
-        setMembers={setMembers}
+        onMemberEvent={onMemberEvent}
       />
     );
 
     await user.click(getByLabelText('user1 Role'));
     await user.click(getByLabelText('Admin'));
 
-    expect(setMembers).toHaveBeenCalledTimes(1);
-    expect(setMembers).toHaveBeenCalledWith(
-      expect.arrayContaining([new ListMember(users[0], MOCK_ROLE_CAN_ADMIN)])
+    expect(onMemberEvent).toHaveBeenCalledTimes(1);
+    expect(onMemberEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: 'UpdateMemberPermissions',
+        role: MOCK_ROLE_CAN_ADMIN.id
+      })
     );
   });
 
   it('Does not allow member role being removed', async () => {
-    const setMembers = vi.fn();
+    const onMemberEvent = vi.fn();
     const user = userEvent.setup();
 
     const { getByLabelText, getByRole } = render(
       <MemberSettings
         listId='list-id'
-        members={[
-          new ListMember(users[0], MOCK_ROLE_CAN_VIEW),
-          new ListMember(users[1], MOCK_ROLE_CAN_VIEW)
-        ]}
+        members={
+          new Map([
+            [users[0].id, { user: users[0], role: MOCK_ROLE_CAN_VIEW.id }],
+            [users[1].id, { user: users[1], role: MOCK_ROLE_CAN_VIEW.id }]
+          ])
+        }
         roles={
           new Map([
             [MOCK_ROLE_CAN_VIEW.id, MOCK_ROLE_CAN_VIEW],
             [MOCK_ROLE_CAN_ADMIN.id, MOCK_ROLE_CAN_ADMIN]
           ])
         }
-        setMembers={setMembers}
+        onMemberEvent={onMemberEvent}
       />
     );
 
     await user.click(getByLabelText('user1 Role'));
     await user.click(getByRole('option', { name: 'Viewer' }));
 
-    expect(setMembers).not.toHaveBeenCalled();
+    expect(onMemberEvent).not.toHaveBeenCalled();
   });
 });

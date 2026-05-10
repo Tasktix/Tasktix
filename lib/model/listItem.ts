@@ -33,6 +33,7 @@ export type Priority = 'Low' | 'Medium' | 'High';
 export const ZodListItem = z.strictObject({
   id: z.string().length(16),
   name: z.string().min(1).max(128),
+  description: z.string().max(65535),
   status: z.enum(statuses),
   priority: z.enum(priorities),
   isUnclear: z.boolean(),
@@ -48,6 +49,7 @@ export const ZodListItem = z.strictObject({
 export default class ListItem {
   id: string;
   name: string;
+  description: string;
   status: Status;
   priority: Priority;
   isUnclear: boolean;
@@ -68,6 +70,7 @@ export default class ListItem {
     sectionId: string,
     {
       id,
+      description = '',
       status = 'Unstarted',
       priority = 'Low',
       isUnclear = false,
@@ -83,6 +86,7 @@ export default class ListItem {
       listId
     }: {
       id?: string;
+      description?: string;
       status?: Status;
       priority?: Priority;
       isUnclear?: boolean;
@@ -102,6 +106,7 @@ export default class ListItem {
 
     this.id = id;
     this.name = name;
+    this.description = description;
     this.status = status;
     this.priority = priority;
     this.isUnclear = Boolean(isUnclear);

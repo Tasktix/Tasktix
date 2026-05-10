@@ -88,6 +88,9 @@ describe('PATCH', () => {
       ...MOCK_ITEM,
       listId: 'dummy-id'
     });
+  test('Updates item description when provided & requestor has permissions', async () => {
+    vi.mocked(getUser).mockResolvedValue(MOCK_USER);
+    vi.mocked(getListItemById).mockResolvedValue(MOCK_ITEM);
     vi.mocked(getRoleByItem).mockResolvedValue(
       new MemberRole('ItemUpdater', 'Updates items and does nothing else', {
         canUpdateItems: true
@@ -95,11 +98,12 @@ describe('PATCH', () => {
     );
     vi.mocked(querySectionInList).mockResolvedValue(true);
     vi.mocked(updateItemSection).mockResolvedValue(true);
+    vi.mocked(updateListItem).mockResolvedValue(true);
 
     const response = await PATCH(
       new Request(ITEM_PATH, {
         method: 'patch',
-        body: JSON.stringify({ sectionId: 'asdfasdfasdfasdf' })
+        body: JSON.stringify({ description: 'New item description' })
       }),
       {
         params: Promise.resolve({ id: MOCK_ITEM.id })
@@ -107,9 +111,8 @@ describe('PATCH', () => {
     );
 
     expect(response.status).toBe(200);
-    expect(updateItemSection).toHaveBeenCalledExactlyOnceWith(
-      expect.anything(),
-      'asdfasdfasdfasdf'
+    expect(updateListItem).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({ description: 'New item description' })
     );
   });
 

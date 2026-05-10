@@ -65,6 +65,24 @@ export async function PATCH(
       requestBody.sectionId
     );
 
+    if (requestBody.name) item.name = requestBody.name;
+    if (requestBody.description !== undefined)
+      item.description = requestBody.description;
+    if (requestBody.status) item.status = requestBody.status;
+    if (requestBody.priority) item.priority = requestBody.priority;
+    if (requestBody.dateDue) item.dateDue = new Date(requestBody.dateDue);
+    if (requestBody.expectedMs) item.expectedMs = requestBody.expectedMs;
+    if (requestBody.elapsedMs !== undefined)
+      item.elapsedMs = requestBody.elapsedMs;
+    if (requestBody.dateStarted !== undefined)
+      item.dateStarted = requestBody.dateStarted
+        ? new Date(requestBody.dateStarted)
+        : null;
+    if (requestBody.dateCompleted !== undefined)
+      item.dateCompleted = requestBody.dateCompleted
+        ? new Date(requestBody.dateCompleted)
+        : null;
+
     if (!allowed) return ClientError.BadRequest('Section not found');
     const res = await updateItemSection(item, requestBody.sectionId);
 

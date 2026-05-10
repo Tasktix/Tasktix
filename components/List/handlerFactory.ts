@@ -75,13 +75,6 @@ export function listHandlerFactory(
    * @param id The ID of the section to delete
    */
   function deleteListSection(id: string) {
-    if (
-      !confirm(
-        'Are you sure you want to delete this section? This action is irreversible.'
-      )
-    )
-      return;
-
     api
       .delete(`/list/${listId}/section/${id}`)
       .then(res => {

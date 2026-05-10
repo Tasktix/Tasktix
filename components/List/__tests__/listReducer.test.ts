@@ -16,42 +16,33 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import List from '@/lib/model/list';
-
 import listReducer from '../listReducer';
-import { ListSectionState } from '../types';
+import { FullState } from '../types';
 
 test('Throws an error if an ItemAction is requested for a nonexistent list item', () => {
-  const list: Omit<List, 'sections'> & {
-    sections: Map<string, ListSectionState>;
-  } = {
+  const list: FullState = {
     id: 'list-id',
     name: 'List name',
     color: 'Amber',
     hasDueDates: true,
     hasTimeTracking: true,
     isAutoOrdered: true,
-    members: [],
+    items: new Map(),
+    members: new Map(),
     sections: new Map([
-      [
-        'section-id',
-        { name: 'Section name', items: new Map(), id: 'section-id' }
-      ]
-    ])
+      ['section-id', { name: 'Section name', id: 'section-id' }]
+    ]),
+    tags: new Map(),
+    sectionItems: new Map(),
+    itemAssignees: new Map(),
+    itemTags: new Map()
   };
 
   expect(() =>
-    listReducer(
-      {
-        list,
-        tagsAvailable: []
-      },
-      {
-        type: 'SetItemName',
-        sectionId: 'section-id',
-        id: 'nonexistent',
-        name: 'new name'
-      }
-    )
-  ).toThrow('Unable to find item with ID nonexistent in section section-id');
+    listReducer(list, {
+      type: 'SetItemName',
+      id: 'nonexistent',
+      name: 'new name'
+    })
+  ).toThrow('Unable to find item with ID nonexistent');
 });

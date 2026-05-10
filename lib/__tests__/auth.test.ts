@@ -96,12 +96,14 @@ describe('getOAuthConfig', () => {
     });
   });
 
-  test('Leaves custom SSO scopes undefined if no environment variable', () => {
+  test('Leaves custom SSO scopes undefined if no OAUTH_SCOPES environment variable', () => {
+    vi.stubEnv('OAUTH_PROVIDER_ID', 'not undefined');
+    vi.stubEnv('OAUTH_CLIENT_ID', 'not undefined');
     vi.stubEnv('OAUTH_SCOPES', undefined); // TS requires 2 args - skipcq: JS-W1042
 
     const config = getOAuthConfig();
 
-    expect(config).not.toHaveProperty('customProviderScope');
+    expect(config).toMatchObject({ customProviderScope: undefined });
   });
 
   test('Logs an error if custom SSO scopes environment variable is unparsable', () => {

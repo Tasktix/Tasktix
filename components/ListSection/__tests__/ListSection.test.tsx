@@ -43,15 +43,17 @@ test('Newly created items are added to the section', async () => {
   const { findByLabelText, findByRole, getByLabelText } = render(
     <ListSection
       isAutoOrdered
-      dispatchItemChange={vi.fn()}
-      dispatchSectionChange={dispatchSectionChange}
       filters={{}}
       hasDueDates={false}
       hasTimeTracking={false}
+      items={[]}
       listId='test-list'
       members={[]}
-      section={{ id: 'section-id', name: 'Section Name', items: new Map() }}
-      tagsAvailable={[]}
+      section={{ id: 'section-id', name: 'Section Name' }}
+      tags={[]}
+      totalSections={[]}
+      onItemChange={vi.fn()}
+      onSectionChange={dispatchSectionChange}
       onTagCreate={() => Promise.resolve('')}
     />
   );
@@ -68,7 +70,7 @@ test('Newly created items are added to the section', async () => {
   expect(dispatchSectionChange).toBeCalledWith(
     expect.objectContaining({
       type: 'AddItemToSection',
-      sectionId: 'section-id',
+      id: 'section-id',
       item: expect.objectContaining({
         name: 'Item 1',
         priority: 'High'
@@ -82,24 +84,27 @@ test('Section can be deleted and propagates that event', async () => {
 
   const dispatchSectionChange = vi.fn();
 
-  const { findByLabelText, getByLabelText } = render(
+  const { findByLabelText, findByRole, getByLabelText } = render(
     <ListSection
       hasDueDates
       hasTimeTracking
       isAutoOrdered
-      dispatchItemChange={vi.fn()}
-      dispatchSectionChange={dispatchSectionChange}
       filters={{}}
+      items={[]}
       listId='test-list'
       members={[]}
-      section={{ id: 'section-id', name: 'Section Name', items: new Map() }}
-      tagsAvailable={[]}
+      section={{ id: 'section-id', name: 'Section Name' }}
+      tags={[]}
+      totalSections={[]}
+      onItemChange={vi.fn()}
+      onSectionChange={dispatchSectionChange}
       onTagCreate={() => Promise.resolve('')}
     />
   );
 
   await user.click(getByLabelText('Show section actions'));
   await user.click(await findByLabelText('Delete section'));
+  await user.click(await findByRole('button', { name: 'Confirm' }));
 
   expect(dispatchSectionChange).toHaveBeenCalledTimes(1);
   expect(dispatchSectionChange).toHaveBeenCalledWith(
@@ -114,25 +119,27 @@ describe('Section expansion/collapse', () => {
         hasDueDates
         hasTimeTracking
         isAutoOrdered
-        dispatchItemChange={vi.fn()}
-        dispatchSectionChange={vi.fn()}
         filters={{}}
+        items={[
+          {
+            ...new ListItem('Item 1', {
+              id: 'aaaaaaaaaaaaaaaa',
+              status: 'Unstarted'
+            }),
+            assignees: [],
+            tags: []
+          }
+        ]}
         listId='test-list'
         members={[]}
         section={{
           id: 'section-id',
-          name: 'Section Name',
-          items: new Map([
-            [
-              'aaaaaaaaaaaaaaaa',
-              new ListItem('Item 1', 'section-id', {
-                id: 'aaaaaaaaaaaaaaaa',
-                status: 'Unstarted'
-              })
-            ]
-          ])
+          name: 'Section Name'
         }}
-        tagsAvailable={[]}
+        tags={[]}
+        totalSections={[]}
+        onItemChange={vi.fn()}
+        onSectionChange={vi.fn()}
         onTagCreate={() => Promise.resolve('')}
       />
     );
@@ -147,26 +154,28 @@ describe('Section expansion/collapse', () => {
         hasDueDates
         hasTimeTracking
         isAutoOrdered
-        dispatchItemChange={vi.fn()}
-        dispatchSectionChange={vi.fn()}
         filters={{}}
+        items={[
+          {
+            ...new ListItem('Item 1', {
+              id: 'aaaaaaaaaaaaaaaa',
+              status: 'Completed',
+              dateCompleted: new Date()
+            }),
+            assignees: [],
+            tags: []
+          }
+        ]}
         listId='test-list'
         members={[]}
         section={{
           id: 'section-id',
-          name: 'Section Name',
-          items: new Map([
-            [
-              'aaaaaaaaaaaaaaaa',
-              new ListItem('Item 1', 'section-id', {
-                id: 'aaaaaaaaaaaaaaaa',
-                status: 'Completed',
-                dateCompleted: new Date()
-              })
-            ]
-          ])
+          name: 'Section Name'
         }}
-        tagsAvailable={[]}
+        tags={[]}
+        totalSections={[]}
+        onItemChange={vi.fn()}
+        onSectionChange={vi.fn()}
         onTagCreate={() => Promise.resolve('')}
       />
     );
@@ -181,13 +190,15 @@ describe('Section expansion/collapse', () => {
         hasDueDates
         hasTimeTracking
         isAutoOrdered
-        dispatchItemChange={vi.fn()}
-        dispatchSectionChange={vi.fn()}
         filters={{}}
+        items={[]}
         listId='test-list'
         members={[]}
-        section={{ id: 'section-id', name: 'Section Name', items: new Map() }}
-        tagsAvailable={[]}
+        section={{ id: 'section-id', name: 'Section Name' }}
+        tags={[]}
+        totalSections={[]}
+        onItemChange={vi.fn()}
+        onSectionChange={vi.fn()}
         onTagCreate={() => Promise.resolve('')}
       />
     );
@@ -204,26 +215,28 @@ describe('Section expansion/collapse', () => {
         hasDueDates
         hasTimeTracking
         isAutoOrdered
-        dispatchItemChange={vi.fn()}
-        dispatchSectionChange={vi.fn()}
         filters={{}}
+        items={[
+          {
+            ...new ListItem('Item 1', {
+              id: 'aaaaaaaaaaaaaaaa',
+              status: 'Completed',
+              dateCompleted: new Date()
+            }),
+            assignees: [],
+            tags: []
+          }
+        ]}
         listId='test-list'
         members={[]}
         section={{
           id: 'section-id',
-          name: 'Section Name',
-          items: new Map([
-            [
-              'aaaaaaaaaaaaaaaa',
-              new ListItem('Item 1', 'section-id', {
-                id: 'aaaaaaaaaaaaaaaa',
-                status: 'Completed',
-                dateCompleted: new Date()
-              })
-            ]
-          ])
+          name: 'Section Name'
         }}
-        tagsAvailable={[]}
+        tags={[]}
+        totalSections={[]}
+        onItemChange={vi.fn()}
+        onSectionChange={vi.fn()}
         onTagCreate={() => Promise.resolve('')}
       />
     );
@@ -242,25 +255,27 @@ describe('Section expansion/collapse', () => {
         hasDueDates
         hasTimeTracking
         isAutoOrdered
-        dispatchItemChange={vi.fn()}
-        dispatchSectionChange={vi.fn()}
         filters={{}}
+        items={[
+          {
+            ...new ListItem('Item 1', {
+              id: 'aaaaaaaaaaaaaaaa',
+              status: 'Unstarted'
+            }),
+            assignees: [],
+            tags: []
+          }
+        ]}
         listId='test-list'
         members={[]}
         section={{
           id: 'section-id',
-          name: 'Section Name',
-          items: new Map([
-            [
-              'aaaaaaaaaaaaaaaa',
-              new ListItem('Item 1', 'section-id', {
-                id: 'aaaaaaaaaaaaaaaa',
-                status: 'Unstarted'
-              })
-            ]
-          ])
+          name: 'Section Name'
         }}
-        tagsAvailable={[]}
+        tags={[]}
+        totalSections={[]}
+        onItemChange={vi.fn()}
+        onSectionChange={vi.fn()}
         onTagCreate={() => Promise.resolve('')}
       />
     );

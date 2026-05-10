@@ -19,9 +19,9 @@
 export { default } from './FilterText';
 
 export {
-  type FilterType,
-  type FilterState,
-  type FilterInputState,
+  type FilterConfig,
+  type FilterGroup,
+  type Filter,
   ComparableFilterOperator,
   DateFilterOperator,
   MultiOptionFilterOperator,
