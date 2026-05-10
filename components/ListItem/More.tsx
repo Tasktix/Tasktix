@@ -96,7 +96,7 @@ export default function More({
   currentSection?: [string, string];
   totalSections?: [string, string][];
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
-  updateSection: (e: unknown) => unknown;
+  updateSection: (e: never) => unknown;
 }) {
   const isComplete = item.status === 'Completed';
 
