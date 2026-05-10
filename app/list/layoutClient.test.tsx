@@ -31,14 +31,8 @@ import '@testing-library/jest-dom';
 import LayoutClient from '@/app/list/layoutClient';
 
 vi.mock('@/components/Sidebar', () => ({
-  default: ({
-    inDrawer = false,
-    onNavigate
-  }: {
-    inDrawer?: boolean;
-    onNavigate?: () => void;
-  }) => (
-    <aside data-in-drawer={String(inDrawer)} data-testid='sidebar'>
+  default: ({ onNavigate }: { onNavigate?: () => void }) => (
+    <aside data-testid='sidebar'>
       <button onClick={onNavigate}>Navigate</button>
     </aside>
   ),

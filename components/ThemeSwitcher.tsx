@@ -60,10 +60,7 @@ export default function ThemeSwitcher() {
   const isMobile = useIsMobile();
   const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const selectedTheme = theme ?? 'system';
-  const selectedThemeKeys = new Set([selectedTheme]);
-  const activeTheme = resolvedTheme ?? 'light';
-  const nextTheme = activeTheme === 'dark' ? 'light' : 'dark';
+  const nextTheme = resolvedTheme === 'dark' ? 'light' : 'dark';
 
   useEffect(() => {
     return () => {
@@ -111,49 +108,30 @@ export default function ThemeSwitcher() {
   }
 
   return (
-    <div className='flex items-center'>
-      <Popover
-        isOpen={isOpen}
-        placement='bottom-end'
-        onOpenChange={handleOpenChange}
-      >
-        <PopoverTrigger>
-          <Button
-            isIconOnly
-            aria-expanded={isOpen}
-            aria-haspopup='menu'
-            aria-label={
-              isMobile ? 'Open theme menu' : `Switch to ${nextTheme} mode`
+    <Popover
+      isOpen={isOpen}
+      placement='bottom-end'
+      onOpenChange={handleOpenChange}
+    >
+      <PopoverTrigger>
+        <Button
+          isIconOnly
+          aria-expanded={isOpen}
+          aria-haspopup='menu'
+          aria-label={
+            isMobile ? 'Open theme menu' : `Switch to ${nextTheme} mode`
+          }
+          variant='ghost'
+          onKeyDown={event => {
+            if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+              event.preventDefault();
+              setIsOpen(true);
             }
-            variant='ghost'
-            onClick={handlePress}
-            onKeyDown={event => {
-              if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
-                event.preventDefault();
-                setIsOpen(true);
-              }
 
-              if (event.key === 'Escape') {
-                setIsOpen(false);
-              }
-            }}
-            onMouseEnter={() => {
-              if (!isMobile) {
-                cancelPendingClose();
-                setIsOpen(true);
-              }
-            }}
-            onMouseLeave={() => {
-              if (!isMobile) {
-                scheduleClose();
-              }
-            }}
-          >
-            {activeTheme === 'dark' ? <SunFill /> : <MoonFill />}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent
-          className='p-0'
+            if (event.key === 'Escape') {
+              setIsOpen(false);
+            }
+          }}
           onMouseEnter={() => {
             if (!isMobile) {
               cancelPendingClose();
@@ -165,31 +143,48 @@ export default function ThemeSwitcher() {
               scheduleClose();
             }
           }}
+          onPress={handlePress}
         >
-          <Listbox
-            aria-label='Theme options'
-            selectedKeys={selectedThemeKeys}
-            selectionMode='single'
-            onSelectionChange={(keys: Selection) => {
-              if (keys === 'all') return;
+          {nextTheme === 'light' ? <SunFill /> : <MoonFill />}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent
+        className='p-0'
+        onMouseEnter={() => {
+          if (!isMobile) {
+            cancelPendingClose();
+            setIsOpen(true);
+          }
+        }}
+        onMouseLeave={() => {
+          if (!isMobile) {
+            scheduleClose();
+          }
+        }}
+      >
+        <Listbox
+          aria-label='Theme options'
+          selectedKeys={new Set([theme ?? 'system'])}
+          selectionMode='single'
+          onSelectionChange={(keys: Selection) => {
+            if (keys === 'all') return;
 
-              const selectedKey = keys.keys().next().value;
+            const selectedKey = keys.keys().next().value;
 
-              if (selectedKey) chooseTheme(String(selectedKey));
-            }}
-          >
-            <ListboxItem key='light' startContent={<SunFill />}>
-              Light
-            </ListboxItem>
-            <ListboxItem key='dark' startContent={<MoonFill />}>
-              Dark
-            </ListboxItem>
-            <ListboxItem key='system' startContent={<Display />}>
-              System
-            </ListboxItem>
-          </Listbox>
-        </PopoverContent>
-      </Popover>
-    </div>
+            if (selectedKey) chooseTheme(String(selectedKey));
+          }}
+        >
+          <ListboxItem key='light' startContent={<SunFill />}>
+            Light
+          </ListboxItem>
+          <ListboxItem key='dark' startContent={<MoonFill />}>
+            Dark
+          </ListboxItem>
+          <ListboxItem key='system' startContent={<Display />}>
+            System
+          </ListboxItem>
+        </Listbox>
+      </PopoverContent>
+    </Popover>
   );
 }

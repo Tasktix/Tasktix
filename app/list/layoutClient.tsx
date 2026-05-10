@@ -53,7 +53,9 @@ export default function LayoutClient({
   return (
     <ListContext.Provider value={dispatchEvent}>
       <div className='flex h-1/4 grow overflow-x-hidden'>
-        <Sidebar lists={lists} />
+        <div className='hidden w-48 p-4 pr-0 shadow-l-lg shadow-content4 md:flex'>
+          <Sidebar lists={lists} />
+        </div>
 
         <div className='flex min-w-0 grow flex-col'>
           <header className='sticky top-0 z-20 flex items-center border-b border-content3 bg-content1/90 p-3 backdrop-blur md:hidden'>
@@ -80,7 +82,7 @@ export default function LayoutClient({
         <DrawerContent id='mobile-sidebar-drawer'>
           <DrawerHeader>Navigation</DrawerHeader>
           <DrawerBody>
-            <Sidebar inDrawer lists={lists} onNavigate={closeDrawer} />
+            <Sidebar lists={lists} onNavigate={closeDrawer} />
           </DrawerBody>
         </DrawerContent>
       </Drawer>

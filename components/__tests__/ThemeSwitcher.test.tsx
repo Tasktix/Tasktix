@@ -92,11 +92,12 @@ vi.mock('@heroui/react', async importOriginal => {
 
     const child = children as React.ReactElement<{
       onClick?: (event: React.MouseEvent<HTMLElement>) => void;
+      onPress?: (event: React.MouseEvent<HTMLElement>) => void;
     }>;
 
     return React.cloneElement(child, {
-      onClick: event => {
-        child.props.onClick?.(event);
+      onClick: (event: React.MouseEvent<HTMLElement>) => {
+        child.props.onPress?.(event);
         onOpenChange?.();
       }
     });
