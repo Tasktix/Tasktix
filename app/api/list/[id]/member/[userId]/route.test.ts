@@ -16,13 +16,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { getIsListMember, updateListMember } from '@/lib/database/list';
+import {
+  deleteListMember,
+  getIsListMember,
+  updateListMember
+} from '@/lib/database/list';
 import User from '@/lib/model/user';
 import { getUser } from '@/lib/session';
 import { getRoleByList } from '@/lib/database/user';
 import MemberRole from '@/lib/model/memberRole';
 
-import { PATCH } from './route';
+import { DELETE, PATCH } from './route';
 
 const MOCK_USER = new User(
   'abcdefg',
@@ -37,6 +41,19 @@ const MOCK_ROLE_CAN_MANAGE_MEMBERS = new MemberRole(
   'MemberManager',
   ' Manages members and nothing else',
   { canManageMembers: true }
+);
+const MOCK_ROLE_CANNOT_MANAGE_MEMBERS = new MemberRole(
+  'NotMemberManager',
+  'Does everything but manage members',
+  {
+    canAddItems: true,
+    canUpdateItems: true,
+    canDeleteItems: true,
+    canManageTags: true,
+    canManageAssignees: true,
+    canUpdateList: true,
+    canDeleteList: true
+  }
 );
 const MEMBER_PATH =
   `http://localhost/api/list/some-list-id/member/${MOCK_USER.id}` as const;
@@ -118,6 +135,27 @@ describe('PATCH', () => {
     expect(updateListMember).not.toHaveBeenCalled();
   });
 
+  test('Rejects requests to update member with insufficient permissions', async () => {
+    vi.mocked(getUser).mockResolvedValue(MOCK_USER);
+    vi.mocked(getRoleByList).mockResolvedValue(MOCK_ROLE_CANNOT_MANAGE_MEMBERS);
+
+    const response = await PATCH(
+      new Request(MEMBER_PATH, {
+        method: 'patch',
+        body: JSON.stringify({ roleId: 'a-16-chr-test-id' })
+      }),
+      {
+        params: Promise.resolve({
+          id: 'some-list-id',
+          userId: MOCK_USER.id
+        })
+      }
+    );
+
+    expect(response.status).toBe(403);
+    expect(updateListMember).not.toHaveBeenCalled();
+  });
+
   test('Rejects requests to modify members not part of the list', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
     vi.mocked(getRoleByList).mockResolvedValue(MOCK_ROLE_CAN_MANAGE_MEMBERS);
@@ -173,6 +211,122 @@ describe('PATCH', () => {
         method: 'patch',
         body: JSON.stringify({ roleId: 'a-16-chr-test-id' })
       }),
+      {
+        params: Promise.resolve({
+          id: 'some-list-id',
+          userId: MOCK_USER.id
+        })
+      }
+    );
+
+    expect(response.status).toBe(500);
+  });
+});
+
+describe('DELETE', () => {
+  test('Allows removing a member from the list', async () => {
+    vi.mocked(getUser).mockResolvedValue(MOCK_USER);
+    vi.mocked(getRoleByList).mockResolvedValue(MOCK_ROLE_CAN_MANAGE_MEMBERS);
+    vi.mocked(getIsListMember).mockResolvedValue(true);
+    vi.mocked(deleteListMember).mockResolvedValue(true);
+
+    const response = await DELETE(
+      new Request(MEMBER_PATH, { method: 'delete' }),
+      {
+        params: Promise.resolve({
+          id: 'some-list-id',
+          userId: MOCK_USER.id
+        })
+      }
+    );
+
+    expect(response.status).toBe(200);
+    expect(deleteListMember).toHaveBeenCalledExactlyOnceWith(
+      'some-list-id',
+      MOCK_USER.id
+    );
+  });
+
+  test('Rejects unauthenticated users', async () => {
+    vi.mocked(getUser).mockResolvedValue(false);
+
+    const response = await DELETE(
+      new Request(MEMBER_PATH, { method: 'delete' }),
+      {
+        params: Promise.resolve({
+          id: 'some-list-id',
+          userId: MOCK_USER.id
+        })
+      }
+    );
+
+    expect(deleteListMember).not.toHaveBeenCalled();
+    expect(response.status).toBe(401);
+  });
+
+  test('Rejects requests to modify lists not a member of', async () => {
+    vi.mocked(getUser).mockResolvedValue(MOCK_USER);
+    vi.mocked(getRoleByList).mockResolvedValue(false);
+
+    const response = await DELETE(
+      new Request(MEMBER_PATH, { method: 'delete' }),
+      {
+        params: Promise.resolve({
+          id: 'some-list-id',
+          userId: MOCK_USER.id
+        })
+      }
+    );
+
+    expect(response.status).toBe(404);
+    expect(deleteListMember).not.toHaveBeenCalled();
+  });
+
+  test('Rejects requests to delete member with insufficient permissions', async () => {
+    vi.mocked(getUser).mockResolvedValue(MOCK_USER);
+    vi.mocked(getRoleByList).mockResolvedValue(MOCK_ROLE_CANNOT_MANAGE_MEMBERS);
+
+    const response = await DELETE(
+      new Request(MEMBER_PATH, { method: 'delete' }),
+      {
+        params: Promise.resolve({
+          id: 'some-list-id',
+          userId: MOCK_USER.id
+        })
+      }
+    );
+
+    expect(response.status).toBe(403);
+    expect(deleteListMember).not.toHaveBeenCalled();
+  });
+
+  test('Rejects requests to remove members not part of the list', async () => {
+    vi.mocked(getUser).mockResolvedValue(MOCK_USER);
+    vi.mocked(getRoleByList).mockResolvedValue(MOCK_ROLE_CAN_MANAGE_MEMBERS);
+    vi.mocked(getIsListMember).mockResolvedValue(false);
+
+    const response = await DELETE(
+      new Request(MEMBER_PATH, { method: 'delete' }),
+      {
+        params: Promise.resolve({
+          id: 'some-list-id',
+          userId: MOCK_USER.id
+        })
+      }
+    );
+
+    expect(response.status).toBe(404);
+    expect(deleteListMember).not.toHaveBeenCalled();
+  });
+
+  test('Warns the user if deleting the member failed', async () => {
+    vi.mocked(getUser).mockResolvedValue(MOCK_USER);
+    vi.mocked(getRoleByList).mockResolvedValue(MOCK_ROLE_CAN_MANAGE_MEMBERS);
+    vi.mocked(getIsListMember).mockResolvedValue(true);
+    vi.mocked(deleteListMember).mockResolvedValue(false);
+
+    const response = await DELETE(
+      new Request(MEMBER_PATH, { method: 'delete' }),
       {
         params: Promise.resolve({
           id: 'some-list-id',
