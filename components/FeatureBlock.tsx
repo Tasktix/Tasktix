@@ -18,22 +18,13 @@
 
 'use client';
 
-import { Image as HeroImage } from '@heroui/image';
-import { useTheme } from 'next-themes';
+import ThemedImage from './ThemedImage';
 
-/**
- * Props for the FeatureBlock component.
- *
- * @property title - The name of the feature being showcased.
- * @property description - A short explanation of what the feature does.
- * @property imageBaseName - Base filename used to load themed screenshots
- * (e.g. "priority" → "priority.light.png" and "priority.dark.png").
- * @property align - Determines whether the image is placed on the left or right.
- */
 type FeatureBlockProps = Readonly<{
   title: string;
   description: string;
   imageBaseName: string;
+  hideImageBorder?: boolean;
   align?: 'default' | 'flipped';
 }>;
 
@@ -51,6 +42,9 @@ type FeatureBlockProps = Readonly<{
  * screenshot. For example, an `imageBaseName` of `"timeTracking"` will load
  * `"public/screenshots/timeTracking.light.png"` in light mode and
  * `"public/screenshots/timeTracking.dark.png"` in dark mode.
+ * @param hideImageBorder - Whether to show a border/shadow around the feature's image.
+ * For use with images that include multiple components and an additional full-image
+ * shadow doesn't look right.
  * @param align - Controls whether the image appears before (`default`) or after
  * (`flipped`) the text content.
  */
@@ -58,36 +52,27 @@ export default function FeatureBlock({
   title,
   description,
   imageBaseName,
+  hideImageBorder = false,
   align = 'default'
 }: FeatureBlockProps) {
-  const { resolvedTheme } = useTheme();
-  const themedSrc =
-    resolvedTheme === 'dark'
-      ? `/screenshots/${imageBaseName}.dark.png`
-      : `/screenshots/${imageBaseName}.light.png`;
-
   return (
     <section
       className={`flex flex-col items-center gap-8 md:gap-16
         md:flex-row ${align === 'flipped' ? 'md:flex-row-reverse' : ''}`}
     >
       <div className='w-full md:w-1/2'>
-        <div className='rounded-xl border shadow-md overflow-hidden border-default'>
-          <HeroImage
-            alt={`${title} screenshot`}
-            className='w-full h-auto object-contain'
-            height={600}
-            src={themedSrc}
-            width={900}
-          />
-        </div>
+        <ThemedImage
+          alt={`${title} screenshot`}
+          hideImageBorder={hideImageBorder}
+          imageBaseName={imageBaseName}
+        />
       </div>
 
       <div className='w-full md:w-1/2 text-center md:text-left'>
-        <h2 className='text-2xl md:text-3xl font-semibold text-foreground'>
+        <h2 className='text-2xl md:text-3xl font-light text-foreground'>
           {title}
         </h2>
-        <p className='mt-3 text-default text-base md:text-lg leading-relaxed'>
+        <p className='mt-3 text-content4-foreground text-base md:text-lg leading-relaxed'>
           {description}
         </p>
       </div>
