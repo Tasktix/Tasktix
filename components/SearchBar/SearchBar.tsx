@@ -112,7 +112,7 @@ export default function SearchBar({
   }
 
   return (
-    <span className='grow rounded-md w-100 overflow-hidden p-4 h-16 flex items-center justify-center gap-4 border-2 border-content3 bg-content1 shadow-lg shadow-content2'>
+    <span className='h-16 w-full min-w-0 grow overflow-hidden rounded-md border-2 border-content3 bg-content1 p-4 shadow-lg shadow-content2 flex items-center justify-center gap-4'>
       {usedOptions.size ? (
         <button aria-label='Clear filter' onClick={clearUsedOptions}>
           <FilterSquareFill className='-mr-1' size={20} />

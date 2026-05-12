@@ -16,6 +16,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+interface ApiResponseBody {
+  content: string;
+}
+
+function getListSpecIdFromPath(path: string, label: string) {
+  const id = path.split('/').pop();
+
+  expect(id, `${label} should have an id segment`).to.be.a('string');
+  expect(id, `${label} should not be empty`).to.not.equal('');
+
+  return id as string;
+}
+
 describe('Home List', () => {
   beforeEach(() => {
     cy.exec('npm run testdb:reset');
@@ -28,5 +41,47 @@ describe('Home List', () => {
     cy.login('newUser', 'password123');
 
     cy.contains('Today view coming soon...');
+  });
+
+  it('marks an item complete from the list view', () => {
+    cy.login('newUser', 'password123');
+
+    cy.request('POST', '/api/list', {
+      name: 'Cypress List',
+      color: 'Amber'
+    }).then(({ body }: { body: ApiResponseBody }) => {
+      const listPath = body.content;
+      const listId = getListSpecIdFromPath(listPath, 'list path');
+
+      cy.request('POST', `/api/list/${listId}/section`, {
+        name: 'Today Section'
+      }).then(({ body }: { body: ApiResponseBody }) => {
+        const sectionId = getListSpecIdFromPath(body.content, 'section path');
+
+        cy.request('POST', '/api/item', {
+          name: 'Cypress task',
+          priority: 'High',
+          sectionId,
+          sectionIndex: 0,
+          dateDue: new Date('2026-03-09T23:59:59.000Z').toISOString(),
+          expectedMs: 60000
+        }).then(({ body }: { body: ApiResponseBody }) => {
+          const itemId = getListSpecIdFromPath(body.content, 'item path');
+
+          cy.intercept('PATCH', `/api/item/${itemId}`).as('completeItem');
+          cy.visit(listPath);
+
+          cy.findByDisplayValue('Cypress task').should('exist');
+          cy.findByRole('checkbox').should('not.be.checked');
+
+          cy.findByRole('checkbox').click();
+          cy.wait('@completeItem').its('response.statusCode').should('eq', 200);
+
+          cy.findByRole('checkbox').should('be.checked');
+          cy.findByText('Cypress task').should('have.class', 'line-through');
+          cy.contains(/^Completed /).should('exist');
+        });
+      });
+    });
   });
 });

@@ -202,7 +202,7 @@ export default function ListItem({
     <div
       className={`p-4 bg-content1 flex gap-4 items-center justify-between w-full ${reorderControls ? '' : 'border-b-1 border-content3 last:border-b-0'}`}
     >
-      <span className='flex gap-4 items-center justify-between w-2/5'>
+      <span className='flex grow gap-4 items-center justify-between w-2/5'>
         {reorderControls ? (
           <div
             className={`px-1 py-2 -mx-3 rounded-lg ${item.status === 'Completed' ? 'text-foreground/20' : 'text-foreground/50 cursor-grab'} text-lg`}
@@ -225,22 +225,31 @@ export default function ListItem({
           }}
         />
 
-        <span className='flex gap-4 items-center justify-start grow flex-wrap'>
-          <div className='flex grow shrink-0 flex-col w-64 gap-0 -mt-3 -mb-1'>
+        <span className='flex gap-4 items-center justify-start grow flex-wrap min-w-0'>
+          <div className='flex min-w-0 grow shrink flex-col w-56 lg:w-60 gap-0 -mt-3 -mb-1'>
             {item.status === 'Completed' ? (
               <span className='text-sm line-through text-foreground/50 text-nowrap overflow-hidden'>
                 {item.name}
               </span>
             ) : (
-              <span className={`-ml-1 flex ${hasDueDates || 'mt-1'}`}>
-                <ConfirmedTextInput
-                  aria-label='Item name'
-                  className='shrink'
-                  updateValue={itemHandlers.setName}
-                  value={item.name}
-                  variant='underlined'
-                />
-              </span>
+              <>
+                <span
+                  className={`text-sm text-foreground truncate md:hidden ${hasDueDates ? '' : 'mt-1'}`}
+                >
+                  {item.name}
+                </span>
+                <span
+                  className={`-ml-1 hidden md:flex ${hasDueDates || 'mt-1'}`}
+                >
+                  <ConfirmedTextInput
+                    aria-label='Item name'
+                    className='shrink'
+                    updateValue={itemHandlers.setName}
+                    value={item.name}
+                    variant='underlined'
+                  />
+                </span>
+              </>
             )}
 
             {item.status === 'Completed' ? (
