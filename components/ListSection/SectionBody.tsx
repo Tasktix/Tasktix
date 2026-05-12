@@ -53,7 +53,6 @@ import { ItemAction } from '../List';
  * @param totalSections A total list of sections in the larger list
  * @param addNewTag Callback to propagate state changes when a new tag is created from the
  *  "add tag" menu
- * @param updateSection The passed function that changes an item's section
  * @param addNewTag Callback to propagate state changes when a new tag is created from the
  *  "add tag" menu
  * @param onItemEvent Callback for updating an item's state
@@ -84,7 +83,7 @@ export default function SectionBody({
   hasDueDates: boolean;
   isAutoOrdered: boolean;
   currentSection: [string, string];
-  totalSections: [string, string][];
+  totalSections: Map<string, string>;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
   onItemEvent: ActionDispatch<[action: ItemAction]>;
   onItemReorder: (item: ListItemState, newIndex: number) => unknown;

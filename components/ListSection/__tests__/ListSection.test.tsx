@@ -51,7 +51,7 @@ test('Newly created items are added to the section', async () => {
       members={[]}
       section={{ id: 'section-id', name: 'Section Name' }}
       tags={[]}
-      totalSections={[]}
+      totalSections={new Map<string, string>()}
       onItemChange={vi.fn()}
       onSectionChange={dispatchSectionChange}
       onTagCreate={() => Promise.resolve('')}
@@ -95,7 +95,7 @@ test('Section can be deleted and propagates that event', async () => {
       members={[]}
       section={{ id: 'section-id', name: 'Section Name' }}
       tags={[]}
-      totalSections={[]}
+      totalSections={new Map<string, string>()}
       onItemChange={vi.fn()}
       onSectionChange={dispatchSectionChange}
       onTagCreate={() => Promise.resolve('')}
@@ -137,7 +137,7 @@ describe('Section expansion/collapse', () => {
           name: 'Section Name'
         }}
         tags={[]}
-        totalSections={[]}
+        totalSections={new Map<string, string>()}
         onItemChange={vi.fn()}
         onSectionChange={vi.fn()}
         onTagCreate={() => Promise.resolve('')}
@@ -173,7 +173,7 @@ describe('Section expansion/collapse', () => {
           name: 'Section Name'
         }}
         tags={[]}
-        totalSections={[]}
+        totalSections={new Map<string, string>()}
         onItemChange={vi.fn()}
         onSectionChange={vi.fn()}
         onTagCreate={() => Promise.resolve('')}
@@ -196,7 +196,7 @@ describe('Section expansion/collapse', () => {
         members={[]}
         section={{ id: 'section-id', name: 'Section Name' }}
         tags={[]}
-        totalSections={[]}
+        totalSections={new Map<string, string>()}
         onItemChange={vi.fn()}
         onSectionChange={vi.fn()}
         onTagCreate={() => Promise.resolve('')}
@@ -234,7 +234,7 @@ describe('Section expansion/collapse', () => {
           name: 'Section Name'
         }}
         tags={[]}
-        totalSections={[]}
+        totalSections={new Map<string, string>()}
         onItemChange={vi.fn()}
         onSectionChange={vi.fn()}
         onTagCreate={() => Promise.resolve('')}
@@ -273,7 +273,7 @@ describe('Section expansion/collapse', () => {
           name: 'Section Name'
         }}
         tags={[]}
-        totalSections={[]}
+        totalSections={new Map<string, string>()}
         onItemChange={vi.fn()}
         onSectionChange={vi.fn()}
         onTagCreate={() => Promise.resolve('')}

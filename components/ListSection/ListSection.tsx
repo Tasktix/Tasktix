@@ -86,7 +86,7 @@ export default function ListSection({
   listId: string;
   filters: Filters;
   members: ListMember[];
-  totalSections: [string, string][];
+  totalSections: Map<string, string>;
   tags: Tag[];
   hasTimeTracking: List['hasTimeTracking'];
   hasDueDates: List['hasDueDates'];

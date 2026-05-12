@@ -181,7 +181,7 @@ it('Calls API when the items section changes', async () => {
     id: 'itemid'
   });
 
-  const { getByTestId } = render(
+  const { getByLabelText } = render(
     <HeroUIProvider disableRipple>
       <ListItem
         addNewTag={vi.fn()}
@@ -202,14 +202,14 @@ it('Calls API when the items section changes', async () => {
   );
   const user = userEvent.setup();
 
-  await user.click(getByTestId('more-button'));
-  expect(getByTestId('item-section-select')).toHaveTextContent('section1');
+  await user.click(getByLabelText('More item info'));
+  expect(getByLabelText('item-section-select')).toHaveTextContent('section1');
 
-  await user.click(getByTestId('item-section-select'));
-  expect(getByTestId('section1-select-item')).toHaveTextContent('section1');
-  expect(getByTestId('section2-select-item')).toHaveTextContent('section2');
+  await user.click(getByLabelText('item-section-select'));
+  expect(getByLabelText('section1-select-item')).toHaveTextContent('section1');
+  expect(getByLabelText('section2-select-item')).toHaveTextContent('section2');
 
-  await user.click(getByTestId('section2-select-item'));
+  await user.click(getByLabelText('section2-select-item'));
   expect(api.patch).toHaveBeenCalledTimes(1);
   expect(api.patch).toHaveBeenCalledWith(`/item/${item.id}`, {
     sectionId: 'sectionid2'

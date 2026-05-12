@@ -69,7 +69,7 @@ import ItemSection from './ItemSection';
  * @param totalSections A total list of sections in the larger list
  * @param addNewTag Callback to propagate state changes when a new tag is created from the
  *  "add tag" menu
- * @param updateSection The passed function that changes an item's section
+ * @param onUpdateSection The passed function that changes an item's section
  */
 export default function More({
   item,
@@ -83,7 +83,7 @@ export default function More({
   currentSection,
   totalSections,
   addNewTag,
-  updateSection
+  onUpdateSection
 }: {
   item: ListItem;
   tags: Tag[];
@@ -94,9 +94,9 @@ export default function More({
   set: SetItem;
   itemHandlers: ItemHandlers;
   currentSection?: [string, string];
-  totalSections?: [string, string][];
+  totalSections?: Map<string, string>;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
-  updateSection: (e: never) => unknown;
+  onUpdateSection: (e: never) => unknown;
 }) {
   const isComplete = item.status === 'Completed';
 
@@ -149,6 +149,13 @@ export default function More({
                   variant='underlined'
                   onValueChange={itemHandlers.setDescription}
                 />
+
+                <ItemSection
+                  currentSection={currentSection}
+                  totalSections={totalSections}
+                  onUpdateSection={onUpdateSection}
+                />
+
                 <div className='flex gap-4 items-center'>
                   <Priority
                     className='w-full'
@@ -168,15 +175,6 @@ export default function More({
                       onValueChange={itemHandlers.setDueDate}
                     />
                   ) : null}
-                  <ItemSection
-                    currentSection={
-                      currentSection || ['NO ID AVAILABLE', 'NO SECTION INFO']
-                    }
-                    totalSections={
-                      totalSections || [['NO ID AVAILABLE', 'NO SECTION INFO']]
-                    }
-                    updateSection={updateSection}
-                  />
                 </div>
 
                 <Tags

@@ -23,20 +23,20 @@ import { Select, SelectItem } from '@heroui/react';
  *
  * @param currentSection The section this item is currently associated with
  * @param totalSections A total list of sections in the larger list
- * @param updateSection The passed function that changes an item's section
+ * @param onUpdateSection The passed function that changes an item's section
  */
 export default function ItemSection({
   currentSection,
   totalSections,
-  updateSection
+  onUpdateSection
 }: {
   currentSection: [string, string];
-  totalSections: [string, string][];
-  updateSection: (e: unknown) => unknown;
+  totalSections: Map<string, string>;
+  onUpdateSection: (e: never) => unknown;
 }) {
-  const updatedTotalSections = totalSections.filter(
-    ([name]) => name !== currentSection[1]
-  );
+  const updatedTotalSections = totalSections
+    .entries()
+    .filter(([name]) => name !== currentSection[1]);
   const selectItems = updatedTotalSections.map(([id, label]) => ({
     id,
     label
@@ -45,17 +45,18 @@ export default function ItemSection({
   return (
     <div className={'-mt-2 -mb-2'}>
       <Select
-        className={'w-28 grow-0 shrink-0'}
-        data-testid='item-section-select'
+        aria-label='item-section-select'
+        className={'w-full grow-0 shrink-0'}
         items={selectItems}
         label={<span className='ml-2 text-foreground'>Section</span>}
-        placeholder={currentSection[1]}
-        onChange={updateSection}
+        selectedKeys={[currentSection[0]]}
+        variant='underlined'
+        onChange={onUpdateSection}
       >
         {selectItems => (
           <SelectItem
             key={selectItems.id}
-            data-testid={`${selectItems.label}-select-item`}
+            aria-label={`${selectItems.label}-select-item`}
           >
             {selectItems.label}
           </SelectItem>

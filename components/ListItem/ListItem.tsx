@@ -365,7 +365,7 @@ export default function ListItem({
             set={set}
             tags={tags}
             totalSections={totalSections}
-            updateSection={changeItemSection}
+            onUpdateSection={changeItemSection}
           />
         </span>
       </span>

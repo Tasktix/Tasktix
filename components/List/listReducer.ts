@@ -236,7 +236,7 @@ export default function listReducer( // skipcq: JS-0045, JS-R1005
       break;
     }
 
-    case 'ChangeItemSection':
+    case 'ChangeItemSection': {
       //Copied from 'AddItemToSection'
       const targetSectionItems = newState.sectionItems.get(
         action.targetSectionId
@@ -252,11 +252,6 @@ export default function listReducer( // skipcq: JS-0045, JS-R1005
       newState.itemAssignees.set(action.targetItem.id, []);
       newState.itemTags.set(action.targetItem.id, []);
 
-      // sectionItems.push(action.item.id);
-      // newState.items.set(action.item.id, action.item);
-      // newState.itemAssignees.set(action.item.id, []);
-      // newState.itemTags.set(action.item.id, []);
-
       //Copied from 'DeleteItem'
       const pastSectionItems = newState.sectionItems.get(action.pastSectionId);
 
@@ -270,6 +265,7 @@ export default function listReducer( // skipcq: JS-0045, JS-R1005
         pastSectionItems.filter(item => item !== action.targetItem.id)
       );
       break;
+    }
   }
 
   return newState;

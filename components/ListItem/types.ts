@@ -36,7 +36,7 @@ export interface ListItemParams {
   sectionId: string;
   item: ListItem;
   currentSection?: [string, string];
-  totalSections?: [string, string][];
+  totalSections?: Map<string, string>;
   list?: Pick<List, 'id' | 'color' | 'name'>;
   members: Omit<ListMember, 'role'>[];
   tags: Tag[];
