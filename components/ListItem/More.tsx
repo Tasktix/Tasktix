@@ -65,8 +65,8 @@ import ItemSection from './ItemSection';
  * @param set Functions for updating the list item timer
  * @param itemHandlers Functions for making API calls & state changes when the item is
  *  interacted with
- * @param currentSection The section this item is currently associated with
  * @param totalSections A total list of sections in the larger list
+ * @param sectionId The list section this component is part of
  * @param addNewTag Callback to propagate state changes when a new tag is created from the
  *  "add tag" menu
  * @param onUpdateSection The passed function that changes an item's section
@@ -80,8 +80,8 @@ export default function More({
   elapsedLive,
   set,
   itemHandlers,
-  currentSection,
   totalSections,
+  sectionId,
   addNewTag,
   onUpdateSection
 }: {
@@ -93,8 +93,8 @@ export default function More({
   elapsedLive: number;
   set: SetItem;
   itemHandlers: ItemHandlers;
-  currentSection?: [string, string];
-  totalSections?: Map<string, string>;
+  totalSections: Map<string, string>;
+  sectionId: string;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
   onUpdateSection: (e: never) => unknown;
 }) {
@@ -151,7 +151,7 @@ export default function More({
                 />
 
                 <ItemSection
-                  currentSection={currentSection}
+                  sectionId={sectionId}
                   totalSections={totalSections}
                   onUpdateSection={onUpdateSection}
                 />

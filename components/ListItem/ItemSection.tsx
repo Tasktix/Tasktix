@@ -21,22 +21,24 @@ import { Select, SelectItem } from '@heroui/react';
 /**
  * This is the component used for changing sections within an item's 'more' menu.
  *
- * @param currentSection The section this item is currently associated with
  * @param totalSections A total list of sections in the larger list
+ * @param sectionId The list section this component is part of
  * @param onUpdateSection The passed function that changes an item's section
  */
 export default function ItemSection({
-  currentSection,
   totalSections,
+  sectionId,
   onUpdateSection
 }: {
-  currentSection: [string, string];
   totalSections: Map<string, string>;
+  sectionId: string;
   onUpdateSection: (e: never) => unknown;
 }) {
+  const currentSection = totalSections.get(sectionId);
+
   const updatedTotalSections = totalSections
     .entries()
-    .filter(([name]) => name !== currentSection[1]);
+    .filter(([name]) => name !== currentSection);
   const selectItems = updatedTotalSections.map(([id, label]) => ({
     id,
     label
@@ -49,7 +51,7 @@ export default function ItemSection({
         className={'w-full grow-0 shrink-0'}
         items={selectItems}
         label={<span className='ml-2 text-foreground'>Section</span>}
-        selectedKeys={[currentSection[0]]}
+        selectedKeys={[sectionId || 'No Section']}
         variant='underlined'
         onChange={onUpdateSection}
       >

@@ -76,7 +76,6 @@ export default function ListItem({
   tags,
   hasTimeTracking,
   hasDueDates,
-  currentSection,
   totalSections,
   reorderControls,
   addNewTag,
@@ -355,13 +354,13 @@ export default function ListItem({
 
           <More
             addNewTag={addNewTag}
-            currentSection={currentSection}
             elapsedLive={elapsedLive}
             hasDueDates={hasDueDates}
             hasTimeTracking={hasTimeTracking}
             item={item}
             itemHandlers={itemHandlers}
             members={members}
+            sectionId={sectionId}
             set={set}
             tags={tags}
             totalSections={totalSections}

@@ -74,6 +74,7 @@ it('Shows everything faded and shows the completion date instead of due date whe
         members={[]}
         sectionId='section-id'
         tags={[]}
+        totalSections={new Map<string, string>()}
         onItemEvent={vi.fn()}
       />
     </HeroUIProvider>
@@ -115,6 +116,7 @@ it('Displays the associated list when one is provided', () => {
         members={[]}
         sectionId='section-id'
         tags={[]}
+        totalSections={new Map<string, string>()}
         onItemEvent={vi.fn()}
       />
     </HeroUIProvider>
@@ -164,6 +166,7 @@ it('Displays all members assigned to the item', () => {
         members={members.map(m => new ListMember(m, MOCK_ROLE_CAN_VIEW))}
         sectionId='section-id'
         tags={[]}
+        totalSections={new Map<string, string>()}
         onItemEvent={vi.fn()}
       />
     </HeroUIProvider>
@@ -181,21 +184,22 @@ it('Calls API when the items section changes', async () => {
     id: 'itemid'
   });
 
+  const sections = new Map<string, string>();
+
+  sections.set('sectionid1', 'section1');
+  sections.set('sectionid2', 'section2');
+
   const { getByLabelText } = render(
     <HeroUIProvider disableRipple>
       <ListItem
         addNewTag={vi.fn()}
-        currentSection={['sectionid1', 'section1']}
         hasDueDates={false}
         hasTimeTracking={false}
         item={item}
         members={[]}
         sectionId='sectionid1'
         tags={[]}
-        totalSections={[
-          ['sectionid1', 'section1'],
-          ['sectionid2', 'section2']
-        ]}
+        totalSections={sections}
         onItemEvent={vi.fn()}
       />
     </HeroUIProvider>

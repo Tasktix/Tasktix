@@ -166,7 +166,6 @@ export default function ListSection({
           >
             <SectionBody
               addNewTag={onTagCreate}
-              currentSection={[section.id, section.name]}
               filters={filters}
               hasDueDates={hasDueDates}
               hasTimeTracking={hasTimeTracking}

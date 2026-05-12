@@ -49,7 +49,6 @@ import { ItemAction } from '../List';
  * @param hasTimeTracking Whether time tracking is enabled in the list's settings
  * @param hasDueDates Whether due dates are enabled in the list's settings
  * @param isAutoOrdered Whether auto-ordering is enabled in the list's settings
- * @param currentSection The section this item is currently associated with
  * @param totalSections A total list of sections in the larger list
  * @param addNewTag Callback to propagate state changes when a new tag is created from the
  *  "add tag" menu
@@ -68,7 +67,6 @@ export default function SectionBody({
   hasTimeTracking,
   hasDueDates,
   isAutoOrdered,
-  currentSection,
   totalSections,
   addNewTag,
   onItemEvent,
@@ -82,7 +80,6 @@ export default function SectionBody({
   hasTimeTracking: boolean;
   hasDueDates: boolean;
   isAutoOrdered: boolean;
-  currentSection: [string, string];
   totalSections: Map<string, string>;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
   onItemEvent: ActionDispatch<[action: ItemAction]>;
@@ -134,7 +131,6 @@ export default function SectionBody({
     item,
     members,
     sectionId,
-    currentSection,
     totalSections,
     tags,
     onItemEvent

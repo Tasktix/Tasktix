@@ -54,7 +54,8 @@ export async function getListItemById(
   });
 
   if (!result) return false;
-  const {section, ...item} = result;
+  const { section, ...item } = result;
+
   return {
     ...item,
     listId: section.listId
@@ -120,8 +121,9 @@ export async function updateListItem(
         sectionId: undefined
       }
     });
-  } catch (err){
-    console.log(err)
+  } catch (err) {
+    console.log(err);
+
     return false;
   }
 
@@ -230,7 +232,7 @@ export async function updateItemSection(
           where: { id: item.id },
           data: {
             sectionId,
-          sectionIndex: targetSectionItems
+            sectionIndex: targetSectionItems
           }
         });
         await tx.item.updateMany({
