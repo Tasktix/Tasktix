@@ -32,7 +32,7 @@ services:
     environment:
       DATABASE_URL: mysql://root:${DB_PASSWORD}@mariadb/${DB_DATABASE}
       BETTER_AUTH_URL: ${BETTER_AUTH_URL}
-      DISABLE_PASSWORD_STRENGTH_CHECK: true
+      DISABLE_PASSWORD_STRENGTH_CHECK: true # Disabled for seed scripts (n.b. this is only the deploy container)
     healthcheck:
       test: ['CMD', 'test', '-f', '/tmp/prisma-ready']
       interval: 2s
