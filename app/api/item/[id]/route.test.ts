@@ -88,143 +88,164 @@ describe('PATCH', () => {
       ...MOCK_ITEM,
       listId: 'dummy-id'
     });
-    test('Updates item description when provided & requestor has permissions', async () => {
-      vi.mocked(getUser).mockResolvedValue(MOCK_USER);
-      vi.mocked(getListItemById).mockResolvedValue(MOCK_ITEM);
-      vi.mocked(getRoleByItem).mockResolvedValue(
-        new MemberRole('ItemUpdater', 'Updates items and does nothing else', {
-          canUpdateItems: true
-        })
-      );
-      vi.mocked(querySectionInList).mockResolvedValue(true);
-      vi.mocked(updateItemSection).mockResolvedValue(true);
-      vi.mocked(updateListItem).mockResolvedValue(true);
+    vi.mocked(getRoleByItem).mockResolvedValue(
+      new MemberRole('ItemUpdater', 'Updates items and does nothing else', {
+        canUpdateItems: true
+      })
+    );
+    vi.mocked(querySectionInList).mockResolvedValue(true);
+    vi.mocked(updateItemSection).mockResolvedValue(true);
+
+    const response = await PATCH(
+      new Request(ITEM_PATH, {
+        method: 'patch',
+        body: JSON.stringify({ sectionId: 'asdfasdfasdfasdf' })
+      }),
+      {
+        params: Promise.resolve({ id: MOCK_ITEM.id })
+      }
+    );
+
+    expect(response.status).toBe(200);
+    expect(updateItemSection).toHaveBeenCalledExactlyOnceWith(
+      expect.anything(),
+      'asdfasdfasdfasdf'
+    );
+  });
+
+  test('Updates item description when provided & requestor has permissions', async () => {
+    vi.mocked(getUser).mockResolvedValue(MOCK_USER);
+    vi.mocked(getListItemById).mockResolvedValue(MOCK_ITEM);
+    vi.mocked(getRoleByItem).mockResolvedValue(
+      new MemberRole('ItemUpdater', 'Updates items and does nothing else', {
+        canUpdateItems: true
+      })
+    );
+    vi.mocked(querySectionInList).mockResolvedValue(true);
+    vi.mocked(updateItemSection).mockResolvedValue(true);
+    vi.mocked(updateListItem).mockResolvedValue(true);
+
+    const response = await PATCH(
+      new Request(ITEM_PATH, {
+        method: 'patch',
+        body: JSON.stringify({ description: 'New item description' })
+      }),
+      {
+        params: Promise.resolve({ id: MOCK_ITEM.id })
+      }
+    );
+
+    expect(response.status).toBe(200);
+    expect(updateListItem).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({ description: 'New item description' })
+    );
+  });
+
+  describe('Errors', () => {
+    test('Rejects unauthenticated users', async () => {
+      vi.mocked(getUser).mockResolvedValue(false);
 
       const response = await PATCH(
         new Request(ITEM_PATH, {
           method: 'patch',
-          body: JSON.stringify({ description: 'New item description' })
+          body: JSON.stringify({ name: 'New item name' })
         }),
         {
           params: Promise.resolve({ id: MOCK_ITEM.id })
         }
       );
 
-      expect(response.status).toBe(200);
-      expect(updateListItem).toHaveBeenCalledExactlyOnceWith(
-        expect.objectContaining({ description: 'New item description' })
-      );
+      expect(response.status).toBe(401);
+      expect(updateListItem).not.toHaveBeenCalled();
     });
 
-    describe('Errors', () => {
-      test('Rejects unauthenticated users', async () => {
-        vi.mocked(getUser).mockResolvedValue(false);
-
-        const response = await PATCH(
-          new Request(ITEM_PATH, {
-            method: 'patch',
-            body: JSON.stringify({ name: 'New item name' })
-          }),
-          {
-            params: Promise.resolve({ id: MOCK_ITEM.id })
-          }
-        );
-
-        expect(response.status).toBe(401);
-        expect(updateListItem).not.toHaveBeenCalled();
+    test("Indicates no resource exists if requestor is not a member of the list they're updating an item of", async () => {
+      vi.mocked(getUser).mockResolvedValue(MOCK_USER);
+      vi.mocked(getListItemById).mockResolvedValue({
+        ...MOCK_ITEM,
+        listId: 'dummy-id'
       });
+      vi.mocked(getRoleByItem).mockResolvedValue(false);
 
-      test("Indicates no resource exists if requestor is not a member of the list they're updating an item of", async () => {
-        vi.mocked(getUser).mockResolvedValue(MOCK_USER);
-        vi.mocked(getListItemById).mockResolvedValue({
-          ...MOCK_ITEM,
-          listId: 'dummy-id'
-        });
-        vi.mocked(getRoleByItem).mockResolvedValue(false);
+      const response = await PATCH(
+        new Request(ITEM_PATH, {
+          method: 'patch',
+          body: JSON.stringify({ name: 'New item name' })
+        }),
+        {
+          params: Promise.resolve({ id: MOCK_ITEM.id })
+        }
+      );
 
-        const response = await PATCH(
-          new Request(ITEM_PATH, {
-            method: 'patch',
-            body: JSON.stringify({ name: 'New item name' })
-          }),
-          {
-            params: Promise.resolve({ id: MOCK_ITEM.id })
-          }
-        );
+      expect(response.status).toBe(404);
+      expect(updateListItem).not.toHaveBeenCalled();
+    });
 
-        expect(response.status).toBe(404);
-        expect(updateListItem).not.toHaveBeenCalled();
+    test('Rejects request if requestor has insufficient permissions to update item', async () => {
+      vi.mocked(getUser).mockResolvedValue(MOCK_USER);
+      vi.mocked(getListItemById).mockResolvedValue({
+        ...MOCK_ITEM,
+        listId: 'dummy-id'
       });
+      vi.mocked(getRoleByItem).mockResolvedValue(
+        new MemberRole('NotItemUpdater', 'Does everything but update items', {
+          canAddItems: true,
+          canDeleteItems: true,
+          canManageTags: true,
+          canManageAssignees: true,
+          canManageMembers: true,
+          canUpdateList: true,
+          canDeleteList: true
+        })
+      );
 
-      test('Rejects request if requestor has insufficient permissions to update item', async () => {
-        vi.mocked(getUser).mockResolvedValue(MOCK_USER);
-        vi.mocked(getListItemById).mockResolvedValue({
-          ...MOCK_ITEM,
-          listId: 'dummy-id'
-        });
-        vi.mocked(getRoleByItem).mockResolvedValue(
-          new MemberRole('NotItemUpdater', 'Does everything but update items', {
-            canAddItems: true,
-            canDeleteItems: true,
-            canManageTags: true,
-            canManageAssignees: true,
-            canManageMembers: true,
-            canUpdateList: true,
-            canDeleteList: true
-          })
-        );
+      const response = await PATCH(
+        new Request(ITEM_PATH, {
+          method: 'patch',
+          body: JSON.stringify({ name: 'New item name' })
+        }),
+        {
+          params: Promise.resolve({ id: MOCK_ITEM.id })
+        }
+      );
 
-        const response = await PATCH(
-          new Request(ITEM_PATH, {
-            method: 'patch',
-            body: JSON.stringify({ name: 'New item name' })
-          }),
-          {
-            params: Promise.resolve({ id: MOCK_ITEM.id })
-          }
-        );
+      expect(response.status).toBe(403);
+      expect(updateListItem).not.toHaveBeenCalled();
+    });
 
-        expect(response.status).toBe(403);
-        expect(updateListItem).not.toHaveBeenCalled();
+    test('Rejects requests to move an item to a section that is part of a different list', async () => {
+      vi.mocked(getUser).mockResolvedValue(MOCK_USER);
+      vi.mocked(getRoleByItem).mockResolvedValue(
+        new MemberRole('DoesAllThings', 'Does everything', {
+          canAddItems: true,
+          canUpdateItems: true,
+          canDeleteItems: true,
+          canManageTags: true,
+          canManageAssignees: true,
+          canManageMembers: true,
+          canUpdateList: true,
+          canDeleteList: true
+        })
+      );
+      vi.mocked(getListItemById).mockResolvedValue({
+        ...MOCK_ITEM,
+        listId: 'dummy-id'
       });
+      vi.mocked(querySectionInList).mockResolvedValue(false);
 
-      test('Rejects requests to move an item to a section that is part of a different list', async () => {
-        vi.mocked(getUser).mockResolvedValue(MOCK_USER);
-        vi.mocked(getRoleByItem).mockResolvedValue(
-          new MemberRole('DoesAllThings', 'Does everything', {
-            canAddItems: true,
-            canUpdateItems: true,
-            canDeleteItems: true,
-            canManageTags: true,
-            canManageAssignees: true,
-            canManageMembers: true,
-            canUpdateList: true,
-            canDeleteList: true
-          })
-        );
-        vi.mocked(getListItemById).mockResolvedValue({
-          ...MOCK_ITEM,
-          listId: 'dummy-id'
-        });
-        vi.mocked(querySectionInList).mockResolvedValue(false);
+      const response = await PATCH(
+        new Request(ITEM_PATH, {
+          method: 'patch',
+          body: JSON.stringify({ sectionId: 'asdfasdfasdfasdf' })
+        }),
+        {
+          params: Promise.resolve({ id: MOCK_ITEM.id })
+        }
+      );
 
-        const response = await PATCH(
-          new Request(ITEM_PATH, {
-            method: 'patch',
-            body: JSON.stringify({ sectionId: 'asdfasdfasdfasdf' })
-          }),
-          {
-            params: Promise.resolve({ id: MOCK_ITEM.id })
-          }
-        );
-
-        expect(querySectionInList).toBeCalledWith(
-          'dummy-id',
-          'asdfasdfasdfasdf'
-        );
-        expect(response.status).toBe(400);
-        expect(updateItemSection).not.toHaveBeenCalled();
-      });
+      expect(querySectionInList).toBeCalledWith('dummy-id', 'asdfasdfasdfasdf');
+      expect(response.status).toBe(400);
+      expect(updateItemSection).not.toHaveBeenCalled();
     });
   });
 
