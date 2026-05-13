@@ -45,13 +45,27 @@ export async function createListItem(
   return true;
 }
 
-export async function getListItemById(id: string): Promise<ListItem | false> {
+export async function getListItemById(
+  id: string
+): Promise<(ListItem & { listId: string }) | false> {
   const result = await prisma.item.findUnique({
     where: { id },
-    include: { tags: true, assignees: { include: { user: true } } }
+    include: {
+      tags: true,
+      assignees: { include: { user: true } },
+      section: {
+        select: { listId: true }
+      }
+    }
   });
 
-  return result ?? false;
+  if (!result) return false;
+  const { section, ...item } = result;
+
+  return {
+    ...item,
+    listId: section.listId
+  };
 }
 
 export async function getListItemsByUser(userId: string): Promise<ListItem[]> {
@@ -113,7 +127,9 @@ export async function updateListItem(
         sectionId: undefined
       }
     });
-  } catch {
+  } catch (err) {
+    console.log(err);
+
     return false;
   }
 
@@ -200,6 +216,54 @@ export async function unlinkAssignee(
         // listId omitted despite being part of primary key because Item is M:1 with List
       }
     });
+  } catch {
+    return false;
+  }
+
+  return true;
+}
+
+/**
+ * Move a List Item from its current section to a new section given by sectionId.
+ * The selected item is appended to the end of that new section.
+ * @param item The ListItem to change the section of
+ * @param sectionId The sectionId of the target Section
+ */
+export async function updateItemSection(
+  item: ListItem,
+  sectionId: string
+): Promise<boolean> {
+  try {
+    await prisma.$transaction(
+      async tx => {
+        const targetSectionItems = await tx.item.count({
+          where: { sectionId }
+        });
+        const originalIndex = item.sectionIndex;
+
+        await tx.item.update({
+          where: { id: item.id },
+          data: {
+            sectionId,
+            sectionIndex: targetSectionItems
+          }
+        });
+        await tx.item.updateMany({
+          where: {
+            sectionId: item.sectionId,
+            sectionIndex: {
+              gte: originalIndex
+            }
+          },
+          data: {
+            sectionIndex: {
+              decrement: 1
+            }
+          }
+        });
+      },
+      { isolationLevel: Prisma.TransactionIsolationLevel.Serializable }
+    );
   } catch {
     return false;
   }

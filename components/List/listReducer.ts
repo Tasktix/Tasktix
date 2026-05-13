@@ -239,6 +239,37 @@ export default function listReducer( // skipcq: JS-0045, JS-R1005
       newState.items.delete(action.id);
       break;
     }
+
+    case 'ChangeItemSection': {
+      //Copied from 'AddItemToSection'
+      const targetSectionItems = newState.sectionItems.get(
+        action.targetSectionId
+      );
+
+      if (!targetSectionItems)
+        throw new Error(
+          `Unable to find section with ID ${action.targetSectionId}`
+        );
+
+      targetSectionItems.push(action.targetItem.id);
+      newState.items.set(action.targetItem.id, action.targetItem);
+      newState.itemAssignees.set(action.targetItem.id, []);
+      newState.itemTags.set(action.targetItem.id, []);
+
+      //Copied from 'DeleteItem'
+      const pastSectionItems = newState.sectionItems.get(action.pastSectionId);
+
+      if (!pastSectionItems)
+        throw new Error(
+          `Unable to find items for section ${action.pastSectionId}`
+        );
+
+      newState.sectionItems.set(
+        action.pastSectionId,
+        pastSectionItems.filter(item => item !== action.targetItem.id)
+      );
+      break;
+    }
   }
 
   return newState;

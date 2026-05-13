@@ -44,6 +44,7 @@ import ExpectedInput from './ExpectedInput';
 import ElapsedInput from './ElapsedInput';
 import TimeButton from './TimeButton';
 import { ItemHandlers, SetItem } from './types';
+import ItemSection from './ItemSection';
 
 /**
  * The UI for interacting with **all of** a single list item's data, such as the name,
@@ -64,8 +65,11 @@ import { ItemHandlers, SetItem } from './types';
  * @param set Functions for updating the list item timer
  * @param itemHandlers Functions for making API calls & state changes when the item is
  *  interacted with
+ * @param totalSections A total list of sections in the larger list
+ * @param sectionId The list section this component is part of
  * @param addNewTag Callback to propagate state changes when a new tag is created from the
  *  "add tag" menu
+ * @param onUpdateSection The passed function that changes an item's section
  */
 export default function More({
   item,
@@ -76,7 +80,10 @@ export default function More({
   elapsedLive,
   set,
   itemHandlers,
-  addNewTag
+  totalSections,
+  sectionId,
+  addNewTag,
+  onUpdateSection
 }: {
   item: ListItem;
   tags: Tag[];
@@ -86,7 +93,10 @@ export default function More({
   elapsedLive: number;
   set: SetItem;
   itemHandlers: ItemHandlers;
+  totalSections: Map<string, string>;
+  sectionId: string;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
+  onUpdateSection: (e: never) => unknown;
 }) {
   const isComplete = item.status === 'Completed';
 
@@ -97,6 +107,7 @@ export default function More({
       <Button
         isIconOnly
         aria-label='More item info'
+        data-testid='more-button'
         variant='ghost'
         onPress={onOpen}
       >
@@ -138,6 +149,13 @@ export default function More({
                   variant='underlined'
                   onValueChange={itemHandlers.setDescription}
                 />
+
+                <ItemSection
+                  sectionId={sectionId}
+                  totalSections={totalSections}
+                  onUpdateSection={onUpdateSection}
+                />
+
                 <div className='flex gap-4 items-center'>
                   <Priority
                     className='w-full'

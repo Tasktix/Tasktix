@@ -60,6 +60,8 @@ today.setHours(0, 0, 0, 0);
  *  complete list items. Start/pause buttons, a timer, and expected time-to-complete are
  *  shown if so
  * @param hasDueDates Whether the list settings enable due dates for items
+ * @param currentSection The section this item is currently associated with
+ * @param totalSections A total list of sections in the larger list
  * @param reorderControls Controller for Framer Motion's reordering feature. Used to
  *  trigger reordering when the user grabs the drag icon in the list item
  * @param addNewTag Callback to propagate state changes when a new tag is created from the
@@ -74,6 +76,7 @@ export default function ListItem({
   tags,
   hasTimeTracking,
   hasDueDates,
+  totalSections,
   reorderControls,
   addNewTag,
   onItemEvent
@@ -191,12 +194,29 @@ export default function ListItem({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  //Stops and clears timer
   function _stopRunning() {
     if (timer.current) {
       clearTimeout(timer.current);
       timer.current = undefined;
     }
   }
+
+  //Changes item section to specified section
+  const changeItemSection = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    api
+      .patch(`/item/${item.id}`, { sectionId: e.target.value })
+      .then(() => {
+        // Update the internal state
+        onItemEvent({
+          type: 'ChangeItemSection',
+          pastSectionId: sectionId,
+          targetSectionId: e.target.value,
+          targetItem: item
+        });
+      })
+      .catch(addToastForError);
+  };
 
   return (
     <div
@@ -340,8 +360,11 @@ export default function ListItem({
             item={item}
             itemHandlers={itemHandlers}
             members={members}
+            sectionId={sectionId}
             set={set}
             tags={tags}
+            totalSections={totalSections}
+            onUpdateSection={changeItemSection}
           />
         </span>
       </span>

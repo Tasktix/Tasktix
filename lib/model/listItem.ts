@@ -63,9 +63,11 @@ export default class ListItem {
   assignees: Assignee[];
   tags: Tag[];
   listId?: string;
+  sectionId: string;
 
   constructor(
     name: string,
+    sectionId: string,
     {
       id,
       description = '',
@@ -98,7 +100,6 @@ export default class ListItem {
       assignees?: Assignee[];
       tags?: Tag[];
       listId?: string;
-      sectionId?: string;
     }
   ) {
     if (!id) id = generateId();
@@ -119,5 +120,6 @@ export default class ListItem {
     this.assignees = assignees;
     this.tags = tags;
     this.listId = listId;
+    this.sectionId = sectionId;
   }
 }

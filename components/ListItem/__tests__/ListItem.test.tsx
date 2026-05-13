@@ -19,7 +19,7 @@
  */
 
 import '@testing-library/jest-dom';
-
+import userEvent from '@testing-library/user-event';
 import { render } from '@testing-library/react';
 import { HeroUIProvider } from '@heroui/react';
 
@@ -27,6 +27,7 @@ import ListItemModel from '@/lib/model/listItem';
 import User from '@/lib/model/user';
 import List from '@/lib/model/list';
 import MemberRole from '@/lib/model/memberRole';
+import api from '@/lib/api';
 import ListMember from '@/lib/model/listMember';
 import Assignee from '@/lib/model/assignee';
 
@@ -54,7 +55,7 @@ beforeEach(vi.resetAllMocks);
 afterAll(vi.unstubAllEnvs);
 
 it('Shows everything faded and shows the completion date instead of due date when the item is marked completed', () => {
-  const item = new ListItemModel('Test item', {
+  const item = new ListItemModel('Test item', 'section-id', {
     priority: 'High',
     status: 'Completed',
     expectedMs: 5000 * 60,
@@ -73,6 +74,7 @@ it('Shows everything faded and shows the completion date instead of due date whe
         members={[]}
         sectionId='section-id'
         tags={[]}
+        totalSections={new Map<string, string>()}
         onItemEvent={vi.fn()}
       />
     </HeroUIProvider>
@@ -89,7 +91,7 @@ it('Shows everything faded and shows the completion date instead of due date whe
 });
 
 it('Displays the associated list when one is provided', () => {
-  const item = new ListItemModel('Test item', {});
+  const item = new ListItemModel('Test item', 'testsectionid', {});
 
   const { getByText, getByRole } = render(
     <HeroUIProvider disableRipple>
@@ -106,6 +108,7 @@ it('Displays the associated list when one is provided', () => {
         members={[]}
         sectionId='section-id'
         tags={[]}
+        totalSections={new Map<string, string>()}
         onItemEvent={vi.fn()}
       />
     </HeroUIProvider>
@@ -121,6 +124,12 @@ it('Displays the associated list when one is provided', () => {
 });
 
 it('Displays all members assigned to the item', () => {
+  vi.mocked(api.patch).mockResolvedValue({
+    code: 200,
+    message: 'Success',
+    content: undefined
+  });
+
   const members = [
     new User(
       'user1Id',
@@ -141,7 +150,7 @@ it('Displays all members assigned to the item', () => {
       { color: 'Blue' }
     )
   ];
-  const item = new ListItemModel('Test item', {
+  const item = new ListItemModel('Test item', 'section-id', {
     assignees: [new Assignee(members[0], ''), new Assignee(members[1], '')]
   });
 
@@ -155,6 +164,7 @@ it('Displays all members assigned to the item', () => {
         members={members.map(m => new ListMember(m, MOCK_ROLE_CAN_VIEW))}
         sectionId='section-id'
         tags={[]}
+        totalSections={new Map<string, string>()}
         onItemEvent={vi.fn()}
       />
     </HeroUIProvider>
@@ -165,4 +175,45 @@ it('Displays all members assigned to the item', () => {
 
   expect(getByText('UT')).toBeVisible();
   expect(getByText('UT').parentElement).toHaveClass('bg-blue-500');
+});
+
+it('Calls API when the items section changes', async () => {
+  const item = new ListItemModel('Test item', 'sectionid1', {
+    id: 'itemid'
+  });
+
+  const sections = new Map<string, string>();
+
+  sections.set('sectionid1', 'section1');
+  sections.set('sectionid2', 'section2');
+
+  const { getByLabelText } = render(
+    <HeroUIProvider disableRipple>
+      <ListItem
+        addNewTag={vi.fn()}
+        hasDueDates={false}
+        hasTimeTracking={false}
+        item={item}
+        members={[]}
+        sectionId='sectionid1'
+        tags={[]}
+        totalSections={sections}
+        onItemEvent={vi.fn()}
+      />
+    </HeroUIProvider>
+  );
+  const user = userEvent.setup();
+
+  await user.click(getByLabelText('More item info'));
+  expect(getByLabelText('item-section-select')).toHaveTextContent('section1');
+
+  await user.click(getByLabelText('item-section-select'));
+  expect(getByLabelText('section1-select-item')).toHaveTextContent('section1');
+  expect(getByLabelText('section2-select-item')).toHaveTextContent('section2');
+
+  await user.click(getByLabelText('section2-select-item'));
+  expect(api.patch).toHaveBeenCalledTimes(1);
+  expect(api.patch).toHaveBeenCalledWith(`/item/${item.id}`, {
+    sectionId: 'sectionid2'
+  });
 });

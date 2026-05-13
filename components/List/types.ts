@@ -99,6 +99,12 @@ export type ItemAction =
       itemId: string;
       tagId: string;
     }
+  | {
+      type: 'ChangeItemSection';
+      pastSectionId: string;
+      targetSectionId: string;
+      targetItem: ListItem;
+    }
   | { type: 'UnlinkTagFromItem'; itemId: string; tagId: string }
   | { type: 'DeleteItem'; sectionId: string; id: string };
 

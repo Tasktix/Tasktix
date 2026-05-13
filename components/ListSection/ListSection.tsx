@@ -61,6 +61,7 @@ import sectionHandlerFactory from './handlerFactory';
  * @param hasTimeTracking Whether time tracking is enabled in the list's settings
  * @param hasDueDates Whether due dates are enabled in the list's settings
  * @param isAutoOrdered Whether auto-ordering is enabled in the list's settings
+ * @param totalSections A total list of sections in the larger list
  * @param section All data for the section to render
  * @param onSectionChange Callback to propagate state changes for the list section
  * @param onItemChange Callback to propagate state changes for an item in the list section
@@ -75,6 +76,7 @@ export default function ListSection({
   hasTimeTracking,
   hasDueDates,
   isAutoOrdered,
+  totalSections,
   section,
   items,
   onSectionChange,
@@ -84,6 +86,7 @@ export default function ListSection({
   listId: string;
   filters: Filters;
   members: ListMember[];
+  totalSections: Map<string, string>;
   tags: Tag[];
   hasTimeTracking: List['hasTimeTracking'];
   hasDueDates: List['hasDueDates'];
@@ -171,6 +174,7 @@ export default function ListSection({
               members={members}
               sectionId={section.id}
               tags={tags}
+              totalSections={totalSections}
               onItemEvent={onItemChange}
               onItemReorder={sectionHandlers.reorderItem}
             />
