@@ -91,7 +91,7 @@ it('Shows everything faded and shows the completion date instead of due date whe
 });
 
 it('Displays the associated list when one is provided', () => {
-  const item = new ListItemModel('Test item', {});
+  const item = new ListItemModel('Test item', 'testsectionid', {});
 
   const { getByText, getByRole } = render(
     <HeroUIProvider disableRipple>
@@ -132,6 +132,12 @@ it('Displays the associated list when one is provided', () => {
 });
 
 it('Displays all members assigned to the item', () => {
+  vi.mocked(api.patch).mockResolvedValue({
+    code: 200,
+    message: 'Success',
+    content: undefined
+  });
+
   const members = [
     new User(
       'user1Id',
