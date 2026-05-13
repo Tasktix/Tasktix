@@ -394,7 +394,9 @@ export async function querySectionInList(
   });
 
   return Boolean(result);
- * Revokes a list member's access and unassigns them from all items in the list
+}
+
+/* Revokes a list member's access and unassigns them from all items in the list
  *
  * @param listId The list to remove a member from
  * @param userId The user to revoke access for
