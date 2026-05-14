@@ -16,11 +16,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import listReducer from '../listReducer';
-import { FullState } from '../types';
+import { listReducer } from '../stateToState';
+import { ListState } from '../types';
 
 test('Throws an error if an ItemAction is requested for a nonexistent list item', () => {
-  const list: FullState = {
+  const list: ListState = {
     id: 'list-id',
     name: 'List name',
     color: 'Amber',

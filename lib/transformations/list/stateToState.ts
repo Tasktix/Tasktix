@@ -19,7 +19,7 @@
 import {
   ItemAction,
   ListAction,
-  FullState,
+  ListState,
   MemberAction,
   SectionAction,
   TagAction
@@ -37,10 +37,10 @@ import {
  * individual case is simple and there have to be this many cases for the `switch`
  * statement
  */
-export default function listReducer( // skipcq: JS-0045, JS-R1005
-  state: FullState,
+export function listReducer( // skipcq: JS-0045, JS-R1005
+  state: ListState,
   action: ListAction | MemberAction | TagAction | SectionAction | ItemAction
-): FullState {
+): ListState {
   const newState = structuredClone(state);
 
   switch (action.type) {
@@ -253,7 +253,7 @@ export default function listReducer( // skipcq: JS-0045, JS-R1005
  *
  * @returns The item that was looked for
  */
-function getItem(state: FullState, itemId: string) {
+export function getItem(state: ListState, itemId: string) {
   const item = state.items.get(itemId);
 
   if (!item) throw new Error(`Unable to find item with ID ${itemId}`);

@@ -40,8 +40,8 @@ import Tag from '@/lib/model/tag';
 import List from '@/lib/model/list';
 import ListSectionModel from '@/lib/model/listSection';
 import ListItem from '@/lib/model/listItem';
+import { ItemAction, SectionAction } from '@/lib/transformations/list/types';
 
-import { ItemAction, SectionAction } from '../List';
 import { Filters } from '../SearchBar/types';
 import ConfirmedTextInput from '../ConfirmedTextInput';
 import ConfirmModal from '../ConfirmModal';

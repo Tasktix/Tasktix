@@ -76,24 +76,35 @@ export async function PATCH(
   if (!result) return ServerError.Internal('Could not update list');
 
   if (requestBody.name)
-    broadcastEvent(list.id, { type: 'SetListName', name: list.name });
+    broadcastEvent(list.id, {
+      type: 'SetListName',
+      id: list.id,
+      name: list.name
+    });
   if (requestBody.hasTimeTracking !== undefined)
     broadcastEvent(list.id, {
       type: 'SetHasTimeTracking',
+      id: list.id,
       hasTimeTracking: list.hasTimeTracking
     });
   if (requestBody.hasDueDates !== undefined)
     broadcastEvent(list.id, {
       type: 'SetHasDueDates',
+      id: list.id,
       hasDueDates: list.hasDueDates
     });
   if (requestBody.isAutoOrdered !== undefined)
     broadcastEvent(list.id, {
       type: 'SetIsAutoOrdered',
+      id: list.id,
       isAutoOrdered: list.isAutoOrdered
     });
   if (requestBody.color)
-    broadcastEvent(list.id, { type: 'SetListColor', color: list.color });
+    broadcastEvent(list.id, {
+      type: 'SetListColor',
+      id: list.id,
+      color: list.color
+    });
 
   return Success.OK('List updated');
 }
