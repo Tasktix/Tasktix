@@ -41,7 +41,7 @@ import {
   stateToMembers,
   stateToItems
 } from '@/lib/transformations/list/fromState';
-import listReducer from '@/lib/transformations/list/stateToState';
+import { listReducer } from '@/lib/transformations/list/stateToState';
 
 import { getFilterOptions } from './filters';
 import { listHandlerFactory } from './handlerFactory';

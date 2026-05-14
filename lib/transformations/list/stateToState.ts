@@ -37,7 +37,7 @@ import {
  * individual case is simple and there have to be this many cases for the `switch`
  * statement
  */
-export default function listReducer( // skipcq: JS-0045, JS-R1005
+export function listReducer( // skipcq: JS-0045, JS-R1005
   state: ListState,
   action: ListAction | MemberAction | TagAction | SectionAction | ItemAction
 ): ListState {

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import listReducer from '../stateToState';
+import { listReducer } from '../stateToState';
 import { ListState } from '../types';
 
 test('Throws an error if an ItemAction is requested for a nonexistent list item', () => {
