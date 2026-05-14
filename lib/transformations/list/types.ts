@@ -93,7 +93,8 @@ export type MemberAction =
       type: 'UpdateMemberPermissions';
       id: string;
       role: string;
-    };
+    }
+  | { type: 'DeleteMember'; id: string };
 
 export type TagAction =
   | { type: 'UpdateTagColor'; id: string; color: NamedColor }
