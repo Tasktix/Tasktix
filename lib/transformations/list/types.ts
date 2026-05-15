@@ -83,9 +83,7 @@ export type ListAction =
       isAutoOrdered: ListState['isAutoOrdered'];
     }
   | { type: 'SetListColor'; id: string; color: ListState['color'] }
-  | { type: 'SetListName'; id: string; name: ListState['name'] }
-  | { type: 'AddTag'; id: string; tag: Tag }
-  | { type: 'AddSection'; id: string; section: ListSection };
+  | { type: 'SetListName'; id: string; name: ListState['name'] };
 
 export type MemberAction =
   | { type: 'AddMember'; listId: string; member: ListMemberState }
@@ -97,6 +95,7 @@ export type MemberAction =
   | { type: 'DeleteMember'; id: string };
 
 export type TagAction =
+  | { type: 'AddTag'; id: string; tag: Tag }
   | { type: 'UpdateTagColor'; id: string; color: NamedColor }
   | { type: 'UpdateTagName'; id: string; name: string }
   | { type: 'DeleteTag'; id: string };
@@ -106,6 +105,7 @@ export type TagAction =
  * list reducer.
  */
 export type SectionAction =
+  | { type: 'AddSection'; id: string; section: ListSection }
   | { type: 'AddItemToSection'; id: string; item: ListItem }
   | {
       type: 'ReorderItem';
@@ -113,6 +113,7 @@ export type SectionAction =
       oldIndex: number;
       newIndex: number;
     }
+  | { type: 'DeleteItem'; sectionId: string; id: string }
   | { type: 'DeleteSection'; id: string };
 
 /**
@@ -147,5 +148,4 @@ export type ItemAction =
       itemId: string;
       tagId: string;
     }
-  | { type: 'UnlinkTagFromItem'; itemId: string; tagId: string }
-  | { type: 'DeleteItem'; sectionId: string; id: string };
+  | { type: 'UnlinkTagFromItem'; itemId: string; tagId: string };
