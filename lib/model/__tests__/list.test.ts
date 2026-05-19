@@ -56,7 +56,7 @@ describe('List constructor', () => {
       false,
       false,
       false,
-      'provided-id'
+      { id: 'provided-id' }
     );
 
     expect(list.id).toBe('provided-id');
@@ -104,7 +104,7 @@ describe('List constructor', () => {
       true,
       false,
       true,
-      'provided-id'
+      { id: 'provided-id' }
     );
 
     expect(list.name).toBe('testListItem');

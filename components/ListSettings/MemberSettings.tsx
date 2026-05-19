@@ -22,10 +22,12 @@ import {
   Select,
   Selection,
   SelectItem,
+  useDisclosure,
   User
 } from '@heroui/react';
-import { SendPlus } from 'react-bootstrap-icons';
+import { PersonPlusFill, PersonXFill } from 'react-bootstrap-icons';
 import { FormEvent, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 import { getBackgroundColor } from '@/lib/color';
 import ListMember from '@/lib/model/listMember';
@@ -33,8 +35,11 @@ import MemberRole from '@/lib/model/memberRole';
 import api from '@/lib/api';
 import { sortRolesByPermissions } from '@/lib/sort';
 import { addToastForError } from '@/lib/error';
+import UserModel from '@/lib/model/user';
 
-import { FullState, MemberAction } from '../List/types';
+import ConfirmModal from '../ConfirmModal';
+import { FullState, ListMemberState, MemberAction } from '../List/types';
+import { useAuth } from '../AuthProvider';
 
 /**
  * Displays all list members and their permissions. Allows adding new members and updating
@@ -55,6 +60,32 @@ export default function MemberSettings({
   roles: Map<string, MemberRole>;
   onMemberEvent: (event: MemberAction) => unknown;
 }>) {
+  return (
+    <span className='flex flex-col gap-4 shrink overflow-y-auto'>
+      <NewMember listId={listId} roles={roles} onMemberEvent={onMemberEvent} />
+
+      {members.values().map(member => (
+        <Member
+          key={member.user.id}
+          listId={listId}
+          member={member}
+          roles={roles}
+          onMemberEvent={onMemberEvent}
+        />
+      ))}
+    </span>
+  );
+}
+
+function NewMember({
+  roles,
+  listId,
+  onMemberEvent
+}: Readonly<{
+  roles: Map<string, MemberRole>;
+  listId: string;
+  onMemberEvent: (event: MemberAction) => unknown;
+}>) {
   const [newMemberEmail, setNewMemberEmail] = useState('');
   const [newRole, setNewRole] = useState(roles.keys().next().value as string);
 
@@ -64,7 +95,8 @@ export default function MemberSettings({
     // strings
     const trueRoleId = (roleId as Set<string>).keys().next().value;
 
-    if (!trueRoleId) return; // User tried to clear selection
+    // Purposeless to clear selection, so prevent to fix type issue
+    if (!trueRoleId) return;
 
     setNewRole(trueRoleId);
   }
@@ -93,7 +125,57 @@ export default function MemberSettings({
       .catch(addToastForError);
   }
 
-  function handleUpdatePermissions(userId: string, roleId: Selection) {
+  return (
+    <form className='flex gap-2' onSubmit={handleAddMember}>
+      <Input
+        aria-label='New member email'
+        placeholder='Email...'
+        value={newMemberEmail}
+        onValueChange={setNewMemberEmail}
+      />
+      <Select
+        aria-label='New member role'
+        selectedKeys={[newRole]}
+        variant='underlined'
+        onSelectionChange={handleUpdateNewRole}
+      >
+        {Array.from(roles.values())
+          .sort(sortRolesByPermissions)
+          .map(role => (
+            <SelectItem key={role.id} description={role.description}>
+              {role.name}
+            </SelectItem>
+          ))}
+      </Select>
+      <Button
+        className='shrink-0'
+        color='primary'
+        type='submit'
+        variant='ghost'
+      >
+        <PersonPlusFill />
+        Add Member
+      </Button>
+    </form>
+  );
+}
+
+function Member({
+  listId,
+  member,
+  roles,
+  onMemberEvent
+}: Readonly<{
+  listId: string;
+  member: ListMemberState;
+  roles: Map<string, MemberRole>;
+  onMemberEvent: (event: MemberAction) => unknown;
+}>) {
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const { loggedInUser } = useAuth() as { loggedInUser: UserModel };
+  const router = useRouter();
+
+  function handleUpdatePermissions(roleId: Selection) {
     // roleId is always `Set<string>`: can't be `"all"` because the `<Select>` is
     // single-select; can't be `Set<number>` because all keys are role IDs, which are
     // strings
@@ -102,7 +184,7 @@ export default function MemberSettings({
     if (!trueRoleId) return; // User tried to clear selection
 
     api
-      .patch(`/list/${listId}/member/${userId}`, { roleId: trueRoleId })
+      .patch(`/list/${listId}/member/${member.user.id}`, { roleId: trueRoleId })
       .then(() => {
         // `trueRoleId` guaranteed to be a key in `roles` because the dropdown options, of
         // which `trueRoleId` is one, is generated based on the `roles`
@@ -110,27 +192,44 @@ export default function MemberSettings({
 
         onMemberEvent({
           type: 'UpdateMemberPermissions',
-          id: userId,
+          id: member.user.id,
           role: role.id
         });
       })
       .catch(addToastForError);
   }
 
+  function handleRemoveMember() {
+    api
+      .delete(`/list/${listId}/member/${member.user.id}`)
+      .then(() => {
+        if (member.user.id === loggedInUser.id) {
+          router.replace('/list');
+        } else {
+          onMemberEvent({ type: 'DeleteMember', id: member.user.id });
+          onOpenChange(); // Closes the confirmation modal
+        }
+      })
+      .catch(addToastForError);
+  }
+
   return (
-    <span className='flex flex-col gap-4 shrink overflow-y-auto'>
-      <form className='flex gap-2' onSubmit={handleAddMember}>
-        <Input
-          aria-label='New member email'
-          placeholder='Email...'
-          value={newMemberEmail}
-          onValueChange={setNewMemberEmail}
+    <>
+      <div key={member.user.id} className='flex gap-4'>
+        <User
+          avatarProps={{
+            classNames: {
+              base: getBackgroundColor(member.user.color)
+            },
+            size: 'sm'
+          }}
+          name={member.user.username ?? member.user.name}
         />
         <Select
-          aria-label='New member role'
-          selectedKeys={[newRole]}
+          aria-label={`${member.user.username ?? member.user.name} Role`}
+          selectedKeys={[member.role]}
           variant='underlined'
-          onSelectionChange={handleUpdateNewRole}
+          onSelectionChange={handleUpdatePermissions}
         >
           {roles
             .values()
@@ -142,51 +241,19 @@ export default function MemberSettings({
               </SelectItem>
             ))}
         </Select>
-        <Button
-          className='shrink-0'
-          color='primary'
-          type='submit'
-          variant='ghost'
-        >
-          <SendPlus />
-          Send Invite
+        <Button isIconOnly color='danger' variant='ghost' onPress={onOpen}>
+          <PersonXFill
+            aria-label={`Remove ${member.user.username ?? member.user.name}`}
+          />
         </Button>
-      </form>
-      {members
-        .values()
-        .map(member => (
-          <div key={member.user.id} className='flex gap-4'>
-            <User
-              avatarProps={{
-                classNames: {
-                  base: getBackgroundColor(member.user.color)
-                },
-                size: 'sm'
-              }}
-              name={member.user.username ?? member.user.name}
-            />
-            <Select
-              aria-label={`${member.user.username ?? member.user.name} Role`}
-              selectedKeys={[member.role]}
-              variant='underlined'
-              onSelectionChange={handleUpdatePermissions.bind(
-                null,
-                member.user.id
-              )}
-            >
-              {roles
-                .values()
-                .toArray()
-                .sort(sortRolesByPermissions)
-                .map(role => (
-                  <SelectItem key={role.id} description={role.description}>
-                    {role.name}
-                  </SelectItem>
-                ))}
-            </Select>
-          </div>
-        ))
-        .toArray()}
-    </span>
+      </div>
+      <ConfirmModal
+        description='This action will unassign them from all tasks and revoke their access. This cannot be done if it would leave the list without an admin.'
+        isOpen={isOpen}
+        title={`Permanently remove ${member.user.name}?`}
+        onConfirm={handleRemoveMember}
+        onOpenChange={onOpenChange}
+      />
+    </>
   );
 }

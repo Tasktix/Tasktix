@@ -99,17 +99,9 @@ it('Displays the associated list when one is provided', () => {
         hasTimeTracking={false}
         item={{ ...item, assignees: [], tags: [] }}
         list={
-          new List(
-            'List Name',
-            'Cyan',
-            [],
-            [],
-            [],
-            false,
-            false,
-            false,
-            'list-id'
-          )
+          new List('List Name', 'Cyan', [], [], [], false, false, false, {
+            id: 'list-id'
+          })
         }
         members={[]}
         sectionId='section-id'
