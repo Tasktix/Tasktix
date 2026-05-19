@@ -48,7 +48,7 @@ export default function FilterGroup({
   const reference = useRef(1);
 
   function shallowCloneFilter() {
-    return {operator: filters.operator, filters: [...filters.filters]};
+    return { operator: filters.operator, filters: [...filters.filters] };
   }
 
   // Function to add a row
@@ -75,20 +75,21 @@ export default function FilterGroup({
   }
 
   // Function for operator change
-  function handleOperatorChange(
-    selection: SharedSelection 
-  ) {
-      const newFilter = {...filters};
+  function handleOperatorChange(selection: SharedSelection) {
+    const newFilter = { ...filters };
 
-      const selectionKey =
-        selection === 'all' ? 'And' : selection.keys().next().value;
-      const selectionOperator = selectionKey === 'Or' ? 'Or' : 'And';
+    const selectionKey =
+      selection === 'all' ? 'And' : selection.keys().next().value;
+    const selectionOperator = selectionKey === 'Or' ? 'Or' : 'And';
 
-      newFilter.operator = selectionOperator;
-      onFilterChange(newFilter);
+    newFilter.operator = selectionOperator;
+    onFilterChange(newFilter);
   }
 
-  function handleChildChange<T extends FilterInput | FilterInputGroup>(filter: T, newFilter: T) {
+  function handleChildChange<T extends FilterInput | FilterInputGroup>(
+    filter: T,
+    newFilter: T
+  ) {
     const tempFilters = shallowCloneFilter();
 
     for (let i = 0; i < filters.filters.length; i++) {
@@ -105,6 +106,7 @@ export default function FilterGroup({
     if (filters.filters.length < 2) {
       // Last filter in this group was deleted; delete group too
       onDeleteGroup();
+
       return;
     }
 
@@ -140,12 +142,12 @@ export default function FilterGroup({
               isRequired
               className='w-24'
               classNames={{ mainWrapper: 'bg-content1' }}
-              color={filters.operator=='And' ? 'success' : 'secondary'}
+              color={filters.operator == 'And' ? 'success' : 'secondary'}
               disabledKeys={[filters.operator]}
               selectedKeys={[filters.operator]}
               size='sm'
-              onSelectionChange={handleOperatorChange}
               variant='flat'
+              onSelectionChange={handleOperatorChange}
             >
               <SelectItem key='And'>AND</SelectItem>
               <SelectItem key='Or'>OR</SelectItem>
@@ -160,8 +162,8 @@ export default function FilterGroup({
                   filterConfig={filterConfig}
                   filters={filter}
                   ids={[...ids, i]}
-                  onFilterChange={handleChildChange.bind(null, filter)}
                   onDeleteGroup={handleChildDelete.bind(null, filter)}
+                  onFilterChange={handleChildChange.bind(null, filter)}
                 />
               );
             } else {

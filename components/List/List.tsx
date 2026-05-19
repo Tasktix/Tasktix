@@ -18,7 +18,7 @@
 
 'use client';
 
-import { useEffect, useReducer, useState } from 'react';
+import { useEffect, useReducer } from 'react';
 import { MemberRole } from '@prisma/client';
 
 import AddListSection from '@/components/AddListSection';

@@ -19,7 +19,6 @@
 //Imports
 import {
   Button,
-  Input,
   Modal,
   ModalContent,
   ModalHeader,
@@ -65,8 +64,13 @@ export function FilterModal({
                 filterConfig={filterConfig}
                 filters={filterState}
                 ids={[]}
+                onDeleteGroup={() =>
+                  setFilterState({
+                    operator: filterState.operator,
+                    filters: []
+                  })
+                }
                 onFilterChange={setFilterState}
-                onDeleteGroup={() => setFilterState({ operator: filterState.operator, filters: [] })}
               />
             </ModalBody>
             <ModalFooter>
