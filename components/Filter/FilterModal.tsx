@@ -56,15 +56,8 @@ export function FilterModal({
         {onClose => (
           <>
             <ModalHeader>
-              <div className='flex flex-row w-full items-center'>
-                <h2 className='flex-1'>Advanced Filters</h2>
-                <Input
-                  className='w-sm grow-0'
-                  placeholder='Filter name...'
-                  type='text'
-                  variant='underlined'
-                />
-                <div className='flex-1' />
+              <div className='flex flex-row w-full'>
+                <h2>Advanced Filters</h2>
               </div>
             </ModalHeader>
             <ModalBody>
@@ -73,6 +66,7 @@ export function FilterModal({
                 filters={filterState}
                 ids={[]}
                 onFilterChange={setFilterState}
+                onDeleteGroup={() => setFilterState({ operator: filterState.operator, filters: [] })}
               />
             </ModalBody>
             <ModalFooter>

@@ -22,7 +22,7 @@ import {
   Plus as AddGroupIcon
 } from 'react-bootstrap-icons';
 import { useRef } from 'react';
-import { Button, Select, SelectItem } from '@heroui/react';
+import { Button, Select, SelectItem, SharedSelection } from '@heroui/react';
 
 import FilterRow from './FilterRow';
 import { FilterInputGroup, FilterInput, FilterConfig } from './types';
@@ -33,6 +33,7 @@ type FilterGroupProps = {
   filters: FilterInputGroup;
   filterConfig: FilterConfig[];
   onFilterChange: (f: FilterInputGroup) => unknown;
+  onDeleteGroup: () => unknown;
 };
 
 // Filter group implementation
@@ -40,14 +41,19 @@ export default function FilterGroup({
   ids,
   filters,
   filterConfig,
-  onFilterChange
+  onFilterChange,
+  onDeleteGroup
 }: FilterGroupProps) {
   // Set a reference
   const reference = useRef(1);
 
+  function shallowCloneFilter() {
+    return {operator: filters.operator, filters: [...filters.filters]};
+  }
+
   // Function to add a row
   function addRow() {
-    const newFilter = structuredClone(filters);
+    const newFilter = shallowCloneFilter();
 
     newFilter.filters.push({
       id: reference.current++,
@@ -58,7 +64,7 @@ export default function FilterGroup({
 
   // Function to add a group
   function addGroup() {
-    const newFilter = structuredClone(filters);
+    const newFilter = shallowCloneFilter();
 
     newFilter.filters.push({
       id: reference.current++,
@@ -68,16 +74,45 @@ export default function FilterGroup({
     onFilterChange(newFilter);
   }
 
-  // Function for child change
-  function handleChildChange(
-    filter: FilterInputGroup | FilterInput,
-    newFilter: FilterInputGroup | FilterInput
+  // Function for operator change
+  function handleOperatorChange(
+    selection: SharedSelection 
   ) {
-    const tempFilters = structuredClone(filters);
+      const newFilter = {...filters};
+
+      const selectionKey =
+        selection === 'all' ? 'And' : selection.keys().next().value;
+      const selectionOperator = selectionKey === 'Or' ? 'Or' : 'And';
+
+      newFilter.operator = selectionOperator;
+      onFilterChange(newFilter);
+  }
+
+  function handleChildChange<T extends FilterInput | FilterInputGroup>(filter: T, newFilter: T) {
+    const tempFilters = shallowCloneFilter();
 
     for (let i = 0; i < filters.filters.length; i++) {
       if (filters.filters[i] == filter) {
         tempFilters.filters[i] = newFilter;
+        break;
+      }
+    }
+    onFilterChange(tempFilters);
+  }
+
+  // Function for row deletion
+  function handleChildDelete(deleteFilter: FilterInputGroup | FilterInput) {
+    if (filters.filters.length < 2) {
+      // Last filter in this group was deleted; delete group too
+      onDeleteGroup();
+      return;
+    }
+
+    const tempFilters = shallowCloneFilter();
+
+    for (let i = 0; i < filters.filters.length; i++) {
+      if (filters.filters[i] == deleteFilter) {
+        tempFilters.filters.splice(i, 1);
         break;
       }
     }
@@ -105,15 +140,15 @@ export default function FilterGroup({
               isRequired
               className='w-24'
               classNames={{ mainWrapper: 'bg-content1' }}
-              color='success'
-              //disabledKeys={[filters.operator]}
-              //selectedKeys={[filters.operator]}
+              color={filters.operator=='And' ? 'success' : 'secondary'}
+              disabledKeys={[filters.operator]}
+              selectedKeys={[filters.operator]}
               size='sm'
-              //onSelectionChange={() => {}}
+              onSelectionChange={handleOperatorChange}
               variant='flat'
             >
-              <SelectItem key='AND'>AND</SelectItem>
-              <SelectItem key='OR'>OR</SelectItem>
+              <SelectItem key='And'>AND</SelectItem>
+              <SelectItem key='Or'>OR</SelectItem>
             </Select>
           )}
           {filters.filters.map((filter, i) => {
@@ -126,6 +161,7 @@ export default function FilterGroup({
                   filters={filter}
                   ids={[...ids, i]}
                   onFilterChange={handleChildChange.bind(null, filter)}
+                  onDeleteGroup={handleChildDelete.bind(null, filter)}
                 />
               );
             } else {
@@ -136,7 +172,7 @@ export default function FilterGroup({
                   filterConfigs={filterConfig}
                   filterInput={filter}
                   onFilterChange={handleChildChange.bind(null, filter)}
-                  onFilterDelete={() => alert('Deleting row')}
+                  onFilterDelete={handleChildDelete.bind(null, filter)}
                 />
               );
             }
