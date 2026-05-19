@@ -61,7 +61,7 @@ export default function CreateListModal({
 }>) {
   const [listName, setListName] = useState('');
   const [selectedRepoId, setSelectedRepoId] = useState<number | undefined>();
-  const { oauthConfig } = useAuth();
+  const { authConfig } = useAuth();
   const dispatchEvent = useContext(ListContext);
   const router = useRouter();
 
@@ -121,7 +121,7 @@ export default function CreateListModal({
                   variant='underlined'
                   onValueChange={setListName}
                 />
-                {oauthConfig.githubEnabled && (
+                {authConfig.githubEnabled && (
                   <GithubListConfig
                     selectedRepoId={selectedRepoId}
                     onRepoSelection={id => setSelectedRepoId(Number(id))}

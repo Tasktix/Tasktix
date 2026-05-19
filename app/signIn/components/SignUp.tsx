@@ -40,8 +40,6 @@ import {
   getPasswordMessage
 } from '../messages';
 
-import OAuth from './OAuth';
-
 export default function SignUp() {
   interface InputMessages {
     username: InputMessage;
@@ -49,7 +47,7 @@ export default function SignUp() {
     password: InputMessage;
   }
 
-  const { setLoggedInUser, oauthConfig } = useAuth();
+  const { setLoggedInUser } = useAuth();
   const defaultMessage: InputMessage = { message: '', color: 'default' };
 
   const [inputs, setInputs] = useState({
@@ -161,7 +159,6 @@ export default function SignUp() {
           Sign Up
         </Button>
       </div>
-      <OAuth oauthConfig={oauthConfig} setLoggedInUser={setLoggedInUser} />
     </form>
   );
 }
