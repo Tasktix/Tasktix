@@ -23,7 +23,7 @@ import { ErrorContext, SuccessContext } from 'better-auth/react';
 
 import { authClient } from '@/lib/auth-client';
 import User from '@/lib/model/user';
-import { OAuthConfig } from '@/lib/auth';
+import { AuthConfig } from '@/lib/auth';
 
 type supportedProvider = 'github' | 'custom';
 /**
@@ -49,7 +49,7 @@ type supportedProvider = 'github' | 'custom';
 export async function handleOAuth(
   provider: supportedProvider,
   setLoggedInUser: (user: User) => void,
-  oauthConfig: OAuthConfig
+  authConfig: AuthConfig
 ) {
   /**
    * Handles successful login via OAuth
@@ -70,14 +70,14 @@ export async function handleOAuth(
   };
 
   if (provider === 'custom') {
-    if (!oauthConfig.customEnabled)
+    if (!authConfig.customEnabled)
       throw new Error('Received custom auth attempt when no provider set');
 
     await authClient.signIn.oauth2(
       {
-        providerId: oauthConfig.customProviderId,
+        providerId: authConfig.customProviderId,
         callbackURL: '/list',
-        scopes: oauthConfig.customProviderScope
+        scopes: authConfig.customProviderScope
       },
       { onSuccess: handleSuccess, onError: handleError }
     );
