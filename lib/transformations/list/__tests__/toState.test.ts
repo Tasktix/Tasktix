@@ -92,7 +92,7 @@ const list = new List(
   false,
   true,
   false,
-  'list-1-id-1234'
+  { id: 'list-1-id-1234' }
 );
 
 test('generateMembersState maps members by user id with role id stored', () => {

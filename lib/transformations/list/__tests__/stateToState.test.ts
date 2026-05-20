@@ -35,7 +35,8 @@ test('Throws an error if an ItemAction is requested for a nonexistent list item'
     tags: new Map(),
     sectionItems: new Map(),
     itemAssignees: new Map(),
-    itemTags: new Map()
+    itemTags: new Map(),
+    repoId: null
   };
 
   expect(() =>
