@@ -23,7 +23,11 @@ import api from '@/lib/api';
 import { NamedColor } from '@/lib/model/color';
 import Tag from '@/lib/model/tag';
 import { addToastForError } from '@/lib/error';
-import { ListAction, SectionAction } from '@/lib/transformations/list/types';
+import {
+  ListAction,
+  SectionAction,
+  TagAction
+} from '@/lib/transformations/list/types';
 
 /**
  * Produces all functions for interacting with a specific list and its data. These
@@ -36,7 +40,7 @@ import { ListAction, SectionAction } from '@/lib/transformations/list/types';
  */
 export function listHandlerFactory(
   listId: string,
-  dispatchList: ActionDispatch<[action: ListAction | SectionAction]>
+  dispatchList: ActionDispatch<[action: ListAction | SectionAction | TagAction]>
 ) {
   /**
    * @param name The new list name
