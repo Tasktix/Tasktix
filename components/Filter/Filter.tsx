@@ -28,13 +28,13 @@ import {
   //AutocompleteItem,
   //AutocompleteSection,
   Button,
-  Input,
   useDisclosure
 } from '@heroui/react';
 
 import { FilterModal } from './FilterModal';
 import { FilterConfig, FilterGroup, FilterInputGroup } from './types';
 import { validateFilterInputGroup } from './validator';
+import FilterText from './FilterText';
 
 // Props for the filter component
 type FilterProps = {
@@ -69,12 +69,11 @@ export default function Filter({
   return (
     <>
       <span className='grow rounded-md w-100 overflow-hidden p-4 h-16 flex items-center justify-center gap-4 border-2 border-content3 bg-content1 shadow-lg shadow-content2'>
-        <Input
-          isClearable
-          placeholder='Filter...'
-          type='text'
-          variant='underlined'
-        />
+        {currentFilters.filters.length > 0 ? (
+          <FilterText filters={currentFilters} />
+        ) : (
+          <p className='text-foreground/60 grow'>Filter...</p>
+        )}
         <Button
           isIconOnly
           aria-label='Open filter modal'
