@@ -23,6 +23,7 @@ import {
 } from 'react-bootstrap-icons';
 //import { Key, ReactElement, useReducer, useState } from 'react';
 import {
+  addToast,
   //Autocomplete,
   //AutocompleteItem,
   //AutocompleteSection,
@@ -30,24 +31,39 @@ import {
   Input,
   useDisclosure
 } from '@heroui/react';
-import { useState } from 'react';
 
 import { FilterModal } from './FilterModal';
-import { FilterConfig, FilterInputGroup } from './types';
+import { FilterConfig, FilterGroup, FilterInputGroup } from './types';
+import { validateFilterInputGroup } from './validator';
 
 // Props for the filter component
 type FilterProps = {
   filterConfig: FilterConfig[];
+  currentFilters: FilterGroup;
+  onFilterSave: (f: FilterGroup) => unknown;
 };
 
 // Filter bar implementation
-export default function Filter({ filterConfig }: FilterProps) {
+export default function Filter({
+  filterConfig,
+  currentFilters,
+  onFilterSave
+}: FilterProps) {
   // States
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [filterState, setFilterState] = useState<FilterInputGroup>({
-    operator: 'And',
-    filters: []
-  });
+
+  function handleFilterSave(filters: FilterInputGroup) {
+    const err = validateFilterInputGroup(filters);
+
+    if (err === null) {
+      onFilterSave(filters as FilterGroup);
+      onOpenChange();
+
+      return;
+    }
+
+    addToast({ title: err.message, color: 'danger' });
+  }
 
   // DOM structure for filter bar component
   return (
@@ -79,9 +95,9 @@ export default function Filter({ filterConfig }: FilterProps) {
       {isOpen && (
         <FilterModal
           filterConfig={filterConfig}
-          filters={filterState}
+          filters={currentFilters}
           isOpen={isOpen}
-          onFilterSave={setFilterState}
+          onFilterSave={handleFilterSave}
           onOpenChange={onOpenChange}
         />
       )}

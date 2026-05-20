@@ -74,13 +74,7 @@ export function FilterModal({
               />
             </ModalBody>
             <ModalFooter>
-              <Button
-                color='primary'
-                onPress={() => {
-                  onClose();
-                  onFilterSave(filterState);
-                }}
-              >
+              <Button color='primary' onPress={() => onFilterSave(filterState)}>
                 Save
               </Button>
               <Button
