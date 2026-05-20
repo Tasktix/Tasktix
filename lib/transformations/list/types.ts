@@ -48,7 +48,7 @@ export type ListState = BaseListState & {
   itemTags: Map<string, string[]>;
 };
 
-export type ListGroupState = {
+export type ItemGroupState = {
   lists: Map<string, BaseListState>;
   members: Map<string, ListMemberState>;
   tags: Map<string, Tag>;
@@ -56,6 +56,8 @@ export type ListGroupState = {
   items: Map<string, ListItemState>;
 
   listSections: Map<string, string[]>;
+  listMembers: Map<string, string[]>;
+  listTags: Map<string, string[]>;
   sectionItems: Map<string, string[]>;
   itemAssignees: Map<string, [string, string][]>;
   itemTags: Map<string, string[]>;

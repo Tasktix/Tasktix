@@ -20,8 +20,40 @@ import Assignee from '@/lib/model/assignee';
 import ListItem from '@/lib/model/listItem';
 import ListMember from '@/lib/model/listMember';
 import MemberRole from '@/lib/model/memberRole';
+import Tag from '@/lib/model/tag';
 
-import { ListState } from './types';
+import {
+  ItemGroupState,
+  ListItemState,
+  ListMemberState,
+  ListState
+} from './types';
+
+export function listStateToItem(
+  itemAssignees: ListState['itemAssignees'],
+  itemTags: ListState['itemTags'],
+  allMembers: ListState['members'],
+  allTags: ListState['tags'],
+  item: ListItemState
+): ListItem {
+  return {
+    ...item,
+    assignees:
+      itemAssignees
+        .get(item.id)
+        ?.map(([assigneeId, role]) => {
+          const member = allMembers.get(assigneeId);
+
+          return member ? new Assignee(member.user, role) : undefined;
+        })
+        .filter(e => e !== undefined) ?? [],
+    tags:
+      itemTags
+        .get(item.id)
+        ?.map(tagId => allTags.get(tagId))
+        .filter(e => e !== undefined) ?? []
+  };
+}
 
 /**
  * Generates a list of full Item objects from the normalized state data tracked for lists.
@@ -36,7 +68,7 @@ import { ListState } from './types';
  * @param allMembers Core details for all members potentially assigned to an item
  * @param allTags Core details for all tags potentially assigned to an item
  */
-export function stateToItems(
+export function listStateToItems(
   items: string[] | undefined,
   itemAssignees: ListState['itemAssignees'],
   itemTags: ListState['itemTags'],
@@ -48,23 +80,9 @@ export function stateToItems(
     items
       ?.map(id => allItems.get(id))
       .filter(e => e !== undefined)
-      .map(item => ({
-        ...item,
-        assignees:
-          itemAssignees
-            .get(item.id)
-            ?.map(([assigneeId, role]) => {
-              const member = allMembers.get(assigneeId);
-
-              return member ? new Assignee(member.user, role) : undefined;
-            })
-            .filter(e => e !== undefined) ?? [],
-        tags:
-          itemTags
-            .get(item.id)
-            ?.map(tagId => allTags.get(tagId))
-            .filter(e => e !== undefined) ?? []
-      })) ?? []
+      .map(
+        listStateToItem.bind(null, itemAssignees, itemTags, allMembers, allTags)
+      ) ?? []
   );
 }
 
@@ -76,7 +94,7 @@ export function stateToItems(
  * @param members The normalized members to convert to ListMember objects
  * @param roles The roles available that `members` may be given
  */
-export function stateToMembers(
+export function listStateToMembers(
   members: ListState['members'],
   roles: Map<string, MemberRole>
 ): ListMember[] {

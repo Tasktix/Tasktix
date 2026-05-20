@@ -25,7 +25,7 @@ import ListSection from '@/lib/model/listSection';
 import List from '@/lib/model/list';
 import Assignee from '@/lib/model/assignee';
 
-import { stateToItems, stateToMembers } from '../fromState';
+import { listStateToItems, listStateToMembers } from '../fromState';
 import {
   generateItemsState,
   generateMembersState,
@@ -102,7 +102,7 @@ describe('stateToMembers', () => {
     ]);
     const roles = new Map<string, MemberRole>([[role1.id, role1]]);
 
-    const result = stateToMembers(membersState, roles);
+    const result = listStateToMembers(membersState, roles);
 
     expect(result).toHaveLength(1);
     expect(result[0]).toEqual({ user: user1, role: role1 });
@@ -116,7 +116,7 @@ describe('stateToItems', () => {
     const members = generateMembersState(list);
     const tags = generateTagsState(list);
 
-    const result = stateToItems(
+    const result = listStateToItems(
       undefined,
       new Map(),
       new Map(),
@@ -150,7 +150,7 @@ describe('stateToItems', () => {
       [item1.id, [tag1.id, missingTagId]]
     ]);
 
-    const result = stateToItems(
+    const result = listStateToItems(
       [item1.id, item2.id, 'missing-item-id'],
       itemAssignees,
       itemTags,

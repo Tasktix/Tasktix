@@ -38,8 +38,8 @@ import {
   generateTagsState
 } from '@/lib/transformations/list/toState';
 import {
-  stateToMembers,
-  stateToItems
+  listStateToMembers,
+  listStateToItems
 } from '@/lib/transformations/list/fromState';
 import { listReducer } from '@/lib/transformations/list/stateToState';
 
@@ -107,7 +107,7 @@ export default function List({
           hasDueDates={list.hasDueDates}
           hasTimeTracking={list.hasTimeTracking}
           isAutoOrdered={list.isAutoOrdered}
-          items={stateToItems(
+          items={listStateToItems(
             list.sectionItems.get(section.id),
             list.itemAssignees,
             list.itemTags,
@@ -116,7 +116,7 @@ export default function List({
             list.tags
           )}
           listId={list.id}
-          members={stateToMembers(list.members, builtRoles)}
+          members={listStateToMembers(list.members, builtRoles)}
           section={section}
           tags={list.tags.values().toArray()}
           onItemChange={dispatchList}
