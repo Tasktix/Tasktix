@@ -40,7 +40,9 @@ export interface ListItemParams {
   hasTimeTracking: ListState['hasTimeTracking'];
   hasDueDates: ListState['hasDueDates'];
   reorderControls?: DragControls;
-  onItemEvent: ActionDispatch<[action: ItemAction]>;
+  onItemEvent: ActionDispatch<
+    [action: ItemAction | { type: 'DeleteItem'; sectionId: string; id: string }]
+  >;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
 }
 

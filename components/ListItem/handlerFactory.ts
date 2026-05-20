@@ -45,7 +45,9 @@ export function itemHandlerFactory(
     setElapsedLive: Dispatch<SetStateAction<number>>;
     stopRunning: () => unknown;
   },
-  dispatchItemChange: ActionDispatch<[action: ItemAction]>
+  dispatchItemChange: ActionDispatch<
+    [action: ItemAction | { type: 'DeleteItem'; sectionId: string; id: string }]
+  >
 ) {
   /**
    * @param name The item's new name

@@ -75,7 +75,9 @@ export default function SectionBody({
   hasDueDates: boolean;
   isAutoOrdered: boolean;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
-  onItemEvent: ActionDispatch<[action: ItemAction]>;
+  onItemEvent: ActionDispatch<
+    [action: ItemAction | { type: 'DeleteItem'; sectionId: string; id: string }]
+  >;
   onItemReorder: (item: ListItemState, newIndex: number) => unknown;
 }) {
   /**

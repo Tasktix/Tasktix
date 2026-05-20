@@ -91,7 +91,9 @@ export default function ListSection({
   section: Omit<ListSectionModel, 'items'>;
   items: ListItem[];
   onSectionChange: ActionDispatch<[action: SectionAction]>;
-  onItemChange: ActionDispatch<[action: ItemAction]>;
+  onItemChange: ActionDispatch<
+    [action: ItemAction | { type: 'DeleteItem'; sectionId: string; id: string }]
+  >;
   onTagCreate: (name: string, color: NamedColor) => Promise<string>;
 }) {
   const [isCollapsed, setIsCollapsed] = useState(
