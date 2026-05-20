@@ -20,14 +20,8 @@ import Assignee from '@/lib/model/assignee';
 import ListItem from '@/lib/model/listItem';
 import ListMember from '@/lib/model/listMember';
 import MemberRole from '@/lib/model/memberRole';
-import Tag from '@/lib/model/tag';
 
-import {
-  ItemGroupState,
-  ListItemState,
-  ListMemberState,
-  ListState
-} from './types';
+import { ListItemState, ListState } from './types';
 
 export function listStateToItem(
   itemAssignees: ListState['itemAssignees'],
