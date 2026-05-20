@@ -48,3 +48,17 @@ export function parseBoolean(input: string | undefined): boolean {
     input?.toLowerCase() !== 'no'
   );
 }
+
+/**
+ * Merges many Maps together into a single Map. If any keys overlap, the corresponding
+ * value in the resulting Map will be taken from the **last Map** with that key.
+ *
+ * @param maps The Maps to merge into a single Map
+ */
+export function mergeMaps<K, V>(maps: Iterable<Map<K, V>>): Map<K, V> {
+  const map = new Map<K, V>();
+
+  for (const m of maps) for (const [k, v] of m) map.set(k, v);
+
+  return map;
+}

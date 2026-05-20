@@ -18,7 +18,7 @@
 
 import ListModel from '@/lib/model/list';
 
-import { ListState } from './types';
+import { ItemGroupState, ListState } from './types';
 
 /**
  * Generates the normalized member state (map of member user IDs to member objects) from
@@ -95,7 +95,8 @@ export function generateItemsState(list: ListModel): ListState['items'] {
             ? new Date(item.dateCompleted)
             : null,
           tags: undefined,
-          assignees: undefined
+          assignees: undefined,
+          listId: list.id
         }
       ])
     )
@@ -132,5 +133,46 @@ export function generateItemTagsState(list: ListModel): ListState['itemTags'] {
     list.sections.flatMap(section =>
       section.items.map(item => [item.id, item.tags.map(tag => tag.id)])
     )
+  );
+}
+
+export function generateListSectionsState(
+  lists: ListModel[]
+): ItemGroupState['listSections'] {
+  return new Map(
+    lists.map(list => [list.id, list.sections.map(section => section.id)])
+  );
+}
+
+export function generateListMembersState(
+  lists: ListModel[]
+): ItemGroupState['listMembers'] {
+  return new Map(
+    lists.map(list => [list.id, list.members.map(member => member.user.id)])
+  );
+}
+
+export function generateListTagsState(
+  lists: ListModel[]
+): ItemGroupState['listTags'] {
+  return new Map(lists.map(list => [list.id, list.tags.map(tag => tag.id)]));
+}
+
+export function generateListsState(
+  lists: ListModel[]
+): ItemGroupState['lists'] {
+  return new Map(
+    lists.map(list => [
+      list.id,
+      {
+        id: list.id,
+        name: list.name,
+        color: list.color,
+        hasTimeTracking: list.hasTimeTracking,
+        hasDueDates: list.hasDueDates,
+        isAutoOrdered: list.isAutoOrdered,
+        repoId: list.repoId
+      }
+    ])
   );
 }

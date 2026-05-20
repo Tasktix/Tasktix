@@ -16,25 +16,4 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import ListItemGroup from '@/components/ListItemGroup';
-import { getRichListsByUser } from '@/lib/database/list';
-import { getAvailableRoles } from '@/lib/database/user';
-import { getUser } from '@/lib/session';
-
-export default async function Page() {
-  // No logic to test - skipcq: TCV-001
-  const user = await getUser();
-
-  const lists = await getRichListsByUser(user ? user.id : '');
-  const roles = await getAvailableRoles();
-
-  return (
-    <main className='p-8 w-full flex grow flex-col gap-8 overflow-y-scroll'>
-      <ListItemGroup
-        alternateText="Great work, you're all caught up!"
-        startingLists={JSON.stringify(lists)}
-        startingRoles={JSON.stringify(roles)}
-      />
-    </main>
-  );
-}
+export { default } from './ListItemGroup';

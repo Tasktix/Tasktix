@@ -131,6 +131,28 @@ export async function getListsByUser(
   return result;
 }
 
+export async function getRichListsByUser(id: string): Promise<List[]> {
+  const result = await prisma.list.findMany({
+    where: { members: { some: { userId: id } } },
+    include: {
+      members: { include: { user: true, role: true } },
+      sections: {
+        include: {
+          items: {
+            include: {
+              assignees: { include: { user: true } },
+              tags: true
+            }
+          }
+        }
+      },
+      tags: true
+    }
+  });
+
+  return result;
+}
+
 export async function getListMembersByUser(
   userId: string
 ): Promise<{ [id: string]: Omit<ListMember, 'user'>[] }> {

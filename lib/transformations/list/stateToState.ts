@@ -22,6 +22,7 @@ import {
   BaseListState,
   ItemAction,
   ListAction,
+  ItemGroupState,
   ListItemState,
   ListMemberState,
   ListSectionState,
@@ -63,6 +64,58 @@ export function listReducer( // skipcq: JS-0045, JS-R1005
     case 'AddTag':
     case 'UpdateTagName':
     case 'UpdateTagColor':
+    case 'DeleteTag':
+      return tagReducer(state, action);
+
+    case 'AddSection':
+    case 'AddItemToSection':
+    case 'ReorderItem':
+    case 'DeleteItem':
+    case 'DeleteSection':
+      return sectionReducer(state, action);
+
+    case 'SetItemName':
+    case 'SetItemDescription':
+    case 'SetItemDueDate':
+    case 'SetItemPriority':
+    case 'SetItemIncomplete':
+    case 'SetItemComplete':
+    case 'SetItemExpectedMs':
+    case 'StartItemTime':
+    case 'PauseItemTime':
+    case 'ResetItemTime':
+    case 'LinkTagToItem':
+    case 'UnlinkTagFromItem':
+      return itemReducer(state, action);
+  }
+}
+
+export function itemGroupReducer(
+  state: ItemGroupState,
+  action: ListAction | MemberAction | TagAction | SectionAction | ItemAction
+): ItemGroupState {
+  switch (action.type) {
+    case 'SetHasDueDates':
+    case 'SetHasTimeTracking':
+    case 'SetIsAutoOrdered':
+    case 'SetListColor':
+    case 'SetListName': {
+      const newState = { ...state };
+      const list = getList(state, action.id);
+
+      newState.lists.set(action.id, baseListReducer(list, action));
+
+      return newState;
+    }
+
+    case 'AddMember':
+    case 'UpdateMemberPermissions':
+    case 'DeleteMember':
+      return memberReducer(state, action);
+
+    case 'AddTag':
+    case 'UpdateTagColor':
+    case 'UpdateTagName':
     case 'DeleteTag':
       return tagReducer(state, action);
 
@@ -365,4 +418,20 @@ function getItem<T extends { items: Map<string, ListItemState> }>(
   if (!item) throw new Error(`Unable to find item with ID ${itemId}`);
 
   return item;
+}
+
+/**
+ * Helper function to find a list that's expected to exist, throwing an error if not found
+ *
+ * @param state The state to look for the list in
+ * @param listId The ID of the list to look for
+ *
+ * @returns The list that was looked for
+ */
+function getList(state: ItemGroupState, listId: string) {
+  const list = state.lists.get(listId);
+
+  if (!list) throw new Error(`Unable to find list with ID ${listId}`);
+
+  return list;
 }

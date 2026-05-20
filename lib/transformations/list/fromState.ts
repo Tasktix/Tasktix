@@ -20,8 +20,14 @@ import Assignee from '@/lib/model/assignee';
 import ListItem from '@/lib/model/listItem';
 import ListMember from '@/lib/model/listMember';
 import MemberRole from '@/lib/model/memberRole';
+import Tag from '@/lib/model/tag';
 
-import { ListItemState, ListState } from './types';
+import {
+  ItemGroupState,
+  ListItemState,
+  ListMemberState,
+  ListState
+} from './types';
 
 export function listStateToItem(
   itemAssignees: ListState['itemAssignees'],
@@ -101,4 +107,35 @@ export function listStateToMembers(
     })
     .filter(member => member !== undefined)
     .toArray();
+}
+
+export function itemGroupStateToTags(
+  listTags: ItemGroupState['listTags'],
+  tags: ItemGroupState['tags'],
+  listId: string
+): Tag[] {
+  return listTags
+    .get(listId)
+    ?.map(tid => tags.get(tid))
+    ?.filter(Boolean) as Tag[];
+}
+
+export function itemGroupStateToMembers(
+  listMembers: ItemGroupState['listMembers'],
+  members: ItemGroupState['members'],
+  roles: Map<string, MemberRole>,
+  listId: string
+) {
+  const relevantMembers = listMembers.get(listId);
+
+  if (relevantMembers === undefined) return [];
+
+  const memberList = relevantMembers
+    ?.map(uid => members.get(uid))
+    ?.filter(Boolean) as ListMemberState[];
+
+  return listStateToMembers(
+    new Map(memberList.map(m => [m.user.id, m])),
+    roles
+  );
 }
