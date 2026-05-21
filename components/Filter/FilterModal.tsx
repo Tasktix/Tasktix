@@ -84,11 +84,16 @@ export function FilterModal({
                 Save
               </Button>
               <Button
-                onPress={() => {
-                  onClose();
-                }}
+                color='danger'
+                variant='flat'
+                onPress={() =>
+                  setFilterState({
+                    operator: filterState.operator,
+                    filters: []
+                  })
+                }
               >
-                Cancel
+                Clear
               </Button>
             </ModalFooter>
           </>
