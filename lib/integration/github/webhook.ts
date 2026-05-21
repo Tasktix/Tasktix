@@ -37,15 +37,16 @@ const app = new App({
   }
 });
 
-async function handleNewIssue({ octokit, payload }) {
+async function handleNewIssue({ octokit, payload }: { octokit: any; payload: any }) {
   const issueNumber = payload.issue.number;
   const repoId = payload.repository.id;
 
   console.log(`Received a Issue Open event for #${issueNumber}:${repoId}`);
+  
 }
 
 app.webhooks.on('issues.opened', handleNewIssue);
 
 export const githubMiddleware = createWebMiddleware(app.webhooks, {
-  path: '/api/github/webhook'
+  path: '/api/webhook/github'
 });
