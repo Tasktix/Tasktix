@@ -18,11 +18,11 @@
 
 'use client';
 
-import { useEffect, useReducer } from 'react';
+import { useEffect, useReducer, useState } from 'react';
 import { MemberRole } from '@prisma/client';
 
 import AddListSection from '@/components/AddListSection';
-import Filter, { FilterConfig } from '@/components/Filter';
+import Filter, { FilterGroup } from '@/components/Filter';
 import ListSettings from '@/components/ListSettings';
 import ListModel from '@/lib/model/list';
 import Tag from '@/lib/model/tag';
@@ -34,6 +34,7 @@ import ListSection from '../ListSection/ListSection';
 import listReducer from './listReducer';
 import { listHandlerFactory } from './handlerFactory';
 import { ListState } from './types';
+import { getFilterConfig } from './filters';
 
 /**
  * This component provides the full list GUI: filters, settings, each section and its
@@ -86,6 +87,12 @@ export default function List({
     tagsAvailable: JSON.parse(startingTagsAvailable) as Tag[]
   });
 
+  const filterConfig = getFilterConfig(list, tagsAvailable);
+  const [filterState, setFilterState] = useState<FilterGroup>({
+    operator: 'And',
+    filters: []
+  });
+
   const listHandlers = listHandlerFactory(list.id, dispatchList);
 
   useEffect(() => subscribe([list.id], dispatchList), [list.id]);
@@ -93,7 +100,11 @@ export default function List({
   return (
     <>
       <span className='flex gap-4 items-center'>
-        <Filter filterConfig={filterConfig} />
+        <Filter
+          currentFilters={filterState}
+          filterConfig={filterConfig}
+          onFilterSave={setFilterState}
+        />
         <ListSettings
           addNewTag={listHandlers.addNewTag}
           dispatchList={dispatchList}
@@ -115,7 +126,7 @@ export default function List({
           key={section.id}
           dispatchItemChange={dispatchList}
           dispatchSectionChange={dispatchList}
-          filters={{}}
+          filters={filterState}
           hasDueDates={list.hasDueDates}
           hasTimeTracking={list.hasTimeTracking}
           isAutoOrdered={list.isAutoOrdered}
@@ -136,40 +147,3 @@ export default function List({
     </>
   );
 }
-
-const filterConfig: FilterConfig[] = [
-  { type: 'text', label: 'name' },
-  {
-    type: 'option',
-    label: 'priority',
-    options: [
-      { name: 'High', color: 'danger' },
-      { name: 'Medium', color: 'warning' },
-      { name: 'Low', color: 'success' }
-    ]
-  },
-  {
-    type: 'multi-option',
-    label: 'tag',
-    options: [
-      { name: 'Bug', color: 'Red' },
-      { name: 'Feature', color: 'Blue' }
-    ]
-  },
-  {
-    type: 'date',
-    label: 'due'
-  },
-  {
-    type: 'number',
-    label: 'assignee_count'
-  },
-  {
-    type: 'color',
-    label: 'tag_color'
-  },
-  {
-    type: 'time',
-    label: 'expected_time'
-  }
-];

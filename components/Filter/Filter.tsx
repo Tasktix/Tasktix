@@ -23,42 +23,57 @@ import {
 } from 'react-bootstrap-icons';
 //import { Key, ReactElement, useReducer, useState } from 'react';
 import {
+  addToast,
   //Autocomplete,
   //AutocompleteItem,
   //AutocompleteSection,
   Button,
-  Input,
   useDisclosure
 } from '@heroui/react';
-import { useState } from 'react';
 
 import { FilterModal } from './FilterModal';
-import { FilterConfig, FilterInputGroup } from './types';
+import { FilterConfig, FilterGroup, FilterInputGroup } from './types';
+import { validateFilterInputGroup } from './validator';
+import FilterText from './FilterText';
 
 // Props for the filter component
 type FilterProps = {
   filterConfig: FilterConfig[];
+  currentFilters: FilterGroup;
+  onFilterSave: (f: FilterGroup) => unknown;
 };
 
 // Filter bar implementation
-export default function Filter({ filterConfig }: FilterProps) {
+export default function Filter({
+  filterConfig,
+  currentFilters,
+  onFilterSave
+}: FilterProps) {
   // States
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [filterState, setFilterState] = useState<FilterInputGroup>({
-    operator: 'And',
-    filters: []
-  });
+
+  function handleFilterSave(filters: FilterInputGroup) {
+    const err = validateFilterInputGroup(filters);
+
+    if (err === null) {
+      onFilterSave(filters as FilterGroup);
+      onOpenChange();
+
+      return;
+    }
+
+    addToast({ title: err.message, color: 'danger' });
+  }
 
   // DOM structure for filter bar component
   return (
     <>
       <span className='grow rounded-md w-100 overflow-hidden p-4 h-16 flex items-center justify-center gap-4 border-2 border-content3 bg-content1 shadow-lg shadow-content2'>
-        <Input
-          isClearable
-          placeholder='Filter...'
-          type='text'
-          variant='underlined'
-        />
+        {currentFilters.filters.length > 0 ? (
+          <FilterText filters={currentFilters} />
+        ) : (
+          <p className='text-foreground/60 grow'>Filter...</p>
+        )}
         <Button
           isIconOnly
           aria-label='Open filter modal'
@@ -79,9 +94,9 @@ export default function Filter({ filterConfig }: FilterProps) {
       {isOpen && (
         <FilterModal
           filterConfig={filterConfig}
-          filters={filterState}
+          filters={currentFilters}
           isOpen={isOpen}
-          onFilterSave={setFilterState}
+          onFilterSave={handleFilterSave}
           onOpenChange={onOpenChange}
         />
       )}

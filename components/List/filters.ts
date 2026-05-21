@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { InputOption, InputOptionGroup } from '@/components/SearchBar/types';
+import { FilterConfig } from '@/components/Filter';
 import List from '@/lib/model/list';
 import Tag from '@/lib/model/tag';
 
@@ -28,87 +28,75 @@ import Tag from '@/lib/model/tag';
  *  settings and details
  * @param tagsAvailable All tags associated with the list
  */
-export function getFilterOptions(
+export function getFilterConfig(
   list: Omit<List, 'sections'>,
   tagsAvailable: Tag[]
-): InputOptionGroup[] {
-  const generalOptions: InputOption[] = [
-    { type: 'String', label: 'name' },
+): FilterConfig[] {
+  const generalOptions: FilterConfig[] = [
+    { type: 'text', label: 'name' },
     {
-      type: 'Select',
+      type: 'option',
       label: 'priority',
-      selectOptions: [
+      options: [
         { name: 'High', color: 'danger' },
         { name: 'Medium', color: 'warning' },
         { name: 'Low', color: 'success' }
       ]
     },
-    { type: 'Select', label: 'tag', selectOptions: tagsAvailable }
+    { type: 'multi-option', label: 'tag', options: tagsAvailable }
   ];
 
-  if (list.members.length > 1)
-    generalOptions.push({
-      type: 'Select',
-      label: 'user',
-      selectOptions: list.members.map(member => {
-        return {
-          name: member.user.username ?? member.user.name,
-          color: member.user.color
-        };
-      })
-    });
-  if (list.hasTimeTracking)
-    generalOptions.push({
-      type: 'Select',
-      label: 'status',
-      selectOptions: [
-        { name: 'Unstarted' },
-        { name: 'In_Progress' },
-        { name: 'Paused' },
-        { name: 'Completed' }
-      ]
-    });
+  const memberOptions: FilterConfig[] =
+    list.members.length > 1
+      ? [
+          {
+            type: 'multi-option',
+            label: 'user',
+            options: list.members.map(member => {
+              return {
+                name: member.user.username ?? member.user.name,
+                color: member.user.color
+              };
+            })
+          }
+        ]
+      : [];
 
-  const filterOptions: InputOptionGroup[] = [
-    { label: 'General', options: generalOptions },
+  const statusOptions: FilterConfig[] = [
     {
-      label: 'Completed',
-      options: [
-        { type: 'Date', label: 'completedBefore' },
-        { type: 'Date', label: 'completedOn' },
-        { type: 'Date', label: 'completedAfter' }
-      ]
+      type: 'option',
+      label: 'status',
+      options: list.hasTimeTracking
+        ? [
+            { name: 'Unstarted' },
+            { name: 'In_Progress' },
+            { name: 'Paused' },
+            { name: 'Completed' }
+          ]
+        : [{ name: 'Unstarted' }, { name: 'Completed' }]
     }
   ];
 
-  if (list.hasDueDates)
-    filterOptions.push({
-      label: 'Due',
-      options: [
-        { type: 'Date', label: 'dueBefore' },
-        { type: 'Date', label: 'dueOn' },
-        { type: 'Date', label: 'dueAfter' }
-      ]
-    });
-  if (list.hasTimeTracking)
-    filterOptions.push(
-      {
-        label: 'Expected Time',
-        options: [
-          { type: 'Time', label: 'expectedTimeAbove' },
-          { type: 'Time', label: 'expectedTimeAt' },
-          { type: 'Time', label: 'expectedTimeBelow' }
-        ]
-      },
-      {
-        label: 'Elapsed Time',
-        options: [
-          { type: 'Time', label: 'elapsedTimeAbove' },
-          { type: 'Time', label: 'elapsedTimeAt' },
-          { type: 'Time', label: 'elapsedTimeBelow' }
-        ]
-      }
-    );
+  const completionOptions: FilterConfig[] = [
+    { type: 'date', label: 'completed' }
+  ];
 
-  return filterOptions;
+  const dueOptions: FilterConfig[] = list.hasDueDates
+    ? [{ type: 'date', label: 'dueDate' }]
+    : [];
+
+  const timeOptions: FilterConfig[] = list.hasTimeTracking
+    ? [
+        { type: 'time', label: 'expectedTime' },
+        { type: 'time', label: 'elapsedTime' }
+      ]
+    : [];
+
+  return generalOptions.concat(
+    memberOptions,
+    statusOptions,
+    completionOptions,
+    dueOptions,
+    timeOptions
+  );
 }

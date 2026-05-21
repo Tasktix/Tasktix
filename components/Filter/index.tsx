@@ -19,6 +19,16 @@
 export { default } from './Filter';
 
 export {
+  compareText,
+  compareNumber,
+  compareOption,
+  compareMultiOption,
+  compareColor,
+  compareDate,
+  compareTime
+} from './comparators';
+
+export {
   type FilterConfig,
   type FilterGroup,
   type Filter,

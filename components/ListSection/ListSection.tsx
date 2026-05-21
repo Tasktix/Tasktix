@@ -38,8 +38,8 @@ import Tag from '@/lib/model/tag';
 import ListMember from '@/lib/model/listMember';
 
 import { ItemAction, ListSectionState, SectionAction } from '../List';
-import { Filters } from '../SearchBar/types';
 import ConfirmedTextInput from '../ConfirmedTextInput';
+import { FilterGroup } from '../Filter';
 
 import SectionBody from './SectionBody';
 import sectionHandlerFactory from './handlerFactory';
@@ -77,7 +77,7 @@ export default function ListSection({
   onTagCreate
 }: {
   listId: string;
-  filters: Filters;
+  filters: FilterGroup;
   members: ListMember[];
   tagsAvailable: Tag[];
   hasTimeTracking: boolean;
