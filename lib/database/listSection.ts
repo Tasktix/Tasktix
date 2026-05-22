@@ -48,7 +48,7 @@ export async function getSectionInfoByRepoId(
 ): Promise<{ sectionId: string; itemCount: number }[] | false> {
   const results = await prisma.list.findMany({
     where: {
-      repoId: repoId
+      repoId
     },
     select: {
       sections: {

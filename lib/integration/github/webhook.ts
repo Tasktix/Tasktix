@@ -36,7 +36,7 @@ let githubMiddlewareSingleton: ReturnType<typeof createWebMiddleware> | null =
 
 /**
  * Creates and controls a singleton instance of Github webhook middleware. All
- * event handlers should be registered here, with definitions elsewhere, If 
+ * event handlers should be registered here, with definitions elsewhere, If
  * necessary environment variables are not present, this will return null.
  */
 function getGithubMiddleware() {
@@ -153,6 +153,12 @@ async function handleCloseIssue({
   }
 }
 
+/**
+ * Middleware for handling receipts of Webhook from Github. Will instantiate a
+ * singleton instance of Middleware if one doesn't already exist. Returns Not 
+ * Found error if middleware null/not configured. 
+ * @param req - Request object from API
+ */
 export async function githubMiddleware(req: Request) {
   const middleware = getGithubMiddleware();
 
@@ -162,5 +168,5 @@ export async function githubMiddleware(req: Request) {
     );
   }
 
-  return middleware(req);
+  return await middleware(req);
 }
