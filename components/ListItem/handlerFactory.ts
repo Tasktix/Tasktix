@@ -21,7 +21,7 @@ import { ActionDispatch, Dispatch, RefObject, SetStateAction } from 'react';
 
 import api from '@/lib/api';
 import ListItem from '@/lib/model/listItem';
-import { ItemAction } from '@/components/List';
+import { ItemAction } from '@/lib/transformations/list/types';
 import { addToastForError } from '@/lib/error';
 
 /**
@@ -45,7 +45,9 @@ export function itemHandlerFactory(
     setElapsedLive: Dispatch<SetStateAction<number>>;
     stopRunning: () => unknown;
   },
-  dispatchItemChange: ActionDispatch<[action: ItemAction]>
+  dispatchItemChange: ActionDispatch<
+    [action: ItemAction | { type: 'DeleteItem'; sectionId: string; id: string }]
+  >
 ) {
   /**
    * @param name The item's new name

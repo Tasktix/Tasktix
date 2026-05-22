@@ -30,7 +30,11 @@ test('addClient returns a unique identifier for the connected client', () => {
 });
 
 test('broadcastEvent dispatches an event for clients subscribed to the given list', () => {
-  const data = { type: 'SetListName', name: 'Some name' } as const;
+  const data = {
+    type: 'SetListName',
+    id: 'some-id',
+    name: 'Some name'
+  } as const;
   const enqueue = vi.fn();
   const id = addClient(
     { enqueue } as unknown as ReadableStreamDefaultController,
@@ -48,7 +52,11 @@ test('broadcastEvent dispatches an event for clients subscribed to the given lis
 });
 
 test('broadcastEvent does not dispatch an event for clients not subscribed to the given list', () => {
-  const data = { type: 'SetListName', name: 'Some name' } as const;
+  const data = {
+    type: 'SetListName',
+    id: 'some-id',
+    name: 'Some name'
+  } as const;
   const enqueue = vi.fn();
   const id = addClient(
     { enqueue } as unknown as ReadableStreamDefaultController,

@@ -35,10 +35,14 @@ import MemberRole from '@/lib/model/memberRole';
 import api from '@/lib/api';
 import { sortRolesByPermissions } from '@/lib/sort';
 import { addToastForError } from '@/lib/error';
+import {
+  MemberAction,
+  ListState,
+  ListMemberState
+} from '@/lib/transformations/list/types';
 import UserModel from '@/lib/model/user';
 
 import ConfirmModal from '../ConfirmModal';
-import { FullState, ListMemberState, MemberAction } from '../List/types';
 import { useAuth } from '../AuthProvider';
 
 /**
@@ -56,7 +60,7 @@ export default function MemberSettings({
   onMemberEvent
 }: Readonly<{
   listId: string;
-  members: FullState['members'];
+  members: ListState['members'];
   roles: Map<string, MemberRole>;
   onMemberEvent: (event: MemberAction) => unknown;
 }>) {
@@ -119,6 +123,7 @@ function NewMember({
 
         onMemberEvent({
           type: 'AddMember',
+          listId,
           member: { ...member, role: member.role.id }
         });
       })

@@ -18,7 +18,7 @@
 
 import { addToast, closeToast } from '@heroui/react';
 
-import { ListAction } from '@/components/List/types';
+import { ListAction } from '../transformations/list/types';
 
 /**
  * Subscribes to Server-Sent Events for updates to the given lists' state, calling the

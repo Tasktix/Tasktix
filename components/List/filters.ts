@@ -17,8 +17,7 @@
  */
 
 import { InputOption, InputOptionGroup } from '@/components/SearchBar/types';
-
-import { FullState } from './types';
+import { ListState } from '@/lib/transformations/list/types';
 
 /**
  * Builds the list of available filters based on the list's settings (e.g. whether due
@@ -28,7 +27,7 @@ import { FullState } from './types';
  *  settings and details
  */
 export function getFilterOptions(
-  list: Omit<FullState, 'items' | 'sections'>
+  list: Omit<ListState, 'items' | 'sections'>
 ): InputOptionGroup[] {
   const generalOptions: InputOption[] = [
     { type: 'String', label: 'name' },

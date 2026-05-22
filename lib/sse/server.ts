@@ -18,7 +18,7 @@
 
 /* eslint-disable no-console */
 
-import { ListAction } from '@/components/List/types';
+import { ListAction } from '../transformations/list/types';
 
 // This file's logic ensures only 1 copy of the clients object is created, even when the
 // development server hot reloads. Based on Prisma Next.js best practices:

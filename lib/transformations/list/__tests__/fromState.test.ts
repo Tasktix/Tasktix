@@ -16,26 +16,21 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Assignee from '@/lib/model/assignee';
-import List from '@/lib/model/list';
-import ListItem from '@/lib/model/listItem';
-import ListMember from '@/lib/model/listMember';
-import ListSection from '@/lib/model/listSection';
 import MemberRole from '@/lib/model/memberRole';
-import Tag from '@/lib/model/tag';
 import User from '@/lib/model/user';
+import ListMember from '@/lib/model/listMember';
+import ListItem from '@/lib/model/listItem';
+import Tag from '@/lib/model/tag';
+import ListSection from '@/lib/model/listSection';
+import List from '@/lib/model/list';
+import Assignee from '@/lib/model/assignee';
 
+import { listStateToItems, listStateToMembers } from '../fromState';
 import {
-  generateItemAssigneesState,
-  generateItemTagsState,
   generateItemsState,
   generateMembersState,
-  generateSectionItemsState,
-  generateSectionsState,
-  generateTagsState,
-  stateToItems,
-  stateToMembers
-} from '../state';
+  generateTagsState
+} from '../toState';
 import { ListMemberState } from '../types';
 
 const user1 = new User(
@@ -96,97 +91,8 @@ const list = new List(
   false,
   true,
   false,
-  'list-1-id-1234'
+  { id: 'list-1-id-1234' }
 );
-
-describe('generate*State helpers', () => {
-  test('generateMembersState maps members by user id with role id stored', () => {
-    const members = generateMembersState(list);
-
-    expect(members.size).toBe(2);
-    expect(members.get(user1.id)?.user).toBe(user1);
-    expect(members.get(user1.id)?.role).toBe(role1.id);
-    expect(members.get(user2.id)?.user).toBe(user2);
-    expect(members.get(user2.id)?.role).toBe(role2.id);
-  });
-
-  test('generateTagsState maps tags by id', () => {
-    const tags = generateTagsState(list);
-
-    expect(tags.size).toBe(2);
-    expect(tags.get(tag1.id)).toBe(tag1);
-    expect(tags.get(tag2.id)).toBe(tag2);
-  });
-
-  test('generateSectionsState maps sections by id and removes items', () => {
-    const sections = generateSectionsState(list);
-
-    expect(sections.size).toBe(1);
-
-    const section = sections.get(section1.id);
-
-    expect(section).toBeDefined();
-    expect(section?.id).toBe(section1.id);
-    expect((section as { items: unknown } | undefined)?.items).toBeUndefined();
-  });
-
-  test('generateSectionItemsState maps section id to item ids', () => {
-    const sectionItems = generateSectionItemsState(list);
-
-    expect(sectionItems.size).toBe(1);
-    expect(sectionItems.get(section1.id)).toEqual(
-      expect.arrayContaining([item1.id, item2.id])
-    );
-  });
-
-  test('generateItemsState maps item id to item state and converts date strings to Date objects', () => {
-    const items = generateItemsState(list);
-
-    expect(items.size).toBe(2);
-    const state1 = items.get(item1.id);
-
-    expect(state1).toBeDefined();
-    expect(state1?.id).toBe(item1.id);
-    expect(state1?.dateCreated).toBeInstanceOf(Date);
-    expect(state1?.dateCreated.getTime()).toBe(item1.dateCreated.getTime());
-    expect(state1?.dateCreated).not.toBe(item1.dateCreated);
-    expect(state1?.dateStarted).toBeNull();
-    expect(state1?.dateCompleted).toBeNull();
-    expect(state1?.dateDue).toBeInstanceOf(Date);
-    expect((state1 as { tags: unknown } | undefined)?.tags).toBeUndefined();
-    expect(
-      (state1 as { assignees: unknown } | undefined)?.assignees
-    ).toBeUndefined();
-
-    const state2 = items.get(item2.id);
-
-    expect(state2?.dateDue).toBeNull();
-    expect(state2?.dateStarted).toBeInstanceOf(Date);
-    expect(state2?.dateCompleted).toBeInstanceOf(Date);
-  });
-
-  test('generateItemAssigneesState maps item id to assignee tuples (user, roleId)', () => {
-    item1.assignees = [{ user: user1, role: role1.id }];
-    item2.assignees = [{ user: user2, role: role2.id }];
-
-    const itemAssignees = generateItemAssigneesState(list);
-
-    expect(itemAssignees.size).toBe(2);
-    expect(itemAssignees.get(item1.id)).toEqual([[user1.id, role1.id]]);
-    expect(itemAssignees.get(item2.id)).toEqual([[user2.id, role2.id]]);
-  });
-
-  test('generateItemTagsState maps item id to tag ids', () => {
-    item1.tags = [tag1, tag2];
-    item2.tags = [tag2];
-
-    const itemTags = generateItemTagsState(list);
-
-    expect(itemTags.size).toBe(2);
-    expect(itemTags.get(item1.id)).toEqual([tag1.id, tag2.id]);
-    expect(itemTags.get(item2.id)).toEqual([tag2.id]);
-  });
-});
 
 describe('stateToMembers', () => {
   test('returns ListMember objects and filters out members with missing roles', () => {
@@ -196,7 +102,7 @@ describe('stateToMembers', () => {
     ]);
     const roles = new Map<string, MemberRole>([[role1.id, role1]]);
 
-    const result = stateToMembers(membersState, roles);
+    const result = listStateToMembers(membersState, roles);
 
     expect(result).toHaveLength(1);
     expect(result[0]).toEqual({ user: user1, role: role1 });
@@ -210,7 +116,7 @@ describe('stateToItems', () => {
     const members = generateMembersState(list);
     const tags = generateTagsState(list);
 
-    const result = stateToItems(
+    const result = listStateToItems(
       undefined,
       new Map(),
       new Map(),
@@ -244,7 +150,7 @@ describe('stateToItems', () => {
       [item1.id, [tag1.id, missingTagId]]
     ]);
 
-    const result = stateToItems(
+    const result = listStateToItems(
       [item1.id, item2.id, 'missing-item-id'],
       itemAssignees,
       itemTags,
