@@ -30,25 +30,38 @@ import {
 } from '@/lib/database/listItem';
 import ListItem from '@/lib/model/listItem';
 
-const appId = process.env.GITHUB_APP_ID!;
-const webhookSecret = process.env.GITHUB_WEBHOOK_SECRET!;
-const privateKey = fs.readFileSync(
-  process.env.GITHUB_PRIVATE_KEY_PATH__CONTAINER!,
-  'utf8'
-);
+let githubMiddlewareSingleton: ReturnType<typeof createWebMiddleware> | null = null;
 
-const app = new App({
-  appId,
-  privateKey,
-  webhooks: {
-    secret: webhookSecret
-  }
-});
+function getGithubMiddleware() {
+  if (githubMiddlewareSingleton) return githubMiddlewareSingleton;
+
+  const appId = process.env.GITHUB_APP_ID!;
+  const webhookSecret = process.env.GITHUB_WEBHOOK_SECRET!;
+  const privateKey = fs.readFileSync(
+    process.env.GITHUB_PRIVATE_KEY_PATH__CONTAINER!,
+    'utf8'
+  );
+
+  const app = new App({
+    appId,
+    privateKey,
+    webhooks: { secret: webhookSecret }
+  });
+
+  app.webhooks.on('issues.opened', handleNewIssue);
+  app.webhooks.on('issues.closed', handleCloseIssue);
+
+  githubMiddlewareSingleton = createWebMiddleware(app.webhooks, {
+    path: '/api/webhook/github'
+  });
+
+  return githubMiddlewareSingleton;
+}
 
 /**
  * Handles webhook events for newly created issues in a repository that Tasktix
  * is installed in by creating a Task within all Tasktix lists that are
- * tracking that repository. Tasks are created within the first section in a
+ * tracking that repository. Tasks are created within the first section in a 
  * list when sorted by alphabetical order
  *
  * Transferred Fields:
@@ -124,9 +137,6 @@ async function handleCloseIssue({
   }
 }
 
-app.webhooks.on('issues.opened', handleNewIssue);
-app.webhooks.on('issues.closed', handleCloseIssue);
-
-export const githubMiddleware = createWebMiddleware(app.webhooks, {
-  path: '/api/webhook/github'
-});
+export async function githubMiddleware(req: Request) {
+  return getGithubMiddleware()(req);
+}

@@ -18,6 +18,8 @@
 
 import { githubMiddleware } from '@/lib/integration/github/webhook';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * Endpoint to recieve events from Github App Webhook, middleware managed
  * through octokit object with handlers defined in
