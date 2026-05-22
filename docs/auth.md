@@ -76,6 +76,15 @@ Repository
 | Metadata: Read-only
 ```
 
+Tasktix integrates with Github Webhooks to proactively fetch new data from linked repositories, to enable this, the app must be configured to listen for `issues` webhook events, this involves setting the webhook url to `<BASE_URL>/api/webhook/github`, generating a Webhook Secret and a private key file in the Github App, then configuring the following .env variables
+
+```
+.env/
+GITHUB_APP_ID=[Your App ID]
+GITHUB_WEBHOOK_SECRET=[The generated Webhook Secret]
+GITHUB_PRIVATE_KEY_PATH__LOCAL=[the full file path for the .pem key file on your local machine]
+```
+
 ## Database Updates
 The required schema for BetterAuth can be found [here](https://www.better-auth.com/docs/concepts/database#core-schema). To add login by username, it is required to extend that schema as described [here](https://www.better-auth.com/docs/plugins/username#schema). .
 
