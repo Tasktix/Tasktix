@@ -157,6 +157,7 @@ export default defineConfig([
   },
   globalIgnores([
     'coverage/**',
+    'scripts/proxy-webhooks.cjs',
     // Default ignores of eslint-config-next:
     '.next/**',
     'out/**',

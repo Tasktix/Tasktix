@@ -63,6 +63,21 @@ export async function getListItemsByUser(userId: string): Promise<ListItem[]> {
   return result;
 }
 
+/**
+ * Gets all pure listItems that are tracking a given IssueId.
+ * @param issueId the issueId to query for
+ * @returns
+ */
+export async function getListItemsByIssueId(
+  issueId: number
+): Promise<Omit<ListItem, 'assignees' | 'tags'>[]> {
+  const results = await prisma.item.findMany({
+    where: { issueId }
+  });
+
+  return results;
+}
+
 export async function linkTag(itemId: string, tagId: string): Promise<boolean> {
   try {
     await prisma.item.update({

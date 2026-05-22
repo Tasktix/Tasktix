@@ -37,6 +37,52 @@ export async function createListSection(
   return Boolean(result);
 }
 
+/**
+ * Gets the first sectionId and the count of items in that section for a all
+ * lists tracking a provided repoId.
+ * @param repoId - repoId to query by
+ * @returns
+ */
+export async function getSectionInfoByRepoId(
+  repoId: number
+): Promise<{ sectionId: string; itemCount: number }[] | false> {
+  const results = await prisma.list.findMany({
+    where: {
+      repoId: repoId
+    },
+    select: {
+      sections: {
+        take: 1,
+        select: {
+          id: true,
+          _count: {
+            select: {
+              items: true
+            }
+          }
+        }
+      }
+    }
+  });
+
+  if (!results || results.length === 0) {
+    return false;
+  }
+
+  return results
+    .map(list => {
+      const firstSection = list.sections[0];
+
+      if (!firstSection) return null;
+
+      return {
+        sectionId: firstSection.id,
+        itemCount: firstSection._count.items
+      };
+    })
+    .filter(section => section !== null);
+}
+
 export async function updateListSection(
   id: string,
   name: string

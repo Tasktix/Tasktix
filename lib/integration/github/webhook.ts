@@ -19,8 +19,16 @@
 import fs from 'fs';
 
 import { App } from 'octokit';
-import { createWebMiddleware } from '@octokit/webhooks';
+import { createWebMiddleware, EmitterWebhookEvent } from '@octokit/webhooks';
+
 import 'server-only';
+import { getSectionInfoByRepoId } from '@/lib/database/listSection';
+import {
+  createListItem,
+  getListItemsByIssueId,
+  updateListItem
+} from '@/lib/database/listItem';
+import ListItem from '@/lib/model/listItem';
 
 const appId = process.env.GITHUB_APP_ID!;
 const webhookSecret = process.env.GITHUB_WEBHOOK_SECRET!;
@@ -37,15 +45,87 @@ const app = new App({
   }
 });
 
-async function handleNewIssue({ octokit, payload }: { octokit: any; payload: any }) {
-  const issueNumber = payload.issue.number;
+/**
+ * Handles webhook events for newly created issues in a repository that Tasktix
+ * is installed in by creating a Task within all Tasktix lists that are
+ * tracking that repository. Tasks are created within the first section in a
+ * list when sorted by alphabetical order
+ *
+ * Transferred Fields:
+ *  - Issue Title
+ *  - Issue Description
+ *  - Issue Creation Date
+ *
+ * Defaults
+ *  - Low Priority
+ * @param payload - Octokit API Webhook request object
+ */
+async function handleNewIssue({
+  payload
+}: EmitterWebhookEvent<'issues.opened'>) {
   const repoId = payload.repository.id;
 
-  console.log(`Received a Issue Open event for #${issueNumber}:${repoId}`);
-  
+  console.log(`handleNewIssue: rx issue open event for repo ${repoId}`);
+
+  const trackingLists = await getSectionInfoByRepoId(repoId);
+
+  if (!trackingLists) {
+    return;
+  }
+  const name = payload.issue.title;
+  const description = payload.issue.body ?? undefined;
+  const priority = 'Low';
+  const dateCreated = new Date(payload.issue.created_at);
+  const issueId = BigInt(payload.issue.id);
+
+  const item = new ListItem(name, {
+    priority,
+    description,
+    dateCreated,
+    issueId
+  });
+
+  for (const list of trackingLists) {
+    item.sectionIndex = ++list.itemCount;
+    const result = await createListItem(list.sectionId, item);
+
+    if (!result)
+      console.error(
+        'handleNewIssue: failed to create item in section',
+        list.sectionId
+      );
+  }
+}
+
+/**
+ * Handles webhook events for closed GitHub issues by marking all Tasktix Tasks
+ * that track that issue as completed.
+ * @param payload - Octokit API Webhook request object
+ */
+async function handleCloseIssue({
+  payload
+}: EmitterWebhookEvent<'issues.closed'>) {
+  const issueId = payload.issue.id;
+
+  console.log(`handleCloseIssue: rx issue closed event for repo ${issueId}`);
+
+  const trackingItems = await getListItemsByIssueId(issueId);
+
+  if (!trackingItems) {
+    return;
+  }
+
+  for (const item of trackingItems) {
+    item.status = 'Completed';
+    const result = await updateListItem(item);
+
+    if (!result)
+      console.error('handleCloseIssue: failed to update item ', item.id);
+  }
 }
 
 app.webhooks.on('issues.opened', handleNewIssue);
+app.webhooks.on('issues.closed', handleCloseIssue);
 
 export const githubMiddleware = createWebMiddleware(app.webhooks, {
   path: '/api/webhook/github'
