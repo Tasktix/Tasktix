@@ -29,16 +29,32 @@ import {
   updateListItem
 } from '@/lib/database/listItem';
 import ListItem from '@/lib/model/listItem';
+import { ClientError } from '@/lib/Response';
 
-let githubMiddlewareSingleton: ReturnType<typeof createWebMiddleware> | null = null;
+let githubMiddlewareSingleton: ReturnType<typeof createWebMiddleware> | null =
+  null;
 
+/**
+ * Creates and controls a singleton instance of Github webhook middleware. All
+ * event handlers should be registered here, with definitions elsewhere, If 
+ * necessary environment variables are not present, this will return null.
+ */
 function getGithubMiddleware() {
   if (githubMiddlewareSingleton) return githubMiddlewareSingleton;
 
-  const appId = process.env.GITHUB_APP_ID!;
-  const webhookSecret = process.env.GITHUB_WEBHOOK_SECRET!;
+  if (
+    !process.env.GITHUB_APP_ID ||
+    !process.env.GITHUB_WEBHOOK_SECRET ||
+    !process.env.GITHUB_PRIVATE_KEY_PATH__CONTAINER
+  ) {
+    console.warn('Github Webhook Integration Not Configured');
+
+    return null;
+  }
+  const appId = process.env.GITHUB_APP_ID;
+  const webhookSecret = process.env.GITHUB_WEBHOOK_SECRET;
   const privateKey = fs.readFileSync(
-    process.env.GITHUB_PRIVATE_KEY_PATH__CONTAINER!,
+    process.env.GITHUB_PRIVATE_KEY_PATH__CONTAINER,
     'utf8'
   );
 
@@ -61,7 +77,7 @@ function getGithubMiddleware() {
 /**
  * Handles webhook events for newly created issues in a repository that Tasktix
  * is installed in by creating a Task within all Tasktix lists that are
- * tracking that repository. Tasks are created within the first section in a 
+ * tracking that repository. Tasks are created within the first section in a
  * list when sorted by alphabetical order
  *
  * Transferred Fields:
@@ -138,5 +154,13 @@ async function handleCloseIssue({
 }
 
 export async function githubMiddleware(req: Request) {
-  return getGithubMiddleware()(req);
+  const middleware = getGithubMiddleware();
+
+  if (!middleware) {
+    return ClientError.NotFound(
+      'Github Webhook Integration not configured, please contact your system administrator'
+    );
+  }
+
+  return middleware(req);
 }
