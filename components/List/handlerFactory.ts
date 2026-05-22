@@ -68,7 +68,7 @@ export function listHandlerFactory(
 
           dispatchList({
             type: 'AddTag',
-            id: listId,
+            listId,
             tag: new Tag(name, color, id)
           });
 
@@ -90,7 +90,7 @@ export function listHandlerFactory(
           color: 'success'
         });
 
-        dispatchList({ type: 'DeleteSection', id });
+        dispatchList({ type: 'DeleteSection', listId, id });
       })
       .catch(addToastForError);
   }

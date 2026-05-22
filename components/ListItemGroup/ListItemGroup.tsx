@@ -96,24 +96,26 @@ export default function ListItemGroup({
     [itemGroup.lists]
   );
 
+  const displayItems = itemGroup.items
+    .values()
+    .toArray()
+    .filter(item => item.status !== 'Completed')
+    .sort(sortItems.bind(null, false, false))
+    .filter((_, idx) => idx < 10);
+
   return (
     <div className='rounded-md w-full border-2 border-content3 box-border shadow-lg shadow-content2'>
-      {itemGroup && itemGroup.items.size ? (
-        itemGroup.items
-          .values()
-          .toArray()
-          .sort(sortItems.bind(null, false, false))
-          .filter((item, idx) => item.status !== 'Completed' && idx < 10)
-          .map(item => (
-            <ListItemWrapper
-              key={item.id}
-              dispatchItemGroup={dispatchItemGroup}
-              groupHandlers={groupHandlers}
-              item={item}
-              itemGroup={itemGroup}
-              roles={builtRoles}
-            />
-          ))
+      {displayItems.length ? (
+        displayItems.map(item => (
+          <ListItemWrapper
+            key={item.id}
+            dispatchItemGroup={dispatchItemGroup}
+            groupHandlers={groupHandlers}
+            item={item}
+            itemGroup={itemGroup}
+            roles={builtRoles}
+          />
+        ))
       ) : (
         <div className='h-16 flex items-center justify-center bg-content2'>
           {alternateText}

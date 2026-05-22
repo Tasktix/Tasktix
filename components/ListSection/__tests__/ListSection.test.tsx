@@ -68,7 +68,7 @@ test('Newly created items are added to the section', async () => {
   expect(dispatchSectionChange).toBeCalledTimes(1);
   expect(dispatchSectionChange).toBeCalledWith(
     expect.objectContaining({
-      type: 'AddItemToSection',
+      type: 'AddItem',
       id: 'section-id',
       item: expect.objectContaining({
         name: 'Item 1',

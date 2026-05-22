@@ -211,7 +211,7 @@ function Member({
         if (member.user.id === loggedInUser.id) {
           router.replace('/list');
         } else {
-          onMemberEvent({ type: 'DeleteMember', id: member.user.id });
+          onMemberEvent({ type: 'DeleteMember', listId, id: member.user.id });
           onOpenChange(); // Closes the confirmation modal
         }
       })

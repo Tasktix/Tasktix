@@ -18,7 +18,7 @@
  * @vitest-environment jsdom
  */
 
-import { render, within, waitFor, screen } from '@testing-library/react';
+import { render, within, waitFor } from '@testing-library/react';
 import { HeroUIProvider } from '@heroui/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
@@ -400,7 +400,6 @@ describe('Tag changes', () => {
 
     await user.clear(tagName);
     await user.type(tagName, 'New tag name');
-    screen.debug(undefined, Number.MAX_SAFE_INTEGER, { highlight: false });
     await user.click(
       within(getByTestId('confirmed-input-rename tag: Test tag')).getByRole(
         'button'
@@ -1016,12 +1015,12 @@ describe('ListItem state propagation', () => {
 
     await user.click(getByLabelText('Update tags'));
 
-    await user.type(getByLabelText('Add tag...'), 'Test tag');
+    await user.type(getByLabelText('New tag name'), 'Test tag');
     await user.click(getByLabelText('Pick color'));
     await user.click(getByLabelText('Cyan'));
     await user.click(
       // We know the DOM, so we know this element does have a parent form - skipcq: JS-0339
-      within(getByLabelText('Add tag...').closest('form')!).getByLabelText(
+      within(getByLabelText('New tag name').closest('form')!).getByLabelText(
         'Submit'
       )
     );

@@ -68,7 +68,7 @@ export function listReducer( // skipcq: JS-0045, JS-R1005
       return tagReducer(state, action);
 
     case 'AddSection':
-    case 'AddItemToSection':
+    case 'AddItem':
     case 'ReorderItem':
     case 'DeleteItem':
     case 'DeleteSection':
@@ -94,6 +94,22 @@ export function itemGroupReducer(
   state: ItemGroupState,
   action: ListAction | MemberAction | TagAction | SectionAction | ItemAction
 ): ItemGroupState {
+  function addToList(
+    listX: Map<string, string[]>,
+    listId: string,
+    xId: string
+  ) {
+    listX.get(listId)?.push(xId);
+  }
+
+  function deleteFromList(
+    listX: Map<string, string[]>,
+    listId: string,
+    xId: string
+  ) {
+    listX.set(listId, listX.get(listId)?.filter(id => id !== xId) ?? []);
+  }
+
   switch (action.type) {
     case 'SetHasDueDates':
     case 'SetHasTimeTracking':
@@ -110,21 +126,45 @@ export function itemGroupReducer(
 
     case 'AddMember':
     case 'UpdateMemberPermissions':
-    case 'DeleteMember':
-      return memberReducer(state, action);
+    case 'DeleteMember': {
+      const newState = memberReducer(state, action);
+
+      if (action.type === 'AddMember')
+        addToList(newState.listMembers, action.listId, action.member.user.id);
+      else if (action.type === 'DeleteMember')
+        deleteFromList(newState.listMembers, action.listId, action.id);
+
+      return newState;
+    }
 
     case 'AddTag':
     case 'UpdateTagColor':
     case 'UpdateTagName':
-    case 'DeleteTag':
-      return tagReducer(state, action);
+    case 'DeleteTag': {
+      const newState = tagReducer(state, action);
+
+      if (action.type === 'AddTag')
+        addToList(newState.listTags, action.listId, action.tag.id);
+      else if (action.type === 'DeleteTag')
+        deleteFromList(newState.listTags, action.listId, action.id);
+
+      return newState;
+    }
 
     case 'AddSection':
-    case 'AddItemToSection':
+    case 'AddItem':
     case 'ReorderItem':
     case 'DeleteItem':
-    case 'DeleteSection':
-      return sectionReducer(state, action);
+    case 'DeleteSection': {
+      const newState = sectionReducer(state, action);
+
+      if (action.type === 'AddSection')
+        addToList(newState.listSections, action.listId, action.section.id);
+      else if (action.type === 'DeleteSection')
+        deleteFromList(newState.listSections, action.listId, action.id);
+
+      return newState;
+    }
 
     case 'SetItemName':
     case 'SetItemDescription':
@@ -263,7 +303,7 @@ function sectionReducer<
       newState.sections.delete(action.id);
       break;
 
-    case 'AddItemToSection': {
+    case 'AddItem': {
       const sectionItems = newState.sectionItems.get(action.id);
 
       // Should be impossible to trigger this, hence the runtime error - skipcq: TCV-001

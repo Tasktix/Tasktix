@@ -56,7 +56,7 @@ export function itemGroupHandlerFactory(
 
           dispatchList({
             type: 'AddTag',
-            id: listId,
+            listId,
             tag: new Tag(name, color, id)
           });
 
