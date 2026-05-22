@@ -25,7 +25,7 @@ import { prisma } from './db_connect';
 export async function createListSection(
   listId: string,
   section: ListSection
-): Promise<boolean> {
+): Promise<string | false> {
   const result = await prisma.listSection.create({
     data: {
       id: section.id,
@@ -34,23 +34,27 @@ export async function createListSection(
     }
   });
 
-  return Boolean(result);
+  return result.id ?? false;
 }
 
 /**
- * Gets the first sectionId and the count of items in that section for a all
- * lists tracking a provided repoId.
+ * Gets the listId, the first sectionId, and the count of items in that section
+ * for all lists tracking a provided repoId. If a list has no sections, returns
+ * placeholders so a section can be created.
  * @param repoId - repoId to query by
  * @returns
  */
 export async function getSectionInfoByRepoId(
   repoId: number
-): Promise<{ sectionId: string; itemCount: number }[] | false> {
+): Promise<
+  { listId: string; sectionId: string | null; itemCount: number }[] | false
+> {
   const results = await prisma.list.findMany({
     where: {
       repoId
     },
     select: {
+      id: true,
       sections: {
         take: 1,
         select: {
@@ -69,18 +73,23 @@ export async function getSectionInfoByRepoId(
     return false;
   }
 
-  return results
-    .map(list => {
-      const firstSection = list.sections[0];
+  return results.map(list => {
+    const firstSection = list.sections[0];
 
-      if (!firstSection) return null;
-
+    if (!firstSection) {
       return {
-        sectionId: firstSection.id,
-        itemCount: firstSection._count.items
+        listId: list.id,
+        sectionId: null,
+        itemCount: 0
       };
-    })
-    .filter(section => section !== null);
+    }
+
+    return {
+      listId: list.id,
+      sectionId: firstSection.id,
+      itemCount: firstSection._count.items
+    };
+  });
 }
 
 export async function updateListSection(

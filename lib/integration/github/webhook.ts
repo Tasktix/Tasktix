@@ -22,7 +22,10 @@ import { App } from 'octokit';
 import { createWebMiddleware, EmitterWebhookEvent } from '@octokit/webhooks';
 
 import 'server-only';
-import { getSectionInfoByRepoId } from '@/lib/database/listSection';
+import {
+  createListSection,
+  getSectionInfoByRepoId
+} from '@/lib/database/listSection';
 import {
   createListItem,
   getListItemsByIssueId,
@@ -30,6 +33,7 @@ import {
 } from '@/lib/database/listItem';
 import ListItem from '@/lib/model/listItem';
 import { ClientError } from '@/lib/Response';
+import ListSection from '@/lib/model/listSection';
 
 let githubMiddlewareSingleton: ReturnType<typeof createWebMiddleware> | null =
   null;
@@ -116,6 +120,22 @@ async function handleNewIssue({
 
   for (const list of trackingLists) {
     item.sectionIndex = ++list.itemCount;
+    if (!list.sectionId) {
+      const name = 'Github Issues';
+      const newSection = new ListSection(name, []);
+      const result = await createListSection(list.listId, newSection);
+
+      if (result) {
+        list.sectionId = result;
+      } else {
+        console.error(
+          'handleNewIssue: failed to create section in list ',
+          list.listId
+        );
+      }
+
+      return;
+    }
     const result = await createListItem(list.sectionId, item);
 
     if (!result)
