@@ -155,11 +155,11 @@ async function handleCloseIssue({
 
 /**
  * Middleware for handling receipts of Webhook from Github. Will instantiate a
- * singleton instance of Middleware if one doesn't already exist. Returns Not 
- * Found error if middleware null/not configured. 
+ * singleton instance of Middleware if one doesn't already exist. Returns Not
+ * Found error if middleware null/not configured.
  * @param req - Request object from API
  */
-export async function githubMiddleware(req: Request) {
+export async function githubMiddleware(req: Request): Promise<Response> {
   const middleware = getGithubMiddleware();
 
   if (!middleware) {
@@ -168,5 +168,5 @@ export async function githubMiddleware(req: Request) {
     );
   }
 
-  return await middleware(req);
+  return (await middleware(req)) as Response;
 }

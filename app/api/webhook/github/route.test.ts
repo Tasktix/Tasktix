@@ -17,27 +17,29 @@
  */
 
 import { Success } from '@/lib/Response';
-import { POST } from './route';
 import { githubMiddleware } from '@/lib/integration/github/webhook';
 
-const ROUTE_PATH = `http://localhost/api/webhook/github` as const;
+import { POST } from './route';
+
+const ROUTE_PATH = 'http://localhost/api/webhook/github' as const;
 
 vi.mock('@/lib/integration/github/webhook');
 beforeEach(() => {
   vi.resetAllMocks();
 });
 
-describe("POST", () => {
-  test("Proxies Requests/Responses to/from Github Webhook Middleware", async () => {
-    vi.mocked(githubMiddleware).mockResolvedValue(Success.OK('mock success message'))
-    
-    const mockRequest = new Request(ROUTE_PATH, {
-          method: 'post'
-        })
-    const response = await POST(mockRequest)
+describe('POST', () => {
+  test('Proxies Requests/Responses to/from Github Webhook Middleware', async () => {
+    vi.mocked(githubMiddleware).mockResolvedValue(
+      Success.OK('mock success message')
+    );
 
-    expect(githubMiddleware).toHaveBeenCalledExactlyOnceWith(mockRequest)
+    const mockRequest = new Request(ROUTE_PATH, {
+      method: 'post'
+    });
+    const response = await POST(mockRequest);
+
+    expect(githubMiddleware).toHaveBeenCalledExactlyOnceWith(mockRequest);
     expect(response.status).toBe(200);
   });
-
-})
+});
