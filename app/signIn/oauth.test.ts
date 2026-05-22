@@ -21,7 +21,7 @@ import { ErrorContext, SuccessContext } from 'better-auth/react';
 
 import User from '@/lib/model/user';
 import { authClient } from '@/lib/auth-client';
-import { OAuthConfig } from '@/lib/auth';
+import { AuthConfig } from '@/lib/auth';
 
 import { handleOAuth } from './oauth';
 
@@ -155,13 +155,13 @@ test('Properly redirects and sets logged in user on successful custom SSO authen
 
 test('Throws Error if custom OAuth attempted without being configured', async () => {
   const setLoggedInUserMock = vi.fn();
-  const MOCK_UNCONFIGURED_OAUTH_CONFIG: OAuthConfig = {
+  const MOCK_UNCONFIGURED_AUTH_CONFIG: AuthConfig = {
     githubEnabled: false,
     customEnabled: false
   };
 
   await expect(
-    handleOAuth('custom', setLoggedInUserMock, MOCK_UNCONFIGURED_OAUTH_CONFIG)
+    handleOAuth('custom', setLoggedInUserMock, MOCK_UNCONFIGURED_AUTH_CONFIG)
   ).rejects.toThrowError();
   expect(authClient.signIn.oauth2).not.toHaveBeenCalled();
 });

@@ -20,7 +20,7 @@ import type { Metadata } from 'next';
 
 import Body from '@/app/body';
 import { getUser } from '@/lib/session';
-import { getOAuthConfig } from '@/lib/auth';
+import { getAuthConfig } from '@/lib/auth';
 
 import { Providers } from './providers';
 
@@ -38,8 +38,8 @@ export default async function RootLayout({
     <html suppressHydrationWarning lang='en'>
       <body>
         <Providers
+          authConfig={getAuthConfig()}
           loggedInUserAtStart={await getUser()}
-          oauthConfig={getOAuthConfig()}
         >
           <Body>{children}</Body>
         </Providers>
