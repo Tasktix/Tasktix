@@ -31,7 +31,7 @@ export default async function Page() {
 
   const user = await getUser();
 
-  /* Necessary for Typescript, will be redirected to signin before this */
+  /* Necessary for Typescript, will be redirected to signin before this skipcq: JS-0424*/
   if (!user) return <></>;
 
   return (
