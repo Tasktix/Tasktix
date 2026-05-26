@@ -105,20 +105,21 @@ async function handleNewIssue({
   if (!trackingLists) {
     return;
   }
+
   const name = payload.issue.title;
   const description = payload.issue.body ?? undefined;
   const priority = 'Low';
   const dateCreated = new Date(payload.issue.created_at);
   const issueId = BigInt(payload.issue.id);
 
-  const item = new ListItem(name, {
-    priority,
-    description,
-    dateCreated,
-    issueId
-  });
-
   for (const list of trackingLists) {
+    const item = new ListItem(name, {
+      priority,
+      description,
+      dateCreated,
+      issueId
+    });
+
     item.sectionIndex = ++list.itemCount;
     if (!list.sectionId) {
       const name = 'Github Issues';
@@ -132,9 +133,9 @@ async function handleNewIssue({
           'handleNewIssue: failed to create section in list ',
           list.listId
         );
-      }
 
-      return;
+        return;
+      }
     }
     const result = await createListItem(list.sectionId, item);
 
