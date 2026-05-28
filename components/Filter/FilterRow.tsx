@@ -100,6 +100,7 @@ export default function FilterRow({
   return (
     <div className='flex flex-row justify-center gap-2'>
       <Select
+        aria-label='Field'
         className='propertyInput'
         placeholder='Field'
         selectedKeys={[filterName]}

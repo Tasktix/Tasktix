@@ -38,6 +38,7 @@ export function TextFilterInputs({
     <>
       <SelectTextFilterOperator value={operator} onChange={onOperatorChange} />
       <Input
+        aria-label='Value'
         className={isRegex ? 'font-mono' : ''}
         endContent={isRegex && '/'}
         startContent={isRegex && '/'}

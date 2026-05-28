@@ -48,6 +48,7 @@ export function MultiOptionFilterInputs({
         onChange={onOperatorChange}
       />
       <Select
+        aria-label='Value'
         selectedKeys={value}
         selectionMode='multiple'
         onSelectionChange={handleValueChange}

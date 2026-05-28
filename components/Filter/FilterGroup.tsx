@@ -140,6 +140,7 @@ export default function FilterGroup({
           {filters.filters.length != 0 && (
             <Select
               isRequired
+              aria-label={'Group operator'}
               className='w-24'
               classNames={{ mainWrapper: 'bg-content1' }}
               color={filters.operator == 'And' ? 'success' : 'secondary'}

@@ -37,7 +37,11 @@ export function TimeFilterInputs({
         value={operator}
         onChange={onOperatorChange}
       />
-      <TimeInput value={value} onValueChange={onValueChange} />
+      <TimeInput 
+        aria-label='Value' 
+        value={value} 
+        onValueChange={onValueChange} 
+      />
     </>
   );
 }

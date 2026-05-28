@@ -68,7 +68,9 @@ export default function Filter({
   // DOM structure for filter bar component
   return (
     <>
-      <span className='grow rounded-md w-100 overflow-hidden p-4 h-16 flex items-center justify-center gap-4 border-2 border-content3 bg-content1 shadow-lg shadow-content2'>
+      <span
+        data-testid="filter-container" 
+        className='grow rounded-md w-100 overflow-hidden p-4 h-16 flex items-center justify-center gap-4 border-2 border-content3 bg-content1 shadow-lg shadow-content2'>
         {currentFilters.filters.length > 0 ? (
           <FilterText filters={currentFilters} />
         ) : (

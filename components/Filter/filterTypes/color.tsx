@@ -37,6 +37,7 @@ export function ColorFilterInputs({
     <>
       <SelectColorFilterOperator value={operator} onChange={onOperatorChange} />
       <ColorPicker
+        aria-label='Value'
         value={value ?? null}
         onValueChange={value => onValueChange(value ?? undefined)}
       />

@@ -38,7 +38,12 @@ export function NumberFilterInputs({
         value={operator}
         onChange={onOperatorChange}
       />
-      <NumberInput type='number' value={value} onValueChange={onValueChange} />
+      <NumberInput 
+        aria-label='Value'
+        type='number' 
+        value={value} 
+        onValueChange={onValueChange} 
+      />
     </>
   );
 }

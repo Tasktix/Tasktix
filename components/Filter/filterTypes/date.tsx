@@ -65,8 +65,20 @@ export function DateFilterInputs({
   return (
     <>
       <SelectDateFilterOperator value={operator} onChange={onOperatorChange} />
-      {isDow && <SelectDayOfWeek value={value} onValueChange={onValueChange} />}
-      {isDate && <DateInput value={value} onValueChange={onValueChange} />}
+      {isDow && (
+        <SelectDayOfWeek
+          aria-label='Value'
+          value={value}
+          onValueChange={onValueChange}
+        />
+      )}
+      {isDate && (
+        <DateInput
+          aria-label='Value'
+          value={value}
+          onValueChange={onValueChange}
+        />
+      )}
     </>
   );
 }

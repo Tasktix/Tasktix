@@ -75,6 +75,7 @@ export function OptionFilterInputs({
         onChange={onOperatorChange}
       />
       <Select
+        aria-label='Value'
         selectedKeys={
           typeof value === 'string' ? [value] : value === undefined ? [] : value
         }

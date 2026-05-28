@@ -50,48 +50,44 @@ export function FilterModal({
   const [filterState, setFilterState] = useState<FilterInputGroup>(filters);
 
   return (
-    <Modal isOpen={isOpen} size={'2xl'} onOpenChange={onOpenChange}>
+    <Modal data-testid='filterModal' isOpen={isOpen} size={'2xl'} onOpenChange={onOpenChange}>
       <ModalContent>
-        {onClose => (
-          <>
-            <ModalHeader>
-              <div className='flex flex-row w-full'>
-                <h2>Advanced Filters</h2>
-              </div>
-            </ModalHeader>
-            <ModalBody>
-              <FilterGroup
-                filterConfig={filterConfig}
-                filters={filterState}
-                ids={[]}
-                onDeleteGroup={() =>
-                  setFilterState({
-                    operator: filterState.operator,
-                    filters: []
-                  })
-                }
-                onFilterChange={setFilterState}
-              />
-            </ModalBody>
-            <ModalFooter>
-              <Button color='primary' onPress={() => onFilterSave(filterState)}>
-                Save
-              </Button>
-              <Button
-                color='danger'
-                variant='flat'
-                onPress={() =>
-                  setFilterState({
-                    operator: filterState.operator,
-                    filters: []
-                  })
-                }
-              >
-                Clear
-              </Button>
-            </ModalFooter>
-          </>
-        )}
+        <ModalHeader>
+          <div className='flex flex-row w-full'>
+            <h2>Advanced Filters</h2>
+          </div>
+        </ModalHeader>
+        <ModalBody>
+          <FilterGroup
+            filterConfig={filterConfig}
+            filters={filterState}
+            ids={[]}
+            onDeleteGroup={() =>
+              setFilterState({
+                operator: filterState.operator,
+                filters: []
+              })
+            }
+            onFilterChange={setFilterState}
+          />
+        </ModalBody>
+        <ModalFooter>
+          <Button color='primary' onPress={() => onFilterSave(filterState)}>
+            Save
+          </Button>
+          <Button
+            color='danger'
+            variant='flat'
+            onPress={() =>
+              setFilterState({
+                operator: filterState.operator,
+                filters: []
+              })
+            }
+          >
+            Clear
+          </Button>
+        </ModalFooter>
       </ModalContent>
     </Modal>
   );
