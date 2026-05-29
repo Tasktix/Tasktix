@@ -38,11 +38,11 @@ export function NumberFilterInputs({
         value={operator}
         onChange={onOperatorChange}
       />
-      <NumberInput 
+      <NumberInput
         aria-label='Value'
-        type='number' 
-        value={value} 
-        onValueChange={onValueChange} 
+        type='number'
+        value={value}
+        onValueChange={onValueChange}
       />
     </>
   );

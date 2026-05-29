@@ -50,7 +50,12 @@ export function FilterModal({
   const [filterState, setFilterState] = useState<FilterInputGroup>(filters);
 
   return (
-    <Modal data-testid='filterModal' isOpen={isOpen} size={'2xl'} onOpenChange={onOpenChange}>
+    <Modal
+      data-testid='filterModal'
+      isOpen={isOpen}
+      size={'2xl'}
+      onOpenChange={onOpenChange}
+    >
       <ModalContent>
         <ModalHeader>
           <div className='flex flex-row w-full'>

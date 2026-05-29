@@ -69,8 +69,9 @@ export default function Filter({
   return (
     <>
       <span
-        data-testid="filter-container" 
-        className='grow rounded-md w-100 overflow-hidden p-4 h-16 flex items-center justify-center gap-4 border-2 border-content3 bg-content1 shadow-lg shadow-content2'>
+        className='grow rounded-md w-100 overflow-hidden p-4 h-16 flex items-center justify-center gap-4 border-2 border-content3 bg-content1 shadow-lg shadow-content2'
+        data-testid='filter-container'
+      >
         {currentFilters.filters.length > 0 ? (
           <FilterText filters={currentFilters} />
         ) : (
