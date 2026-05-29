@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /**
  * Tasktix: A powerful and flexible task-tracking tool for all.
  * Copyright (C) 2025 Nate Baird & other Tasktix contributors
@@ -16,20 +17,21 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import 'server-only';
+const SmeeClient = require('smee-client');
 
-import { PrismaClient } from '@prisma/client';
+/**
+ * Get a proxy URL from https://smee.io, and configure Github App to route
+ * webhook traffic to that URL, then run this in a seperate terminal to
+ * forward requests to local machine
+ */
+if (!process.argv[2]) {
+  console.log('usage: ./proxy-webhooks.js [proxy-url]');
+  process.exit(1);
+}
+const smee = new SmeeClient({
+  source: process.argv[2],
+  target: 'http://localhost:3000/api/webhook/github',
+  logger: console
+});
 
-// This file's logic ensures only 1 copy of the Prisma client is created, even when the
-// development server hot reloads. See Prisma Next.js best practices:
-// https://www.prisma.io/docs/orm/more/help-and-troubleshooting/nextjs-help#best-practices-for-using-prisma-client-in-development
-
-const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
-
-// Always omit issueId unless explicity necessary to prevent BigInt Serialization issues
-
-export const prisma =
-  globalForPrisma.prisma ||
-  new PrismaClient({ omit: { item: { issueId: true } } });
-
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
+smee.start();

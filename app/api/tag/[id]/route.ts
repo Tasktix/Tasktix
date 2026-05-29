@@ -71,7 +71,13 @@ export async function DELETE(
 
   const role = await getRoleByTag(user.id, id);
 
-  if (!role) return ClientError.NotFound('Tag not found');
+  if (!role) {
+    console.warn(
+      `${user.id} tried deleting ${id} which they don't have access to`
+    );
+
+    return ClientError.NotFound('Tag not found');
+  }
   if (!role.canManageTags)
     return ClientError.Forbidden('Insufficient permissions to remove tag');
 
