@@ -96,6 +96,7 @@ describe('PATCH', () => {
 
     expect(broadcastEvent).toHaveBeenCalledExactlyOnceWith('list-id', {
       type: 'SetListName',
+      id: 'list-id',
       name: 'New list name'
     });
   });
@@ -127,6 +128,7 @@ describe('PATCH', () => {
 
     expect(broadcastEvent).toHaveBeenCalledExactlyOnceWith('list-id', {
       type: 'SetHasTimeTracking',
+      id: 'list-id',
       hasTimeTracking: false
     });
   });
@@ -158,6 +160,7 @@ describe('PATCH', () => {
 
     expect(broadcastEvent).toHaveBeenCalledExactlyOnceWith('list-id', {
       type: 'SetHasDueDates',
+      id: 'list-id',
       hasDueDates: false
     });
   });
@@ -189,6 +192,7 @@ describe('PATCH', () => {
 
     expect(broadcastEvent).toHaveBeenCalledExactlyOnceWith('list-id', {
       type: 'SetIsAutoOrdered',
+      id: 'list-id',
       isAutoOrdered: false
     });
   });
@@ -220,6 +224,7 @@ describe('PATCH', () => {
 
     expect(broadcastEvent).toHaveBeenCalledExactlyOnceWith('list-id', {
       type: 'SetListColor',
+      id: 'list-id',
       color: 'Blue'
     });
   });

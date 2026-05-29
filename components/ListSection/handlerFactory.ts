@@ -21,9 +21,7 @@ import { ActionDispatch } from 'react';
 
 import api from '@/lib/api';
 import { addToastForError } from '@/lib/error';
-
-import { SectionAction } from '../List';
-import { ListItemState } from '../List/types';
+import { SectionAction, ListItemState } from '@/lib/transformations/list/types';
 
 /**
  * Produces all functions for interacting with a specific list section and its contents.

@@ -16,10 +16,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import Tag from '@/lib/model/tag';
+
 import {
+  BaseListState,
   ItemAction,
   ListAction,
-  FullState,
+  ListItemState,
+  ListMemberState,
+  ListSectionState,
+  ListState,
   MemberAction,
   SectionAction,
   TagAction
@@ -37,10 +43,56 @@ import {
  * individual case is simple and there have to be this many cases for the `switch`
  * statement
  */
-export default function listReducer( // skipcq: JS-0045, JS-R1005
-  state: FullState,
+export function listReducer( // skipcq: JS-0045, JS-R1005
+  state: ListState,
   action: ListAction | MemberAction | TagAction | SectionAction | ItemAction
-): FullState {
+): ListState {
+  switch (action.type) {
+    case 'SetHasDueDates':
+    case 'SetHasTimeTracking':
+    case 'SetIsAutoOrdered':
+    case 'SetListColor':
+    case 'SetListName':
+      return baseListReducer(state, action);
+
+    case 'AddMember':
+    case 'UpdateMemberPermissions':
+    case 'DeleteMember':
+      return memberReducer(state, action);
+
+    case 'AddTag':
+    case 'UpdateTagName':
+    case 'UpdateTagColor':
+    case 'DeleteTag':
+      return tagReducer(state, action);
+
+    case 'AddSection':
+    case 'AddItemToSection':
+    case 'ReorderItem':
+    case 'DeleteItem':
+    case 'DeleteSection':
+      return sectionReducer(state, action);
+
+    case 'SetItemName':
+    case 'SetItemDescription':
+    case 'SetItemDueDate':
+    case 'SetItemPriority':
+    case 'SetItemIncomplete':
+    case 'SetItemComplete':
+    case 'SetItemExpectedMs':
+    case 'StartItemTime':
+    case 'PauseItemTime':
+    case 'ResetItemTime':
+    case 'LinkTagToItem':
+    case 'UnlinkTagFromItem':
+      return itemReducer(state, action);
+  }
+}
+
+function baseListReducer<T extends BaseListState>(
+  state: T,
+  action: ListAction
+): T {
   const newState = structuredClone(state);
 
   switch (action.type) {
@@ -63,7 +115,18 @@ export default function listReducer( // skipcq: JS-0045, JS-R1005
     case 'SetListName':
       newState.name = action.name;
       break;
+  }
 
+  return newState;
+}
+
+function memberReducer<T extends { members: Map<string, ListMemberState> }>(
+  state: T,
+  action: MemberAction
+): T {
+  const newState = structuredClone(state);
+
+  switch (action.type) {
     case 'AddMember':
       newState.members.set(action.member.user.id, action.member);
       break;
@@ -82,7 +145,18 @@ export default function listReducer( // skipcq: JS-0045, JS-R1005
     case 'DeleteMember':
       newState.members.delete(action.id);
       break;
+  }
 
+  return newState;
+}
+
+function tagReducer<T extends { tags: Map<string, Tag> }>(
+  state: T,
+  action: TagAction
+): T {
+  const newState = structuredClone(state);
+
+  switch (action.type) {
     case 'AddTag':
       newState.tags.set(action.tag.id, action.tag);
       break;
@@ -110,7 +184,23 @@ export default function listReducer( // skipcq: JS-0045, JS-R1005
     case 'DeleteTag':
       newState.tags.delete(action.id);
       break;
+  }
 
+  return newState;
+}
+
+function sectionReducer<
+  T extends {
+    sections: Map<string, ListSectionState>;
+    sectionItems: Map<string, string[]>;
+    items: Map<string, ListItemState>;
+    itemAssignees: Map<string, [string, string][]>;
+    itemTags: Map<string, string[]>;
+  }
+>(state: T, action: SectionAction): T {
+  const newState = structuredClone(state);
+
+  switch (action.type) {
     case 'AddSection':
       newState.sections.set(action.section.id, action.section);
       newState.sectionItems.set(action.section.id, []);
@@ -158,6 +248,35 @@ export default function listReducer( // skipcq: JS-0045, JS-R1005
       break;
     }
 
+    case 'DeleteItem': {
+      const sectionItems = newState.sectionItems.get(action.sectionId);
+
+      // Should be impossible to trigger this, hence the runtime error - skipcq: TCV-001
+      if (!sectionItems)
+        throw new Error(`Unable to find items for section ${action.sectionId}`);
+
+      newState.sectionItems.set(
+        action.sectionId,
+        sectionItems.filter(item => item === action.id)
+      );
+
+      newState.items.delete(action.id);
+      break;
+    }
+  }
+
+  return newState;
+}
+
+function itemReducer<
+  T extends {
+    items: Map<string, ListItemState>;
+    itemTags: Map<string, string[]>;
+  }
+>(state: T, action: ItemAction): T {
+  const newState = structuredClone(state);
+
+  switch (action.type) {
     case 'SetItemName':
       getItem(newState, action.id).name = action.name;
       break;
@@ -223,22 +342,6 @@ export default function listReducer( // skipcq: JS-0045, JS-R1005
       );
       break;
     }
-
-    case 'DeleteItem': {
-      const sectionItems = newState.sectionItems.get(action.sectionId);
-
-      // Should be impossible to trigger this, hence the runtime error - skipcq: TCV-001
-      if (!sectionItems)
-        throw new Error(`Unable to find items for section ${action.sectionId}`);
-
-      newState.sectionItems.set(
-        action.sectionId,
-        sectionItems.filter(item => item === action.id)
-      );
-
-      newState.items.delete(action.id);
-      break;
-    }
   }
 
   return newState;
@@ -253,7 +356,10 @@ export default function listReducer( // skipcq: JS-0045, JS-R1005
  *
  * @returns The item that was looked for
  */
-function getItem(state: FullState, itemId: string) {
+function getItem<T extends { items: Map<string, ListItemState> }>(
+  state: T,
+  itemId: string
+): ListItemState {
   const item = state.items.get(itemId);
 
   if (!item) throw new Error(`Unable to find item with ID ${itemId}`);
