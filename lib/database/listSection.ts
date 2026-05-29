@@ -42,7 +42,6 @@ export async function createListSection(
  * for all lists tracking a provided repoId. If a list has no sections, returns
  * placeholders so a section can be created.
  * @param repoId - repoId to query by
- * @returns
  */
 export async function getSectionInfoByRepoId(
   repoId: number

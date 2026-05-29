@@ -66,7 +66,6 @@ export async function getListItemsByUser(userId: string): Promise<ListItem[]> {
 /**
  * Gets all pure listItems that are tracking a given IssueId.
  * @param issueId the issueId to query for
- * @returns
  */
 export async function getListItemsByIssueId(
   issueId: number

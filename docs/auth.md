@@ -76,7 +76,10 @@ Repository
 | Metadata: Read-only
 ```
 
-Tasktix integrates with Github Webhooks to proactively fetch new data from linked repositories, to enable this, the app must be configured to listen for `issues` webhook events, this involves setting the webhook url to `<BASE_URL>/api/webhook/github`, generating a Webhook Secret and a private key file in the Github App, then configuring the following .env variables
+Tasktix integrates with Github Webhooks to proactively fetch new data from linked repositories. To enable this, the app must be configured to listen for `issues` webhook events by: 
+- Setting the webhook url to `<BASE_URL>/api/webhook/github`
+- Generating a Webhook Secret and a private key file in the Github App
+- Configuring the following `.env` variables:
 
 ```
 .env/

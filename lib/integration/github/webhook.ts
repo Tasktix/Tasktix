@@ -120,7 +120,7 @@ async function handleNewIssue({
       issueId
     });
 
-    item.sectionIndex = ++list.itemCount;
+    item.sectionIndex = list.itemCount + 1;
     if (!list.sectionId) {
       const name = 'Github Issues';
       const newSection = new ListSection(name, []);
@@ -167,6 +167,7 @@ async function handleCloseIssue({
 
   for (const item of trackingItems) {
     item.status = 'Completed';
+    item.dateCompleted = new Date();
     const result = await updateListItem(item);
 
     if (!result)
@@ -185,7 +186,7 @@ export async function githubMiddleware(req: Request): Promise<Response> {
 
   if (!middleware) {
     return ClientError.NotFound(
-      'Github Webhook Integration not configured, please contact your system administrator'
+      'Github webhook integration not configured. Please contact your system administrator'
     );
   }
 
