@@ -133,9 +133,7 @@ export async function getRoleByTag(
         some: {
           userId,
           list: {
-            sections: {
-              some: { items: { some: { tags: { some: { id: tagId } } } } }
-            }
+            tags: { some: { id: tagId } }
           }
         }
       }
