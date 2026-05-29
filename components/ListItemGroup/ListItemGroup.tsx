@@ -161,10 +161,10 @@ function ListItemWrapper({
 }) {
   return (
     <ListItem
-      addNewTag={groupHandlers.addNewTag.bind(null, item.listId!)}
-      hasDueDates={itemGroup.lists.get(item.listId!)?.hasDueDates || false}
+      addNewTag={groupHandlers.addNewTag.bind(null, item.listId)}
+      hasDueDates={itemGroup.lists.get(item.listId)?.hasDueDates || false}
       hasTimeTracking={
-        itemGroup.lists.get(item.listId!)?.hasTimeTracking || false
+        itemGroup.lists.get(item.listId)?.hasTimeTracking || false
       }
       item={listStateToItem(
         itemGroup.itemAssignees,
@@ -173,18 +173,18 @@ function ListItemWrapper({
         itemGroup.tags,
         item
       )}
-      list={itemGroup.lists.get(item.listId!)}
+      list={itemGroup.lists.get(item.listId)}
       members={itemGroupStateToMembers(
         itemGroup.listMembers,
         itemGroup.members,
         roles,
-        item.listId!
+        item.listId
       )}
       sectionId='unknown'
       tags={itemGroupStateToTags(
         itemGroup.listTags,
         itemGroup.tags,
-        item.listId!
+        item.listId
       )}
       onItemEvent={dispatchItemGroup}
     />

@@ -38,7 +38,7 @@ const MOCK_USER = new User(
   new Date(),
   { color: 'Amber' }
 );
-const MOCK_ITEM = new ListItem('test tag', {});
+const MOCK_ITEM = new ListItem('test item', 'list-id', {});
 const ITEM_PATH = `http://localhost/api/item/${MOCK_ITEM.id}` as const;
 
 vi.mock('@/lib/session');

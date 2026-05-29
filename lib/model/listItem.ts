@@ -62,10 +62,11 @@ export default class ListItem {
   dateCompleted: Date | null;
   assignees: Assignee[];
   tags: Tag[];
-  listId?: string;
+  listId: string;
 
   constructor(
     name: string,
+    listId: string,
     {
       id,
       description = '',
@@ -80,8 +81,7 @@ export default class ListItem {
       dateStarted = null,
       dateCompleted = null,
       assignees = [],
-      tags = [],
-      listId
+      tags = []
     }: {
       id?: string;
       description?: string;
