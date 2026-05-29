@@ -46,6 +46,9 @@ export const ZodListItem = z.strictObject({
   sectionId: z.string().length(16)
 });
 
+/**
+ * Represents a list item/task with a backreference to the list it belongs to
+ */
 export default class ListItem {
   id: string;
   name: string;

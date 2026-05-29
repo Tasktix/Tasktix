@@ -61,7 +61,7 @@ describe('ListItem constructor', () => {
     expect(listItem.dateCompleted).toBeNull();
     expect(listItem.assignees).toHaveLength(0);
     expect(listItem.tags).toHaveLength(0);
-    expect(listItem.listId).toBeUndefined();
+    expect(listItem.listId).toBe('list-id');
   });
 
   test('Assigns all properties correctly', () => {
@@ -81,7 +81,7 @@ describe('ListItem constructor', () => {
     ];
     const tags = [new Tag('tag1', 'Amber'), new Tag('tag2', 'Cyan')];
 
-    const listItem = new ListItem('testListItem', 'list-id', {
+    const listItem = new ListItem('testListItem', 'listId', {
       status: 'Completed',
       priority: 'High',
       isUnclear: true,
@@ -94,7 +94,6 @@ describe('ListItem constructor', () => {
       dateCompleted: new Date('2021-01-02'),
       assignees,
       tags,
-      listId: 'listId',
       id: 'provided-id'
     });
 
