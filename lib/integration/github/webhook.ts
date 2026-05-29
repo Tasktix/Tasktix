@@ -155,7 +155,7 @@ async function handleNewIssue({
 async function handleCloseIssue({
   payload
 }: EmitterWebhookEvent<'issues.closed'>) {
-  const issueId = payload.issue.id;
+  const issueId = BigInt(payload.issue.id);
 
   console.log(`handleCloseIssue: rx issue closed event for repo ${issueId}`);
 

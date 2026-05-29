@@ -68,7 +68,7 @@ export async function getListItemsByUser(userId: string): Promise<ListItem[]> {
  * @param issueId the issueId to query for
  */
 export async function getListItemsByIssueId(
-  issueId: number
+  issueId: bigint
 ): Promise<Omit<ListItem, 'assignees' | 'tags'>[]> {
   const results = await prisma.item.findMany({
     where: { issueId }

@@ -62,7 +62,7 @@ export default class ListItem {
   dateCompleted: Date | null;
   assignees: Assignee[];
   tags: Tag[];
-  issueId?: bigint | null;
+  issueId: bigint | null;
   listId?: string;
 
   constructor(
