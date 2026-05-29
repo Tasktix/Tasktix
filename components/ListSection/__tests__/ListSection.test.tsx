@@ -24,8 +24,11 @@ import { render, within } from '@testing-library/react';
 
 import ListItem from '@/lib/model/listItem';
 import api from '@/lib/api';
+import { FilterGroup } from '@/components/Filter';
 
 import ListSection from '../ListSection';
+
+const DEFAULT_FILTERS = { filters: [], operator: 'And' } satisfies FilterGroup;
 
 vi.mock('@/lib/api');
 
@@ -45,7 +48,7 @@ test('Newly created items are added to the section', async () => {
       isAutoOrdered
       dispatchItemChange={vi.fn()}
       dispatchSectionChange={dispatchSectionChange}
-      filters={{}}
+      filters={DEFAULT_FILTERS}
       hasDueDates={false}
       hasTimeTracking={false}
       listId='test-list'
@@ -89,7 +92,7 @@ test('Section can be deleted and propagates that event', async () => {
       isAutoOrdered
       dispatchItemChange={vi.fn()}
       dispatchSectionChange={dispatchSectionChange}
-      filters={{}}
+      filters={DEFAULT_FILTERS}
       listId='test-list'
       members={[]}
       section={{ id: 'section-id', name: 'Section Name', items: new Map() }}
@@ -116,7 +119,7 @@ describe('Section expansion/collapse', () => {
         isAutoOrdered
         dispatchItemChange={vi.fn()}
         dispatchSectionChange={vi.fn()}
-        filters={{}}
+        filters={DEFAULT_FILTERS}
         listId='test-list'
         members={[]}
         section={{
@@ -149,7 +152,7 @@ describe('Section expansion/collapse', () => {
         isAutoOrdered
         dispatchItemChange={vi.fn()}
         dispatchSectionChange={vi.fn()}
-        filters={{}}
+        filters={DEFAULT_FILTERS}
         listId='test-list'
         members={[]}
         section={{
@@ -183,7 +186,7 @@ describe('Section expansion/collapse', () => {
         isAutoOrdered
         dispatchItemChange={vi.fn()}
         dispatchSectionChange={vi.fn()}
-        filters={{}}
+        filters={DEFAULT_FILTERS}
         listId='test-list'
         members={[]}
         section={{ id: 'section-id', name: 'Section Name', items: new Map() }}
@@ -206,7 +209,7 @@ describe('Section expansion/collapse', () => {
         isAutoOrdered
         dispatchItemChange={vi.fn()}
         dispatchSectionChange={vi.fn()}
-        filters={{}}
+        filters={DEFAULT_FILTERS}
         listId='test-list'
         members={[]}
         section={{
@@ -244,7 +247,7 @@ describe('Section expansion/collapse', () => {
         isAutoOrdered
         dispatchItemChange={vi.fn()}
         dispatchSectionChange={vi.fn()}
-        filters={{}}
+        filters={DEFAULT_FILTERS}
         listId='test-list'
         members={[]}
         section={{

@@ -24,56 +24,52 @@ import userEvent from '@testing-library/user-event';
 import { expect, it } from 'vitest';
 
 import FilterRow from '../FilterRow';
+import { FilterConfig } from '../types';
 
-// Mock Heroui components
+const MOCK_FILTER_CONFIG = [
+  {
+    type: 'option',
+    label: 'priority',
+    options: [{ name: 'High' }, { name: 'Medium' }, { name: 'Low' }]
+  }
+] satisfies FilterConfig[];
+
 vi.mock(import('@heroui/react'), async importOriginal => ({
   ...(await importOriginal()),
   addToast: vi.fn()
 }));
 
-// Reset after each test
-beforeEach(() => {
-  vi.resetAllMocks();
-});
+beforeEach(vi.resetAllMocks);
 
 // When a filter is changed, the state is changed
 it('Triggers update to state when a field is changed', async () => {
-  // Some setup required
   const user = userEvent.setup();
   const stateChange = vi.fn();
-  // Mock the filter row component
-  const { getByText, getByLabelText } = render(
+
+  const { getByText, findByLabelText } = render(
     <FilterRow
-      filterConfigs={[]}
+      filterConfigs={MOCK_FILTER_CONFIG}
       filterInput={{ id: 0, type: 'undefined' }}
       onFilterChange={stateChange}
       onFilterDelete={vi.fn()}
     />
   );
 
-  // Change the first field
   await user.click(getByText('Field'));
-  await user.click(getByLabelText('priority'));
+  await user.click(await findByLabelText('priority'));
   // Check that onFilterChange was called
-  expect(stateChange).toHaveBeenCalledExactlyOnceWith({
-    operator: 'And',
-    filters: [
-      expect.objectContaining({
-        label: 'priority'
-      })
-    ]
-  });
-  // *** Is this good enough? Do we actually call onFilterChange
-  // when we change our selection? Or do we only call this when
-  // the entire row has been filled out? ***
+  expect(stateChange).toHaveBeenCalledExactlyOnceWith(
+    expect.objectContaining({
+      label: 'priority',
+      type: 'option'
+    })
+  );
 });
 
-// Callback function is called when the row is deleted
 it('Triggers callback when the row is deleted', async () => {
-  // Some setup required
   const user = userEvent.setup();
   const onDelete = vi.fn();
-  // Mock the filter row component
+
   const { getByText, getByLabelText } = render(
     <FilterRow
       filterConfigs={[]}
@@ -83,11 +79,9 @@ it('Triggers callback when the row is deleted', async () => {
     />
   );
 
-  // Check that the row exists
   expect(getByText('Field')).toBeVisible();
-  // Have the user delete the row
+
   await user.click(getByLabelText('Delete filter row'));
-  // Check that the row was deleted
-  expect(onDelete).toHaveBeenCalledExactlyOnceWith();
-  expect(getByText('Field')).not.toBeVisible();
+
+  expect(onDelete).toHaveBeenCalledOnce();
 });

@@ -19,7 +19,7 @@
  */
 
 import '@testing-library/jest-dom';
-import { getAllByLabelText, render } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { it } from 'vitest';
 
@@ -36,77 +36,78 @@ beforeEach(() => {
   vi.resetAllMocks();
 });
 
-// When a row is added, onFilterChange is called
-it('Triggers state change when a row is added', async () => {
-  // Some setup required
-  const user = userEvent.setup();
-  const filterChangeCallback = vi.fn();
-  // Mock the filter component
-  const { getByText } = render(
-    <FilterGroup
-      filterConfig={[]}
-      filters={{ operator: 'And', filters: [] }}
-      ids={[1]}
-      onDeleteGroup={vi.fn()}
-      onFilterChange={filterChangeCallback}
-    />
-  );
+describe('Event handlers propagate user actions', () => {
+  it('Triggers state change when a row is added', async () => {
+    const user = userEvent.setup();
+    const filterChangeCallback = vi.fn();
 
-  // Check that the modal is empty
-  expect(getByText('Field')).not.toBeVisible();
-  // Have the user add a row
-  await user.click(getByText('Add Filter Row'));
-  // Check that the filter row was made
-  expect(getByText('Field')).toBeVisible();
-  expect(filterChangeCallback).toHaveBeenCalledExactlyOnceWith();
-  // *** Pretty sure that I need to add something here ***
-});
+    const { getByText, queryByText } = render(
+      <FilterGroup
+        filterConfig={[]}
+        filters={{ operator: 'And', filters: [] }}
+        ids={[1]}
+        onDeleteGroup={vi.fn()}
+        onFilterChange={filterChangeCallback}
+      />
+    );
 
-// When a group is added, onFilterChange is called
-it('Triggers state change when a row is added', async () => {
-  // Some setup required
-  const user = userEvent.setup();
-  const filterChangeCallback = vi.fn();
-  // Mock the filter component
-  const { getByText, getAllByText } = render(
-    <FilterGroup
-      filterConfig={[]}
-      filters={{ operator: 'And', filters: [] }}
-      ids={[1]}
-      onDeleteGroup={vi.fn()}
-      onFilterChange={filterChangeCallback}
-    />
-  );
+    // Check that the modal is empty
+    expect(queryByText('Field')).not.toBeInTheDocument();
 
-  // Check that the modal is empty
-  expect(getByText('Field')).not.toBeVisible();
-  // Have the user add a group
-  await user.click(getByText('Add Filter Group'));
-  // Check that the filter group was made
-  expect(getAllByText('Add Filter Group')).toHaveLength(2);
-  expect(filterChangeCallback).toHaveBeenCalledExactlyOnceWith();
-  // *** Pretty sure that I need to add something here ***
-});
+    await user.click(getByText('Add Filter Row'));
 
-// When a subgroup is added, the operator alternates
-it('Triggers state change when a row is added', async () => {
-  // Some setup required
-  const user = userEvent.setup();
-  // Mock the filter component
-  const { getByText, getAllByText, getAllByLabelText } = render(
-    <FilterGroup
-      filterConfig={[]}
-      filters={{ operator: 'And', filters: [] }}
-      ids={[1]}
-      onDeleteGroup={vi.fn()}
-      onFilterChange={vi.fn()}
-    />
-  );
+    expect(filterChangeCallback).toHaveBeenCalledExactlyOnceWith({
+      filters: [{ id: 1, type: 'undefined' }],
+      operator: 'And'
+    });
+  });
 
-  // Have the user add a subgroup with row
-  await user.click(getByText('Add Filter Group'));
-  await user.click(getAllByText('Add Filter Row')[1]);
-  // Check that there are two unique operators visible
-  expect(getAllByLabelText('Group operator')[0]).toHaveTextContent('And');
-  expect(getAllByLabelText('Group operator')[1]).toHaveTextContent('Or');
+  it('Triggers state change when a subgroup is added', async () => {
+    const user = userEvent.setup();
+    const filterChangeCallback = vi.fn();
+
+    const { getByText, queryByText } = render(
+      <FilterGroup
+        filterConfig={[]}
+        filters={{ operator: 'And', filters: [] }}
+        ids={[1]}
+        onDeleteGroup={vi.fn()}
+        onFilterChange={filterChangeCallback}
+      />
+    );
+
+    expect(queryByText('Field')).not.toBeInTheDocument();
+
+    await user.click(getByText('Add Filter Group'));
+
+    expect(filterChangeCallback).toHaveBeenCalledExactlyOnceWith({
+      filters: [{ id: 1, filters: [], operator: 'Or' }],
+      operator: 'And'
+    });
+  });
+
+  it('Triggers state change when a row is added to a subgroup', async () => {
+    const user = userEvent.setup();
+    const mockFilterChangeHandler = vi.fn();
+
+    const { getAllByText } = render(
+      <FilterGroup
+        filterConfig={[]}
+        filters={{
+          operator: 'And',
+          filters: [{ id: 1, filters: [], operator: 'Or' }]
+        }}
+        ids={[1]}
+        onDeleteGroup={vi.fn()}
+        onFilterChange={mockFilterChangeHandler}
+      />
+    );
+
+    await user.click(getAllByText('Add Filter Row')[0]);
+
+    expect(mockFilterChangeHandler).toHaveBeenCalledExactlyOnceWith({
+      filters: [{ filters: [{ id: 1, type: 'undefined' }], operator: 'Or' }],
+      operator: 'And'
+    });
+  });
 });
