@@ -16,7 +16,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-// Imports
 import {
   NodePlusFill as AddRowIcon,
   Plus as AddGroupIcon
@@ -27,7 +26,6 @@ import { Button, Select, SelectItem, SharedSelection } from '@heroui/react';
 import FilterRow from './FilterRow';
 import { FilterInputGroup, FilterInput, FilterConfig } from './types';
 
-// Input type for the filter modal
 type FilterGroupProps = {
   ids: number[];
   filters: FilterInputGroup;
@@ -36,7 +34,6 @@ type FilterGroupProps = {
   onDeleteGroup: () => unknown;
 };
 
-// Filter group implementation
 export default function FilterGroup({
   ids,
   filters,
@@ -44,14 +41,12 @@ export default function FilterGroup({
   onFilterChange,
   onDeleteGroup
 }: FilterGroupProps) {
-  // Set a reference
   const reference = useRef(1);
 
   function shallowCloneFilter() {
     return { operator: filters.operator, filters: [...filters.filters] };
   }
 
-  // Function to add a row
   function addRow() {
     const newFilter = shallowCloneFilter();
 
@@ -62,7 +57,6 @@ export default function FilterGroup({
     onFilterChange(newFilter);
   }
 
-  // Function to add a group
   function addGroup() {
     const newFilter = shallowCloneFilter();
 
@@ -74,7 +68,6 @@ export default function FilterGroup({
     onFilterChange(newFilter);
   }
 
-  // Function for operator change
   function handleOperatorChange(selection: SharedSelection) {
     const newFilter = { ...filters };
 
@@ -101,7 +94,6 @@ export default function FilterGroup({
     onFilterChange(tempFilters);
   }
 
-  // Function for row deletion
   function handleChildDelete(deleteFilter: FilterInputGroup | FilterInput) {
     if (filters.filters.length < 2) {
       // Last filter in this group was deleted; delete group too
@@ -121,7 +113,6 @@ export default function FilterGroup({
     onFilterChange(tempFilters);
   }
 
-  // DOM structure for filter group component
   return (
     <>
       {ids.length == 0 && <>Where:</>}
@@ -156,7 +147,7 @@ export default function FilterGroup({
           )}
           {filters.filters.map((filter, i) => {
             if ('filters' in filter) {
-              // Render a filterGroup component
+              // Only subgroups have 'filters'
               return (
                 <FilterGroup
                   key={[...ids, i].join('.')}
@@ -168,7 +159,6 @@ export default function FilterGroup({
                 />
               );
             } else {
-              // Render a FilterRow component
               return (
                 <FilterRow
                   key={[...ids, i].join('.')}

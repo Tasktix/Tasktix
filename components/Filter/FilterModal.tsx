@@ -16,7 +16,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-//Imports
 import {
   Button,
   Modal,
@@ -30,7 +29,6 @@ import { useState } from 'react';
 import FilterGroup from './FilterGroup';
 import { FilterInputGroup, FilterConfig } from './types';
 
-// Input type for the filter modal
 type FilterModalProps = {
   filters: FilterInputGroup;
   filterConfig: FilterConfig[];
@@ -39,7 +37,6 @@ type FilterModalProps = {
   onOpenChange: (isOpen: boolean) => void;
 };
 
-// Filter modal implementation
 export function FilterModal({
   filters,
   filterConfig,

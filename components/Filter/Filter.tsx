@@ -16,40 +16,28 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-// Imports
 import {
   Diagram2Fill as FilterModalIcon,
   Bookmarks as FilterSavedIcon
 } from 'react-bootstrap-icons';
-//import { Key, ReactElement, useReducer, useState } from 'react';
-import {
-  addToast,
-  //Autocomplete,
-  //AutocompleteItem,
-  //AutocompleteSection,
-  Button,
-  useDisclosure
-} from '@heroui/react';
+import { addToast, Button, useDisclosure } from '@heroui/react';
 
 import { FilterModal } from './FilterModal';
 import { FilterConfig, FilterGroup, FilterInputGroup } from './types';
 import { validateFilterInputGroup } from './validator';
 import FilterText from './FilterText';
 
-// Props for the filter component
 type FilterProps = {
   filterConfig: FilterConfig[];
   currentFilters: FilterGroup;
   onFilterSave: (f: FilterGroup) => unknown;
 };
 
-// Filter bar implementation
 export default function Filter({
   filterConfig,
   currentFilters,
   onFilterSave
 }: FilterProps) {
-  // States
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   function handleFilterSave(filters: FilterInputGroup) {
@@ -65,7 +53,6 @@ export default function Filter({
     addToast({ title: err.message, color: 'danger' });
   }
 
-  // DOM structure for filter bar component
   return (
     <>
       <span
