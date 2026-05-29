@@ -127,7 +127,7 @@ systemctl --user start tasktix-pod
 
 You'll also need to run the following command to set up your database:
 ```sh
-podman run --rm --pod tasktix --secret "TASKTIX_DATABASE_URL,type=env,target=DATABASE_URL" ghcr.io/tasktix/tasktix-deploy:latest
+podman run --rm --detach --pod tasktix --secret "TASKTIX_DATABASE_URL,type=env,target=DATABASE_URL" ghcr.io/tasktix/tasktix-deploy:latest
 ```
 
 > [!NOTE]

@@ -11,7 +11,7 @@
 Tasktix is a task-tracking tool for power users, providing increased control and
 flexibility when creating and scheduling tasks. Most free task tracking tools fall short
 when it comes to advanced functionality, either entirely missing them or locking them
-behind paywalls. Our goal is to build a comprehensive tool that anyone can use for free
+behind paywalls. Our goal is to provide a comprehensive tool that anyone can use for free
 (or even self-host!) to boost efficiency and productivity without those limitations.
 
 ## Getting Started
