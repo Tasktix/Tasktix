@@ -136,6 +136,12 @@ export function generateItemTagsState(list: ListModel): ListState['itemTags'] {
   );
 }
 
+/**
+ * Generates the 1:M normalized mapping of lists to the sections they contain (map of list
+ * IDs to the section IDs of all sections in each list) from all List data
+ *
+ * @param lists The lists to extract list:section mapping data from
+ */
 export function generateListSectionsState(
   lists: ListModel[]
 ): ItemGroupState['listSections'] {
@@ -144,6 +150,12 @@ export function generateListSectionsState(
   );
 }
 
+/**
+ * Generates the 1:M normalized mapping of lists to the members they contain (map of list
+ * IDs to the member IDs of all members in each list) from all List data
+ *
+ * @param lists The lists to extract list:member mapping data from
+ */
 export function generateListMembersState(
   lists: ListModel[]
 ): ItemGroupState['listMembers'] {
@@ -152,12 +164,24 @@ export function generateListMembersState(
   );
 }
 
+/**
+ * Generates the 1:M normalized mapping of lists to the tags they contain (map of list IDs
+ * to the tag IDs of all tags in each list) from all List data
+ *
+ * @param lists The lists to extract list:tag mapping data from
+ */
 export function generateListTagsState(
   lists: ListModel[]
 ): ItemGroupState['listTags'] {
   return new Map(lists.map(list => [list.id, list.tags.map(tag => tag.id)]));
 }
 
+/**
+ * Generates the normalized list state (map of list IDs to flat list objects) from all
+ * List data
+ *
+ * @param lists The lists to extract normalized data from
+ */
 export function generateListsState(
   lists: ListModel[]
 ): ItemGroupState['lists'] {

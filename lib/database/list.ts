@@ -121,6 +121,12 @@ export async function getListBySectionId(id: string): Promise<List | false> {
   return result ?? false;
 }
 
+/**
+ * Gets all lists a user has access to, without nested data, for use displaying a
+ * summary of lists.
+ *
+ * @param id The ID of the user to fetch lists for
+ */
 export async function getListsByUser(
   id: string
 ): Promise<Omit<List, 'members' | 'sections' | 'tags'>[]> {
@@ -131,6 +137,12 @@ export async function getListsByUser(
   return result;
 }
 
+/**
+ * Gets all lists a user has access to, complete with nested member, section, and tag
+ * data. For use displaying all data from several lists.
+ *
+ * @param id The ID of the user to fetch lists for
+ */
 export async function getRichListsByUser(id: string): Promise<List[]> {
   const result = await prisma.list.findMany({
     where: { members: { some: { userId: id } } },

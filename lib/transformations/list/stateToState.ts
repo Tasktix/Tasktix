@@ -90,10 +90,29 @@ export function listReducer( // skipcq: JS-0045, JS-R1005
   }
 }
 
-export function itemGroupReducer(
+/**
+ * The reducer for managing <ListItemGroup />'s state
+ *
+ * @param state The current state (passed in by React)
+ * @param action The action to take for mutating state
+ *
+ * Default case intentionally omitted to surface TS error if not all cases are explicitly
+ * handled (e.g. because the ListAction type was added to). All VALID code paths do
+ * return. Also, cyclomatic complexity of this function is high, but each individual case
+ * is simple and there have to be this many cases for the `switch` statement
+ */
+export function itemGroupReducer( // skipcq: JS-0045, JS-R1005
   state: ItemGroupState,
   action: ListAction | MemberAction | TagAction | SectionAction | ItemAction
 ): ItemGroupState {
+  /**
+   * Adds the given ID to a 1:M mapping for a list's data. For example, it could be used
+   * to add a tag ID to `listTags` or a member ID to `listMembers`
+   *
+   * @param listX The 1:M mapping to add the ID to
+   * @param listId The list the new ID belongs to
+   * @param xId The ID to add
+   */
   function addToList(
     listX: Map<string, string[]>,
     listId: string,
@@ -102,6 +121,14 @@ export function itemGroupReducer(
     listX.get(listId)?.push(xId);
   }
 
+  /**
+   * Removes the given ID from a 1:M mapping for a list's data. For example, it could be
+   * used to remove a tag ID from `listTags` or a member ID from `listMembers`
+   *
+   * @param listX The 1:M mapping to remove the ID from
+   * @param listId The list the old ID belonged to
+   * @param xId The ID to remove
+   */
   function deleteFromList(
     listX: Map<string, string[]>,
     listId: string,

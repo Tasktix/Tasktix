@@ -109,6 +109,15 @@ export function listStateToMembers(
     .toArray();
 }
 
+/**
+ * Generates a list of full Tag objects from the normalized state data tracked for lists.
+ * That is, this function retrieves the Tag objects for a list of tag IDs tracked by a
+ * list.
+ *
+ * @param listTags A map of list IDs to the tag IDs that belong to that list
+ * @param tags A map of tag IDs to full Tag objects
+ * @param listId The list to retrieve Tag objects for
+ */
 export function itemGroupStateToTags(
   listTags: ItemGroupState['listTags'],
   tags: ItemGroupState['tags'],
@@ -120,12 +129,23 @@ export function itemGroupStateToTags(
     ?.filter(Boolean) as Tag[];
 }
 
+/**
+ * Generates a list of full ListMember objects from the normalized state data tracked for
+ * lists. That is, for all members of a given list, this function converts the M:1
+ * relationship of members:roles back to each member's role nested within the member
+ * object.
+ *
+ * @param listMembers A map of list IDs to the member IDs that belong to that list
+ * @param members The normalized members to convert to ListMember objects
+ * @param roles The roles available that `members` may be given
+ * @param listId The list to retrieve ListMembers for
+ */
 export function itemGroupStateToMembers(
   listMembers: ItemGroupState['listMembers'],
   members: ItemGroupState['members'],
   roles: Map<string, MemberRole>,
   listId: string
-) {
+): ListMember[] {
   const relevantMembers = listMembers.get(listId);
 
   if (relevantMembers === undefined) return [];

@@ -54,6 +54,13 @@ import { ListItem } from '../ListItem';
 
 import { itemGroupHandlerFactory } from './handlerFactory';
 
+/**
+ * Displays the top list items from several lists, all in a single section.
+ *
+ * @param startingLists All lists with all data that displayed items may come from
+ * @param startingRoles All roles list members may have when the list is loaded
+ * @param alternateText The text to display if there are no incomplete items to display
+ */
 export default function ListItemGroup({
   startingLists,
   startingRoles,
@@ -125,6 +132,18 @@ export default function ListItemGroup({
   );
 }
 
+/**
+ * Component that simplifies the list item interface for <ListItemGroup> (i.e. handles
+ * conversion from flat React state to nested JS objects).
+ *
+ * @param item The flat item state
+ * @param itemGroup All React state (for pulling tag, member, etc. data)
+ * @param roles All roles a list member could have
+ * @param groupHandlers Callback functions that handle API calls and state updates for the
+ *  item group
+ * @param dispatchItemGroup Callback functions for updating an item's React state (without
+ *  API calls)
+ */
 function ListItemWrapper({
   item,
   itemGroup,
