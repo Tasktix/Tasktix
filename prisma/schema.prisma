@@ -49,6 +49,7 @@ model Item {
   dateDue       DateTime?      @db.DateTime(0)
   dateStarted   DateTime?      @db.DateTime(0)
   dateCompleted DateTime?      @db.DateTime(0)
+  issueId       BigInt?        @db.UnsignedBigInt
   parent        Item?          @relation("family", fields: [parentId], references: [id], onDelete: Cascade)
   children      Item[]         @relation("family")
   section       ListSection    @relation(fields: [sectionId, listId], references: [id, listId], onDelete: Cascade)
