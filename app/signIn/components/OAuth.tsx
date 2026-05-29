@@ -18,11 +18,11 @@
 
 'use client';
 
-import { Button, Divider } from '@heroui/react';
+import { Button } from '@heroui/react';
 import { Github, ShieldLockFill } from 'react-bootstrap-icons';
 import { startTransition } from 'react';
 
-import { OAuthConfig } from '@/lib/auth';
+import { AuthConfig } from '@/lib/auth';
 import User from '@/lib/model/user';
 
 import { handleOAuth } from '../oauth';
@@ -35,59 +35,48 @@ import { handleOAuth } from '../oauth';
  * @component
  * @param props - The OAuth controller props
  * @param props.setLoggedInUser - Callback function to set the logged-in user state
- * @param props.oauthConfig - Supported Oauth Providers configuration
+ * @param props.authConfig - Supported Oauth Providers configuration
  *
  * @example
  * <OAuth setLoggedInUser={setUser} router={router} />
  */
 export default function OAuth({
   setLoggedInUser,
-  oauthConfig
+  authConfig
 }: Readonly<{
   setLoggedInUser: (user: User) => void;
-  oauthConfig: OAuthConfig;
+  authConfig: AuthConfig;
 }>) {
-  if (!oauthConfig?.githubEnabled && !oauthConfig?.customEnabled) {
-    return null;
-  }
-
   return (
-    <div>
-      <div className='flex items-center gap-4 my-6'>
-        <Divider className='flex-1' />
-        <p className='text-tiny text-default-500 shrink-0'>OR</p>
-        <Divider className='flex-1' />
-      </div>
-      <div className='flex flex-col items-center gap-4'>
-        {oauthConfig.githubEnabled && (
-          <Button
-            aria-label='sign in with github'
-            startContent={<Github />}
-            variant='bordered'
-            onPress={() =>
-              startTransition(() =>
-                handleOAuth('github', setLoggedInUser, oauthConfig)
-              )
-            }
-          >
-            Continue with Github
-          </Button>
-        )}
-        {oauthConfig.customEnabled && (
-          <Button
-            aria-label={`sign in with ${oauthConfig.customProviderId}`}
-            startContent={<ShieldLockFill />}
-            variant='bordered'
-            onPress={() =>
-              startTransition(() =>
-                handleOAuth('custom', setLoggedInUser, oauthConfig)
-              )
-            }
-          >
-            Continue with {oauthConfig.customProviderId}
-          </Button>
-        )}
-      </div>
+    <div className='flex flex-col items-center gap-4'>
+      {authConfig.githubEnabled && (
+        <Button
+          aria-label='sign in with github'
+          startContent={<Github />}
+          variant='bordered'
+          onPress={() =>
+            startTransition(() =>
+              handleOAuth('github', setLoggedInUser, authConfig)
+            )
+          }
+        >
+          Continue with Github
+        </Button>
+      )}
+      {authConfig.customEnabled && (
+        <Button
+          aria-label={`sign in with ${authConfig.customProviderId}`}
+          startContent={<ShieldLockFill />}
+          variant='bordered'
+          onPress={() =>
+            startTransition(() =>
+              handleOAuth('custom', setLoggedInUser, authConfig)
+            )
+          }
+        >
+          Continue with {authConfig.customProviderId}
+        </Button>
+      )}
     </div>
   );
 }

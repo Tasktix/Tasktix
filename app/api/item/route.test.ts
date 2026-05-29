@@ -77,7 +77,7 @@ describe('POST', () => {
         false,
         true,
         true,
-        'list-id'
+        { id: 'list-id' }
       )
     );
     vi.mocked(createListItem).mockResolvedValue(true);
@@ -121,7 +121,7 @@ describe('POST', () => {
         true,
         false,
         true,
-        'list-id'
+        { id: 'list-id' }
       )
     );
     vi.mocked(createListItem).mockResolvedValue(true);
@@ -227,7 +227,7 @@ describe('POST', () => {
           true,
           true,
           true,
-          'list-id'
+          { id: 'list-id' }
         )
       );
 
@@ -260,7 +260,7 @@ describe('POST', () => {
           true,
           true,
           true,
-          'list-id'
+          { id: 'list-id' }
         )
       );
 
@@ -293,7 +293,7 @@ describe('POST', () => {
           true,
           true,
           true,
-          'list-id'
+          { id: 'list-id' }
         )
       );
 
@@ -326,7 +326,7 @@ describe('POST', () => {
           true,
           true,
           true,
-          'list-id'
+          { id: 'list-id' }
         )
       );
 
@@ -359,7 +359,7 @@ describe('POST', () => {
           true,
           true,
           true,
-          'list-id'
+          { id: 'list-id' }
         )
       );
       vi.mocked(createListItem).mockResolvedValue(false);
