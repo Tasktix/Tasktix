@@ -25,16 +25,12 @@ import { it } from 'vitest';
 
 import FilterGroup from '../FilterGroup';
 
-// Mock Heroui components
 vi.mock(import('@heroui/react'), async importOriginal => ({
   ...(await importOriginal()),
   addToast: vi.fn()
 }));
 
-// Reset after each test
-beforeEach(() => {
-  vi.resetAllMocks();
-});
+beforeEach(vi.resetAllMocks);
 
 describe('Event handlers propagate user actions', () => {
   it('Triggers state change when a row is added', async () => {

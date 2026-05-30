@@ -27,132 +27,129 @@ import { expect, it } from 'vitest';
 import Filter from '../Filter';
 import { OptionFilterOperator } from '../types';
 
-// Mock Heroui components
 vi.mock(import('@heroui/react'), async importOriginal => ({
   ...(await importOriginal()),
   addToast: vi.fn()
 }));
 
-// Reset after each test
-beforeEach(() => {
-  vi.resetAllMocks();
-});
+beforeEach(vi.resetAllMocks);
 
-// When the filters are saved, FilterText is updated to match
-it('Triggers callback when the filters are saved', async () => {
-  // Some setup required
-  const user = userEvent.setup();
-  const filterSaveCallback = vi.fn();
-  // Mock the filter component
-  const { getByLabelText, getByTestId, getByText } = render(
-    <Filter
-      currentFilters={{ operator: 'And', filters: [] }}
-      filterConfig={[
-        { label: 'priority', options: [{ name: 'High' }], type: 'option' }
-      ]}
-      onFilterSave={filterSaveCallback}
-    />
-  );
+describe('Propagates events', () => {
+  it('Triggers callback when the filters are saved', async () => {
+    const user = userEvent.setup();
+    const filterSaveCallback = vi.fn();
 
-  // Check that the filter is initially empty
-  expect(getByTestId('filter-container')).toHaveTextContent('Filter...');
-  // Have the user fill out a row
-  await user.click(getByLabelText('Open filter modal'));
-  await user.click(getByText('Add Filter Row'));
-  await user.click(getByText('Field'));
-  await user.click(getByLabelText('priority'));
-  await user.click(getByLabelText('operator'));
-  await user.click(getByLabelText('equals'));
-  await user.click(getByLabelText('Value'));
-  await user.click(getByLabelText('High'));
-  await user.click(getByText('Save'));
+    const { getByLabelText, getByTestId, getByText } = render(
+      <Filter
+        currentFilters={{ operator: 'And', filters: [] }}
+        filterConfig={[
+          { label: 'priority', options: [{ name: 'High' }], type: 'option' }
+        ]}
+        onFilterSave={filterSaveCallback}
+      />
+    );
 
-  // Check that the filter now contains content
-  expect(filterSaveCallback).toHaveBeenCalledExactlyOnceWith({
-    operator: 'And',
-    filters: [
-      expect.objectContaining({
-        label: 'priority',
-        operator: '=',
-        options: [{ name: 'High' }]
-      })
-    ]
+    expect(getByTestId('filter-container')).toHaveTextContent('Filter...');
+
+    // Have the user fill out a row
+    await user.click(getByLabelText('Open filter modal'));
+    await user.click(getByText('Add Filter Row'));
+    await user.click(getByText('Field'));
+    await user.click(getByLabelText('priority'));
+    await user.click(getByLabelText('operator'));
+    await user.click(getByLabelText('equals'));
+    await user.click(getByLabelText('Value'));
+    await user.click(getByLabelText('High'));
+    await user.click(getByText('Save'));
+
+    // Check that the filter now contains content
+    expect(filterSaveCallback).toHaveBeenCalledExactlyOnceWith({
+      operator: 'And',
+      filters: [
+        expect.objectContaining({
+          label: 'priority',
+          operator: '=',
+          options: [{ name: 'High' }]
+        })
+      ]
+    });
   });
 });
 
-// Displays filter information when provided
-it('Displays the saved filter when one is specified', async () => {
-  // Some setup required
-  const user = userEvent.setup();
-  // Mock the filter component
-  const { getByTestId, getByLabelText } = render(
-    <Filter
-      currentFilters={{
-        operator: 'And',
-        filters: [
-          {
-            type: 'option',
-            id: 1,
-            label: 'priority',
-            operator: OptionFilterOperator.Equal,
-            value: 'High'
-          }
-        ]
-      }}
-      filterConfig={[
-        { label: 'priority', options: [{ name: 'High' }], type: 'option' }
-      ]}
-      onFilterSave={vi.fn()}
-    />
-  );
+describe('Displays contents', () => {
+  it('Displays the saved filter when one is specified', async () => {
+    const user = userEvent.setup();
 
-  // Check that the filter now contains content
-  expect(getByTestId('filter-container')).toHaveTextContent('priority');
-  // Check that the filter modal reflects the state
-  await user.click(getByLabelText('Open filter modal'));
-  expect(getByLabelText('Field')).toHaveTextContent('priority');
-  expect(getByLabelText('operator')).toHaveTextContent('equals');
-  expect(getByLabelText('Value')).toHaveTextContent('High');
+    const { getByTestId, getByLabelText } = render(
+      <Filter
+        currentFilters={{
+          operator: 'And',
+          filters: [
+            {
+              type: 'option',
+              id: 1,
+              label: 'priority',
+              operator: OptionFilterOperator.Equal,
+              value: 'High'
+            }
+          ]
+        }}
+        filterConfig={[
+          { label: 'priority', options: [{ name: 'High' }], type: 'option' }
+        ]}
+        onFilterSave={vi.fn()}
+      />
+    );
+
+    // Filter text is displayed
+    expect(getByTestId('filter-container')).toHaveTextContent('priority');
+    expect(getByTestId('filter-container')).toHaveTextContent('=');
+    expect(getByTestId('filter-container')).toHaveTextContent('"High"');
+
+    // Filter modal reflects the state
+    await user.click(getByLabelText('Open filter modal'));
+    expect(getByLabelText('Field')).toHaveTextContent('priority');
+    expect(getByLabelText('operator')).toHaveTextContent('equals');
+    expect(getByLabelText('Value')).toHaveTextContent('High');
+  });
+
+  it('Displays placeholder text when no saved filter is specified', () => {
+    const { getByTestId } = render(
+      <Filter
+        currentFilters={{
+          operator: 'And',
+          filters: []
+        }}
+        filterConfig={[]}
+        onFilterSave={vi.fn()}
+      />
+    );
+
+    expect(getByTestId('filter-container')).toHaveTextContent('Filter...');
+  });
 });
 
-// Displays Filter... when no filter state is specified
-it('Displays placeholder text when no saved filter is specified', () => {
-  // Mock the filter component
-  const { getByTestId } = render(
-    <Filter
-      currentFilters={{
-        operator: 'And',
-        filters: []
-      }}
-      filterConfig={[]}
-      onFilterSave={vi.fn()}
-    />
-  );
+describe('Errors', () => {
+  it('Warns the user with toast message when validation fails', async () => {
+    const user = userEvent.setup();
 
-  // Check that the filter contains placeholder
-  expect(getByTestId('filter-container')).toHaveTextContent('Filter...');
-});
+    const { getByTestId, getByLabelText, getByText } = render(
+      <Filter
+        currentFilters={{ operator: 'And', filters: [] }}
+        filterConfig={[]}
+        onFilterSave={vi.fn()}
+      />
+    );
 
-// Triggers a toast if validation fails & doesn't close modal
-it('Warns the user with toast message when validation fails', async () => {
-  // Some setup required
-  const user = userEvent.setup();
-  // Mock the filter component
-  const { getByTestId, getByLabelText, getByText } = render(
-    <Filter
-      currentFilters={{ operator: 'And', filters: [] }}
-      filterConfig={[]}
-      onFilterSave={vi.fn()}
-    />
-  );
+    // Have the user create an incomplete filter
+    await user.click(getByLabelText('Open filter modal'));
+    await user.click(getByText('Add Filter Row'));
+    await user.click(getByText('Save'));
 
-  // Have the user create an incomplete filter
-  await user.click(getByLabelText('Open filter modal'));
-  await user.click(getByText('Add Filter Row'));
-  await user.click(getByText('Save'));
-  // Check that the toast message is called and modal is open
-  expect(getByTestId('filterModal')).toBeVisible();
-  expect(addToast).toHaveBeenCalledExactlyOnceWith(
-    expect.objectContaining({ title: 'Filter row cannot be empty' })
-  );
+    // Check that validation fails & explanation is given
+    expect(getByTestId('filterModal')).toBeVisible();
+    expect(addToast).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({ title: 'Filter row cannot be empty' })
+    );
+  });
 });
