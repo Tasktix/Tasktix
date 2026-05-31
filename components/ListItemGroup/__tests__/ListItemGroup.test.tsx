@@ -18,7 +18,7 @@
  * @vitest-environment jsdom
  */
 
-import { render, screen, within, waitFor } from '@testing-library/react';
+import { render, within, waitFor } from '@testing-library/react';
 import { HeroUIProvider } from '@heroui/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
