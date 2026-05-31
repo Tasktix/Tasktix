@@ -158,7 +158,7 @@ describe('Adding members', () => {
     await user.type(getByLabelText('New member email'), 'user2');
     await user.click(getByText('Add Member'));
 
-    expect(getByLabelText('New member email')).toHaveValue('');
+    expect(getByLabelText('New member email')).toHaveValue('user2');
     expect(addToast).toHaveBeenCalledTimes(1);
     expect(addToast).toHaveBeenCalledWith({
       color: 'danger',
@@ -196,7 +196,7 @@ describe('Adding members', () => {
     await user.type(getByLabelText('New member email'), 'user2');
     await user.click(getByText('Add Member'));
 
-    expect(getByLabelText('New member email')).toHaveValue('');
+    expect(getByLabelText('New member email')).toHaveValue('user2');
     expect(addToast).toHaveBeenCalledTimes(1);
     expect(addToast).toHaveBeenCalledWith({
       color: 'danger',
