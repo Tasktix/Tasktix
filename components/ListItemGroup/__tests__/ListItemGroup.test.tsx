@@ -329,7 +329,6 @@ describe('Tag changes', () => {
     await user.click(within(item2).getByLabelText('Update tags'));
     await waitFor(() => expect(getByText('New tag')).toBeVisible());
     expect(queryByText(MOCK_TAG.name)).not.toBeInTheDocument();
-    screen.debug(undefined, Number.MAX_SAFE_INTEGER, { highlight: false });
     expect(within(item2).getByLabelText('Update tags')).toHaveTextContent(
       'New tag'
     );
