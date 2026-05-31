@@ -16,20 +16,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import 'server-only';
+import { githubMiddleware } from '@/lib/integration/github/webhook';
 
-import { PrismaClient } from '@prisma/client';
+export const dynamic = 'force-dynamic';
 
-// This file's logic ensures only 1 copy of the Prisma client is created, even when the
-// development server hot reloads. See Prisma Next.js best practices:
-// https://www.prisma.io/docs/orm/more/help-and-troubleshooting/nextjs-help#best-practices-for-using-prisma-client-in-development
-
-const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
-
-// Always omit issueId unless explicity necessary to prevent BigInt Serialization issues
-
-export const prisma =
-  globalForPrisma.prisma ||
-  new PrismaClient({ omit: { item: { issueId: true } } });
-
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
+/**
+ * Endpoint to recieve events from Github App Webhook, middleware managed
+ * through octokit object with handlers defined in
+ * `integration/github/webhook.ts`
+ * @param req http request object
+ */
+export async function POST(req: Request) {
+  return await githubMiddleware(req);
+}

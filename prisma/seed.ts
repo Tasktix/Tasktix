@@ -20,7 +20,13 @@ import { PrismaClient } from '@prisma/client';
 
 import { auth } from '@/lib/auth';
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  omit: {
+    item: {
+      issueId: true // Always omit issueId unless explicity necessary to prevent BigInt Serialization issues
+    }
+  }
+});
 
 async function main() {
   await auth.api.signUpEmail({

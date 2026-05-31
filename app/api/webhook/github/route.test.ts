@@ -16,20 +16,30 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import 'server-only';
+import { Success } from '@/lib/Response';
+import { githubMiddleware } from '@/lib/integration/github/webhook';
 
-import { PrismaClient } from '@prisma/client';
+import { POST } from './route';
 
-// This file's logic ensures only 1 copy of the Prisma client is created, even when the
-// development server hot reloads. See Prisma Next.js best practices:
-// https://www.prisma.io/docs/orm/more/help-and-troubleshooting/nextjs-help#best-practices-for-using-prisma-client-in-development
+const ROUTE_PATH = 'http://localhost/api/webhook/github' as const;
 
-const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
+vi.mock('@/lib/integration/github/webhook');
+beforeEach(() => {
+  vi.resetAllMocks();
+});
 
-// Always omit issueId unless explicity necessary to prevent BigInt Serialization issues
+describe('POST', () => {
+  test('Proxies Requests/Responses to/from Github Webhook Middleware', async () => {
+    vi.mocked(githubMiddleware).mockResolvedValue(
+      Success.OK('mock success message')
+    );
 
-export const prisma =
-  globalForPrisma.prisma ||
-  new PrismaClient({ omit: { item: { issueId: true } } });
+    const mockRequest = new Request(ROUTE_PATH, {
+      method: 'post'
+    });
+    const response = await POST(mockRequest);
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
+    expect(githubMiddleware).toHaveBeenCalledExactlyOnceWith(mockRequest);
+    expect(response.status).toBe(200);
+  });
+});
