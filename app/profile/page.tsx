@@ -16,9 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-'use client';
-
-import { useAuth } from '@/components/AuthProvider';
+import { getUser } from '@/lib/session';
+import { authorize } from '@/lib/security/authorize';
 
 import UserProperties from './components/UserProperties';
 import AuthSettings from './components/AuthSettings';
@@ -27,17 +26,20 @@ import AuthSettings from './components/AuthSettings';
  * Gets current user information and sends it to UserProperties
  *
  */
-export default function Page() {
-  // Nothing substantial to test here - skipcq: TCV-001
+export default async function Page() {
+  await authorize();
 
-  const { loggedInUser } = useAuth();
+  const user = await getUser();
+
+  /* Necessary for Typescript, will be redirected to signin before this skipcq: JS-0424*/
+  if (!user) return <></>;
 
   return (
     <main className='flex p-6 justify-center grow'>
       <div className='border-2 border-content3 bg-content1 shadow-lg shadow-content2 w-130 m-4 rounded-lg px-4 h-full'>
         <h1 className='text-2xl p-4'>Profile</h1>
-        <UserProperties user={JSON.stringify(loggedInUser)} />
-        {loggedInUser && <AuthSettings user={loggedInUser} />}
+        <UserProperties user={JSON.stringify(user)} />
+        <AuthSettings user={user} />
       </div>
     </main>
   );
