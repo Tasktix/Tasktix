@@ -156,7 +156,7 @@ export default function AuthSettings({ user }: { user: User }) {
             setLoggedInUser(false);
             router.push('/');
             addToast({
-              description: 'Account succesfully deleted',
+              description: 'Account successfully deleted',
               color: 'success'
             });
           },
