@@ -31,7 +31,8 @@ describe('addToastForError', () => {
 
     expect(addToast).toHaveBeenCalledExactlyOnceWith(
       expect.objectContaining({
-        title: 'Some message'
+        title: 'Error',
+        description: 'Some message'
       })
     );
   });
@@ -41,7 +42,8 @@ describe('addToastForError', () => {
 
     expect(addToast).toHaveBeenCalledExactlyOnceWith(
       expect.objectContaining({
-        title: 'Some message'
+        title: 'Error',
+        description: 'Some message'
       })
     );
   });
@@ -51,7 +53,19 @@ describe('addToastForError', () => {
 
     expect(addToast).toHaveBeenCalledExactlyOnceWith(
       expect.objectContaining({
-        title: 'An unknown error occurred'
+        title: 'Error',
+        description: 'An unknown error occurred'
+      })
+    );
+  });
+
+  test('Creates a toast with a custom short title when given one', () => {
+    addToastForError(new Error('Some message'), 'Sign in failed');
+
+    expect(addToast).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({
+        title: 'Sign in failed',
+        description: 'Some message'
       })
     );
   });

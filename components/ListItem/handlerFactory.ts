@@ -218,7 +218,11 @@ export function itemHandlerFactory(
         dispatchItemChange({ type: 'DeleteItem', sectionId, id: itemId }); // Send parent the update to remove this component
 
         // Let the user know we succeeded
-        addToast({ title: res.message, color: 'success' });
+        addToast({
+          title: 'Success',
+          description: res.message,
+          color: 'success'
+        });
       })
       .catch(addToastForError);
   }

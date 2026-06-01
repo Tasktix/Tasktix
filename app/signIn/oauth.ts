@@ -18,12 +18,12 @@
 
 'use client';
 
-import { addToast } from '@heroui/react';
 import { ErrorContext, SuccessContext } from 'better-auth/react';
 
 import { authClient } from '@/lib/auth-client';
 import User from '@/lib/model/user';
 import { AuthConfig } from '@/lib/auth';
+import { addToastForError } from '@/lib/error';
 
 type supportedProvider = 'github' | 'custom';
 /**
@@ -66,7 +66,7 @@ export async function handleOAuth(
    * @param ctx The BetterAuth context for the error
    */
   const handleError = (ctx: ErrorContext) => {
-    addToast({ title: ctx.error.message, color: 'danger' });
+    addToastForError(ctx.error, 'Sign in failed');
   };
 
   if (provider === 'custom') {

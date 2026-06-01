@@ -33,6 +33,7 @@ import { authClient } from '@/lib/auth-client';
 import { randomNamedColor } from '@/lib/color';
 import { useAuth } from '@/components/AuthProvider';
 import User from '@/lib/model/user';
+import { addToastForError } from '@/lib/error';
 
 import {
   getUsernameMessage,
@@ -113,7 +114,7 @@ export default function SignUp() {
                 color: 'danger'
               });
             } else {
-              addToast({ title: ctx.error.message, color: 'danger' });
+              addToastForError(ctx.error, 'Sign up failed');
             }
           },
           onSuccess: (ctx: SuccessContext<{ user: User }>) => {

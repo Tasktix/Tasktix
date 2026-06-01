@@ -47,7 +47,8 @@ const MOCK_USER = new User(
   new Date(),
   { color: 'Amber' }
 );
-const MOCK_OAUTH_CONFIG = {
+const MOCK_OAUTH_CONFIG: AuthConfig = {
+  localEnabled: true,
   githubEnabled: true,
   customEnabled: true,
   customProviderId: 'SSO'
@@ -77,7 +78,8 @@ test('Properly handles failed GitHub authentication', async () => {
   expect(authClient.signIn.social).toHaveBeenCalled();
   expect(setLoggedInUserMock).not.toHaveBeenCalled();
   expect(addToast).toHaveBeenCalledWith({
-    title: 'Provider not found',
+    title: 'Sign in failed',
+    description: 'Provider not found',
     color: 'danger'
   });
 });
@@ -106,7 +108,8 @@ test('Properly handles failed custom SSO authentication', async () => {
   expect(authClient.signIn.oauth2).toHaveBeenCalled();
   expect(setLoggedInUserMock).not.toHaveBeenCalled();
   expect(addToast).toHaveBeenCalledWith({
-    title: 'Provider not found',
+    title: 'Sign in failed',
+    description: 'Provider not found',
     color: 'danger'
   });
 });
@@ -156,6 +159,7 @@ test('Properly redirects and sets logged in user on successful custom SSO authen
 test('Throws Error if custom OAuth attempted without being configured', async () => {
   const setLoggedInUserMock = vi.fn();
   const MOCK_UNCONFIGURED_AUTH_CONFIG: AuthConfig = {
+    localEnabled: true,
     githubEnabled: false,
     customEnabled: false
   };

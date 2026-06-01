@@ -60,7 +60,11 @@ export default function sectionHandlerFactory(
         oldIndex
       })
       .then(res => {
-        addToast({ title: res.message, color: 'success' });
+        addToast({
+          title: 'Success',
+          description: res.message,
+          color: 'success'
+        });
 
         dispatchSection({
           type: 'ReorderItem',

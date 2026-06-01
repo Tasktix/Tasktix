@@ -46,7 +46,11 @@ vi.mock(import('@/components/AuthProvider'), async importOriginal => ({
       ({
         loggedInUser: false,
         setLoggedInUser: vi.fn(),
-        oauthConfig: { githubEnabled: false, customEnabled: false }
+        authConfig: {
+          localEnabled: true,
+          githubEnabled: false,
+          customEnabled: false
+        }
       }) as const
   )
 }));
@@ -162,7 +166,8 @@ describe('Adding members', () => {
     expect(addToast).toHaveBeenCalledTimes(1);
     expect(addToast).toHaveBeenCalledWith({
       color: 'danger',
-      title: 'Server message about failure'
+      title: 'Error',
+      description: 'Server message about failure'
     });
     expect(onMemberEvent).not.toHaveBeenCalled();
   });
@@ -200,7 +205,8 @@ describe('Adding members', () => {
     expect(addToast).toHaveBeenCalledTimes(1);
     expect(addToast).toHaveBeenCalledWith({
       color: 'danger',
-      title: 'User added, but unable to display'
+      title: 'Error',
+      description: 'User added, but unable to display'
     });
     expect(onMemberEvent).not.toHaveBeenCalled();
   });

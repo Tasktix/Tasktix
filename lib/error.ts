@@ -23,9 +23,10 @@ import { addToast } from '@heroui/react';
  *
  * @param error The error to add a toast for. `unknown` type because `.catch()` blocks'
  *  callback argument is `any` type
+ * @param title The short toast title to show above the error message
  */
-export function addToastForError(error: unknown) {
-  let title = 'An unknown error occurred';
+export function addToastForError(error: unknown, title = 'Error') {
+  let description = 'An unknown error occurred';
 
   if (
     typeof error === 'object' &&
@@ -33,7 +34,7 @@ export function addToastForError(error: unknown) {
     'message' in error &&
     typeof error.message === 'string'
   )
-    title = error.message;
+    description = error.message;
 
-  addToast({ title, color: 'danger' });
+  addToast({ title, description, color: 'danger' });
 }
