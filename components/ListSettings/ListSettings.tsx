@@ -117,6 +117,7 @@ export default function ListSettings({
               >
                 <TagSettings
                   addNewTag={addNewTag}
+                  listId={list.id}
                   tags={list.tags}
                   onTagEvent={onListEvent}
                 />

@@ -61,13 +61,13 @@ const member2 = new ListMember(user2, role2);
 const tag1 = new Tag('Tag One', 'Violet', 'tag-1-id-1234');
 const tag2 = new Tag('Tag Two', 'Orange', 'tag-2-id-1234');
 
-const item1 = new ListItem('item', {
+const item1 = new ListItem('item', 'list-id', {
   id: 'item-1-id-1234',
   sectionId: 'section-1-id-1234',
   dateCreated: new Date('2024-01-02T00:00:00Z'),
   dateDue: new Date('2025-01-01T00:00:00Z')
 });
-const item2 = new ListItem('item', {
+const item2 = new ListItem('item', 'list-id', {
   id: 'item-2-id-1234',
   sectionId: 'section-1-id-1234',
   dateCreated: new Date('2024-01-03T00:00:00Z'),

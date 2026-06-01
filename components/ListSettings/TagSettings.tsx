@@ -39,10 +39,12 @@ import ConfirmModal from '../ConfirmModal';
  * @param onTagEvent A callback for updating React state with changes to a tag
  */
 export default function TagSettings({
+  listId,
   tags,
   addNewTag,
   onTagEvent
 }: Readonly<{
+  listId: string;
   tags: ListState['tags'];
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
   onTagEvent: (event: TagAction) => unknown;
@@ -51,7 +53,12 @@ export default function TagSettings({
     <>
       <span className='flex flex-col gap-4 shrink overflow-y-auto'>
         {tags.values().map(tag => (
-          <TagDetails key={tag.id} tag={tag} onTagEvent={onTagEvent} />
+          <TagDetails
+            key={tag.id}
+            listId={listId}
+            tag={tag}
+            onTagEvent={onTagEvent}
+          />
         ))}
       </span>
       <TagInput onTagCreated={addNewTag} />
@@ -60,9 +67,11 @@ export default function TagSettings({
 }
 
 function TagDetails({
+  listId,
   tag,
   onTagEvent
 }: Readonly<{
+  listId: string;
   tag: Tag;
   onTagEvent: (event: TagAction) => unknown;
 }>) {
@@ -87,7 +96,7 @@ function TagDetails({
     api
       .delete(`/tag/${tag.id}`)
       .then(() => {
-        onTagEvent({ type: 'DeleteTag', id: tag.id });
+        onTagEvent({ type: 'DeleteTag', listId, id: tag.id });
       })
       .catch(addToastForError);
   }

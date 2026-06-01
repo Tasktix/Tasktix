@@ -22,6 +22,7 @@ import {
   BaseListState,
   ItemAction,
   ListAction,
+  ItemGroupState,
   ListItemState,
   ListMemberState,
   ListSectionState,
@@ -67,11 +68,130 @@ export function listReducer( // skipcq: JS-0045, JS-R1005
       return tagReducer(state, action);
 
     case 'AddSection':
-    case 'AddItemToSection':
+    case 'AddItem':
     case 'ReorderItem':
     case 'DeleteItem':
     case 'DeleteSection':
       return sectionReducer(state, action);
+
+    case 'SetItemName':
+    case 'SetItemDescription':
+    case 'SetItemDueDate':
+    case 'SetItemPriority':
+    case 'SetItemIncomplete':
+    case 'SetItemComplete':
+    case 'SetItemExpectedMs':
+    case 'StartItemTime':
+    case 'PauseItemTime':
+    case 'ResetItemTime':
+    case 'LinkTagToItem':
+    case 'UnlinkTagFromItem':
+      return itemReducer(state, action);
+  }
+}
+
+/**
+ * The reducer for managing <ListItemGroup />'s state
+ *
+ * @param state The current state (passed in by React)
+ * @param action The action to take for mutating state
+ *
+ * Default case intentionally omitted to surface TS error if not all cases are explicitly
+ * handled (e.g. because the ListAction type was added to). All VALID code paths do
+ * return. Also, cyclomatic complexity of this function is high, but each individual case
+ * is simple and there have to be this many cases for the `switch` statement
+ */
+export function itemGroupReducer( // skipcq: JS-0045, JS-R1005
+  state: ItemGroupState,
+  action: ListAction | MemberAction | TagAction | SectionAction | ItemAction
+): ItemGroupState {
+  /**
+   * Adds the given ID to a 1:M mapping for a list's data. For example, it could be used
+   * to add a tag ID to `listTags` or a member ID to `listMembers`
+   *
+   * @param listX The 1:M mapping to add the ID to
+   * @param listId The list the new ID belongs to
+   * @param xId The ID to add
+   */
+  function addToList(
+    listX: Map<string, string[]>,
+    listId: string,
+    xId: string
+  ) {
+    listX.get(listId)?.push(xId);
+  }
+
+  /**
+   * Removes the given ID from a 1:M mapping for a list's data. For example, it could be
+   * used to remove a tag ID from `listTags` or a member ID from `listMembers`
+   *
+   * @param listX The 1:M mapping to remove the ID from
+   * @param listId The list the old ID belonged to
+   * @param xId The ID to remove
+   */
+  function deleteFromList(
+    listX: Map<string, string[]>,
+    listId: string,
+    xId: string
+  ) {
+    listX.set(listId, listX.get(listId)?.filter(id => id !== xId) ?? []);
+  }
+
+  switch (action.type) {
+    case 'SetHasDueDates':
+    case 'SetHasTimeTracking':
+    case 'SetIsAutoOrdered':
+    case 'SetListColor':
+    case 'SetListName': {
+      const newState = { ...state };
+      const list = getList(state, action.id);
+
+      newState.lists.set(action.id, baseListReducer(list, action));
+
+      return newState;
+    }
+
+    case 'AddMember':
+    case 'UpdateMemberPermissions':
+    case 'DeleteMember': {
+      const newState = memberReducer(state, action);
+
+      if (action.type === 'AddMember')
+        addToList(newState.listMembers, action.listId, action.member.user.id);
+      else if (action.type === 'DeleteMember')
+        deleteFromList(newState.listMembers, action.listId, action.id);
+
+      return newState;
+    }
+
+    case 'AddTag':
+    case 'UpdateTagColor':
+    case 'UpdateTagName':
+    case 'DeleteTag': {
+      const newState = tagReducer(state, action);
+
+      if (action.type === 'AddTag')
+        addToList(newState.listTags, action.listId, action.tag.id);
+      else if (action.type === 'DeleteTag')
+        deleteFromList(newState.listTags, action.listId, action.id);
+
+      return newState;
+    }
+
+    case 'AddSection':
+    case 'AddItem':
+    case 'ReorderItem':
+    case 'DeleteItem':
+    case 'DeleteSection': {
+      const newState = sectionReducer(state, action);
+
+      if (action.type === 'AddSection')
+        addToList(newState.listSections, action.listId, action.section.id);
+      else if (action.type === 'DeleteSection')
+        deleteFromList(newState.listSections, action.listId, action.id);
+
+      return newState;
+    }
 
     case 'SetItemName':
     case 'SetItemDescription':
@@ -210,7 +330,7 @@ function sectionReducer<
       newState.sections.delete(action.id);
       break;
 
-    case 'AddItemToSection': {
+    case 'AddItem': {
       const sectionItems = newState.sectionItems.get(action.id);
 
       // Should be impossible to trigger this, hence the runtime error - skipcq: TCV-001
@@ -365,4 +485,20 @@ function getItem<T extends { items: Map<string, ListItemState> }>(
   if (!item) throw new Error(`Unable to find item with ID ${itemId}`);
 
   return item;
+}
+
+/**
+ * Helper function to find a list that's expected to exist, throwing an error if not found
+ *
+ * @param state The state to look for the list in
+ * @param listId The ID of the list to look for
+ *
+ * @returns The list that was looked for
+ */
+function getList(state: ItemGroupState, listId: string) {
+  const list = state.lists.get(listId);
+
+  if (!list) throw new Error(`Unable to find list with ID ${listId}`);
+
+  return list;
 }

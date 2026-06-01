@@ -94,21 +94,21 @@ export type MemberAction =
       id: string;
       role: string;
     }
-  | { type: 'DeleteMember'; id: string };
+  | { type: 'DeleteMember'; listId: string; id: string };
 
 export type TagAction =
-  | { type: 'AddTag'; id: string; tag: Tag }
+  | { type: 'AddTag'; listId: string; tag: Tag }
   | { type: 'UpdateTagColor'; id: string; color: NamedColor }
   | { type: 'UpdateTagName'; id: string; name: string }
-  | { type: 'DeleteTag'; id: string };
+  | { type: 'DeleteTag'; listId: string; id: string };
 
 /**
  * Possible actions and the required data needed for updating a list section with the the
  * list reducer.
  */
 export type SectionAction =
-  | { type: 'AddSection'; id: string; section: ListSection }
-  | { type: 'AddItemToSection'; id: string; item: ListItem }
+  | { type: 'AddSection'; listId: string; section: ListSection }
+  | { type: 'AddItem'; id: string; item: ListItem }
   | {
       type: 'ReorderItem';
       sectionId: string;
@@ -116,7 +116,7 @@ export type SectionAction =
       newIndex: number;
     }
   | { type: 'DeleteItem'; sectionId: string; id: string }
-  | { type: 'DeleteSection'; id: string };
+  | { type: 'DeleteSection'; listId: string; id: string };
 
 /**
  * Possible actions and the required data needed for updating a list item with the the

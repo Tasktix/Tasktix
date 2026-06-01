@@ -68,7 +68,7 @@ test('Newly created items are added to the section', async () => {
   expect(dispatchSectionChange).toBeCalledTimes(1);
   expect(dispatchSectionChange).toBeCalledWith(
     expect.objectContaining({
-      type: 'AddItemToSection',
+      type: 'AddItem',
       id: 'section-id',
       item: expect.objectContaining({
         name: 'Item 1',
@@ -120,7 +120,7 @@ describe('Section expansion/collapse', () => {
         filters={{}}
         items={[
           {
-            ...new ListItem('Item 1', {
+            ...new ListItem('Item 1', 'list-id', {
               id: 'aaaaaaaaaaaaaaaa',
               status: 'Unstarted'
             }),
@@ -154,7 +154,7 @@ describe('Section expansion/collapse', () => {
         filters={{}}
         items={[
           {
-            ...new ListItem('Item 1', {
+            ...new ListItem('Item 1', 'list-id', {
               id: 'aaaaaaaaaaaaaaaa',
               status: 'Completed',
               dateCompleted: new Date()
@@ -213,7 +213,7 @@ describe('Section expansion/collapse', () => {
         filters={{}}
         items={[
           {
-            ...new ListItem('Item 1', {
+            ...new ListItem('Item 1', 'list-id', {
               id: 'aaaaaaaaaaaaaaaa',
               status: 'Completed',
               dateCompleted: new Date()
@@ -252,7 +252,7 @@ describe('Section expansion/collapse', () => {
         filters={{}}
         items={[
           {
-            ...new ListItem('Item 1', {
+            ...new ListItem('Item 1', 'list-id', {
               id: 'aaaaaaaaaaaaaaaa',
               status: 'Unstarted'
             }),

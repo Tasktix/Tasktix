@@ -46,6 +46,9 @@ export const ZodListItem = z.strictObject({
   sectionId: z.string().length(16)
 });
 
+/**
+ * Represents a list item/task with a backreference to the list it belongs to
+ */
 export default class ListItem {
   id: string;
   name: string;
@@ -63,10 +66,11 @@ export default class ListItem {
   assignees: Assignee[];
   tags: Tag[];
   issueId: bigint | null;
-  listId?: string;
+  listId: string;
 
   constructor(
     name: string,
+    listId: string,
     {
       id,
       description = '',
@@ -82,7 +86,6 @@ export default class ListItem {
       dateCompleted = null,
       assignees = [],
       tags = [],
-      listId,
       issueId = null
     }: {
       id?: string;
@@ -99,7 +102,6 @@ export default class ListItem {
       dateCompleted?: Date | null;
       assignees?: Assignee[];
       tags?: Tag[];
-      listId?: string;
       sectionId?: string;
       issueId?: bigint | null;
     }

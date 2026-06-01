@@ -54,7 +54,7 @@ beforeEach(vi.resetAllMocks);
 afterAll(vi.unstubAllEnvs);
 
 it('Shows everything faded and shows the completion date instead of due date when the item is marked completed', () => {
-  const item = new ListItemModel('Test item', {
+  const item = new ListItemModel('Test item', 'list-id', {
     priority: 'High',
     status: 'Completed',
     expectedMs: 5000 * 60,
@@ -89,7 +89,7 @@ it('Shows everything faded and shows the completion date instead of due date whe
 });
 
 it('Displays the associated list when one is provided', () => {
-  const item = new ListItemModel('Test item', {});
+  const item = new ListItemModel('Test item', 'list-id', {});
 
   const { getByText, getByRole } = render(
     <HeroUIProvider disableRipple>
@@ -141,7 +141,7 @@ it('Displays all members assigned to the item', () => {
       { color: 'Blue' }
     )
   ];
-  const item = new ListItemModel('Test item', {
+  const item = new ListItemModel('Test item', 'list-id', {
     assignees: [new Assignee(members[0], ''), new Assignee(members[1], '')]
   });
 
