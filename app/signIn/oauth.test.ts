@@ -47,7 +47,7 @@ const MOCK_USER = new User(
   new Date(),
   { color: 'Amber' }
 );
-const MOCK_OAUTH_CONFIG: AuthConfig = {
+const MOCK_AUTH_CONFIG: AuthConfig = {
   localEnabled: true,
   githubEnabled: true,
   customEnabled: true,
@@ -73,7 +73,7 @@ test('Properly handles failed GitHub authentication', async () => {
     }
   );
 
-  await handleOAuth('github', setLoggedInUserMock, MOCK_OAUTH_CONFIG);
+  await handleOAuth('github', setLoggedInUserMock, MOCK_AUTH_CONFIG);
 
   expect(authClient.signIn.social).toHaveBeenCalled();
   expect(setLoggedInUserMock).not.toHaveBeenCalled();
@@ -102,7 +102,7 @@ test('Properly handles failed custom SSO authentication', async () => {
     }
   );
 
-  await handleOAuth('custom', setLoggedInUserMock, MOCK_OAUTH_CONFIG);
+  await handleOAuth('custom', setLoggedInUserMock, MOCK_AUTH_CONFIG);
 
   expect(authClient.signIn.oauth2).toHaveBeenCalled();
   expect(setLoggedInUserMock).not.toHaveBeenCalled();
@@ -126,7 +126,7 @@ test('Properly redirects and sets logged in user on successful github authentica
     }
   );
 
-  await handleOAuth('github', setLoggedInUserMock, MOCK_OAUTH_CONFIG);
+  await handleOAuth('github', setLoggedInUserMock, MOCK_AUTH_CONFIG);
 
   expect(authClient.signIn.social).toHaveBeenCalled();
   expect(setLoggedInUserMock).toHaveBeenCalledWith(MOCK_USER);
@@ -147,7 +147,7 @@ test('Properly redirects and sets logged in user on successful custom SSO authen
     }
   );
 
-  await handleOAuth('custom', setLoggedInUserMock, MOCK_OAUTH_CONFIG);
+  await handleOAuth('custom', setLoggedInUserMock, MOCK_AUTH_CONFIG);
 
   expect(authClient.signIn.oauth2).toHaveBeenCalled();
   expect(setLoggedInUserMock).toHaveBeenCalledWith(MOCK_USER);

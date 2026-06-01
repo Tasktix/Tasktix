@@ -48,7 +48,7 @@ export default function TagInput({
     e.preventDefault();
     if (!newTagColor) {
       addToast({
-        title: 'Please specify a tag color',
+        description: 'Please specify a tag color',
         color: 'danger'
       });
 
@@ -56,7 +56,7 @@ export default function TagInput({
     }
     if (!newTagName) {
       addToast({
-        title: 'Please specify a tag name',
+        description: 'Please specify a tag name',
         color: 'danger'
       });
 

@@ -161,7 +161,7 @@ describe('UserProperties functions', () => {
 
     expect(addToast).toHaveBeenCalledTimes(1);
     expect(addToast).toHaveBeenCalledWith({
-      title: 'Please specify a user color',
+      description: 'Please specify a user color',
       color: 'danger'
     });
   });

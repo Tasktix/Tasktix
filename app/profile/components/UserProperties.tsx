@@ -81,7 +81,7 @@ export default function UserProperties({ user }: { user: string }) {
   function setColor(color: NamedColor | null) {
     if (!color) {
       addToast({
-        title: 'Please specify a user color',
+        description: 'Please specify a user color',
         color: 'danger'
       });
     } else {

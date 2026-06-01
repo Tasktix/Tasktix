@@ -52,7 +52,7 @@ export function subscribe(
 
   es.onopen = () => {
     if (hasOpened)
-      setState(addToast({ title: 'Reconnected', color: 'success' }));
+      setState(addToast({ description: 'Reconnected', color: 'success' }));
     else hasOpened = true;
   };
 
@@ -64,14 +64,14 @@ export function subscribe(
     if (es.readyState === es.CLOSED && !expectClose)
       setState(
         addToast({
-          title: 'Unable to connect for live updates',
+          description: 'Unable to connect for live updates',
           color: 'danger'
         })
       );
     if (es.readyState === es.CONNECTING) {
       let resolve;
       const toast = addToast({
-        title: 'Reconnecting for live updates',
+        description: 'Reconnecting for live updates',
         color: 'warning',
         promise: new Promise(r => (resolve = r))
       });
