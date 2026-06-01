@@ -98,7 +98,6 @@ export default function GeneralSettings({
       .delete(`/list/${listId}`)
       .then(res => {
         addToast({
-          title: 'Success',
           description: res.message,
           color: 'success'
         });

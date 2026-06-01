@@ -219,7 +219,6 @@ export function itemHandlerFactory(
 
         // Let the user know we succeeded
         addToast({
-          title: 'Success',
           description: res.message,
           color: 'success'
         });

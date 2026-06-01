@@ -86,7 +86,6 @@ export function listHandlerFactory(
       .delete(`/list/${listId}/section/${id}`)
       .then(res => {
         addToast({
-          title: 'Success',
           description: res.message,
           color: 'success'
         });

@@ -61,7 +61,6 @@ export default function sectionHandlerFactory(
       })
       .then(res => {
         addToast({
-          title: 'Success',
           description: res.message,
           color: 'success'
         });

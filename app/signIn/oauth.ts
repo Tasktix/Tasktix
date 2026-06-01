@@ -66,7 +66,7 @@ export async function handleOAuth(
    * @param ctx The BetterAuth context for the error
    */
   const handleError = (ctx: ErrorContext) => {
-    addToastForError(ctx.error, 'Sign in failed');
+    addToastForError(ctx.error);
   };
 
   if (provider === 'custom') {

@@ -50,7 +50,7 @@ export default function SignIn() {
         },
         {
           onError: ctx => {
-            addToastForError(ctx.error, 'Sign in failed');
+            addToastForError(ctx.error);
           },
           onSuccess: (ctx: SuccessContext<{ user: User }>) => {
             setLoggedInUser(ctx.data.user);

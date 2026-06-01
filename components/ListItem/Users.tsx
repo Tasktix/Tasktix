@@ -55,7 +55,6 @@ export default function Users({
       .post(`/item/${itemId}/assignee/${userId}`, {})
       .then(res => {
         addToast({
-          title: 'Success',
           description: res.message,
           color: 'success'
         });
@@ -74,7 +73,6 @@ export default function Users({
       .delete(`/item/${itemId}/assignee/${userId}`)
       .then(res => {
         addToast({
-          title: 'Success',
           description: res.message,
           color: 'success'
         });

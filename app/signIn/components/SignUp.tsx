@@ -114,7 +114,7 @@ export default function SignUp() {
                 color: 'danger'
               });
             } else {
-              addToastForError(ctx.error, 'Sign up failed');
+              addToastForError(ctx.error);
             }
           },
           onSuccess: (ctx: SuccessContext<{ user: User }>) => {

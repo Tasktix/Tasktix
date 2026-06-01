@@ -29,44 +29,27 @@ describe('addToastForError', () => {
   test('Creates a toast with the message field when given an Error object', () => {
     addToastForError(new Error('Some message'));
 
-    expect(addToast).toHaveBeenCalledExactlyOnceWith(
-      expect.objectContaining({
-        title: 'Error',
-        description: 'Some message'
-      })
-    );
+    expect(addToast).toHaveBeenCalledExactlyOnceWith({
+      description: 'Some message',
+      color: 'danger'
+    });
   });
 
   test('Creates a toast with the message field when given a ServerResponse object', () => {
     addToastForError({ message: 'Some message' } as ServerResponse);
 
-    expect(addToast).toHaveBeenCalledExactlyOnceWith(
-      expect.objectContaining({
-        title: 'Error',
-        description: 'Some message'
-      })
-    );
+    expect(addToast).toHaveBeenCalledExactlyOnceWith({
+      description: 'Some message',
+      color: 'danger'
+    });
   });
 
   test('Creates a toast telling the user an unknown error occurred when given an unexpected error', () => {
     addToastForError({ somethingElse: 'not shown' });
 
-    expect(addToast).toHaveBeenCalledExactlyOnceWith(
-      expect.objectContaining({
-        title: 'Error',
-        description: 'An unknown error occurred'
-      })
-    );
-  });
-
-  test('Creates a toast with a custom short title when given one', () => {
-    addToastForError(new Error('Some message'), 'Sign in failed');
-
-    expect(addToast).toHaveBeenCalledExactlyOnceWith(
-      expect.objectContaining({
-        title: 'Sign in failed',
-        description: 'Some message'
-      })
-    );
+    expect(addToast).toHaveBeenCalledExactlyOnceWith({
+      description: 'An unknown error occurred',
+      color: 'danger'
+    });
   });
 });

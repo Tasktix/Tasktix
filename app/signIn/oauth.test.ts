@@ -78,7 +78,6 @@ test('Properly handles failed GitHub authentication', async () => {
   expect(authClient.signIn.social).toHaveBeenCalled();
   expect(setLoggedInUserMock).not.toHaveBeenCalled();
   expect(addToast).toHaveBeenCalledWith({
-    title: 'Sign in failed',
     description: 'Provider not found',
     color: 'danger'
   });
@@ -108,7 +107,6 @@ test('Properly handles failed custom SSO authentication', async () => {
   expect(authClient.signIn.oauth2).toHaveBeenCalled();
   expect(setLoggedInUserMock).not.toHaveBeenCalled();
   expect(addToast).toHaveBeenCalledWith({
-    title: 'Sign in failed',
     description: 'Provider not found',
     color: 'danger'
   });
