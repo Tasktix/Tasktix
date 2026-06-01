@@ -130,7 +130,7 @@ async function handleNewIssue({
       }
     }
 
-    const item = new ListItem(name, list.sectionId, {
+    const item = new ListItem(name, list.listId, {
       priority,
       description,
       dateCreated,
