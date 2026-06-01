@@ -18,7 +18,7 @@
 
 import ListModel from '@/lib/model/list';
 
-import { ListState } from './types';
+import { ItemGroupState, ListState } from './types';
 
 /**
  * Generates the normalized member state (map of member user IDs to member objects) from
@@ -95,7 +95,8 @@ export function generateItemsState(list: ListModel): ListState['items'] {
             ? new Date(item.dateCompleted)
             : null,
           tags: undefined,
-          assignees: undefined
+          assignees: undefined,
+          listId: list.id
         }
       ])
     )
@@ -132,5 +133,70 @@ export function generateItemTagsState(list: ListModel): ListState['itemTags'] {
     list.sections.flatMap(section =>
       section.items.map(item => [item.id, item.tags.map(tag => tag.id)])
     )
+  );
+}
+
+/**
+ * Generates the 1:M normalized mapping of lists to the sections they contain (map of list
+ * IDs to the section IDs of all sections in each list) from all List data
+ *
+ * @param lists The lists to extract list:section mapping data from
+ */
+export function generateListSectionsState(
+  lists: ListModel[]
+): ItemGroupState['listSections'] {
+  return new Map(
+    lists.map(list => [list.id, list.sections.map(section => section.id)])
+  );
+}
+
+/**
+ * Generates the 1:M normalized mapping of lists to the members they contain (map of list
+ * IDs to the member IDs of all members in each list) from all List data
+ *
+ * @param lists The lists to extract list:member mapping data from
+ */
+export function generateListMembersState(
+  lists: ListModel[]
+): ItemGroupState['listMembers'] {
+  return new Map(
+    lists.map(list => [list.id, list.members.map(member => member.user.id)])
+  );
+}
+
+/**
+ * Generates the 1:M normalized mapping of lists to the tags they contain (map of list IDs
+ * to the tag IDs of all tags in each list) from all List data
+ *
+ * @param lists The lists to extract list:tag mapping data from
+ */
+export function generateListTagsState(
+  lists: ListModel[]
+): ItemGroupState['listTags'] {
+  return new Map(lists.map(list => [list.id, list.tags.map(tag => tag.id)]));
+}
+
+/**
+ * Generates the normalized list state (map of list IDs to flat list objects) from all
+ * List data
+ *
+ * @param lists The lists to extract normalized data from
+ */
+export function generateListsState(
+  lists: ListModel[]
+): ItemGroupState['lists'] {
+  return new Map(
+    lists.map(list => [
+      list.id,
+      {
+        id: list.id,
+        name: list.name,
+        color: list.color,
+        hasTimeTracking: list.hasTimeTracking,
+        hasDueDates: list.hasDueDates,
+        isAutoOrdered: list.isAutoOrdered,
+        repoId: list.repoId
+      }
+    ])
   );
 }

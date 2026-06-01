@@ -113,14 +113,6 @@ async function handleNewIssue({
   const issueId = BigInt(payload.issue.id);
 
   for (const list of trackingLists) {
-    const item = new ListItem(name, {
-      priority,
-      description,
-      dateCreated,
-      issueId
-    });
-
-    item.sectionIndex = list.itemCount + 1;
     if (!list.sectionId) {
       const name = 'Github Issues';
       const newSection = new ListSection(name, []);
@@ -137,6 +129,16 @@ async function handleNewIssue({
         return;
       }
     }
+
+    const item = new ListItem(name, list.listId, {
+      priority,
+      description,
+      dateCreated,
+      issueId
+    });
+
+    item.sectionIndex = list.itemCount + 1;
+
     const result = await createListItem(list.sectionId, item);
 
     if (!result)

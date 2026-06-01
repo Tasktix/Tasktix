@@ -27,6 +27,6 @@ describe('Home List', () => {
   it('Shows an "all caught up" message for a new user', () => {
     cy.login('newUser', 'password123');
 
-    cy.contains('Today view coming soon...');
+    cy.contains("Great work, you're all caught up!");
   });
 });

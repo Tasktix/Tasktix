@@ -47,6 +47,7 @@ describe('Edit Tags', () => {
     const { getByLabelText } = render(
       <TagSettings
         addNewTag={vi.fn()}
+        listId='list-id'
         tags={
           new Map([
             ['id-tag1', new Tag('tag1', 'Red', 'id-tag1')],
@@ -82,6 +83,7 @@ describe('Edit Tags', () => {
     const { getByLabelText } = render(
       <TagSettings
         addNewTag={vi.fn()}
+        listId='list-id'
         tags={
           new Map([
             ['id-tag1', new Tag('tag1', 'Red', 'id-tag1')],
@@ -116,6 +118,7 @@ describe('Edit Tags', () => {
     const { getByLabelText } = render(
       <TagSettings
         addNewTag={vi.fn()}
+        listId='list-id'
         tags={
           new Map([
             ['id-tag1', new Tag('tag1', 'Red', 'id-tag1')],
@@ -154,6 +157,7 @@ describe('Removing Tags', () => {
     const { getByLabelText, getByRole } = render(
       <TagSettings
         addNewTag={vi.fn()}
+        listId='list-id'
         tags={
           new Map([
             ['id-tag1', new Tag('tag1', 'Red', 'id-tag1')],
@@ -189,6 +193,7 @@ describe('Removing Tags', () => {
     const { getByLabelText, getByRole } = render(
       <TagSettings
         addNewTag={vi.fn()}
+        listId='list-id'
         tags={
           new Map([
             ['id-tag1', new Tag('tag1', 'Red', 'id-tag1')],

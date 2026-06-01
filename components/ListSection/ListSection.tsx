@@ -133,7 +133,7 @@ export default function ListSection({
             addItem={item => {
               setIsCollapsed(false);
               onSectionChange({
-                type: 'AddItemToSection',
+                type: 'AddItem',
                 id: section.id,
                 item
               });
@@ -145,7 +145,7 @@ export default function ListSection({
           />
           <SectionActionMenu
             onDelete={() =>
-              onSectionChange({ type: 'DeleteSection', id: section.id })
+              onSectionChange({ type: 'DeleteSection', listId, id: section.id })
             }
           />
         </span>

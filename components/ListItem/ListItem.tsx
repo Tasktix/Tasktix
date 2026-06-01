@@ -201,10 +201,12 @@ export default function ListItem({
   return (
     <div
       className={`p-4 bg-content1 flex gap-4 items-center justify-between w-full ${reorderControls ? '' : 'border-b-1 border-content3 last:border-b-0'}`}
+      data-testid={`wrapper-${item.name}`}
     >
       <span className='flex gap-4 items-center justify-between w-2/5'>
         {reorderControls ? (
           <div
+            aria-label='Drag to reorder item'
             className={`px-1 py-2 -mx-3 rounded-lg ${item.status === 'Completed' ? 'text-foreground/20' : 'text-foreground/50 cursor-grab'} text-lg`}
             onPointerDown={e => {
               e.preventDefault();

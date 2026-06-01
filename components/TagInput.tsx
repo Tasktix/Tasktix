@@ -76,6 +76,7 @@ export default function TagInput({
       onSubmit={e => void handleSubmit(e)}
     >
       <Input
+        aria-label='New tag name'
         className={classNames?.name}
         placeholder='Add tag...'
         size='sm'

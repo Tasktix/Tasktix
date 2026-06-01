@@ -16,18 +16,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { addToast } from '@heroui/react';
 import { ActionDispatch } from 'react';
 
 import api from '@/lib/api';
 import { NamedColor } from '@/lib/model/color';
 import Tag from '@/lib/model/tag';
-import { addToastForError } from '@/lib/error';
-import {
-  ListAction,
-  SectionAction,
-  TagAction
-} from '@/lib/transformations/list/types';
+import { TagAction } from '@/lib/transformations/list/types';
 
 /**
  * Produces all functions for interacting with a specific list and its data. These
@@ -38,28 +32,22 @@ import {
  * @param listId The ID of the list to generate functions for
  * @param dispatchList Callback to update the list's state
  */
-export function listHandlerFactory(
-  listId: string,
-  dispatchList: ActionDispatch<[action: ListAction | SectionAction | TagAction]>
+export function itemGroupHandlerFactory(
+  dispatchList: ActionDispatch<[action: TagAction]>
 ) {
   /**
-   * @param name The new list name
-   */
-  function setName(name: string) {
-    api
-      .patch(`/list/${listId}`, { name })
-      .then(() => window.location.reload())
-      .catch(addToastForError);
-  }
-
-  /**
-   * Creates a new tag to make available for any items in the list
+   * Creates a new tag to make available for any items in the given list
    *
+   * @param listId The list to add the tag to
    * @param name The new tag's name
    * @param color The new tag's color
    * @returns The new tag's ID, or an error if one occurs
    */
-  function addNewTag(name: string, color: NamedColor): Promise<string> {
+  function addNewTag(
+    listId: string,
+    name: string,
+    color: NamedColor
+  ): Promise<string> {
     return new Promise((resolve, reject) => {
       api
         .post(`/list/${listId}/tag`, { name, color })
@@ -78,26 +66,7 @@ export function listHandlerFactory(
     });
   }
 
-  /**
-   * @param id The ID of the section to delete
-   */
-  function deleteListSection(id: string) {
-    api
-      .delete(`/list/${listId}/section/${id}`)
-      .then(res => {
-        addToast({
-          title: res.message,
-          color: 'success'
-        });
-
-        dispatchList({ type: 'DeleteSection', listId, id });
-      })
-      .catch(addToastForError);
-  }
-
   return {
-    setName,
-    addNewTag,
-    deleteListSection
+    addNewTag
   };
 }
