@@ -51,7 +51,7 @@ describe('POST', () => {
         canUpdateList: true
       })
     );
-    vi.mocked(createListSection).mockResolvedValue(true);
+    vi.mocked(createListSection).mockResolvedValue('section-id');
 
     const response = await POST(
       new Request(SECTION_PATH, {
