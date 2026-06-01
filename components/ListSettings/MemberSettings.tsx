@@ -107,7 +107,6 @@ function NewMember({
 
   function handleAddMember(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setNewMemberEmail('');
     api
       .post(`/list/${listId}/member`, {
         email: newMemberEmail,
@@ -116,6 +115,7 @@ function NewMember({
       .then(res => {
         if (!res.content) throw new Error('User added, but unable to display');
 
+        setNewMemberEmail('');
         const member = JSON.parse(res.content) as ListMember;
 
         member.user.createdAt = new Date(member.user.createdAt);
