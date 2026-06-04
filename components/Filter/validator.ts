@@ -23,13 +23,32 @@ export interface FilterInputError {
   message: string;
 }
 
+/**
+ * Validates that a FilterInputGroup is a valid FilterGroup, i.e. there are no invalid
+ * `undefined`s present
+ *
+ * @param inputGroup The FilterInputGroup to validate
+ */
 export function validateFilterInputGroup(
   inputGroup: FilterInputGroup
 ): FilterInputError | null {
-  function _mergeResults(results: (FilterInputError | null)[]) {
+  /**
+   * Selects the first error, if any, from a series of validation results
+   *
+   * @param results The results to check for errors in
+   */
+  function _mergeResults(
+    results: (FilterInputError | null)[]
+  ): FilterInputError | null {
     return results.reduce((prev, curr) => prev || curr, null);
   }
 
+  /**
+   * Validates a specific filter and, if it's a FilterInputGroup, all descendant filters,
+   * returning an error if any invalid `undefined`s are found
+   *
+   * @param filter The filter to validate
+   */
   function _validate(
     filter: FilterInputGroup | FilterInput
   ): FilterInputError | null {

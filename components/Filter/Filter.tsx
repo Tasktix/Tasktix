@@ -16,10 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {
-  Diagram2Fill as FilterModalIcon,
-  Bookmarks as FilterSavedIcon
-} from 'react-bootstrap-icons';
+import { Diagram2Fill as FilterModalIcon } from 'react-bootstrap-icons';
 import { addToast, Button, useDisclosure } from '@heroui/react';
 
 import { FilterModal } from './FilterModal';
@@ -71,14 +68,6 @@ export default function Filter({
           onPress={onOpen}
         >
           <FilterModalIcon size={20} />
-        </Button>
-        <Button
-          isIconOnly
-          aria-label='Open saved filters'
-          variant='ghost'
-          onPress={() => {}}
-        >
-          <FilterSavedIcon size={20} />
         </Button>
       </span>
       {isOpen && (

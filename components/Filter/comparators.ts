@@ -28,6 +28,16 @@ import {
   TextFilterOperator
 } from './types';
 
+/**
+ * Checks if a text filter matches the given string
+ *
+ * @param filter The filter to test
+ * @param elementValue The string to test against
+ *
+ * Default case intentionally omitted to surface TS error if not all cases are explicitly
+ * handled (e.g. because the TextFilterOperator type was expanded). All VALID code paths
+ * (based on the TextFilterOperator type) do return - skipcq: JS-0045
+ */
 export function compareText(
   filter: { operator: TextFilterOperator; value: string },
   elementValue: string
@@ -55,6 +65,16 @@ export function compareText(
   }
 }
 
+/**
+ * Checks if a numeric filter matches the given number
+ *
+ * @param filter The filter to test
+ * @param elementValue The number to test against
+ *
+ * Default case intentionally omitted to surface TS error if not all cases are explicitly
+ * handled (e.g. because the ComparableFilterOperator type was expanded). All VALID code paths
+ * (based on the ComparableFilterOperator type) do return - skipcq: JS-0045
+ */
 export function compareNumber(
   filter: { operator: ComparableFilterOperator; value: number },
   elementValue: number
@@ -80,6 +100,16 @@ export function compareNumber(
   }
 }
 
+/**
+ * Checks if an option filter matches the given string
+ *
+ * @param filter The filter to test
+ * @param elementValue The string to test against
+ *
+ * Default case intentionally omitted to surface TS error if not all cases are explicitly
+ * handled (e.g. because the OptionFilterOperator type was expanded). All VALID code paths
+ * (based on the OptionFilterOperator type) do return - skipcq: JS-0045
+ */
 export function compareOption(
   filter:
     | {
@@ -107,6 +137,16 @@ export function compareOption(
   }
 }
 
+/**
+ * Checks if a multi-option filter matches the given list of strings
+ *
+ * @param filter The filter to test
+ * @param elementValue The strings to test against
+ *
+ * Default case intentionally omitted to surface TS error if not all cases are explicitly
+ * handled (e.g. because the MultiOptionFilterOperator type was expanded). All VALID code
+ * paths (based on the MultiOptionFilterOperator type) do return - skipcq: JS-0045
+ */
 export function compareMultiOption(
   filter: { operator: MultiOptionFilterOperator; value: string[] },
   elementValue: string[]
@@ -132,6 +172,16 @@ export function compareMultiOption(
   }
 }
 
+/**
+ * Checks if a color filter matches the given color
+ *
+ * @param filter The filter to test
+ * @param elementValue The color to test against
+ *
+ * Default case intentionally omitted to surface TS error if not all cases are explicitly
+ * handled (e.g. because the ColorFilterOperator type was expanded). All VALID code paths
+ * (based on the ColorFilterOperator type) do return - skipcq: JS-0045
+ */
 export function compareColor(
   filter: { operator: ColorFilterOperator; value: NamedColor },
   elementValue: NamedColor
@@ -145,6 +195,16 @@ export function compareColor(
   }
 }
 
+/**
+ * Checks if a date filter matches the given date
+ *
+ * @param filter The filter to test
+ * @param elementValue The date to test against
+ *
+ * Default case intentionally omitted to surface TS error if not all cases are explicitly
+ * handled (e.g. because the DateFilterOperator type was expanded). All VALID code paths
+ * (based on the DateFilterOperator type) do return - skipcq: JS-0045
+ */
 export function compareDate(
   filter:
     | {
@@ -162,6 +222,12 @@ export function compareDate(
       },
   elementValue: Date | null
 ): boolean {
+  /**
+   * Gets a numeric offset for the given day of the week such that it matches JavaScript's
+   * Date.prototype.getDay()
+   *
+   * @param day The day to get a numeric offset for
+   */
   function getDay(day: DayOfWeek): number {
     return [
       'Sunday',
@@ -201,6 +267,16 @@ export function compareDate(
   }
 }
 
+/**
+ * Checks if a time filter matches the given time
+ *
+ * @param filter The filter to test
+ * @param elementValue The time (in ms) to test against
+ *
+ * Default case intentionally omitted to surface TS error if not all cases are explicitly
+ * handled (e.g. because the ComparableFilterOperator type was expanded). All VALID code
+ * paths (based on the ComparableFilterOperator type) do return - skipcq: JS-0045
+ */
 export function compareTime(
   filter: { operator: ComparableFilterOperator; value: number },
   elementValue: number | null

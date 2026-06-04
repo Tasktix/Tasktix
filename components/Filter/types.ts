@@ -247,6 +247,12 @@ export enum DateFilterOperator {
   NotDayOfWeek = '!@dow'
 }
 
+/**
+ * Checks whether the given OptionFilterOperator accepts a single value (e.g. Equal) or
+ * multiple possible values (e.g. In)
+ *
+ * @param operator The operator to check
+ */
 export function isSingleSelectOperator(
   operator: OptionFilterOperator
 ): boolean {
@@ -255,6 +261,11 @@ export function isSingleSelectOperator(
   );
 }
 
+/**
+ * Checks whether the given DateFilterOperator accepts a day of the week or a date
+ *
+ * @param operator The operator to check
+ */
 export function isDayOfWeekOperator(operator: DateFilterOperator): boolean {
   return [
     DateFilterOperator.DayOfWeek,

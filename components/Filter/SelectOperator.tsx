@@ -232,6 +232,11 @@ export function SelectDateFilterOperator({
   );
 }
 
+/**
+ * Stylizes a given operator to match the query language string used to represent it
+ *
+ * @param o The operator to stylize
+ */
 function Operator({ o }: { o: string }) {
   return <Kbd className='font-mono'>{o}</Kbd>;
 }

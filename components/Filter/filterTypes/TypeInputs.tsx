@@ -65,7 +65,7 @@ export default function TypeInput({
         !isSingleSelectOperator(filterData.operator) &&
         isSingleSelectOperator(operator)
       )
-        value = value && value[0];
+        value = value?.[0];
       if (
         isSingleSelectOperator(filterData.operator) &&
         !isSingleSelectOperator(operator)

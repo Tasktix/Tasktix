@@ -71,6 +71,7 @@ export default function FilterRow({
       return;
     }
 
+    // `value` must be found since `key` was loaded as a dropdown option - skipcq: JS-0339
     const value = filterConfigs.find(option => option.label === key)!;
 
     onFilterChange({
