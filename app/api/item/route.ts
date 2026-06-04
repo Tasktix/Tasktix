@@ -24,6 +24,7 @@ import { getUser } from '@/lib/session';
 
 const PostBody = ZodListItem.omit({
   id: true,
+  description: true,
   status: true,
   isUnclear: true,
   elapsedMs: true,
@@ -79,7 +80,7 @@ export async function POST(request: Request) {
   if (!expectedMs && list.hasTimeTracking)
     return ClientError.BadRequest('Invalid expected duration');
 
-  const listItem = new ListItem(name, {
+  const listItem = new ListItem(name, 'list-id', {
     priority,
     expectedMs,
     sectionIndex,

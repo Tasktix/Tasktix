@@ -103,6 +103,9 @@ export function FilterInputText({ filter }: { filter: Filter }) {
             &quot;{filter.value.replaceAll('"', '\\"')}&quot;
           </span>
         );
+
+      // Have to use another `if` here instead of `else` because TS is failing to
+      // recognize the `operator` enum as a complete discriminant for type narrowing
       if (
         filter.operator === OptionFilterOperator.In ||
         filter.operator === OptionFilterOperator.NotIn
@@ -133,6 +136,8 @@ export function FilterInputText({ filter }: { filter: Filter }) {
       )
         value = <span className={PRIMITIVE_COLOR}>{filter.value}</span>;
 
+      // Have to use another `if` here instead of `else` because TS is failing to
+      // recognize the `operator` enum as a complete discriminant for type narrowing
       if (
         filter.operator === DateFilterOperator.Equal ||
         filter.operator === DateFilterOperator.NotEqual ||

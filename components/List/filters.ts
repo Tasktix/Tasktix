@@ -17,8 +17,7 @@
  */
 
 import { FilterConfig } from '@/components/Filter';
-import List from '@/lib/model/list';
-import Tag from '@/lib/model/tag';
+import { ListState } from '@/lib/transformations/list/types';
 
 /**
  * Builds the list of available filters based on the list's settings (e.g. whether due
@@ -26,12 +25,8 @@ import Tag from '@/lib/model/tag';
  *
  * @param list The rich list object (including members, items, etc.), used to check
  *  settings and details
- * @param tagsAvailable All tags associated with the list
  */
-export function getFilterConfig(
-  list: Omit<List, 'sections'>,
-  tagsAvailable: Tag[]
-): FilterConfig[] {
+export function getFilterConfig(list: ListState): FilterConfig[] {
   const generalOptions: FilterConfig[] = [
     { type: 'text', label: 'name' },
     {
@@ -43,21 +38,28 @@ export function getFilterConfig(
         { name: 'Low', color: 'success' }
       ]
     },
-    { type: 'multi-option', label: 'tag', options: tagsAvailable }
+    {
+      type: 'multi-option',
+      label: 'tag',
+      options: list.tags.values().toArray()
+    }
   ];
 
   const memberOptions: FilterConfig[] =
-    list.members.length > 1
+    list.members.size > 1
       ? [
           {
             type: 'multi-option',
             label: 'user',
-            options: list.members.map(member => {
-              return {
-                name: member.user.username ?? member.user.name,
-                color: member.user.color
-              };
-            })
+            options: list.members
+              .values()
+              .map(member => {
+                return {
+                  name: member.user.username ?? member.user.name,
+                  color: member.user.color
+                };
+              })
+              .toArray()
           }
         ]
       : [];

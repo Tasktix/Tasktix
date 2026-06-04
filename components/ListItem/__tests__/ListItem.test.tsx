@@ -24,11 +24,11 @@ import { render } from '@testing-library/react';
 import { HeroUIProvider } from '@heroui/react';
 
 import ListItemModel from '@/lib/model/listItem';
-import Assignee from '@/lib/model/assignee';
 import User from '@/lib/model/user';
-import ListMember from '@/lib/model/listMember';
 import List from '@/lib/model/list';
 import MemberRole from '@/lib/model/memberRole';
+import ListMember from '@/lib/model/listMember';
+import Assignee from '@/lib/model/assignee';
 
 import ListItem from '../ListItem';
 
@@ -54,7 +54,7 @@ beforeEach(vi.resetAllMocks);
 afterAll(vi.unstubAllEnvs);
 
 it('Shows everything faded and shows the completion date instead of due date when the item is marked completed', () => {
-  const item = new ListItemModel('Test item', {
+  const item = new ListItemModel('Test item', 'list-id', {
     priority: 'High',
     status: 'Completed',
     expectedMs: 5000 * 60,
@@ -69,11 +69,11 @@ it('Shows everything faded and shows the completion date instead of due date whe
         hasDueDates
         hasTimeTracking
         addNewTag={vi.fn()}
-        dispatchItemChange={vi.fn()}
-        item={item}
+        item={{ ...item, assignees: [], tags: [] }}
         members={[]}
         sectionId='section-id'
-        tagsAvailable={[]}
+        tags={[]}
+        onItemEvent={vi.fn()}
       />
     </HeroUIProvider>
   );
@@ -89,20 +89,24 @@ it('Shows everything faded and shows the completion date instead of due date whe
 });
 
 it('Displays the associated list when one is provided', () => {
+  const item = new ListItemModel('Test item', 'list-id', {});
+
   const { getByText, getByRole } = render(
     <HeroUIProvider disableRipple>
       <ListItem
         addNewTag={vi.fn()}
-        dispatchItemChange={vi.fn()}
         hasDueDates={false}
         hasTimeTracking={false}
-        item={new ListItemModel('Test item', {})}
+        item={{ ...item, assignees: [], tags: [] }}
         list={
-          new List('List Name', 'Cyan', [], [], false, false, false, 'list-id')
+          new List('List Name', 'Cyan', [], [], [], false, false, false, {
+            id: 'list-id'
+          })
         }
         members={[]}
         sectionId='section-id'
-        tagsAvailable={[]}
+        tags={[]}
+        onItemEvent={vi.fn()}
       />
     </HeroUIProvider>
   );
@@ -137,7 +141,7 @@ it('Displays all members assigned to the item', () => {
       { color: 'Blue' }
     )
   ];
-  const item = new ListItemModel('Test item', {
+  const item = new ListItemModel('Test item', 'list-id', {
     assignees: [new Assignee(members[0], ''), new Assignee(members[1], '')]
   });
 
@@ -145,13 +149,13 @@ it('Displays all members assigned to the item', () => {
     <HeroUIProvider disableRipple>
       <ListItem
         addNewTag={vi.fn()}
-        dispatchItemChange={vi.fn()}
         hasDueDates={false}
         hasTimeTracking={false}
         item={item}
         members={members.map(m => new ListMember(m, MOCK_ROLE_CAN_VIEW))}
         sectionId='section-id'
-        tagsAvailable={[]}
+        tags={[]}
+        onItemEvent={vi.fn()}
       />
     </HeroUIProvider>
   );

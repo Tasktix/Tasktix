@@ -23,8 +23,11 @@ import api from '@/lib/api';
 import { NamedColor } from '@/lib/model/color';
 import Tag from '@/lib/model/tag';
 import { addToastForError } from '@/lib/error';
-
-import { ListAction, SectionAction } from './types';
+import {
+  ListAction,
+  SectionAction,
+  TagAction
+} from '@/lib/transformations/list/types';
 
 /**
  * Produces all functions for interacting with a specific list and its data. These
@@ -37,7 +40,7 @@ import { ListAction, SectionAction } from './types';
  */
 export function listHandlerFactory(
   listId: string,
-  dispatchList: ActionDispatch<[action: ListAction | SectionAction]>
+  dispatchList: ActionDispatch<[action: ListAction | SectionAction | TagAction]>
 ) {
   /**
    * @param name The new list name
@@ -63,7 +66,11 @@ export function listHandlerFactory(
         .then(res => {
           const id = res.content?.split('/').at(-1) || '';
 
-          dispatchList({ type: 'AddTag', tag: new Tag(name, color, id) });
+          dispatchList({
+            type: 'AddTag',
+            listId,
+            tag: new Tag(name, color, id)
+          });
 
           resolve(id);
         })
@@ -75,13 +82,6 @@ export function listHandlerFactory(
    * @param id The ID of the section to delete
    */
   function deleteListSection(id: string) {
-    if (
-      !confirm(
-        'Are you sure you want to delete this section? This action is irreversible.'
-      )
-    )
-      return;
-
     api
       .delete(`/list/${listId}/section/${id}`)
       .then(res => {
@@ -90,7 +90,7 @@ export function listHandlerFactory(
           color: 'success'
         });
 
-        dispatchList({ type: 'DeleteSection', id });
+        dispatchList({ type: 'DeleteSection', listId, id });
       })
       .catch(addToastForError);
   }

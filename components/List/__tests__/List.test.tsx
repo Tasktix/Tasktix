@@ -28,30 +28,547 @@ import ListModel from '@/lib/model/list';
 import ListSection from '@/lib/model/listSection';
 import ListItem from '@/lib/model/listItem';
 import Tag from '@/lib/model/tag';
+import { subscribe } from '@/lib/sse/client';
+import ListMember from '@/lib/model/listMember';
+import User from '@/lib/model/user';
+import MemberRole from '@/lib/model/memberRole';
 
 import List from '../List';
 
-class MockEventSource {
-  onopen = null;
-  onmessage = null;
-  onerror = null;
-
-  // Mock function shouldn't be a static method - skipcq: JS-0105
-  close() {
-    // Mock function doesn't need an implementation
-  }
-}
-
+vi.mock(import('next/navigation'), async importOriginal => ({
+  ...(await importOriginal()),
+  useRouter: vi.fn()
+}));
 vi.mock('@/lib/api');
+vi.mock('@/lib/sse/client');
+vi.mock(import('@/components/AuthProvider'), async importOriginal => ({
+  ...(await importOriginal()),
+  useAuth: vi.fn(
+    () =>
+      ({
+        loggedInUser: false,
+        setLoggedInUser: vi.fn(),
+        oauthConfig: { githubEnabled: false, customEnabled: false }
+      }) as const
+  )
+}));
 
 beforeAll(() => {
   vi.stubEnv('TZ', 'UTC');
-  vi.stubGlobal('EventSource', MockEventSource);
+
+  // Needed for <Tabs> component
+  vi.stubGlobal(
+    'ResizeObserver',
+    class {
+      observe;
+      unobserve;
+      disconnect;
+
+      constructor() {
+        this.observe = vi.fn();
+        this.unobserve = vi.fn();
+        this.disconnect = vi.fn();
+      }
+    }
+  );
 });
 beforeEach(vi.resetAllMocks);
 afterAll(() => {
   vi.unstubAllEnvs();
   vi.unstubAllGlobals();
+});
+
+describe('List state changes', () => {
+  const MOCK_LIST = new ListModel(
+    'List name',
+    'Amber',
+    [],
+    [],
+    [],
+    true,
+    true,
+    true,
+    { id: 'list-id' }
+  );
+
+  test('List name updates when event received', async () => {
+    const user = userEvent.setup();
+
+    vi.mocked(subscribe).mockImplementation((_, onMessage) => {
+      onMessage({
+        type: 'SetListName',
+        id: MOCK_LIST.id,
+        name: 'New list name'
+      });
+
+      return vi.fn();
+    });
+
+    const { getByDisplayValue, getByLabelText, getByText } = render(
+      <HeroUIProvider disableRipple>
+        <List startingList={JSON.stringify(MOCK_LIST)} startingRoles='[]' />
+      </HeroUIProvider>
+    );
+
+    await user.click(getByLabelText('Settings'));
+    await waitFor(() => expect(getByText('List Settings')).toBeVisible());
+
+    expect(getByDisplayValue('New list name')).toBeVisible();
+  });
+
+  test('List color updates when event received', async () => {
+    const user = userEvent.setup();
+
+    vi.mocked(subscribe).mockImplementation((_, onMessage) => {
+      onMessage({ type: 'SetListColor', id: MOCK_LIST.id, color: 'Blue' });
+
+      return vi.fn();
+    });
+
+    const { getByLabelText, getByText } = render(
+      <HeroUIProvider disableRipple>
+        <List
+          startingList={JSON.stringify({ ...MOCK_LIST, color: 'Amber' })}
+          startingRoles='[]'
+        />
+      </HeroUIProvider>
+    );
+
+    await user.click(getByLabelText('Settings'));
+    await waitFor(() => expect(getByText('List Settings')).toBeVisible());
+
+    expect(getByLabelText('Pick color')).toHaveClass('bg-blue-500');
+  });
+
+  test('List due date toggle updates when event received', async () => {
+    const user = userEvent.setup();
+
+    vi.mocked(subscribe).mockImplementation((_, onMessage) => {
+      onMessage({
+        type: 'SetHasDueDates',
+        id: MOCK_LIST.id,
+        hasDueDates: false
+      });
+
+      return vi.fn();
+    });
+
+    const { getByLabelText, getByText } = render(
+      <HeroUIProvider disableRipple>
+        <List
+          startingList={JSON.stringify({ ...MOCK_LIST, hasDueDates: true })}
+          startingRoles='[]'
+        />
+      </HeroUIProvider>
+    );
+
+    await user.click(getByLabelText('Settings'));
+    await waitFor(() => expect(getByText('List Settings')).toBeVisible());
+
+    expect(getByLabelText('Track due dates')).not.toBeChecked();
+  });
+
+  test('List time tracking toggle updates when event received', async () => {
+    const user = userEvent.setup();
+
+    vi.mocked(subscribe).mockImplementation((_, onMessage) => {
+      onMessage({
+        type: 'SetHasTimeTracking',
+        id: MOCK_LIST.id,
+        hasTimeTracking: false
+      });
+
+      return vi.fn();
+    });
+
+    const { getByLabelText, getByText } = render(
+      <HeroUIProvider disableRipple>
+        <List
+          startingList={JSON.stringify({ ...MOCK_LIST, hasTimeTracking: true })}
+          startingRoles='[]'
+        />
+      </HeroUIProvider>
+    );
+
+    await user.click(getByLabelText('Settings'));
+    await waitFor(() => expect(getByText('List Settings')).toBeVisible());
+
+    expect(getByLabelText('Track completion time')).not.toBeChecked();
+  });
+
+  test('List auto-ordering toggle updates when event received', async () => {
+    const user = userEvent.setup();
+
+    vi.mocked(subscribe).mockImplementation((_, onMessage) => {
+      onMessage({
+        type: 'SetIsAutoOrdered',
+        id: MOCK_LIST.id,
+        isAutoOrdered: false
+      });
+
+      return vi.fn();
+    });
+
+    const { getByLabelText, getByText } = render(
+      <HeroUIProvider disableRipple>
+        <List
+          startingList={JSON.stringify({ ...MOCK_LIST, isAutoOrdered: true })}
+          startingRoles='[]'
+        />
+      </HeroUIProvider>
+    );
+
+    await user.click(getByLabelText('Settings'));
+    await waitFor(() => expect(getByText('List Settings')).toBeVisible());
+
+    expect(getByLabelText('Auto-order list items')).not.toBeChecked();
+  });
+});
+
+describe('List member changes', () => {
+  const VIEWER_ROLE = new MemberRole('Viewer', "Can't do anything", {});
+  const ADDER_ROLE = new MemberRole('Adder', 'Can add items', {
+    canAddItems: true
+  });
+  const MOCK_USER = new User(
+    'user-1',
+    'Test user',
+    'test@example.com',
+    true,
+    new Date(),
+    new Date(),
+    {}
+  );
+  const MOCK_LIST = new ListModel(
+    'List name',
+    'Amber',
+    [new ListMember(MOCK_USER, VIEWER_ROLE)],
+    [],
+    [],
+    true,
+    true,
+    true,
+    { id: 'list-id' }
+  );
+
+  test('Allows users to be added', async () => {
+    const MOCK_NEW_USER = new User(
+      'user-2',
+      'New user',
+      'newuser@example.com',
+      true,
+      new Date(),
+      new Date(),
+      {}
+    );
+
+    const user = userEvent.setup();
+
+    vi.mocked(api.post).mockResolvedValue({
+      code: 200,
+      message: 'Success',
+      content: JSON.stringify(new ListMember(MOCK_NEW_USER, ADDER_ROLE))
+    });
+
+    const { getByLabelText, getByRole, getByText } = render(
+      <HeroUIProvider disableRipple>
+        <List
+          startingList={JSON.stringify({ ...MOCK_LIST, isAutoOrdered: true })}
+          startingRoles={JSON.stringify([VIEWER_ROLE, ADDER_ROLE])}
+        />
+      </HeroUIProvider>
+    );
+
+    await user.click(getByLabelText('Settings'));
+    await waitFor(() => expect(getByText('List Settings')).toBeVisible());
+    await user.click(getByText('Members'));
+    await waitFor(() => expect(getByText('Test user')).toBeVisible());
+
+    await user.type(getByLabelText('New member email'), 'newuser@example.com');
+    await user.click(getByLabelText('New member role'));
+    await waitFor(() => expect(getByLabelText('Adder')).toBeVisible());
+    await user.click(getByLabelText('Adder'));
+    await user.click(getByRole('button', { name: 'Add Member' }));
+
+    await waitFor(() => expect(getByText('New user')).toBeVisible());
+  });
+
+  test('Allows user roles to be changed', async () => {
+    const user = userEvent.setup();
+
+    vi.mocked(api.patch).mockResolvedValue({
+      code: 200,
+      message: 'Success',
+      content: undefined
+    });
+
+    const { getByLabelText, getByText } = render(
+      <HeroUIProvider disableRipple>
+        <List
+          startingList={JSON.stringify({ ...MOCK_LIST, isAutoOrdered: true })}
+          startingRoles={JSON.stringify([VIEWER_ROLE, ADDER_ROLE])}
+        />
+      </HeroUIProvider>
+    );
+
+    await user.click(getByLabelText('Settings'));
+    await waitFor(() => expect(getByText('List Settings')).toBeVisible());
+    await user.click(getByText('Members'));
+    await waitFor(() => expect(getByText('Test user')).toBeVisible());
+
+    expect(getByLabelText('Test user Role')).toHaveTextContent('Viewer');
+
+    await user.click(getByLabelText('Test user Role'));
+    await waitFor(() => expect(getByLabelText('Adder')).toBeVisible());
+    await user.click(getByLabelText('Adder'));
+
+    await waitFor(() =>
+      expect(getByLabelText('Test user Role')).toHaveTextContent('Adder')
+    );
+  });
+
+  test('Allows users to be removed', async () => {
+    const user = userEvent.setup();
+
+    vi.mocked(api.delete).mockResolvedValue({
+      code: 200,
+      message: 'Success',
+      content: undefined
+    });
+
+    const { getByLabelText, getByText, queryByLabelText } = render(
+      <HeroUIProvider disableRipple>
+        <List
+          startingList={JSON.stringify({ ...MOCK_LIST, isAutoOrdered: true })}
+          startingRoles={JSON.stringify([VIEWER_ROLE, ADDER_ROLE])}
+        />
+      </HeroUIProvider>
+    );
+
+    await user.click(getByLabelText('Settings'));
+    await waitFor(() => expect(getByText('List Settings')).toBeVisible());
+    await user.click(getByText('Members'));
+    await waitFor(() => expect(getByText('Test user')).toBeVisible());
+
+    await user.click(getByLabelText('Remove Test user'));
+    await user.click(getByText('Confirm'));
+
+    await waitFor(() =>
+      expect(queryByLabelText('Remove Test user')).not.toBeInTheDocument()
+    );
+    expect(api.delete).toHaveBeenCalledExactlyOnceWith(
+      `/list/${MOCK_LIST.id}/member/${MOCK_USER.id}`
+    );
+  });
+});
+
+describe('Tag changes', () => {
+  const MOCK_LIST = new ListModel(
+    'List name',
+    'Amber',
+    [],
+    [],
+    [new Tag('Test tag', 'Amber')],
+    true,
+    true,
+    true,
+    { id: 'list-id' }
+  );
+
+  test('Allows tag names to be changed', async () => {
+    const user = userEvent.setup();
+
+    vi.mocked(api.patch).mockResolvedValue({
+      code: 200,
+      message: 'Success',
+      content: undefined
+    });
+
+    const { getByDisplayValue, getByLabelText, getByTestId, getByText } =
+      render(
+        <HeroUIProvider disableRipple>
+          <List startingList={JSON.stringify(MOCK_LIST)} startingRoles='[]' />
+        </HeroUIProvider>
+      );
+
+    await user.click(getByLabelText('Settings'));
+    await waitFor(() => expect(getByText('List Settings')).toBeVisible());
+    await user.click(getByText('Tags'));
+    await waitFor(() => expect(getByDisplayValue('Test tag')).toBeVisible());
+
+    const tagName = getByDisplayValue('Test tag');
+
+    await user.clear(tagName);
+    await user.type(tagName, 'New tag name');
+    await user.click(
+      within(getByTestId('confirmed-input-rename tag: Test tag')).getByRole(
+        'button'
+      )
+    );
+
+    await waitFor(() =>
+      expect(
+        within(
+          getByTestId('confirmed-input-rename tag: New tag name')
+        ).getByRole('button')
+      ).toHaveClass('hidden')
+    );
+  });
+
+  test('Allows tag colors to be changed', async () => {
+    const user = userEvent.setup();
+
+    vi.mocked(api.patch).mockResolvedValue({
+      code: 200,
+      message: 'Success',
+      content: undefined
+    });
+
+    const { getByDisplayValue, getByLabelText, getByText } = render(
+      <HeroUIProvider disableRipple>
+        <List startingList={JSON.stringify(MOCK_LIST)} startingRoles='[]' />
+      </HeroUIProvider>
+    );
+
+    await user.click(getByLabelText('Settings'));
+    await waitFor(() => expect(getByText('List Settings')).toBeVisible());
+    await user.click(getByText('Tags'));
+    await waitFor(() => expect(getByDisplayValue('Test tag')).toBeVisible());
+
+    const tagColor = getByLabelText('edit color: Test tag');
+
+    await user.click(tagColor);
+    await user.click(getByLabelText('Green'));
+
+    await waitFor(() => expect(tagColor).toHaveClass('bg-green-500'));
+  });
+
+  test('Allows tags to be deleted', async () => {
+    const user = userEvent.setup();
+
+    vi.mocked(api.delete).mockResolvedValue({
+      code: 200,
+      message: 'Success',
+      content: undefined
+    });
+
+    const {
+      getByDisplayValue,
+      getByLabelText,
+      getByRole,
+      getByText,
+      queryByDisplayValue
+    } = render(
+      <HeroUIProvider disableRipple>
+        <List startingList={JSON.stringify(MOCK_LIST)} startingRoles='[]' />
+      </HeroUIProvider>
+    );
+
+    await user.click(getByLabelText('Settings'));
+    await waitFor(() => expect(getByText('List Settings')).toBeVisible());
+    await user.click(getByText('Tags'));
+    await waitFor(() => expect(getByDisplayValue('Test tag')).toBeVisible());
+
+    const deleteTag = getByLabelText('delete tag: Test tag');
+
+    await user.click(deleteTag);
+    await user.click(getByRole('button', { name: 'Confirm' }));
+
+    await waitFor(() =>
+      expect(queryByDisplayValue('Test tag')).not.toBeInTheDocument()
+    );
+  });
+});
+
+describe('List section changes', () => {
+  const MOCK_LIST = new ListModel(
+    'List name',
+    'Amber',
+    [],
+    [new ListSection('Test section', [])],
+    [],
+    false,
+    false,
+    false,
+    { id: 'list-id' }
+  );
+
+  test('Allows sections to be added', async () => {
+    const user = userEvent.setup();
+
+    vi.mocked(api.post).mockResolvedValue({
+      code: 200,
+      message: 'Success',
+      content: undefined
+    });
+
+    const { getByLabelText, getByRole, getByDisplayValue } = render(
+      <HeroUIProvider disableRipple>
+        <List startingList={JSON.stringify(MOCK_LIST)} startingRoles='[]' />
+      </HeroUIProvider>
+    );
+
+    const sectionNameInput = getByLabelText('New section name');
+
+    await user.type(sectionNameInput, 'New section');
+    await user.click(getByRole('button', { name: 'Add Section' }));
+
+    await waitFor(() => expect(sectionNameInput).toHaveValue(''));
+    expect(getByDisplayValue('New section')).toBeVisible();
+  });
+
+  test('Allows sections to be deleted', async () => {
+    const user = userEvent.setup();
+
+    vi.mocked(api.post).mockResolvedValue({
+      code: 200,
+      message: 'Success',
+      content: undefined
+    });
+
+    const { getByRole, getByDisplayValue } = render(
+      <HeroUIProvider disableRipple>
+        <List startingList={JSON.stringify(MOCK_LIST)} startingRoles='[]' />
+      </HeroUIProvider>
+    );
+
+    const sectionName = getByDisplayValue('Test section');
+
+    await user.click(getByRole('button', { name: 'Show section actions' }));
+    await waitFor(() =>
+      expect(getByRole('menuitem', { name: 'Delete' })).toBeVisible()
+    );
+    await user.click(getByRole('menuitem', { name: 'Delete' }));
+    await user.click(getByRole('button', { name: 'Confirm' }));
+
+    await waitFor(() => expect(sectionName).not.toBeInTheDocument());
+  });
+
+  test('Allows items to be added to sections', async () => {
+    const user = userEvent.setup();
+
+    vi.mocked(api.post).mockResolvedValue({
+      code: 200,
+      message: 'Success',
+      content: undefined
+    });
+
+    const { getByRole, getByDisplayValue, getByLabelText } = render(
+      <HeroUIProvider disableRipple>
+        <List startingList={JSON.stringify(MOCK_LIST)} startingRoles='[]' />
+      </HeroUIProvider>
+    );
+
+    const itemNameInput = getByLabelText('Name');
+
+    await user.click(getByRole('button', { name: 'Create item' }));
+    await waitFor(() => expect(itemNameInput).toBeVisible());
+    await user.type(itemNameInput, 'New item');
+    await user.click(getByRole('button', { name: 'Submit' }));
+
+    await waitFor(() => expect(itemNameInput).toHaveValue(''));
+    expect(getByDisplayValue('New item')).toBeVisible();
+  });
 });
 
 describe('ListItem state propagation', () => {
@@ -74,17 +591,17 @@ describe('ListItem state propagation', () => {
               [],
               [
                 new ListSection('List section name', [
-                  new ListItem('List item name', { id: 'item-id' })
+                  new ListItem('List item name', 'list-id', { id: 'item-id' })
                 ])
               ],
+              [],
               true,
               true,
               true,
-              'list-id'
+              { id: 'list-id' }
             )
           )}
           startingRoles='[]'
-          startingTagsAvailable='[]'
         />
       </HeroUIProvider>
     );
@@ -110,6 +627,68 @@ describe('ListItem state propagation', () => {
     );
   });
 
+  test('Item descriptions update when changed', async () => {
+    const user = userEvent.setup();
+
+    vi.mocked(api.patch).mockResolvedValue({
+      code: 200,
+      message: 'Success',
+      content: undefined
+    });
+
+    const { getByDisplayValue, getByLabelText, getByTestId } = render(
+      <HeroUIProvider disableRipple>
+        <List
+          startingList={JSON.stringify(
+            new ListModel(
+              'List name',
+              'Amber',
+              [],
+              [
+                new ListSection('List section name', [
+                  new ListItem('List item name', 'list-id', {
+                    description: 'Initial description',
+                    id: 'item-id'
+                  })
+                ])
+              ],
+              [],
+              true,
+              true,
+              true,
+              { id: 'list-id' }
+            )
+          )}
+          startingRoles='[]'
+        />
+      </HeroUIProvider>
+    );
+
+    await user.click(getByLabelText('More item info'));
+
+    const nameInput = getByDisplayValue('Initial description');
+
+    await user.clear(nameInput);
+    await user.type(nameInput, 'A better description');
+    await user.click(
+      within(getByTestId('confirmed-textarea-Description')).getByRole('button')
+    );
+
+    await waitFor(() =>
+      expect(api.patch).toHaveBeenCalledExactlyOnceWith('/item/item-id', {
+        description: 'A better description'
+      })
+    );
+
+    await waitFor(() =>
+      expect(
+        within(getByTestId('confirmed-textarea-Description')).getByRole(
+          'button'
+        )
+      ).toHaveClass('hidden')
+    );
+  });
+
   test('Item priority updates when changed', async () => {
     const user = userEvent.setup();
 
@@ -129,20 +708,20 @@ describe('ListItem state propagation', () => {
               [],
               [
                 new ListSection('List section name', [
-                  new ListItem('List item name', {
+                  new ListItem('List item name', 'list-id', {
                     priority: 'High',
                     id: 'item-id'
                   })
                 ])
               ],
+              [],
               true,
               true,
               true,
-              'list-id'
+              { id: 'list-id' }
             )
           )}
           startingRoles='[]'
-          startingTagsAvailable='[]'
         />
       </HeroUIProvider>
     );
@@ -180,20 +759,20 @@ describe('ListItem state propagation', () => {
               [],
               [
                 new ListSection('List section name', [
-                  new ListItem('List item name', {
+                  new ListItem('List item name', 'list-id', {
                     status: 'In_Progress',
                     id: 'item-id'
                   })
                 ])
               ],
+              [],
               true,
               true,
               true,
-              'list-id'
+              { id: 'list-id' }
             )
           )}
           startingRoles='[]'
-          startingTagsAvailable='[]'
         />
       </HeroUIProvider>
     );
@@ -235,20 +814,20 @@ describe('ListItem state propagation', () => {
               [],
               [
                 new ListSection('List section name', [
-                  new ListItem('List item name', {
+                  new ListItem('List item name', 'list-id', {
                     status: 'In_Progress',
                     id: 'item-id'
                   })
                 ])
               ],
+              [],
               true,
               true,
               true,
-              'list-id'
+              { id: 'list-id' }
             )
           )}
           startingRoles='[]'
-          startingTagsAvailable='[]'
         />
       </HeroUIProvider>
     );
@@ -292,21 +871,21 @@ describe('ListItem state propagation', () => {
               [],
               [
                 new ListSection('List section name', [
-                  new ListItem('List item name', {
+                  new ListItem('List item name', 'list-id', {
                     status: 'Completed',
                     dateCompleted: new Date('2026-01-01'),
                     id: 'item-id'
                   })
                 ])
               ],
+              [],
               true,
               true,
               true,
-              'list-id'
+              { id: 'list-id' }
             )
           )}
           startingRoles='[]'
-          startingTagsAvailable='[]'
         />
       </HeroUIProvider>
     );
@@ -350,21 +929,21 @@ describe('ListItem state propagation', () => {
               [],
               [
                 new ListSection('List section name', [
-                  new ListItem('List item name', {
+                  new ListItem('List item name', 'list-id', {
                     status: 'Completed',
                     dateCompleted: new Date('2026-01-01'),
                     id: 'item-id'
                   })
                 ])
               ],
+              [],
               true,
               true,
               true,
-              'list-id'
+              { id: 'list-id' }
             )
           )}
           startingRoles='[]'
-          startingTagsAvailable='[]'
         />
       </HeroUIProvider>
     );
@@ -415,19 +994,19 @@ describe('ListItem state propagation', () => {
               [],
               [
                 new ListSection('List section name', [
-                  new ListItem('List item name', {
+                  new ListItem('List item name', 'list-id', {
                     id: 'item-id'
                   })
                 ])
               ],
+              [],
               true,
               true,
               true,
-              'list-id'
+              { id: 'list-id' }
             )
           )}
           startingRoles='[]'
-          startingTagsAvailable='[]'
         />
       </HeroUIProvider>
     );
@@ -436,12 +1015,12 @@ describe('ListItem state propagation', () => {
 
     await user.click(getByLabelText('Update tags'));
 
-    await user.type(getByLabelText('Add tag...'), 'Test tag');
+    await user.type(getByLabelText('New tag name'), 'Test tag');
     await user.click(getByLabelText('Pick color'));
     await user.click(getByLabelText('Cyan'));
     await user.click(
       // We know the DOM, so we know this element does have a parent form - skipcq: JS-0339
-      within(getByLabelText('Add tag...').closest('form')!).getByLabelText(
+      within(getByLabelText('New tag name').closest('form')!).getByLabelText(
         'Submit'
       )
     );
@@ -481,21 +1060,19 @@ describe('ListItem state propagation', () => {
               [],
               [
                 new ListSection('List section name', [
-                  new ListItem('List item name', {
+                  new ListItem('List item name', 'list-id', {
                     id: 'item-id'
                   })
                 ])
               ],
+              [new Tag('Tag name', 'Emerald', 'tag-id')],
               true,
               true,
               true,
-              'list-id'
+              { id: 'list-id' }
             )
           )}
           startingRoles='[]'
-          startingTagsAvailable={JSON.stringify([
-            new Tag('Tag name', 'Emerald', 'tag-id')
-          ])}
         />
       </HeroUIProvider>
     );
@@ -535,22 +1112,20 @@ describe('ListItem state propagation', () => {
               [],
               [
                 new ListSection('List section name', [
-                  new ListItem('List item name', {
+                  new ListItem('List item name', 'list-id', {
                     id: 'item-id',
                     tags: [new Tag('Tag name', 'Emerald', 'tag-id')]
                   })
                 ])
               ],
+              [new Tag('Tag name', 'Emerald', 'tag-id')],
               true,
               true,
               true,
-              'list-id'
+              { id: 'list-id' }
             )
           )}
           startingRoles='[]'
-          startingTagsAvailable={JSON.stringify([
-            new Tag('Tag name', 'Emerald', 'tag-id')
-          ])}
         />
       </HeroUIProvider>
     );
@@ -585,20 +1160,20 @@ describe('ListItem state propagation', () => {
               [],
               [
                 new ListSection('List section name', [
-                  new ListItem('List item name', {
+                  new ListItem('List item name', 'list-id', {
                     expectedMs: 1000 * 60,
                     id: 'item-id'
                   })
                 ])
               ],
+              [],
               true,
               true,
               true,
-              'list-id'
+              { id: 'list-id' }
             )
           )}
           startingRoles='[]'
-          startingTagsAvailable='[]'
         />
       </HeroUIProvider>
     );
@@ -642,21 +1217,21 @@ describe('ListItem state propagation', () => {
                 [],
                 [
                   new ListSection('List section name', [
-                    new ListItem('List item name', {
+                    new ListItem('List item name', 'list-id', {
                       status: 'Unstarted',
                       elapsedMs: 0,
                       id: 'item-id'
                     })
                   ])
                 ],
+                [],
                 true,
                 true,
                 true,
-                'list-id'
+                { id: 'list-id' }
               )
             )}
             startingRoles='[]'
-            startingTagsAvailable='[]'
           />
         </HeroUIProvider>
       );
@@ -698,21 +1273,21 @@ describe('ListItem state propagation', () => {
                 [],
                 [
                   new ListSection('List section name', [
-                    new ListItem('List item name', {
+                    new ListItem('List item name', 'list-id', {
                       status: 'In_Progress',
                       elapsedMs: 2000 * 60,
                       id: 'item-id'
                     })
                   ])
                 ],
+                [],
                 true,
                 true,
                 true,
-                'list-id'
+                { id: 'list-id' }
               )
             )}
             startingRoles='[]'
-            startingTagsAvailable='[]'
           />
         </HeroUIProvider>
       );
@@ -759,21 +1334,21 @@ describe('ListItem state propagation', () => {
               [],
               [
                 new ListSection('List section name', [
-                  new ListItem('List item name', {
+                  new ListItem('List item name', 'list-id', {
                     status: 'Paused',
                     elapsedMs: 1000 * 60 * 5,
                     id: 'item-id'
                   })
                 ])
               ],
+              [],
               true,
               true,
               true,
-              'list-id'
+              { id: 'list-id' }
             )
           )}
           startingRoles='[]'
-          startingTagsAvailable='[]'
         />
       </HeroUIProvider>
     );
@@ -815,19 +1390,19 @@ describe('ListItem state propagation', () => {
               [],
               [
                 new ListSection('List section name', [
-                  new ListItem('List item name', {
+                  new ListItem('List item name', 'list-id', {
                     id: 'item-id'
                   })
                 ])
               ],
+              [],
               true,
               true,
               true,
-              'list-id'
+              { id: 'list-id' }
             )
           )}
           startingRoles='[]'
-          startingTagsAvailable='[]'
         />
       </HeroUIProvider>
     );

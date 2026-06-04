@@ -19,21 +19,30 @@
 'use client';
 
 import { useEffect, useReducer, useState } from 'react';
-import { MemberRole } from '@prisma/client';
 
 import AddListSection from '@/components/AddListSection';
 import Filter, { FilterGroup } from '@/components/Filter';
 import ListSettings from '@/components/ListSettings';
 import ListModel from '@/lib/model/list';
-import Tag from '@/lib/model/tag';
-import ListItem from '@/lib/model/listItem';
 import { subscribe } from '@/lib/sse/client';
+import MemberRole from '@/lib/model/memberRole';
+import ListSection from '@/components/ListSection/ListSection';
+import {
+  generateItemAssigneesState,
+  generateItemsState,
+  generateItemTagsState,
+  generateMembersState,
+  generateSectionItemsState,
+  generateSectionsState,
+  generateTagsState
+} from '@/lib/transformations/list/toState';
+import {
+  listStateToMembers,
+  listStateToItems
+} from '@/lib/transformations/list/fromState';
+import { listReducer } from '@/lib/transformations/list/stateToState';
 
-import ListSection from '../ListSection/ListSection';
-
-import listReducer from './listReducer';
 import { listHandlerFactory } from './handlerFactory';
-import { ListState } from './types';
 import { getFilterConfig } from './filters';
 
 /**
@@ -46,48 +55,31 @@ import { getFilterConfig } from './filters';
  *  loaded (type List). Must be manually JSON stringified to cross the server/client
  *  component boundary because Next.js doesn't automatically convert Date objects or
  *  classes
- * @param startingTagsAvailable A JSON-stringified version of the list's tags when the
- *  page is first loaded (type Tag[]). Must be manually JSON stringified to cross the
- *  server/client component boundary because Next.js doesn't automatically convert classes
  */
 export default function List({
   startingList,
-  startingTagsAvailable,
   startingRoles
 }: {
   startingList: string;
-  startingTagsAvailable: string;
   startingRoles: string;
 }) {
   const builtList = JSON.parse(startingList) as ListModel;
-  const builtSections: ListState['list']['sections'] = new Map();
   const builtRoles = new Map(
     (JSON.parse(startingRoles) as MemberRole[]).map(role => [role.id, role])
   );
 
-  // Rebuild Date objects turned to JSON strings & convert arrays to Maps
-  for (const section of builtList.sections) {
-    const builtItems: Map<string, ListItem> = new Map();
-
-    for (const item of section.items) {
-      item.dateCreated = new Date(item.dateCreated);
-      item.dateDue = item.dateDue ? new Date(item.dateDue) : null;
-      item.dateStarted = item.dateStarted ? new Date(item.dateStarted) : null;
-      item.dateCompleted = item.dateCompleted
-        ? new Date(item.dateCompleted)
-        : null;
-
-      builtItems.set(item.id, item);
-    }
-    builtSections.set(section.id, { ...section, items: builtItems });
-  }
-
-  const [{ list, tagsAvailable }, dispatchList] = useReducer(listReducer, {
-    list: { ...builtList, sections: builtSections },
-    tagsAvailable: JSON.parse(startingTagsAvailable) as Tag[]
+  const [list, dispatchList] = useReducer(listReducer, {
+    ...builtList,
+    members: generateMembersState(builtList),
+    tags: generateTagsState(builtList),
+    sections: generateSectionsState(builtList),
+    sectionItems: generateSectionItemsState(builtList),
+    items: generateItemsState(builtList),
+    itemAssignees: generateItemAssigneesState(builtList),
+    itemTags: generateItemTagsState(builtList)
   });
 
-  const filterConfig = getFilterConfig(list, tagsAvailable);
+  const filterConfig = getFilterConfig(list);
   const [filterState, setFilterState] = useState<FilterGroup>({
     operator: 'And',
     filters: []
@@ -107,33 +99,34 @@ export default function List({
         />
         <ListSettings
           addNewTag={listHandlers.addNewTag}
-          dispatchList={dispatchList}
-          hasDueDates={list.hasDueDates}
-          hasTimeTracking={list.hasTimeTracking}
-          isAutoOrdered={list.isAutoOrdered}
-          listColor={list.color}
-          listId={list.id}
-          listName={list.name}
-          members={list.members}
+          list={list}
           roles={builtRoles}
-          setListName={listHandlers.setName}
-          tagsAvailable={tagsAvailable}
+          onListEvent={dispatchList}
+          onListNameChange={listHandlers.setName}
         />
       </span>
 
       {Array.from(list.sections.values()).map(section => (
         <ListSection
           key={section.id}
-          dispatchItemChange={dispatchList}
-          dispatchSectionChange={dispatchList}
           filters={filterState}
           hasDueDates={list.hasDueDates}
           hasTimeTracking={list.hasTimeTracking}
           isAutoOrdered={list.isAutoOrdered}
+          items={listStateToItems(
+            list.sectionItems.get(section.id),
+            list.itemAssignees,
+            list.itemTags,
+            list.items,
+            list.members,
+            list.tags
+          )}
           listId={list.id}
-          members={list.members}
+          members={listStateToMembers(list.members, builtRoles)}
           section={section}
-          tagsAvailable={tagsAvailable}
+          tags={list.tags.values().toArray()}
+          onItemChange={dispatchList}
+          onSectionChange={dispatchList}
           onTagCreate={listHandlers.addNewTag}
         />
       ))}
@@ -141,7 +134,7 @@ export default function List({
       <AddListSection
         listId={list.id}
         onSectionAdded={section =>
-          dispatchList({ type: 'AddSection', section })
+          dispatchList({ type: 'AddSection', listId: list.id, section })
         }
       />
     </>

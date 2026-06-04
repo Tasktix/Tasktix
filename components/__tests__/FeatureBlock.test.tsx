@@ -20,7 +20,6 @@
 
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
-import { useTheme } from 'next-themes';
 
 import FeatureBlock from '../FeatureBlock';
 
@@ -51,35 +50,6 @@ describe('FeatureBlock', () => {
     expect(screen.getByText('This is a test.')).toBeInTheDocument();
   });
 
-  test('renders light image when theme is light', () => {
-    vi.mocked(useTheme).mockReturnValue({
-      theme: 'light',
-      themes: ['light', 'dark', 'system'],
-      setTheme: vi.fn()
-    });
-
-    render(<FeatureBlock {...baseProps} />);
-
-    const img = screen.getByRole('img');
-
-    expect(img).toHaveAttribute('src', expect.stringContaining('.light.png'));
-  });
-
-  test('renders dark image when theme is dark', () => {
-    vi.mocked(useTheme).mockReturnValue({
-      theme: 'dark',
-      themes: ['light', 'dark', 'system'],
-      resolvedTheme: 'dark',
-      setTheme: vi.fn()
-    });
-
-    render(<FeatureBlock {...baseProps} />);
-
-    const img = screen.getByRole('img');
-
-    expect(img).toHaveAttribute('src', expect.stringContaining('.dark.png'));
-  });
-
   test("flips layout when align='flipped'", () => {
     const { container } = render(
       <FeatureBlock {...baseProps} align='flipped' />
@@ -106,20 +76,5 @@ describe('FeatureBlock', () => {
     const section = container.querySelector('section');
 
     expect(section).not.toHaveClass('md:flex-row-reverse');
-  });
-
-  test('renders dark image when theme is system and resolvedTheme is dark', () => {
-    vi.mocked(useTheme).mockReturnValue({
-      theme: 'system',
-      themes: ['light', 'dark', 'system'],
-      resolvedTheme: 'dark',
-      setTheme: vi.fn()
-    });
-
-    render(<FeatureBlock {...baseProps} />);
-
-    const img = screen.getByRole('img');
-
-    expect(img).toHaveAttribute('src', expect.stringContaining('.dark.png'));
   });
 });

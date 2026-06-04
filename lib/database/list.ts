@@ -26,14 +26,13 @@ import Tag from '@/lib/model/tag';
 
 import { prisma } from './db_connect';
 
-export async function createList(
-  list: Omit<List, 'sections'>
-): Promise<boolean> {
+export async function createList(list: List): Promise<boolean> {
   try {
     await prisma.list.create({
       data: {
         ...list,
         sections: undefined,
+        tags: undefined,
         members: {
           createMany: {
             data: list.members.map(m => ({
@@ -44,7 +43,9 @@ export async function createList(
         }
       }
     });
-  } catch {
+  } catch (error) {
+    console.log(error);
+
     return false;
   }
 
@@ -120,11 +121,45 @@ export async function getListBySectionId(id: string): Promise<List | false> {
   return result ?? false;
 }
 
+/**
+ * Gets all lists a user has access to, without nested data, for use displaying a
+ * summary of lists.
+ *
+ * @param id The ID of the user to fetch lists for
+ */
 export async function getListsByUser(
   id: string
-): Promise<Omit<List, 'members' | 'sections'>[]> {
+): Promise<Omit<List, 'members' | 'sections' | 'tags'>[]> {
   const result = await prisma.list.findMany({
     where: { members: { some: { userId: id } } }
+  });
+
+  return result;
+}
+
+/**
+ * Gets all lists a user has access to, complete with nested member, section, and tag
+ * data. For use displaying all data from several lists.
+ *
+ * @param id The ID of the user to fetch lists for
+ */
+export async function getRichListsByUser(id: string): Promise<List[]> {
+  const result = await prisma.list.findMany({
+    where: { members: { some: { userId: id } } },
+    include: {
+      members: { include: { user: true, role: true } },
+      sections: {
+        include: {
+          items: {
+            include: {
+              assignees: { include: { user: true } },
+              tags: true
+            }
+          }
+        }
+      },
+      tags: true
+    }
   });
 
   return result;
@@ -320,7 +355,8 @@ export async function updateListMember(
         // full transaction duration
         await tx.$queryRaw`
           SELECT \`userId\` FROM \`ListMember\`
-          WHERE \`listId\` = ${listId} AND \`name\` = 'Admin'
+            INNER JOIN \`MemberRole\` ON \`ListMember\`.\`roleId\` = \`MemberRole\`.\`id\`
+          WHERE \`ListMember\`.\`listId\` = ${listId} AND \`MemberRole\`.\`name\` = 'Admin'
           FOR UPDATE;
         `;
 
@@ -337,7 +373,9 @@ export async function updateListMember(
       },
       { isolationLevel: Prisma.TransactionIsolationLevel.ReadCommitted }
     );
-  } catch {
+  } catch (error) {
+    console.log(error);
+
     return false;
   }
 
@@ -370,6 +408,50 @@ export async function deleteTag(id: string): Promise<boolean> {
   try {
     await prisma.tag.delete({ where: { id } });
   } catch {
+    return false;
+  }
+
+  return true;
+}
+
+/**
+ * Revokes a list member's access and unassigns them from all items in the list
+ *
+ * @param listId The list to remove a member from
+ * @param userId The user to revoke access for
+ * @returns Whether the database accepted the update
+ */
+export async function deleteListMember(
+  listId: string,
+  userId: string
+): Promise<boolean> {
+  try {
+    await prisma.$transaction(
+      async tx => {
+        // Prevent race conditions removing all admins by locking admin rows for
+        // full transaction duration
+        await tx.$queryRaw`
+          SELECT \`userId\` FROM \`ListMember\`
+            INNER JOIN \`MemberRole\` ON \`ListMember\`.\`roleId\` = \`MemberRole\`.\`id\`
+          WHERE \`ListMember\`.\`listId\` = ${listId} AND \`MemberRole\`.\`name\` = 'Admin'
+          FOR UPDATE;
+        `;
+
+        await tx.listMember.delete({
+          where: { userId_listId: { userId, listId } }
+        });
+
+        const admins = await tx.listMember.count({
+          where: { listId, role: { name: 'Admin' } }
+        });
+
+        if (admins < 1) throw new Error('Must have an admin for the list');
+      },
+      { isolationLevel: Prisma.TransactionIsolationLevel.ReadCommitted }
+    );
+  } catch (error) {
+    console.log(error);
+
     return false;
   }
 

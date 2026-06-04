@@ -10,7 +10,8 @@ services:
       - DATABASE_URL=mysql://root:${DB_PASSWORD}@mariadb/${DB_DATABASE}
       - BETTER_AUTH_URL=${BETTER_AUTH_URL}
       - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
-      - ENABLE_PASSWORD_STRENGTH_CHECK=true
+      - DISABLE_LOCAL_AUTH=${DISABLE_LOCAL_AUTH}
+      - DISABLE_PASSWORD_STRENGTH_CHECK=${DISABLE_PASSWORD_STRENGTH_CHECK}
       - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
       - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
       - OAUTH_PROVIDER_ID=${OAUTH_PROVIDER_ID}
@@ -21,6 +22,11 @@ services:
       - OAUTH_TOKEN_URL=${OAUTH_TOKEN_URL}
       - OAUTH_USERINFO_URL=${OAUTH_USERINFO_URL}
       - OAUTH_DISCOVERY_URL=${OAUTH_DISCOVERY_URL}
+      - GITHUB_APP_ID=${GITHUB_APP_ID}
+      - GITHUB_WEBHOOK_SECRET=${GITHUB_WEBHOOK_SECRET}
+      - GITHUB_PRIVATE_KEY_PATH__CONTAINER=/run/secrets/github_private_key
+    secrets:
+      - github_private_key
 
   mariadb:
     image: mariadb:latest
@@ -28,3 +34,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: ${DB_DATABASE}
+
+secrets:
+  github_private_key:
+    file: ${GITHUB_PRIVATE_KEY_PATH__LOCAL}

@@ -11,16 +11,27 @@
 Tasktix is a task-tracking tool for power users, providing increased control and
 flexibility when creating and scheduling tasks. Most free task tracking tools fall short
 when it comes to advanced functionality, either entirely missing them or locking them
-behind paywalls. Our goal is to build a comprehensive tool that anyone can use for free
+behind paywalls. Our goal is to provide a comprehensive tool that anyone can use for free
 (or even self-host!) to boost efficiency and productivity without those limitations.
 
 ## Getting Started
 
-### Usage
+If you are considering self-hosting Tasktix, check out our
+[self-hosting documentation](./docs/self_hosting.md). Setting it up with a minimal
+configuration for analysis takes less than 5 minutes!
 
-To start the development server after following the instructions above, simply run
-`npm start`. Any changes you make to the source will be immediately and automatically
-reflected on the website. To teardown the Docker container the development server is run
-from, run `npm run teardown`. You only need to do this if you want to reclaim the storage
-space that's being used by the container image. To simply halt container execution, press
-<kbd>Ctrl</kbd> + <kbd>C</kbd> from the shell running `npm start` or run `npm stop`.
+## Contributing
+
+Thank you for helping us make Tasktix the best task-tracking app for power users! Please
+note that everyone who interacts with this repo must adhere to
+[our code of conduct](./CODE_OF_CONDUCT.md). A few things you could do that would help
+drive Tasktix forward are:
+
+- **Create a bug report** so we can ensure Tasktix keeps advancing with minimal turbulence
+- **Submit a feature request** to help us decide where to take Tasktix next
+- **Signal interest** in existing issues using GitHub reactions (:thumbs-up:) on the top
+  post or relevant comments
+- Only add a comment if you bring *new, actionable information* (e.g. reproduction steps
+  for a bug or a concrete use case for a feature)
+- **Submit a PR** to bring your ideas to life! To get started, please check out
+  [our contribution guidelines](./CONTRIBUTING.md).

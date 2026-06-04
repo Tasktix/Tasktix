@@ -73,10 +73,11 @@ describe('POST', () => {
         'Amber',
         [new ListMember(MOCK_USER, MOCK_ROLE_CAN_ADD_ITEM)],
         [MOCK_SECTION],
+        [],
         false,
         true,
         true,
-        'list-id'
+        { id: 'list-id' }
       )
     );
     vi.mocked(createListItem).mockResolvedValue(true);
@@ -116,10 +117,11 @@ describe('POST', () => {
         'Amber',
         [new ListMember(MOCK_USER, MOCK_ROLE_CAN_ADD_ITEM)],
         [MOCK_SECTION],
+        [],
         true,
         false,
         true,
-        'list-id'
+        { id: 'list-id' }
       )
     );
     vi.mocked(createListItem).mockResolvedValue(true);
@@ -221,10 +223,11 @@ describe('POST', () => {
           'Amber',
           [],
           [MOCK_SECTION],
+          [],
           true,
           true,
           true,
-          'list-id'
+          { id: 'list-id' }
         )
       );
 
@@ -253,10 +256,11 @@ describe('POST', () => {
           'Amber',
           [new ListMember(MOCK_USER, MOCK_ROLE_CANNOT_ADD_ITEM)],
           [MOCK_SECTION],
+          [],
           true,
           true,
           true,
-          'list-id'
+          { id: 'list-id' }
         )
       );
 
@@ -285,10 +289,11 @@ describe('POST', () => {
           'Amber',
           [new ListMember(MOCK_USER, MOCK_ROLE_CAN_ADD_ITEM)],
           [MOCK_SECTION],
+          [],
           true,
           true,
           true,
-          'list-id'
+          { id: 'list-id' }
         )
       );
 
@@ -317,10 +322,11 @@ describe('POST', () => {
           'Amber',
           [new ListMember(MOCK_USER, MOCK_ROLE_CAN_ADD_ITEM)],
           [MOCK_SECTION],
+          [],
           true,
           true,
           true,
-          'list-id'
+          { id: 'list-id' }
         )
       );
 
@@ -349,10 +355,11 @@ describe('POST', () => {
           'Amber',
           [new ListMember(MOCK_USER, MOCK_ROLE_CAN_ADD_ITEM)],
           [MOCK_SECTION],
+          [],
           true,
           true,
           true,
-          'list-id'
+          { id: 'list-id' }
         )
       );
       vi.mocked(createListItem).mockResolvedValue(false);

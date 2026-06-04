@@ -61,6 +61,7 @@ export default function AddListSection({
       onSubmit={createSection}
     >
       <Input
+        aria-label='New section name'
         className='w-52'
         placeholder='Name'
         value={name}

@@ -27,10 +27,8 @@ import { useAuth } from '@/components/AuthProvider';
 import { authClient } from '@/lib/auth-client';
 import User from '@/lib/model/user';
 
-import OAuth from './OAuth';
-
 export default function SignIn() {
-  const { setLoggedInUser, oauthConfig } = useAuth();
+  const { setLoggedInUser } = useAuth();
   const [inputs, setInputs] = useState({ username: '', password: '' });
   const router = useRouter();
 
@@ -53,8 +51,8 @@ export default function SignIn() {
           onError: ctx => {
             addToast({ title: ctx.error.message, color: 'danger' });
           },
-          onSuccess: (ctx: SuccessContext<{ User: User }>) => {
-            setLoggedInUser(ctx.data.User);
+          onSuccess: (ctx: SuccessContext<{ user: User }>) => {
+            setLoggedInUser(ctx.data.user);
             router.push('/list');
           }
         }
@@ -85,7 +83,6 @@ export default function SignIn() {
           Sign In
         </Button>
       </div>
-      <OAuth oauthConfig={oauthConfig} setLoggedInUser={setLoggedInUser} />
     </form>
   );
 }

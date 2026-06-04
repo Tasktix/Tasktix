@@ -40,7 +40,7 @@ beforeEach(() => {
 
 describe('List constructor', () => {
   test('Generates an id if none provided', () => {
-    const list = new List('testList', 'Amber', [], [], false, false, false);
+    const list = new List('testList', 'Amber', [], [], [], false, false, false);
 
     expect(list.id).toBe('mock-generated-id');
     expect(generateId).toHaveBeenCalled();
@@ -52,10 +52,11 @@ describe('List constructor', () => {
       'Amber',
       [],
       [],
+      [],
       false,
       false,
       false,
-      'provided-id'
+      { id: 'provided-id' }
     );
 
     expect(list.id).toBe('provided-id');
@@ -99,10 +100,11 @@ describe('List constructor', () => {
       'Amber',
       members,
       sections,
+      [],
       true,
       false,
       true,
-      'provided-id'
+      { id: 'provided-id' }
     );
 
     expect(list.name).toBe('testListItem');

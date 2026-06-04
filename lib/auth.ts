@@ -20,16 +20,17 @@
 
 import 'server-only';
 
-import { betterAuth, DBFieldType } from 'better-auth';
+import { APIError, betterAuth, DBFieldType } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
-import { PrismaClient } from '@prisma/client';
 import { genericOAuth, haveIBeenPwned, username } from 'better-auth/plugins';
 
 import { namedColors } from './model/color';
+import { getIsOnlyAdminOnSharedList } from './database/user';
+import { prisma } from './database/db_connect';
+import { parseBoolean } from './util';
 
-const prisma = new PrismaClient();
-
-export type OAuthConfig = {
+export type AuthConfig = {
+  localEnabled: boolean;
   githubEnabled: boolean;
 } & (
   | { customEnabled: false }
@@ -46,7 +47,7 @@ export type OAuthConfig = {
  *
  * @returns Object containing all supported oauth providers and whether they have been configured
  */
-export const getOAuthConfig = () => {
+export const getAuthConfig = () => {
   let scopes;
 
   try {
@@ -59,6 +60,7 @@ export const getOAuthConfig = () => {
     );
   }
 
+  const localEnabled = !parseBoolean(process.env.DISABLE_LOCAL_AUTH);
   const githubEnabled =
     Boolean(process.env.GITHUB_CLIENT_ID) &&
     Boolean(process.env.GITHUB_CLIENT_SECRET);
@@ -66,14 +68,17 @@ export const getOAuthConfig = () => {
     Boolean(process.env.OAUTH_PROVIDER_ID) &&
     Boolean(process.env.OAUTH_CLIENT_ID);
 
-  const config: OAuthConfig = customEnabled
-    ? {
-        githubEnabled,
-        customEnabled,
-        customProviderId: process.env.OAUTH_PROVIDER_ID as string,
-        customProviderScope: scopes
-      }
-    : { githubEnabled, customEnabled };
+  const config: AuthConfig = {
+    localEnabled,
+    githubEnabled,
+    ...(customEnabled
+      ? {
+          customEnabled: true,
+          customProviderId: process.env.OAUTH_PROVIDER_ID as string,
+          customProviderScope: scopes
+        }
+      : { customEnabled: false })
+  };
 
   return config;
 };
@@ -91,6 +96,22 @@ export const auth = betterAuth({
   user: {
     modelName: 'User',
     tableName: 'User',
+    deleteUser: {
+      enabled: true,
+      beforeDelete: async user => {
+        /** Ideally this check would be transactionized with account deletion to
+         * prevent race conditions orphaning a list, but that does not appear
+         * possible with BetterAuth
+         */
+        const isLastAdmin = await getIsOnlyAdminOnSharedList(user.id);
+
+        if (isLastAdmin) {
+          throw new APIError('BAD_REQUEST', {
+            message: 'Cannot delete the only admin account in a shared list.'
+          });
+        }
+      }
+    },
     changeEmail: {
       enabled: true,
       // Necessary unless we have an email server
@@ -111,7 +132,8 @@ export const auth = betterAuth({
   },
   session: {
     modelName: 'Session',
-    tableName: 'Session'
+    tableName: 'Session',
+    freshAge: 1
   },
   account: {
     modelName: 'Account',
@@ -122,11 +144,11 @@ export const auth = betterAuth({
     tableName: 'Verification'
   },
   emailAndPassword: {
-    enabled: true,
+    enabled: !parseBoolean(process.env.DISABLE_LOCAL_AUTH),
     minPasswordLength: 10
   },
   socialProviders: {
-    ...(getOAuthConfig().githubEnabled
+    ...(getAuthConfig().githubEnabled
       ? {
           github: {
             clientId: process.env.GITHUB_CLIENT_ID as string,
@@ -137,15 +159,15 @@ export const auth = betterAuth({
   },
   plugins: [
     username(),
-    ...(process.env.ENABLE_PASSWORD_STRENGTH_CHECK === 'true'
-      ? [
+    ...(process.env.DISABLE_PASSWORD_STRENGTH_CHECK === 'true'
+      ? []
+      : [
           haveIBeenPwned({
             customPasswordCompromisedMessage:
               'Please choose a more secure password'
           })
-        ]
-      : []),
-    ...(getOAuthConfig().customEnabled
+        ]),
+    ...(getAuthConfig().customEnabled
       ? [
           genericOAuth({
             config: [

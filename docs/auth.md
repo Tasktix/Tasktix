@@ -67,6 +67,27 @@ GITHUB_CLIENT_SECRET=
 
 With the Github App created and properly permissioned, set the Homepage url to the url where you are hosting tasktix, then set the callback url to `<homepageURL>/api/auth/callback/github`. All other fields of the Application should be left blank/default.
 
+### Github Projects Integration
+To support the Github projects integration and allow Tasktix to automatically synchronize and translate Github Issues to Tasks you need to set the following permissions on the Github App in addition to those required for OAuth:
+
+```
+Repository
+| Issues: Read-only
+| Metadata: Read-only
+```
+
+Tasktix integrates with Github Webhooks to proactively fetch new data from linked repositories. To enable this, the app must be configured to listen for `issues` webhook events by: 
+- Setting the webhook url to `<BASE_URL>/api/webhook/github`
+- Generating a Webhook Secret and a private key file in the Github App
+- Configuring the following `.env` variables:
+
+```
+.env/
+GITHUB_APP_ID=[Your App ID]
+GITHUB_WEBHOOK_SECRET=[The generated Webhook Secret]
+GITHUB_PRIVATE_KEY_PATH__LOCAL=[the full file path for the .pem key file on your local machine]
+```
+
 ## Database Updates
 The required schema for BetterAuth can be found [here](https://www.better-auth.com/docs/concepts/database#core-schema). To add login by username, it is required to extend that schema as described [here](https://www.better-auth.com/docs/plugins/username#schema). .
 
