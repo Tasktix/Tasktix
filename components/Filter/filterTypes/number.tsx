@@ -16,30 +16,34 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Filters, InputAction } from './types';
+import { NumberInput } from '@heroui/react';
 
-export default function searchReducer(
-  state: Filters,
-  action: InputAction
-): Filters {
-  let newState = structuredClone(state);
+import { SelectComparableFilterOperator } from '../SelectOperator';
+import { NumberFilterInput } from '../types';
 
-  switch (action.type) {
-    case 'Add':
-    case 'Update':
-      newState[action.label] = action.value;
-      break;
-
-    case 'Remove':
-      delete newState[action.label];
-      break;
-
-    case 'Clear':
-      newState = {};
-      break;
-  }
-
-  action.callback(newState);
-
-  return newState;
+export function NumberFilterInputs({
+  operator,
+  value,
+  onOperatorChange,
+  onValueChange
+}: Readonly<{
+  operator: NumberFilterInput['operator'];
+  value: NumberFilterInput['value'];
+  onOperatorChange: (operator: NumberFilterInput['operator']) => unknown;
+  onValueChange: (value: NumberFilterInput['value']) => unknown;
+}>) {
+  return (
+    <>
+      <SelectComparableFilterOperator
+        value={operator}
+        onChange={onOperatorChange}
+      />
+      <NumberInput
+        aria-label='Value'
+        type='number'
+        value={value}
+        onValueChange={onValueChange}
+      />
+    </>
+  );
 }

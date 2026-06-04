@@ -37,7 +37,7 @@ export const STRING_COLOR = 'text-warning-700 dark:text-warning-200' as const;
  */
 export default function FilterText({ filters }: { filters: FilterGroup }) {
   return (
-    <span className='font-mono'>
+    <span className='font-mono grow'>
       {filters.filters.map((f, i) => (
         <>
           {f && 'filters' in f ? (

@@ -24,13 +24,28 @@ import {
   ReorderableListItem,
   ListItemParams
 } from '@/components/ListItem';
-import { Filters } from '@/components/SearchBar/types';
 import { NamedColor } from '@/lib/model/color';
 import { sortItems, sortItemsByCompleted, sortItemsByOrder } from '@/lib/sort';
 import ListItemModel from '@/lib/model/listItem';
 import ListMember from '@/lib/model/listMember';
 import Tag from '@/lib/model/tag';
 import { ItemAction, ListItemState } from '@/lib/transformations/list/types';
+
+import { Filter, FilterGroup } from '../Filter';
+import {
+  compareDate,
+  compareMultiOption,
+  compareOption,
+  compareText,
+  compareTime
+} from '../Filter/comparators';
+import {
+  DateFilter,
+  MultiOptionFilter,
+  OptionFilter,
+  TextFilter,
+  TimeFilter
+} from '../Filter/types';
 
 /**
  * A component that provides the body of the list section - i.e. just the items in it,
@@ -68,7 +83,7 @@ export default function SectionBody({
 }: {
   sectionId: string;
   items: ListItemModel[];
-  filters: Filters;
+  filters: FilterGroup;
   members: ListMember[];
   tags: Tag[];
   hasTimeTracking: boolean;
@@ -172,11 +187,26 @@ export default function SectionBody({
  * @param filters The filters to apply
  * @returns Whether the item should be rendered
  */
-function checkItemFilter(item: ListItemModel, filters: Filters): boolean {
-  for (const key in filters)
-    if (!compareFilter(item, key, filters[key])) return false;
+function checkItemFilter(item: ListItemModel, filters: FilterGroup): boolean {
+  function _checkResults(operator: 'And' | 'Or', results: boolean[]) {
+    if (operator === 'And') return results.every(Boolean);
+    else return results.some(Boolean);
+  }
 
-  return true;
+  function _checkFilter(filter: FilterGroup | Filter): boolean {
+    if ('label' in filter) {
+      // Actual Filter, not nested FilterGroup
+      return compareFilter(item, filter);
+    }
+
+    const result = filter.filters.map(_checkFilter);
+
+    return _checkResults(filter.operator, result);
+  }
+
+  const result = filters.filters.map(_checkFilter);
+
+  return _checkResults(filters.operator, result);
 }
 
 /**
@@ -187,115 +217,42 @@ function checkItemFilter(item: ListItemModel, filters: Filters): boolean {
  * @param value The filter value to compare the item against
  * @returns True if the filter allows the item to be rendered; false if not
  */
-function compareFilter(
-  item: ListItemModel,
-  key: string,
-  value: unknown
-): boolean {
-  if (value === undefined) return false;
-
-  switch (key) {
+function compareFilter(item: ListItemModel, filter: Filter): boolean {
+  switch (filter.label) {
     case 'name':
-      return value === item.name;
+      return compareText(filter as TextFilter, item.name);
 
     case 'priority':
-      return value instanceof Set && value.has(item.priority);
+      return compareOption(filter as OptionFilter, item.priority);
 
     case 'tag':
-      return (
-        value instanceof Set &&
-        item.tags.reduce((prev, tag) => prev || value.has(tag.name), false)
+      return compareMultiOption(
+        filter as MultiOptionFilter,
+        item.tags.map(t => t.name)
       );
 
     case 'user':
-      return (
-        value instanceof Set &&
-        item.assignees.reduce(
-          (prev, assignee) => prev || value.has(assignee.user.id),
-          false
-        )
+      return compareMultiOption(
+        filter as MultiOptionFilter,
+        item.assignees.map(a => a.user.username).filter(Boolean) as string[]
       );
 
     case 'status':
-      return value instanceof Set && value.has(item.status);
+      return compareOption(filter as OptionFilter, item.status);
 
-    case 'completedBefore':
-      if (value instanceof Date) value.setHours(0, 0, 0, 0);
+    case 'completed':
+      return compareDate(filter as DateFilter, item.dateCompleted);
 
-      return (
-        item.dateCompleted !== null &&
-        value instanceof Date &&
-        value.getTime() > item.dateCompleted.getTime()
-      );
-    case 'completedOn': {
-      if (!(value instanceof Date)) return false;
+    case 'dueDate':
+      return compareDate(filter as DateFilter, item.dateDue);
 
-      const start = structuredClone(value);
-      const end = structuredClone(value);
+    case 'expectedTime':
+      return compareTime(filter as TimeFilter, item.expectedMs);
 
-      if (start && end && value instanceof Date) {
-        start.setHours(0, 0, 0, 0);
-        end.setHours(0, 0, 0, 0);
-        end.setDate(value.getDate() + 1);
-      }
-
-      return (
-        item.dateCompleted !== null &&
-        start.getTime() <= item.dateCompleted.getTime() &&
-        end.getTime() > item.dateCompleted.getTime()
-      );
-    }
-    case 'completedAfter':
-      if (value instanceof Date) value.setHours(23, 59, 59, 999);
-
-      return (
-        item.dateCompleted !== null &&
-        value instanceof Date &&
-        value.getTime() < item.dateCompleted.getTime()
-      );
-
-    case 'dueBefore':
-      return (
-        item.dateDue !== null &&
-        value instanceof Date &&
-        value.getTime() > item.dateDue.getTime()
-      );
-    case 'dueOn':
-      return (
-        item.dateDue !== null &&
-        value instanceof Date &&
-        value.getTime() === item.dateDue.getTime()
-      );
-    case 'dueAfter':
-      return (
-        item.dateDue !== null &&
-        value instanceof Date &&
-        value.getTime() < item.dateDue.getTime()
-      );
-
-    case 'expectedTimeBelow':
-      return (
-        item.expectedMs !== null &&
-        typeof value === 'number' &&
-        item.expectedMs < value
-      );
-    case 'expectedTimeAt':
-      return item.expectedMs !== null && item.expectedMs === value;
-    case 'expectedTimeAbove':
-      return (
-        item.expectedMs !== null &&
-        typeof value === 'number' &&
-        item.expectedMs > value
-      );
-
-    case 'elapsedTimeBelow':
-      return typeof value === 'number' && item.elapsedMs < value;
-    case 'elapsedTimeAt':
-      return item.elapsedMs === value;
-    case 'elapsedTimeAbove':
-      return typeof value === 'number' && item.elapsedMs > value;
+    case 'elapsedTime':
+      return compareTime(filter as TimeFilter, item.elapsedMs);
 
     default:
-      throw new Error(`Invalid option ${key}`);
+      throw new Error(`Invalid option ${filter.label}`);
   }
 }

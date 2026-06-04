@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { InputOption, InputOptionGroup } from '@/components/SearchBar/types';
+import { FilterConfig } from '@/components/Filter';
 import { ListState } from '@/lib/transformations/list/types';
 
 /**
@@ -26,91 +26,79 @@ import { ListState } from '@/lib/transformations/list/types';
  * @param list The rich list object (including members, items, etc.), used to check
  *  settings and details
  */
-export function getFilterOptions(
-  list: Omit<ListState, 'items' | 'sections'>
-): InputOptionGroup[] {
-  const generalOptions: InputOption[] = [
-    { type: 'String', label: 'name' },
+export function getFilterConfig(list: ListState): FilterConfig[] {
+  const generalOptions: FilterConfig[] = [
+    { type: 'text', label: 'name' },
     {
-      type: 'Select',
+      type: 'option',
       label: 'priority',
-      selectOptions: [
+      options: [
         { name: 'High', color: 'danger' },
         { name: 'Medium', color: 'warning' },
         { name: 'Low', color: 'success' }
       ]
     },
     {
-      type: 'Select',
+      type: 'multi-option',
       label: 'tag',
-      selectOptions: list.tags.values().toArray()
+      options: list.tags.values().toArray()
     }
   ];
 
-  if (list.members.size > 1)
-    generalOptions.push({
-      type: 'Select',
-      label: 'user',
-      selectOptions: list.members
-        .values()
-        .map(member => ({
-          name: member.user.username ?? member.user.name,
-          color: member.user.color
-        }))
-        .toArray()
-    });
-  if (list.hasTimeTracking)
-    generalOptions.push({
-      type: 'Select',
-      label: 'status',
-      selectOptions: [
-        { name: 'Unstarted' },
-        { name: 'In_Progress' },
-        { name: 'Paused' },
-        { name: 'Completed' }
-      ]
-    });
+  const memberOptions: FilterConfig[] =
+    list.members.size > 1
+      ? [
+          {
+            type: 'multi-option',
+            label: 'user',
+            options: list.members
+              .values()
+              .map(member => {
+                return {
+                  name: member.user.username ?? member.user.name,
+                  color: member.user.color
+                };
+              })
+              .toArray()
+          }
+        ]
+      : [];
 
-  const filterOptions: InputOptionGroup[] = [
-    { label: 'General', options: generalOptions },
+  const statusOptions: FilterConfig[] = [
     {
-      label: 'Completed',
-      options: [
-        { type: 'Date', label: 'completedBefore' },
-        { type: 'Date', label: 'completedOn' },
-        { type: 'Date', label: 'completedAfter' }
-      ]
+      type: 'option',
+      label: 'status',
+      options: list.hasTimeTracking
+        ? [
+            { name: 'Unstarted' },
+            { name: 'In_Progress' },
+            { name: 'Paused' },
+            { name: 'Completed' }
+          ]
+        : [{ name: 'Unstarted' }, { name: 'Completed' }]
     }
   ];
 
-  if (list.hasDueDates)
-    filterOptions.push({
-      label: 'Due',
-      options: [
-        { type: 'Date', label: 'dueBefore' },
-        { type: 'Date', label: 'dueOn' },
-        { type: 'Date', label: 'dueAfter' }
-      ]
-    });
-  if (list.hasTimeTracking)
-    filterOptions.push(
-      {
-        label: 'Expected Time',
-        options: [
-          { type: 'Time', label: 'expectedTimeAbove' },
-          { type: 'Time', label: 'expectedTimeAt' },
-          { type: 'Time', label: 'expectedTimeBelow' }
-        ]
-      },
-      {
-        label: 'Elapsed Time',
-        options: [
-          { type: 'Time', label: 'elapsedTimeAbove' },
-          { type: 'Time', label: 'elapsedTimeAt' },
-          { type: 'Time', label: 'elapsedTimeBelow' }
-        ]
-      }
-    );
+  const completionOptions: FilterConfig[] = [
+    { type: 'date', label: 'completed' }
+  ];
 
-  return filterOptions;
+  const dueOptions: FilterConfig[] = list.hasDueDates
+    ? [{ type: 'date', label: 'dueDate' }]
+    : [];
+
+  const timeOptions: FilterConfig[] = list.hasTimeTracking
+    ? [
+        { type: 'time', label: 'expectedTime' },
+        { type: 'time', label: 'elapsedTime' }
+      ]
+    : [];
+
+  return generalOptions.concat(
+    memberOptions,
+    statusOptions,
+    completionOptions,
+    dueOptions,
+    timeOptions
+  );
 }

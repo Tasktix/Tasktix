@@ -42,7 +42,7 @@ import ListSectionModel from '@/lib/model/listSection';
 import ListItem from '@/lib/model/listItem';
 import { ItemAction, SectionAction } from '@/lib/transformations/list/types';
 
-import { Filters } from '../SearchBar/types';
+import { FilterGroup } from '../Filter';
 import ConfirmedTextInput from '../ConfirmedTextInput';
 import ConfirmModal from '../ConfirmModal';
 
@@ -82,7 +82,7 @@ export default function ListSection({
   onTagCreate
 }: {
   listId: string;
-  filters: Filters;
+  filters: FilterGroup;
   members: ListMember[];
   tags: Tag[];
   hasTimeTracking: List['hasTimeTracking'];

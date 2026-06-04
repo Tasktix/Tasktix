@@ -24,8 +24,11 @@ import { render, within } from '@testing-library/react';
 
 import ListItem from '@/lib/model/listItem';
 import api from '@/lib/api';
+import { FilterGroup } from '@/components/Filter';
 
 import ListSection from '../ListSection';
+
+const DEFAULT_FILTERS = { filters: [], operator: 'And' } satisfies FilterGroup;
 
 vi.mock('@/lib/api');
 
@@ -43,7 +46,7 @@ test('Newly created items are added to the section', async () => {
   const { findByLabelText, findByRole, getByLabelText } = render(
     <ListSection
       isAutoOrdered
-      filters={{}}
+      filters={DEFAULT_FILTERS}
       hasDueDates={false}
       hasTimeTracking={false}
       items={[]}
@@ -88,7 +91,7 @@ test('Section can be deleted and propagates that event', async () => {
       hasDueDates
       hasTimeTracking
       isAutoOrdered
-      filters={{}}
+      filters={DEFAULT_FILTERS}
       items={[]}
       listId='test-list'
       members={[]}
@@ -117,7 +120,7 @@ describe('Section expansion/collapse', () => {
         hasDueDates
         hasTimeTracking
         isAutoOrdered
-        filters={{}}
+        filters={DEFAULT_FILTERS}
         items={[
           {
             ...new ListItem('Item 1', 'list-id', {
@@ -151,7 +154,7 @@ describe('Section expansion/collapse', () => {
         hasDueDates
         hasTimeTracking
         isAutoOrdered
-        filters={{}}
+        filters={DEFAULT_FILTERS}
         items={[
           {
             ...new ListItem('Item 1', 'list-id', {
@@ -186,7 +189,7 @@ describe('Section expansion/collapse', () => {
         hasDueDates
         hasTimeTracking
         isAutoOrdered
-        filters={{}}
+        filters={DEFAULT_FILTERS}
         items={[]}
         listId='test-list'
         members={[]}
@@ -210,7 +213,7 @@ describe('Section expansion/collapse', () => {
         hasDueDates
         hasTimeTracking
         isAutoOrdered
-        filters={{}}
+        filters={DEFAULT_FILTERS}
         items={[
           {
             ...new ListItem('Item 1', 'list-id', {
@@ -249,7 +252,7 @@ describe('Section expansion/collapse', () => {
         hasDueDates
         hasTimeTracking
         isAutoOrdered
-        filters={{}}
+        filters={DEFAULT_FILTERS}
         items={[
           {
             ...new ListItem('Item 1', 'list-id', {

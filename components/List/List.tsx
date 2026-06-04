@@ -21,8 +21,7 @@
 import { useEffect, useReducer, useState } from 'react';
 
 import AddListSection from '@/components/AddListSection';
-import SearchBar from '@/components/SearchBar';
-import { Filters } from '@/components/SearchBar/types';
+import Filter, { FilterGroup } from '@/components/Filter';
 import ListSettings from '@/components/ListSettings';
 import ListModel from '@/lib/model/list';
 import { subscribe } from '@/lib/sse/client';
@@ -43,8 +42,8 @@ import {
 } from '@/lib/transformations/list/fromState';
 import { listReducer } from '@/lib/transformations/list/stateToState';
 
-import { getFilterOptions } from './filters';
 import { listHandlerFactory } from './handlerFactory';
+import { getFilterConfig } from './filters';
 
 /**
  * This component provides the full list GUI: filters, settings, each section and its
@@ -80,8 +79,11 @@ export default function List({
     itemTags: generateItemTagsState(builtList)
   });
 
-  const [filters, setFilters] = useState<Filters>({});
-  const filterOptions = getFilterOptions(list);
+  const filterConfig = getFilterConfig(list);
+  const [filterState, setFilterState] = useState<FilterGroup>({
+    operator: 'And',
+    filters: []
+  });
 
   const listHandlers = listHandlerFactory(list.id, dispatchList);
 
@@ -90,7 +92,11 @@ export default function List({
   return (
     <>
       <span className='flex gap-4 items-center'>
-        <SearchBar inputOptions={filterOptions} onValueChange={setFilters} />
+        <Filter
+          currentFilters={filterState}
+          filterConfig={filterConfig}
+          onFilterSave={setFilterState}
+        />
         <ListSettings
           addNewTag={listHandlers.addNewTag}
           list={list}
@@ -103,7 +109,7 @@ export default function List({
       {Array.from(list.sections.values()).map(section => (
         <ListSection
           key={section.id}
-          filters={filters}
+          filters={filterState}
           hasDueDates={list.hasDueDates}
           hasTimeTracking={list.hasTimeTracking}
           isAutoOrdered={list.isAutoOrdered}
