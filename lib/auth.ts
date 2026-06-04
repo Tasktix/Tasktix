@@ -88,6 +88,9 @@ export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: 'mysql'
   }),
+  ...(parseBoolean(process.env.DISABLE_AUTH_RATE_LIMIT)
+    ? { rateLimit: { enabled: false } }
+    : {}),
   /**
    * The user and session table schemas support adding additional/renaming
    * fields, but they must be documented here. For details on how to apply this

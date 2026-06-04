@@ -46,7 +46,11 @@ vi.mock(import('@/components/AuthProvider'), async importOriginal => ({
       ({
         loggedInUser: false,
         setLoggedInUser: vi.fn(),
-        oauthConfig: { githubEnabled: false, customEnabled: false }
+        authConfig: {
+          localEnabled: true,
+          githubEnabled: false,
+          customEnabled: false
+        }
       }) as const
   )
 }));

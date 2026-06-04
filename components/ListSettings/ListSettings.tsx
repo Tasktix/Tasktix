@@ -72,12 +72,13 @@ export default function ListSettings({
     <>
       <Button
         isIconOnly
+        aria-label='Open list settings'
         className='bg-content1 shadow-lg shadow-content2'
         size='lg'
         variant='ghost'
         onPress={onOpen}
       >
-        <GearWideConnected aria-label='Settings' size={20} />
+        <GearWideConnected size={20} />
       </Button>
       <Modal isOpen={isOpen} size='2xl' onOpenChange={onOpenChange}>
         <ModalContent className='h-1/2'>
