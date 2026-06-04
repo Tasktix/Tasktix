@@ -176,7 +176,7 @@ it('uses read-only task name text on mobile and keeps inline editing desktop-onl
         addNewTag={vi.fn()}
         hasDueDates={false}
         hasTimeTracking={false}
-        item={new ListItemModel('Test item', {})}
+        item={new ListItemModel('Test item', 'list-id', {})}
         members={[]}
         sectionId='section-id'
         tags={[]}
@@ -300,7 +300,7 @@ describe('time tracking interactions', () => {
   it('covers the priority update success path', async () => {
     const user = userEvent.setup();
     const { onItemEvent } = await renderTimeTrackingListItem(
-      new ListItemModel('Priority item', { id: 'item-id' })
+      new ListItemModel('Priority item', 'list-id', { id: 'item-id' })
     );
 
     await user.click(screen.getByRole('button', { name: 'set-priority-high' }));
@@ -321,7 +321,7 @@ describe('time tracking interactions', () => {
     const user = userEvent.setup();
     const setTimeoutSpy = vi.spyOn(globalThis, 'setTimeout');
     const { onItemEvent } = await renderTimeTrackingListItem(
-      new ListItemModel('Start item', {
+      new ListItemModel('Start item', 'list-id', {
         id: 'item-id',
         status: 'Unstarted',
         elapsedMs: 0
@@ -348,7 +348,7 @@ describe('time tracking interactions', () => {
     const clearTimeoutSpy = vi.spyOn(globalThis, 'clearTimeout');
     const setTimeoutSpy = vi.spyOn(globalThis, 'setTimeout');
     const { onItemEvent } = await renderTimeTrackingListItem(
-      new ListItemModel('Restart item', {
+      new ListItemModel('Restart item', 'list-id', {
         id: 'item-id',
         status: 'In_Progress',
         elapsedMs: 2 * 60 * 1000
@@ -370,7 +370,7 @@ describe('time tracking interactions', () => {
   it('covers the pause timer success path for a running item', async () => {
     const user = userEvent.setup();
     const { onItemEvent } = await renderTimeTrackingListItem(
-      new ListItemModel('Pause item', {
+      new ListItemModel('Pause item', 'list-id', {
         id: 'item-id',
         status: 'In_Progress',
         elapsedMs: 2 * 60 * 1000
@@ -395,7 +395,7 @@ describe('time tracking interactions', () => {
   it('covers the reset timer success path', async () => {
     const user = userEvent.setup();
     const { onItemEvent } = await renderTimeTrackingListItem(
-      new ListItemModel('Reset item', {
+      new ListItemModel('Reset item', 'list-id', {
         id: 'item-id',
         status: 'Paused',
         elapsedMs: 2 * 60 * 1000
@@ -421,7 +421,7 @@ describe('time tracking interactions', () => {
     const setTimeoutSpy = vi.spyOn(globalThis, 'setTimeout');
 
     await renderTimeTrackingListItem(
-      new ListItemModel('Mounted running item', {
+      new ListItemModel('Mounted running item', 'list-id', {
         id: 'item-id',
         status: 'In_Progress',
         elapsedMs: 2 * 60 * 1000
