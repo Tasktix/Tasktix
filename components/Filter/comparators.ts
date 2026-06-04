@@ -36,9 +36,9 @@ import {
  *
  * Default case intentionally omitted to surface TS error if not all cases are explicitly
  * handled (e.g. because the TextFilterOperator type was expanded). All VALID code paths
- * (based on the TextFilterOperator type) do return - skipcq: JS-0045
+ * (based on the TextFilterOperator type) do return
  */
-export function compareText(
+export function compareText( // skipcq: JS-0045
   filter: { operator: TextFilterOperator; value: string },
   elementValue: string
 ): boolean {
@@ -73,9 +73,9 @@ export function compareText(
  *
  * Default case intentionally omitted to surface TS error if not all cases are explicitly
  * handled (e.g. because the ComparableFilterOperator type was expanded). All VALID code paths
- * (based on the ComparableFilterOperator type) do return - skipcq: JS-0045
+ * (based on the ComparableFilterOperator type) do return
  */
-export function compareNumber(
+export function compareNumber( // skipcq: JS-0045
   filter: { operator: ComparableFilterOperator; value: number },
   elementValue: number
 ): boolean {
@@ -108,9 +108,9 @@ export function compareNumber(
  *
  * Default case intentionally omitted to surface TS error if not all cases are explicitly
  * handled (e.g. because the OptionFilterOperator type was expanded). All VALID code paths
- * (based on the OptionFilterOperator type) do return - skipcq: JS-0045
+ * (based on the OptionFilterOperator type) do return
  */
-export function compareOption(
+export function compareOption( // skipcq: JS-0045
   filter:
     | {
         operator: OptionFilterOperator.Equal | OptionFilterOperator.NotEqual;
@@ -145,9 +145,9 @@ export function compareOption(
  *
  * Default case intentionally omitted to surface TS error if not all cases are explicitly
  * handled (e.g. because the MultiOptionFilterOperator type was expanded). All VALID code
- * paths (based on the MultiOptionFilterOperator type) do return - skipcq: JS-0045
+ * paths (based on the MultiOptionFilterOperator type) do return
  */
-export function compareMultiOption(
+export function compareMultiOption( // skipcq: JS-0045
   filter: { operator: MultiOptionFilterOperator; value: string[] },
   elementValue: string[]
 ): boolean {
@@ -180,9 +180,9 @@ export function compareMultiOption(
  *
  * Default case intentionally omitted to surface TS error if not all cases are explicitly
  * handled (e.g. because the ColorFilterOperator type was expanded). All VALID code paths
- * (based on the ColorFilterOperator type) do return - skipcq: JS-0045
+ * (based on the ColorFilterOperator type) do return
  */
-export function compareColor(
+export function compareColor( // skipcq: JS-0045
   filter: { operator: ColorFilterOperator; value: NamedColor },
   elementValue: NamedColor
 ): boolean {
@@ -203,9 +203,9 @@ export function compareColor(
  *
  * Default case intentionally omitted to surface TS error if not all cases are explicitly
  * handled (e.g. because the DateFilterOperator type was expanded). All VALID code paths
- * (based on the DateFilterOperator type) do return - skipcq: JS-0045
+ * (based on the DateFilterOperator type) do return
  */
-export function compareDate(
+export function compareDate( // skipcq: JS-0045
   filter:
     | {
         operator: Exclude<
@@ -275,9 +275,9 @@ export function compareDate(
  *
  * Default case intentionally omitted to surface TS error if not all cases are explicitly
  * handled (e.g. because the ComparableFilterOperator type was expanded). All VALID code
- * paths (based on the ComparableFilterOperator type) do return - skipcq: JS-0045
+ * paths (based on the ComparableFilterOperator type) do return
  */
-export function compareTime(
+export function compareTime( // skipcq: JS-0045
   filter: { operator: ComparableFilterOperator; value: number },
   elementValue: number | null
 ): boolean {
