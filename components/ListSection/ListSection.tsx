@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { useReducer } from 'react';
+import { ActionDispatch, useState } from 'react';
 import {
   ChevronContract,
   ChevronExpand,
@@ -28,33 +28,32 @@ import {
   Dropdown,
   DropdownItem,
   DropdownMenu,
-  DropdownTrigger
+  DropdownTrigger,
+  useDisclosure
 } from '@heroui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 
 import AddItem from '@/components/ListSection/AddItem';
-import ListItemModel from '@/lib/model/listItem';
 import { NamedColor } from '@/lib/model/color';
-import Tag from '@/lib/model/tag';
 import ListMember from '@/lib/model/listMember';
-import { sortItemsByCompleted, sortItemsByIndex } from '@/lib/sortItems';
+import Tag from '@/lib/model/tag';
+import List from '@/lib/model/list';
+import ListSectionModel from '@/lib/model/listSection';
+import ListItem from '@/lib/model/listItem';
+import { ItemAction, SectionAction } from '@/lib/transformations/list/types';
 
 import { Filters } from '../SearchBar/types';
 import ConfirmedTextInput from '../ConfirmedTextInput';
+import ConfirmModal from '../ConfirmModal';
 
 import SectionBody from './SectionBody';
-import { Item } from './types';
-import sectionReducer from './sectionReducer';
 import sectionHandlerFactory from './handlerFactory';
 
 /**
  * Provides the container for a section of the list, grouping items & allowing items to be
  * added specifically to this section
  *
- * @param id This section's ID
  * @param listId The ID of the list this section belongs to
- * @param name The section's name
- * @param startingItems The items that belong to this section when the page first loads
  * @param filters The filters currently active on the list that should limit which items
  *  are rendered
  * @param members The users who have access to the list
@@ -62,67 +61,69 @@ import sectionHandlerFactory from './handlerFactory';
  * @param hasTimeTracking Whether time tracking is enabled in the list's settings
  * @param hasDueDates Whether due dates are enabled in the list's settings
  * @param isAutoOrdered Whether auto-ordering is enabled in the list's settings
- * @param deleteSection Callback to delete a section and remove it from React's state
- * @param addNewTag Callback to propagate state changes when a new tag is created from the
- *  "add tag" menu
+ * @param section All data for the section to render
+ * @param onSectionChange Callback to propagate state changes for the list section
+ * @param onItemChange Callback to propagate state changes for an item in the list section
+ * @param onTagCreate Callback to propagate state changes when a new tag is created from
+ *  the "add tag" menu
  */
 export default function ListSection({
-  id,
   listId,
-  name,
-  startingItems,
   filters,
   members,
-  tagsAvailable,
+  tags,
   hasTimeTracking,
   hasDueDates,
   isAutoOrdered,
-  deleteSection,
-  addNewTag
+  section,
+  items,
+  isKanban,
+  onSectionChange,
+  onItemChange,
+  onTagCreate
 }: {
-  id: string;
   listId: string;
-  name: string;
-  startingItems: ListItemModel[];
   filters: Filters;
   members: ListMember[];
-  tagsAvailable: Tag[];
-  hasTimeTracking: boolean;
-  hasDueDates: boolean;
-  isAutoOrdered: boolean;
-  deleteSection: () => unknown;
-  addNewTag: (name: string, color: NamedColor) => Promise<string>;
+  tags: Tag[];
+  hasTimeTracking: List['hasTimeTracking'];
+  hasDueDates: List['hasDueDates'];
+  isAutoOrdered: List['isAutoOrdered'];
+  section: Omit<ListSectionModel, 'items'>;
+  items: ListItem[];
+  isKanban: boolean;
+  onSectionChange: ActionDispatch<[action: SectionAction]>;
+  onItemChange: ActionDispatch<
+    [action: ItemAction | { type: 'DeleteItem'; sectionId: string; id: string }]
+  >;
+  onTagCreate: (name: string, color: NamedColor) => Promise<string>;
 }) {
-  const [{ items, isCollapsed }, dispatchSection] = useReducer(sectionReducer, {
-    items: itemsToMap(
-      startingItems.sort(sortItemsByIndex).sort(sortItemsByCompleted)
-    ),
-    isCollapsed: !startingItems.reduce(
-      (prev, curr) => prev || curr.status !== 'Completed',
-      false
-    )
-  });
+  const [isCollapsed, setIsCollapsed] = useState(
+    !items
+      .values()
+      .reduce((prev, curr) => prev || curr.status !== 'Completed', false)
+  );
 
   const sectionHandlers = sectionHandlerFactory(
     listId,
-    id,
-    items,
-    dispatchSection
+    section.id,
+    onSectionChange
   );
 
   return (
-    <div className='rounded-md w-full overflow-hidden border-2 border-content3 box-border shrink-0 shadow-lg shadow-content2'>
+    <div
+      className={`rounded-md overflow-hidden border-2 border-content3 box-border shrink-0 shadow-lg shadow-content2 ${isKanban ? 'w-100' : 'w-full'}`}
+      data-testid={
+        isKanban ? 'kanban-section-format' : 'vertical-section-format'
+      }
+    >
       <div className='bg-content3 font-bold p-4 h-16 flex items-center justify-between'>
         <span className='min-w-fit shrink-0 flex'>
           <Button
             isIconOnly
+            aria-label={isCollapsed ? 'Expand section' : 'Collapse section'}
             className='hover:bg-foreground/10 -ml-2 mr-2'
-            onPress={() =>
-              dispatchSection({
-                type: 'SetIsCollapsed',
-                isCollapsed: !isCollapsed
-              })
-            }
+            onPress={() => setIsCollapsed(!isCollapsed)}
           >
             {isCollapsed ? <ChevronExpand /> : <ChevronContract />}
           </Button>
@@ -130,43 +131,30 @@ export default function ListSection({
             className='mt-0.5'
             classNames={{ input: 'text-md' }}
             updateValue={() => null}
-            value={name}
+            value={section.name}
             variant='underlined'
           />
         </span>
         <span className='flex gap-4'>
           <AddItem
-            addItem={item => dispatchSection({ type: 'AddItem', item })}
+            addItem={item => {
+              setIsCollapsed(false);
+              onSectionChange({
+                type: 'AddItem',
+                id: section.id,
+                item
+              });
+            }}
             hasDueDates={hasDueDates}
             hasTimeTracking={hasTimeTracking}
-            nextIndex={items.size}
-            sectionId={id}
+            nextIndex={items.length}
+            sectionId={section.id}
           />
-          <Dropdown placement='bottom'>
-            <DropdownTrigger>
-              <Button
-                isIconOnly
-                className='border-2 border-content4 hover:bg-content4!'
-                variant='light'
-              >
-                <ThreeDots />
-              </Button>
-            </DropdownTrigger>
-            <DropdownMenu
-              onAction={key => {
-                if (key === 'delete') deleteSection();
-              }}
-            >
-              <DropdownItem
-                key='delete'
-                className='text-danger'
-                color='danger'
-                startContent={<TrashFill />}
-              >
-                Delete
-              </DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
+          <SectionActionMenu
+            onDelete={() =>
+              onSectionChange({ type: 'DeleteSection', listId, id: section.id })
+            }
+          />
         </span>
       </div>
       <AnimatePresence initial={isCollapsed}>
@@ -181,39 +169,64 @@ export default function ListSection({
               open: { height: 'auto' },
               collapsed: { height: 0 }
             }}
-          />
+          >
+            <SectionBody
+              addNewTag={onTagCreate}
+              filters={filters}
+              hasDueDates={hasDueDates}
+              hasTimeTracking={hasTimeTracking}
+              isAutoOrdered={isAutoOrdered}
+              items={items}
+              members={members}
+              sectionId={section.id}
+              tags={tags}
+              onItemEvent={onItemChange}
+              onItemReorder={sectionHandlers.reorderItem}
+            />
+          </motion.section>
         )}
-        <SectionBody
-          addNewTag={addNewTag}
-          dispatchSection={dispatchSection}
-          filters={filters}
-          hasDueDates={hasDueDates}
-          hasTimeTracking={hasTimeTracking}
-          isAutoOrdered={isAutoOrdered}
-          items={items}
-          members={members}
-          reorderItem={sectionHandlers.reorderItem}
-          setItems={items =>
-            dispatchSection({ type: 'SetItems', items: itemsToMap(items) })
-          }
-          tagsAvailable={tagsAvailable}
-        />
       </AnimatePresence>
     </div>
   );
 }
 
-/**
- * Converts a list of items to a map of items for easy access via the item's ID. Also adds
- * the `visualIndex` property as documented on `interface Item`
- *
- * @param items The list of items to convert to a map
- */
-function itemsToMap(items: ListItemModel[]): Map<string, Item> {
-  return new Map(
-    items.map((item, i) => [
-      item.id,
-      { ...structuredClone(item), visualIndex: i }
-    ])
+function SectionActionMenu({
+  onDelete
+}: Readonly<{ onDelete: () => unknown }>) {
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
+  return (
+    <>
+      <Dropdown placement='bottom'>
+        <DropdownTrigger>
+          <Button
+            isIconOnly
+            aria-label='Show section actions'
+            className='border-2 border-content4 hover:bg-content4!'
+            variant='light'
+          >
+            <ThreeDots />
+          </Button>
+        </DropdownTrigger>
+        <DropdownMenu onAction={onOpen}>
+          <DropdownItem
+            key='delete'
+            aria-label='Delete section'
+            className='text-danger'
+            color='danger'
+            startContent={<TrashFill />}
+          >
+            Delete
+          </DropdownItem>
+        </DropdownMenu>
+      </Dropdown>
+      <ConfirmModal
+        description='This will also delete all items in this section.'
+        isOpen={isOpen}
+        title='Permanently delete section?'
+        onConfirm={onDelete}
+        onOpenChange={onOpenChange}
+      />
+    </>
   );
 }

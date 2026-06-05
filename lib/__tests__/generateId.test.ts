@@ -39,7 +39,7 @@ test('Generates IDs of the specified length', () => {
 });
 
 test('Generated IDs contain only numbers and letters', () => {
-  crypto.getRandomValues = jest
+  crypto.getRandomValues = vi
     .fn()
     .mockReturnValueOnce(new Uint8Array(512).map((_, i) => i));
 

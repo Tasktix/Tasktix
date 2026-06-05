@@ -56,7 +56,7 @@ describe('Internal', () => {
     // eslint-disable-next-line @typescript-eslint/unbound-method
     const originalJson = Response.json;
 
-    Response.json = jest.fn(() => {
+    Response.json = vi.fn(() => {
       throw new Error('Stringification failed');
     });
 
@@ -105,7 +105,7 @@ describe('BadGateway', () => {
     // eslint-disable-next-line @typescript-eslint/unbound-method
     const originalJson = Response.json;
 
-    Response.json = jest.fn(() => {
+    Response.json = vi.fn(() => {
       throw new Error('Stringification failed');
     });
 

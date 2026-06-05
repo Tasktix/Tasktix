@@ -16,6 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import 'server-only';
+
 import { PrismaClient } from '@prisma/client';
 
 // This file's logic ensures only 1 copy of the Prisma client is created, even when the
@@ -24,6 +26,10 @@ import { PrismaClient } from '@prisma/client';
 
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 
-export const prisma = globalForPrisma.prisma || new PrismaClient();
+// Always omit issueId unless explicity necessary to prevent BigInt Serialization issues
+
+export const prisma =
+  globalForPrisma.prisma ||
+  new PrismaClient({ omit: { item: { issueId: true } } });
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;

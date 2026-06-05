@@ -17,30 +17,23 @@
  */
 
 import ListItemGroup from '@/components/ListItemGroup';
-import {
-  getListMembersByUser,
-  getListsByUser,
-  getTagsByUser
-} from '@/lib/database/list';
-import { getListItemsByUser } from '@/lib/database/listItem';
+import { getRichListsByUser } from '@/lib/database/list';
+import { getAvailableRoles } from '@/lib/database/user';
 import { getUser } from '@/lib/session';
 
 export default async function Page() {
+  // No logic to test - skipcq: TCV-001
   const user = await getUser();
 
-  const lists = await getListsByUser(user ? user.id : '');
-  const items = await getListItemsByUser(user ? user.id : '');
-  const tags = await getTagsByUser(user ? user.id : '');
-  const members = await getListMembersByUser(user ? user.id : '');
+  const lists = await getRichListsByUser(user ? user.id : '');
+  const roles = await getAvailableRoles();
 
   return (
     <main className='p-8 w-full flex grow flex-col gap-8 overflow-y-scroll'>
       <ListItemGroup
-        alternate="You're all caught up!"
-        members={JSON.stringify(members)}
-        startingItems={JSON.stringify(items)}
+        alternateText="Great work, you're all caught up!"
         startingLists={JSON.stringify(lists)}
-        startingTags={JSON.stringify(tags)}
+        startingRoles={JSON.stringify(roles)}
       />
     </main>
   );

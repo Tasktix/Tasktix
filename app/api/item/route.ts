@@ -17,20 +17,35 @@
  */
 
 import { ClientError, ServerError, Success } from '@/lib/Response';
-import { getListBySectionId, getListMember } from '@/lib/database/list';
+import { getListBySectionId } from '@/lib/database/list';
 import { createListItem } from '@/lib/database/listItem';
 import ListItem, { ZodListItem } from '@/lib/model/listItem';
 import { getUser } from '@/lib/session';
 
 const PostBody = ZodListItem.omit({
   id: true,
+  description: true,
   status: true,
   isUnclear: true,
   elapsedMs: true,
   dateStarted: true,
   dateCompleted: true
-});
+}).partial({ dateDue: true, expectedMs: true });
 
+/**
+ * Creates a new list item in the given section
+ *
+ * @param request.name The new item's name
+ * @param request.priority The new item's priority
+ * @param request.sectionId The section the new item belongs in
+ * @param request.sectionIndex Which index the new item is at in the section (must be an
+ *  index not currently taken by another item; cannot be used to simultaneously reorder
+ * items)
+ * @param request.dateDue [optional] The new item's due date (required if the list has due
+ *  dates enabled)
+ * @param expectedMs [optional] The expected time to complete the new item (required if
+ *  the list has time tracking enabled)
+ */
 export async function POST(request: Request) {
   const user = await getUser();
 
@@ -54,19 +69,18 @@ export async function POST(request: Request) {
 
   if (!list) return ClientError.BadRequest('List not found');
 
-  const member = await getListMember(user.id, list.id);
+  const member = list.members.find(m => m.user.id === user.id);
 
   if (!member) return ClientError.BadRequest('List not found');
-
-  if (!member.canAdd)
-    return ClientError.BadRequest('Insufficient permissions to add item');
+  if (!member.role.canAddItems)
+    return ClientError.Forbidden('Insufficient permissions to add item');
 
   if (!dateDue && list.hasDueDates)
     return ClientError.BadRequest('Invalid due date');
   if (!expectedMs && list.hasTimeTracking)
     return ClientError.BadRequest('Invalid expected duration');
 
-  const listItem = new ListItem(name, {
+  const listItem = new ListItem(name, 'list-id', {
     priority,
     expectedMs,
     sectionIndex,

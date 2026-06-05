@@ -33,22 +33,30 @@ import {
   Avatar
 } from '@heroui/react';
 import { useRouter } from 'next/navigation';
-import { ReactNode } from 'react';
+import { ReactNode, startTransition } from 'react';
 import Image from 'next/image';
+import { DoorClosedFill, PersonFill } from 'react-bootstrap-icons';
 
-import { default as api } from '@/lib/api';
 import ThemeSwitcher from '@/components/ThemeSwitcher';
 import { useAuth } from '@/components/AuthProvider';
 import { getBackgroundColor } from '@/lib/color';
+import { authClient } from '@/lib/auth-client';
 
-export default function Body({ children }: Readonly<{ children?: ReactNode }>) {
+/**
+ * Main Layout of Tasktix Application
+ * @param children - main page content to be rendered
+ */
+export default function Body({ children }: Readonly<{ children: ReactNode }>) {
+  const { loggedInUser } = useAuth();
+  const logoHref = loggedInUser ? '/list' : '/about';
+
   return (
-    <div className='flex flex-col h-screen'>
+    <div className='flex min-h-dvh flex-col'>
       <Navbar maxWidth='full'>
         <NavbarBrand
           as={Link}
           className='flex flex-row justify-left items-center gap-2'
-          href='/'
+          href={logoHref}
         >
           <Image
             priority
@@ -72,7 +80,7 @@ export default function Body({ children }: Readonly<{ children?: ReactNode }>) {
 
       <ToastProvider />
 
-      <footer className='text-center text-default-600'>
+      <footer className='mt-auto px-4 py-4 text-center text-default-600'>
         Tasktix is licensed under the GNU AGPL v3. To view Tasktix&apos;s source
         code, visit{' '}
         <Link
@@ -100,19 +108,32 @@ export default function Body({ children }: Readonly<{ children?: ReactNode }>) {
   );
 }
 
+/**
+ * Renders Account Icon in Tasktix Navbar
+ */
 function AccountButton() {
   const { loggedInUser, setLoggedInUser } = useAuth();
 
   const router = useRouter();
 
+  /**
+   * Handles clicking of Logout button on Profile Icon dropdown
+   * Sings out user, redirects to Home/About page and suppreses errors
+   */
   function handleClick() {
-    api
-      .delete('/session')
-      .catch(_ => {})
-      .finally(() => {
-        setLoggedInUser(false);
-        router.replace('/');
+    startTransition(async () => {
+      await authClient.signOut({
+        fetchOptions: {
+          onSuccess: () => {
+            setLoggedInUser(false);
+            router.push('/');
+          },
+          onError: () => {
+            /* suppress errors on logout */
+          }
+        }
       });
+    });
   }
 
   if (!loggedInUser)
@@ -129,23 +150,34 @@ function AccountButton() {
     );
 
   return (
-    <Dropdown aria-label='Profile Dropdown'>
+    <Dropdown>
       <DropdownTrigger>
         <Avatar
           key='profile'
           isIconOnly
-          aria-label='Profile Actions Dropdown'
+          aria-label='Profile actions'
           as={Button}
           className={getBackgroundColor(loggedInUser.color)}
-          name={loggedInUser.username ?? ''}
+          name={loggedInUser.username ?? loggedInUser.name}
+          src={loggedInUser.image ?? undefined}
         />
       </DropdownTrigger>
       <DropdownMenu aria-label='User Actions'>
-        <DropdownItem key='settings' href='/profile'>
+        <DropdownItem
+          key='settings'
+          href='/profile'
+          startContent={<PersonFill />}
+        >
           Profile
         </DropdownItem>
-        <DropdownItem key='signOut' onPress={handleClick}>
-          Log Out
+        <DropdownItem
+          key='signOut'
+          className='text-danger'
+          color='danger'
+          startContent={<DoorClosedFill />}
+          onPress={handleClick}
+        >
+          Sign Out
         </DropdownItem>
       </DropdownMenu>
     </Dropdown>

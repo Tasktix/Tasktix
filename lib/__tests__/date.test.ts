@@ -27,12 +27,12 @@ import {
 } from '../date';
 
 beforeAll(() => {
-  jest.useFakeTimers();
-  jest.setSystemTime(new Date('2023-01-01 00:00:00'));
+  vi.useFakeTimers();
+  vi.setSystemTime(new Date('2023-01-01 00:00:00'));
 });
 
 afterAll(() => {
-  jest.useRealTimers();
+  vi.useRealTimers();
 });
 
 describe('getDateDiff', () => {
@@ -161,7 +161,7 @@ describe('formatDate', () => {
   });
 
   test('Returns weekday for future dates within this week when pretty printing', () => {
-    jest.setSystemTime(new Date('2023-01-01 00:00:00')); // A Sunday
+    vi.setSystemTime(new Date('2023-01-01 00:00:00')); // A Sunday
 
     const wednesday = new Date(2023, 0, 4);
     const saturday = new Date(2023, 0, 7);
@@ -171,7 +171,7 @@ describe('formatDate', () => {
   });
 
   test('Returns weekday for future dates within three days, even if a different week, when pretty printing', () => {
-    jest.setSystemTime(new Date('2023-01-05 00:00:00')); // A Thursday
+    vi.setSystemTime(new Date('2023-01-05 00:00:00')); // A Thursday
 
     const sunday = new Date();
 
@@ -181,7 +181,7 @@ describe('formatDate', () => {
   });
 
   test('Returns formatted date string for past dates within this week when pretty printing', () => {
-    jest.setSystemTime(new Date('2023-01-06 00:00:00')); // A Friday
+    vi.setSystemTime(new Date('2023-01-06 00:00:00')); // A Friday
 
     const sunday = new Date(2023, 0, 1);
     const thursday = new Date(2023, 0, 4);
@@ -191,7 +191,7 @@ describe('formatDate', () => {
   });
 
   test('Returns formatted date string for future dates more than three days out, if a different week, when pretty printing', () => {
-    jest.setSystemTime(new Date('2023-01-05 00:00:00')); // A Thursday
+    vi.setSystemTime(new Date('2023-01-05 00:00:00')); // A Thursday
 
     const sunday = new Date();
 

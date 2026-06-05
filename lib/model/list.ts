@@ -23,6 +23,7 @@ import { generateId } from '@/lib/generateId';
 import ListMember from './listMember';
 import ListSection from './listSection';
 import { NamedColor, namedColors } from './color';
+import Tag from './tag';
 
 export const ZodList = z.strictObject({
   id: z.string().length(16),
@@ -30,7 +31,8 @@ export const ZodList = z.strictObject({
   color: z.enum(namedColors),
   hasTimeTracking: z.boolean(),
   hasDueDates: z.boolean(),
-  isAutoOrdered: z.boolean()
+  isAutoOrdered: z.boolean(),
+  repoId: z.int().optional()
 });
 
 export default class List {
@@ -42,16 +44,25 @@ export default class List {
   isAutoOrdered: boolean;
   members: ListMember[];
   sections: ListSection[];
+  tags: Tag[];
+  repoId: number | null;
 
   constructor(
     name: string,
     color: NamedColor,
     members: ListMember[],
     sections: ListSection[],
+    tags: Tag[],
     hasTimeTracking: boolean,
     hasDueDates: boolean,
     isAutoOrdered: boolean,
-    id?: string
+    {
+      repoId,
+      id
+    }: {
+      repoId?: number;
+      id?: string;
+    } = {}
   ) {
     if (!id) id = generateId();
 
@@ -63,5 +74,7 @@ export default class List {
     this.isAutoOrdered = isAutoOrdered;
     this.members = members;
     this.sections = sections;
+    this.tags = tags;
+    this.repoId = repoId ?? null;
   }
 }

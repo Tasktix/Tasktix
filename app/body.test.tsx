@@ -14,58 +14,238 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- * @jest-environment jsdom
+ *
+ * @vitest-environment jsdom
  */
 
-import { render } from '@testing-library/react';
+import { fireEvent, screen, render } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { HeroUIProvider } from '@heroui/react';
+import { useRouter } from 'next/navigation';
+import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
+import { SuccessContext } from 'better-auth/react';
 
+import User from '@/lib/model/user';
 import Body from '@/app/body';
-import { useAuth } from '@/components/AuthProvider/authHook';
-import { NamedColor } from '@/lib/model/color';
-import AuthProvider from '@/components/AuthProvider/AuthProvider';
+import { authClient } from '@/lib/auth-client';
+import AuthProvider, { useAuth } from '@/components/AuthProvider';
 
-jest.mock('@/components/AuthProvider/authHook', () => ({
-  useAuth: jest.fn()
+Object.defineProperty(globalThis, 'matchMedia', {
+  writable: true,
+  value: (query: string) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: () => false
+  })
+});
+
+vi.mock(import('framer-motion'), async importOriginal => ({
+  ...(await importOriginal()),
+  LazyMotion: ({ children }) => <div>{children}</div>
 }));
 
-jest.mock('next/navigation');
+vi.mock(import('next/navigation'), async importOriginal => ({
+  ...(await importOriginal()),
+  useRouter: vi.fn()
+}));
 
-jest.mock('framer-motion', () => ({
-  ...jest.requireActual('framer-motion'),
-  LazyMotion: ({ children }: { children: React.ReactNode }) => children
+vi.mock('@/components/AuthProvider', async importOriginal => ({
+  ...(await importOriginal()),
+  useAuth: vi.fn()
+}));
+
+vi.mock('@/lib/auth-client', () => ({
+  authClient: {
+    signOut: vi.fn()
+  }
 }));
 
 beforeEach(() => {
-  jest.resetAllMocks();
+  vi.resetAllMocks();
 });
 
-test('Profile Icon Populates Correctly', () => {
-  const oldUser = {
-    id: '1234',
-    username: 'oldUsername',
-    email: 'test@gmail.com',
-    password: 'password',
-    color: 'Pink' as NamedColor,
-    dateCreated: '1/1/2000' as unknown as Date,
-    dateSignedIn: '1/1/2000' as unknown as Date
-  };
+const MOCK_AUTH_CONFIG = {
+  localEnabled: true,
+  githubEnabled: true,
+  customEnabled: false
+} as const;
 
-  (useAuth as jest.Mock).mockReturnValue({
-    loggedInUser: oldUser,
-    setLoggedInUser: jest.fn()
+describe('Body', () => {
+  it('uses a full-height document flow layout with a non-sticky footer', () => {
+    vi.mocked(useAuth).mockReturnValue({
+      loggedInUser: false,
+      authConfig: MOCK_AUTH_CONFIG,
+      setLoggedInUser: vi.fn()
+    });
+
+    render(
+      <HeroUIProvider disableRipple>
+        <Body>
+          <main className='grow'>child</main>
+        </Body>
+      </HeroUIProvider>
+    );
+
+    const main = screen.getByText('child').closest('main');
+
+    expect(main).not.toBeNull();
+    if (!main) throw new Error('Expected page-owned main element');
+
+    expect(main.parentElement).toHaveClass('flex', 'min-h-dvh', 'flex-col');
+    expect(
+      screen.getByText(/Tasktix is licensed under the GNU AGPL v3/i)
+    ).toHaveClass('mt-auto');
   });
 
-  const { getByLabelText } = render(
-    <HeroUIProvider disableRipple>
-      <AuthProvider loggedInUserAtStart={oldUser}>
-        <Body />
-      </AuthProvider>
-    </HeroUIProvider>
-  );
+  it('links logo to /list when logged in', () => {
+    vi.mocked(useAuth).mockReturnValue({
+      authConfig: MOCK_AUTH_CONFIG,
+      loggedInUser: new User(
+        'userid',
+        'username',
+        'email@example.com',
+        false,
+        new Date(),
+        new Date(),
+        { color: 'Amber' }
+      ),
+      setLoggedInUser: vi.fn()
+    });
 
-  const avatar = getByLabelText('Profile Actions Dropdown');
+    const { getByRole } = render(
+      <HeroUIProvider disableRipple>
+        <Body>
+          <div>child</div>
+        </Body>
+      </HeroUIProvider>
+    );
 
-  expect(avatar).toHaveClass('bg-pink-500');
+    const logoImg = getByRole('img', { name: 'Tasktix' });
+    const link = logoImg.closest('a');
+
+    expect(link).not.toBeNull();
+    expect(link as HTMLElement).toBeVisible();
+    expect(link).toHaveAttribute('href', '/list');
+  });
+
+  it('links logo to /about when logged out', () => {
+    vi.mocked(useAuth).mockReturnValue({
+      authConfig: MOCK_AUTH_CONFIG,
+      loggedInUser: false,
+      setLoggedInUser: vi.fn()
+    });
+
+    const { getByRole } = render(
+      <HeroUIProvider disableRipple>
+        <Body>
+          <div>child</div>
+        </Body>
+      </HeroUIProvider>
+    );
+
+    const logoImg = getByRole('img', { name: 'Tasktix' });
+    const link = logoImg.closest('a');
+
+    expect(link).not.toBeNull();
+    expect(link as HTMLElement).toBeVisible();
+    expect(link).toHaveAttribute('href', '/about');
+  });
+
+  test('Profile Icon Populates Correctly', () => {
+    const oldUser = new User(
+      '1234',
+      'oldUsername',
+      'test@gmail.com',
+      false,
+      '1/1/2000' as unknown as Date,
+      '1/1/2000' as unknown as Date,
+      { color: 'Pink' }
+    );
+
+    vi.mocked(useAuth).mockReturnValue({
+      authConfig: MOCK_AUTH_CONFIG,
+      loggedInUser: oldUser,
+      setLoggedInUser: vi.fn()
+    });
+
+    const { getByLabelText } = render(
+      <HeroUIProvider disableRipple>
+        <AuthProvider
+          authConfig={MOCK_AUTH_CONFIG}
+          loggedInUserAtStart={oldUser}
+        >
+          <Body>contents...</Body>
+        </AuthProvider>
+      </HeroUIProvider>
+    );
+
+    const avatar = getByLabelText('Profile actions');
+
+    expect(avatar).toHaveClass('bg-pink-500');
+  });
+});
+
+describe('Sign Out Process', () => {
+  test('Removes User Session on Logout', async () => {
+    const mock_user = new User(
+      'userid',
+      'username',
+      'email@example.com',
+      false,
+      new Date(),
+      new Date(),
+      { color: 'Amber' }
+    );
+    const setLoggedInUserMock = vi.fn();
+
+    vi.mocked(useAuth).mockReturnValue({
+      authConfig: MOCK_AUTH_CONFIG,
+      loggedInUser: mock_user,
+      setLoggedInUser: setLoggedInUserMock
+    });
+
+    const routerMock = {
+      push: vi.fn()
+    } as unknown as AppRouterInstance;
+
+    vi.mocked(useRouter).mockReturnValue(routerMock);
+
+    /* eslint-disable */
+    vi.mocked(authClient.signOut).mockImplementation(async options => {
+      options!.fetchOptions!.onSuccess!({} as SuccessContext);
+
+      return { user: null, session: null };
+    });
+
+    /* eslint-enable */
+    const { getByLabelText } = render(
+      <HeroUIProvider disableRipple>
+        <AuthProvider
+          authConfig={MOCK_AUTH_CONFIG}
+          loggedInUserAtStart={mock_user}
+        >
+          <Body>contents...</Body>
+        </AuthProvider>
+      </HeroUIProvider>
+    );
+
+    const avatar = getByLabelText('Profile actions');
+
+    fireEvent.click(avatar);
+
+    const signOut = screen.getByText('Sign Out');
+
+    fireEvent.click(signOut);
+
+    await vi.waitFor(() => {
+      expect(authClient.signOut).toHaveBeenCalled();
+    });
+
+    expect(setLoggedInUserMock).toHaveBeenCalledWith(false);
+    // eslint-disable-next-line
+    expect(routerMock.push).toHaveBeenCalledWith('/');
+  });
 });

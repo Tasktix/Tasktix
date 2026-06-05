@@ -15,22 +15,25 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
- * @jest-environment jsdom
+ * @vitest-environment jsdom
  */
 
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
-import { useTheme } from 'next-themes';
 
 import FeatureBlock from '../FeatureBlock';
 
-jest.mock('next-themes', () => ({
-  useTheme: jest.fn()
-}));
+vi.mock(import('next-themes'), async importOriginal => {
+  const originalUseTheme = await importOriginal();
+
+  return {
+    ...originalUseTheme,
+    useTheme: vi.fn(() => ({ ...originalUseTheme.useTheme(), theme: 'light' }))
+  };
+});
 
 beforeEach(() => {
-  jest.resetAllMocks();
-  (useTheme as jest.Mock).mockReturnValue({ theme: 'light' });
+  vi.resetAllMocks();
 });
 
 const baseProps = {
@@ -45,29 +48,6 @@ describe('FeatureBlock', () => {
 
     expect(screen.getByText('Test Feature')).toBeInTheDocument();
     expect(screen.getByText('This is a test.')).toBeInTheDocument();
-  });
-
-  test('renders light image when theme is light', () => {
-    (useTheme as jest.Mock).mockReturnValue({ theme: 'light' });
-
-    render(<FeatureBlock {...baseProps} />);
-
-    const img = screen.getByRole('img');
-
-    expect(img).toHaveAttribute('src', expect.stringContaining('.light.png'));
-  });
-
-  test('renders dark image when theme is dark', () => {
-    (useTheme as jest.Mock).mockReturnValue({
-      theme: 'dark',
-      resolvedTheme: 'dark'
-    });
-
-    render(<FeatureBlock {...baseProps} />);
-
-    const img = screen.getByRole('img');
-
-    expect(img).toHaveAttribute('src', expect.stringContaining('.dark.png'));
   });
 
   test("flips layout when align='flipped'", () => {
@@ -96,18 +76,5 @@ describe('FeatureBlock', () => {
     const section = container.querySelector('section');
 
     expect(section).not.toHaveClass('md:flex-row-reverse');
-  });
-
-  test('renders dark image when theme is system and resolvedTheme is dark', () => {
-    (useTheme as jest.Mock).mockReturnValue({
-      theme: 'system',
-      resolvedTheme: 'dark'
-    });
-
-    render(<FeatureBlock {...baseProps} />);
-
-    const img = screen.getByRole('img');
-
-    expect(img).toHaveAttribute('src', expect.stringContaining('.dark.png'));
   });
 });

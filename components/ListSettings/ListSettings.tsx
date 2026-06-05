@@ -29,10 +29,14 @@ import {
 import { GearWideConnected } from 'react-bootstrap-icons';
 import { ActionDispatch } from 'react';
 
-import Tag from '@/lib/model/tag';
 import { NamedColor } from '@/lib/model/color';
-import ListMember from '@/lib/model/listMember';
-import { ListAction } from '@/components/List/types';
+import {
+  ListAction,
+  MemberAction,
+  TagAction,
+  ListState
+} from '@/lib/transformations/list/types';
+import MemberRole from '@/lib/model/memberRole';
 
 import GeneralSettings from './GeneralSettings';
 import MemberSettings from './MemberSettings';
@@ -43,49 +47,31 @@ import TagSettings from './TagSettings';
  * name, whether certain features are enabled, members with access to the list and their
  * permissions, and tags that list items can have.
  *
- * @param listId The list the settings are for
- * @param members All members of the list
- * @param listName The list's current name
- * @param listColor The list's current color
- * @param tagsAvailable All tags currently part of the list
- * @param hasTimeTracking Whether time tracking is currently enabled for the list
- * @param isAutoOrdered Whether auto-ordering is currently enabled for the list
- * @param hasDueDates Whether due dates are currently enabled for the list
- * @param setListName A callback for updating React state with a new list name
- * @param setListColor A callback for updating React state with a new list color
- * @param setTagsAvailable A callback for updating React state with changes to the tags
- * @param setHasTimeTracking A callback for updating React state when time tracking is
- *  toggled
- * @param setHasDueDates A callback for updating React state when due dates are toggled
- * @param setIsAutoOrdered A callback for updating React state when auto-ordering is
- *  toggled
- * @param setMembers A callback for updating React state with changes to the members
+ * @param list All data for the list
+ * @param roles All roles for this list
+ * @param isKanban The list's Kanban preference
+ * @param onKanbanToggle A callback for updating React state with Kanban preference
  * @param addNewTag A callback for adding a tag to the list
+ * @param onListEvent A callback for updating React state with list events
+ * @param onListNameChange A callback for updating React state with a new list name,
+ *  including handling the API call
  */
 export default function ListSettings({
-  listId,
-  members,
-  listName,
-  listColor,
-  tagsAvailable,
-  hasTimeTracking,
-  isAutoOrdered,
-  hasDueDates,
-  dispatchList,
+  list,
+  roles,
+  isKanban,
+  onKanbanToggle,
   addNewTag,
-  setListName
+  onListEvent,
+  onListNameChange
 }: Readonly<{
-  listId: string;
-  members: ListMember[];
-  listName: string;
-  listColor: NamedColor;
-  tagsAvailable: Tag[];
-  hasTimeTracking: boolean;
-  hasDueDates: boolean;
-  isAutoOrdered: boolean;
-  dispatchList: ActionDispatch<[action: ListAction]>;
+  list: Omit<ListState, 'items' | 'sections'>;
+  roles: Map<string, MemberRole>;
+  isKanban: boolean;
+  onKanbanToggle: (value: boolean) => unknown;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
-  setListName: (name: string) => unknown;
+  onListEvent: ActionDispatch<[action: ListAction | MemberAction | TagAction]>;
+  onListNameChange: (name: string) => unknown;
 }>) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
@@ -93,58 +79,57 @@ export default function ListSettings({
     <>
       <Button
         isIconOnly
+        aria-label='Open list settings'
         className='bg-content1 shadow-lg shadow-content2'
         size='lg'
         variant='ghost'
         onPress={onOpen}
       >
-        <GearWideConnected aria-label='Settings' size={20} />
+        <GearWideConnected size={20} />
       </Button>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal isOpen={isOpen} size='2xl' onOpenChange={onOpenChange}>
         <ModalContent className='h-1/2'>
           <ModalHeader className='justify-center pb-0'>
             List Settings
           </ModalHeader>
-          <ModalBody className='overflow-clip'>
+          <ModalBody className='min-h-0'>
             <Tabs aria-label='Options' variant='underlined'>
               <Tab
-                className='flex flex-col gap-4 grow justify-between'
+                className='flex flex-col gap-4 grow justify-between min-h-0'
                 title='General'
               >
                 <GeneralSettings
-                  dispatchList={dispatchList}
-                  hasDueDates={hasDueDates}
-                  hasTimeTracking={hasTimeTracking}
-                  isAutoOrdered={isAutoOrdered}
-                  listColor={listColor}
-                  listId={listId}
-                  listName={listName}
-                  setListName={setListName}
+                  hasDueDates={list.hasDueDates}
+                  hasTimeTracking={list.hasTimeTracking}
+                  isAutoOrdered={list.isAutoOrdered}
+                  isKanban={isKanban}
+                  listColor={list.color}
+                  listId={list.id}
+                  listName={list.name}
+                  onKanbanToggle={onKanbanToggle}
+                  onListNameChange={onListNameChange}
                 />
               </Tab>
               <Tab
-                className='flex flex-col gap-6 grow shrink justify-between overflow-clip'
+                className='flex flex-col gap-6 grow shrink justify-between min-h-0'
                 title='Members'
               >
                 <MemberSettings
-                  listId={listId}
-                  members={members}
-                  setMembers={members =>
-                    dispatchList({ type: 'SetMembers', members })
-                  }
+                  listId={list.id}
+                  members={list.members}
+                  roles={roles}
+                  onMemberEvent={onListEvent}
                 />
               </Tab>
               <Tab
-                className='flex flex-col gap-6 grow shrink justify-between overflow-clip'
+                className='flex flex-col gap-6 grow shrink justify-between min-h-0'
                 title='Tags'
               >
                 <TagSettings
                   addNewTag={addNewTag}
-                  listId={listId}
-                  setTagsAvailable={tags =>
-                    dispatchList({ type: 'SetTagsAvailable', tags })
-                  }
-                  tagsAvailable={tagsAvailable}
+                  listId={list.id}
+                  tags={list.tags}
+                  onTagEvent={onListEvent}
                 />
               </Tab>
             </Tabs>

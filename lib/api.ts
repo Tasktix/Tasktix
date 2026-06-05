@@ -96,7 +96,11 @@ async function request(
   if (encodingType) options.headers = { 'Content-Type': encodingType };
 
   const result = await fetch(`/api${resource}`, options);
-  const parsedResult = await result.json();
+  const parsedResult = (await result.json()) as {
+    status: number;
+    message: string;
+    content: string;
+  };
 
   const serverResponse: ServerResponse = {
     code: result.status,
@@ -104,7 +108,7 @@ async function request(
     content: parsedResult.content
   };
 
-  if (serverResponse.code === 403) window.location.href = '/signIn';
+  if (serverResponse.code === 401) window.location.href = '/signIn';
   // eslint-disable-next-line @typescript-eslint/only-throw-error
   if (serverResponse.code >= 400) throw serverResponse;
 

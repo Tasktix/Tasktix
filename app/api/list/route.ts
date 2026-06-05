@@ -18,16 +18,21 @@
 
 import { ClientError, ServerError, Success } from '@/lib/Response';
 import { createList } from '@/lib/database/list';
+import { getAdminRole } from '@/lib/database/user';
 import List, { ZodList } from '@/lib/model/list';
 import ListMember from '@/lib/model/listMember';
 import { getUser } from '@/lib/session';
 
-const PostBody = ZodList.pick({ name: true, color: true });
+const PostBody = ZodList.pick({
+  name: true,
+  color: true,
+  repoId: true
+});
 
 export async function POST(request: Request) {
-  const session = await getUser();
+  const user = await getUser();
 
-  if (!session) return ClientError.Unauthenticated('Not logged in');
+  if (!user) return ClientError.Unauthenticated('Not logged in');
 
   const parseResult = PostBody.safeParse(await request.json());
 
@@ -38,9 +43,13 @@ export async function POST(request: Request) {
 
   const name = requestBody.name;
   const color = requestBody.color;
+  const role = await getAdminRole();
+  const repoId = requestBody.repoId;
 
-  const listMember = new ListMember(session, true, true, true, true);
-  const list = new List(name, color, [listMember], [], true, true, true);
+  const listMember = new ListMember(user, role);
+  const list = new List(name, color, [listMember], [], [], true, true, true, {
+    repoId
+  });
 
   const result = await createList(list);
 

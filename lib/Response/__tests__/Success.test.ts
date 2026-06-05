@@ -56,7 +56,7 @@ describe('OK', () => {
     // eslint-disable-next-line @typescript-eslint/unbound-method
     const originalJson = Response.json;
 
-    Response.json = jest.fn(() => {
+    Response.json = vi.fn(() => {
       throw new Error('Stringification failed');
     });
 
@@ -110,7 +110,7 @@ describe('Created', () => {
     // eslint-disable-next-line @typescript-eslint/unbound-method
     const originalJson = Response.json;
 
-    Response.json = jest.fn(() => {
+    Response.json = vi.fn(() => {
       throw new Error('Stringification failed');
     });
 

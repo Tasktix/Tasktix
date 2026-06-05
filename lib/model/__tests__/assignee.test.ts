@@ -21,12 +21,13 @@ import User from '../user';
 
 test('Assigns all properties correctly', () => {
   const user = new User(
-    'testListMember',
-    'test@example.com',
-    'secret',
+    'abcdefg',
+    'username',
+    'email@example.com',
+    false,
     new Date(),
     new Date(),
-    {}
+    { color: 'Amber' }
   );
 
   const listMember = new Assignee(user, 'role-name');

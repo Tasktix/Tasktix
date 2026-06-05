@@ -16,8 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-jest.mock('@/lib/generateId', () => ({
-  generateId: jest.fn(() => 'mock-generated-id')
+vi.mock('@/lib/generateId', () => ({
+  generateId: vi.fn(() => 'mock-generated-id')
 }));
 
 import { generateId } from '@/lib/generateId';
@@ -25,7 +25,7 @@ import { generateId } from '@/lib/generateId';
 import Tag from '../tag';
 
 beforeEach(() => {
-  (generateId as jest.Mock).mockClear();
+  vi.resetAllMocks();
 });
 
 test('Generates an id if none provided', () => {
