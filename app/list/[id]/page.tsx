@@ -18,13 +18,10 @@
 
 import { redirect } from 'next/navigation';
 
-import {
-  getIsListAssignee,
-  getListById,
-  getTagsByListId
-} from '@/lib/database/list';
+import { getIsListMember, getListById } from '@/lib/database/list';
 import List from '@/components/List';
 import { getUser } from '@/lib/session';
+import { getAvailableRoles } from '@/lib/database/user';
 
 export default async function Page({
   params
@@ -33,22 +30,22 @@ export default async function Page({
 }) {
   const { id } = await params;
   const list = await getListById(id);
-  const tagsAvailable = await getTagsByListId(id);
+  const roles = await getAvailableRoles();
 
   const user = await getUser();
 
   if (!list || !user) redirect('/list');
 
-  const isMember = await getIsListAssignee(user.id, list.id);
+  const isMember = await getIsListMember(user.id, list.id);
 
   if (!isMember) redirect('/list');
 
   return (
-    <main className='p-8 w-full flex grow flex-col gap-8 overflow-y-scroll'>
+    <main className='w-full min-w-0 grow overflow-x-hidden overflow-y-scroll p-4 md:p-8 flex flex-col gap-8'>
       {list && (
         <List
           startingList={JSON.stringify(list)}
-          startingTagsAvailable={JSON.stringify(tagsAvailable || [])}
+          startingRoles={JSON.stringify(roles || [])}
         />
       )}
     </main>

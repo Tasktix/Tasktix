@@ -22,7 +22,7 @@ export function generateId(length = 16): string {
   crypto.getRandomValues(array);
 
   const codeAlphabet =
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZ' + 'abcdefghijklmnopqrstuvwxyz' + '0123456789';
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
   let code = '';
 

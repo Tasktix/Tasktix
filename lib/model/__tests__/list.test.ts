@@ -16,8 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-jest.mock('@/lib/generateId', () => ({
-  generateId: jest.fn(() => 'mock-generated-id')
+vi.mock('@/lib/generateId', () => ({
+  generateId: vi.fn(() => 'mock-generated-id')
 }));
 
 import { generateId } from '@/lib/generateId';
@@ -26,14 +26,21 @@ import List from '../list';
 import ListMember from '../listMember';
 import ListSection from '../listSection';
 import User from '../user';
+import MemberRole from '../memberRole';
+
+const MOCK_ROLE_CAN_VIEW = new MemberRole(
+  'Viewer',
+  'No explicit permissions',
+  {}
+);
 
 beforeEach(() => {
-  (generateId as jest.Mock).mockClear();
+  vi.resetAllMocks();
 });
 
 describe('List constructor', () => {
   test('Generates an id if none provided', () => {
-    const list = new List('testList', 'Amber', [], [], false, false, false);
+    const list = new List('testList', 'Amber', [], [], [], false, false, false);
 
     expect(list.id).toBe('mock-generated-id');
     expect(generateId).toHaveBeenCalled();
@@ -45,10 +52,11 @@ describe('List constructor', () => {
       'Amber',
       [],
       [],
+      [],
       false,
       false,
       false,
-      'provided-id'
+      { id: 'provided-id' }
     );
 
     expect(list.id).toBe('provided-id');
@@ -59,23 +67,27 @@ describe('List constructor', () => {
     const members = [
       new ListMember(
         new User(
+          'user1Id',
           'user1',
           'test@example.com',
-          'secret',
+          true,
           new Date(),
           new Date(),
           {}
-        )
+        ),
+        MOCK_ROLE_CAN_VIEW
       ),
       new ListMember(
         new User(
+          'user2Id',
           'user2',
           'test@not-example.com',
-          'an0th3rSecret',
+          true,
           new Date(),
           new Date(),
           {}
-        )
+        ),
+        MOCK_ROLE_CAN_VIEW
       )
     ];
     const sections = [
@@ -88,10 +100,11 @@ describe('List constructor', () => {
       'Amber',
       members,
       sections,
+      [],
       true,
       false,
       true,
-      'provided-id'
+      { id: 'provided-id' }
     );
 
     expect(list.name).toBe('testListItem');

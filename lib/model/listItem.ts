@@ -33,6 +33,7 @@ export type Priority = 'Low' | 'Medium' | 'High';
 export const ZodListItem = z.strictObject({
   id: z.string().length(16),
   name: z.string().min(1).max(128),
+  description: z.string().max(65535),
   status: z.enum(statuses),
   priority: z.enum(priorities),
   isUnclear: z.boolean(),
@@ -45,9 +46,13 @@ export const ZodListItem = z.strictObject({
   sectionId: z.string().length(16)
 });
 
+/**
+ * Represents a list item/task with a backreference to the list it belongs to
+ */
 export default class ListItem {
   id: string;
   name: string;
+  description: string;
   status: Status;
   priority: Priority;
   isUnclear: boolean;
@@ -60,12 +65,17 @@ export default class ListItem {
   dateCompleted: Date | null;
   assignees: Assignee[];
   tags: Tag[];
-  listId?: string;
+  issueId: bigint | null;
+  listId: string;
+  sectionId: string;
 
   constructor(
     name: string,
+    sectionId: string,
+    listId: string,
     {
       id,
+      description = '',
       status = 'Unstarted',
       priority = 'Low',
       isUnclear = false,
@@ -78,9 +88,10 @@ export default class ListItem {
       dateCompleted = null,
       assignees = [],
       tags = [],
-      listId
+      issueId = null
     }: {
       id?: string;
+      description?: string;
       status?: Status;
       priority?: Priority;
       isUnclear?: boolean;
@@ -93,14 +104,14 @@ export default class ListItem {
       dateCompleted?: Date | null;
       assignees?: Assignee[];
       tags?: Tag[];
-      listId?: string;
-      sectionId?: string;
+      issueId?: bigint | null;
     }
   ) {
     if (!id) id = generateId();
 
     this.id = id;
     this.name = name;
+    this.description = description;
     this.status = status;
     this.priority = priority;
     this.isUnclear = Boolean(isUnclear);
@@ -114,5 +125,7 @@ export default class ListItem {
     this.assignees = assignees;
     this.tags = tags;
     this.listId = listId;
+    this.sectionId = sectionId;
+    this.issueId = issueId;
   }
 }

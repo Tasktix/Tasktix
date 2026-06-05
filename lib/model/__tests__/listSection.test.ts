@@ -22,13 +22,11 @@ import ListItem from '../listItem';
 import ListSection from '../listSection';
 
 beforeEach(() => {
-  jest
-    .spyOn(generateIdModule, 'generateId')
-    .mockReturnValue('mock-generated-id');
+  vi.spyOn(generateIdModule, 'generateId').mockReturnValue('mock-generated-id');
 });
 
 afterEach(() => {
-  jest.restoreAllMocks();
+  vi.restoreAllMocks();
 });
 
 test('Generates an id if none provided', () => {
@@ -47,8 +45,8 @@ test('Uses the provided id', () => {
 
 test('Assigns all properties correctly', () => {
   const listItems = [
-    new ListItem('listItem1', {}),
-    new ListItem('listItem2', {})
+    new ListItem('listItem1', 'section-id', 'list-id', {}),
+    new ListItem('listItem2', 'section-id', 'list-id', {})
   ];
 
   const listSection = new ListSection(

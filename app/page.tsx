@@ -17,46 +17,25 @@
  *
  */
 
-import features from '@/public/data/features.json';
-import FeatureBlock from '@/components/FeatureBlock';
+import { redirect } from 'next/navigation';
 
-/* Renders the Tasktix homepage.
+import { getUser } from '@/lib/session';
+
+/* Root route handler.
  *
- * This page displays a hero section with a title and subtitle describing the
- * purpose of the application, followed by a set of feature showcase sections.
- * Feature content (title, description, and image base name) is loaded from
- * `/public/data/features.json` to keep the page content configurable without modifying
- * application code.
+ * This page exists only to redirect users visiting `/` to the
+ * appropriate entry point:
+ * - authenticated users -> `/list`
+ * - unauthenticated users -> `/about`
  *
- * Each feature is rendered using the `FeatureBlock` component, which handles
- * themed screenshots (light/dark mode) and optional layout flipping. The layout
- * alternates between left- and right-aligned images to create a visually
- * balanced presentation.
- *
- * @returns The homepage layout containing the hero section and a list of
- * feature showcase blocks.
+ * No UI is rendered here.
  */
-export default function Page() {
-  return (
-    <main className='grow mx-auto max-w-6xl px-4 md:px-6 py-12 space-y-24'>
-      <header className='text-center mb-12'>
-        <h1 className='text-3xl md:text-4xl font-extrabold'>
-          Tasktix — Smarter Task Tracking
-        </h1>
-        <p className='mt-3 text-lg'>
-          Stay organized with time tracking, tagging, and smart filtering.
-        </p>
-      </header>
+export default async function Home() {
+  const user = await getUser();
 
-      {features.map((f, i) => (
-        <FeatureBlock
-          key={f.title}
-          align={i % 2 === 0 ? 'default' : 'flipped'}
-          description={f.description}
-          imageBaseName={f.imageBaseName}
-          title={f.title}
-        />
-      ))}
-    </main>
-  );
+  if (user) {
+    redirect('/list');
+  }
+
+  redirect('/about');
 }

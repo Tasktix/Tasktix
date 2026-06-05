@@ -15,148 +15,230 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
- * @jest-environment jsdom
+ * @vitest-environment jsdom
  */
 
 import '@testing-library/jest-dom';
-import { render, within } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { addToast, HeroUIProvider } from '@heroui/react';
 
-import ListMember from '@/lib/model/listMember';
 import User from '@/lib/model/user';
 import api from '@/lib/api';
+import MemberRole from '@/lib/model/memberRole';
+import ListMember from '@/lib/model/listMember';
 
 import MemberSettings from '../MemberSettings';
 
-jest.mock(
-  '@heroui/react',
-  () =>
-    ({
-      ...jest.requireActual('@heroui/react'),
-      addToast: jest.fn()
-    }) as typeof import('@heroui/react')
-);
-jest.mock('@/lib/api');
+vi.mock(import('@heroui/react'), async importOriginal => ({
+  ...(await importOriginal()),
+  addToast: vi.fn()
+}));
+vi.mock(import('next/navigation'), async importOriginal => ({
+  ...(await importOriginal()),
+  useRouter: vi.fn()
+}));
+vi.mock('@/lib/api');
+vi.mock(import('@/components/AuthProvider'), async importOriginal => ({
+  ...(await importOriginal()),
+  useAuth: vi.fn(
+    () =>
+      ({
+        loggedInUser: false,
+        setLoggedInUser: vi.fn(),
+        authConfig: {
+          localEnabled: true,
+          githubEnabled: false,
+          customEnabled: false
+        }
+      }) as const
+  )
+}));
 
 beforeEach(() => {
-  jest.resetAllMocks();
+  vi.resetAllMocks();
 });
 
 const users = [
-  new User('user1', 'user1@example.com', 'football', new Date(), new Date(), {
-    id: 'user1-id',
-    color: 'Violet'
-  }),
-  new User('user2', 'user2@example.com', 'password', new Date(), new Date(), {
-    id: 'user2-id',
-    color: 'Violet'
-  })
+  new User(
+    'user1-id',
+    'user1',
+    'user1@example.com',
+    false,
+    new Date(),
+    new Date(),
+    { color: 'Violet' }
+  ),
+  new User(
+    'user2-id',
+    'user2',
+    'user2@example.com',
+    false,
+    new Date(),
+    new Date(),
+    { color: 'Violet' }
+  )
 ];
+const MOCK_ROLE_CAN_VIEW = new MemberRole(
+  'Viewer',
+  'No explicit permissions',
+  {}
+);
+const MOCK_ROLE_CAN_ADMIN = new MemberRole('Admin', 'All permissions', {
+  canAddItems: true,
+  canUpdateItems: true,
+  canDeleteItems: true,
+  canManageTags: true,
+  canManageAssignees: true,
+  canManageMembers: true,
+  canUpdateList: true,
+  canDeleteList: true
+});
 
 describe('Adding members', () => {
-  it('Allows adding new members by entering their username', async () => {
-    const oldMember = new ListMember(users[0], true, true, true, true);
-    const newMember = new ListMember(users[1], false, false, false, false);
+  it('Allows adding new members by entering their Email', async () => {
+    const oldMember = { user: users[0], role: MOCK_ROLE_CAN_VIEW.id };
+    const newMember = new ListMember(users[1], MOCK_ROLE_CAN_VIEW);
 
-    (api.post as jest.Mock).mockResolvedValue({
+    vi.mocked(api.post).mockResolvedValue({
+      code: 200,
+      message: 'Success',
       content: JSON.stringify(newMember)
     });
-    const setMembers = jest.fn();
+    const onMemberEvent = vi.fn();
     const user = userEvent.setup();
 
-    const { getByLabelText, getByRole, getByText } = render(
+    const { getByLabelText, getByText } = render(
       // NOTE: must disable ripple to avoid dynamic import via ESM `import()`
       <HeroUIProvider disableRipple>
         <MemberSettings
           listId='list-id'
-          members={[oldMember]}
-          setMembers={setMembers}
+          members={new Map([[oldMember.user.id, oldMember]])}
+          roles={new Map()}
+          onMemberEvent={onMemberEvent}
         />
       </HeroUIProvider>
     );
 
-    expect(getByLabelText('Username...')).toBeVisible();
-    expect(getByRole('button')).toBeVisible();
+    expect(getByLabelText('New member email')).toBeVisible();
+    expect(getByText('Add Member')).toBeVisible();
 
-    await user.type(getByLabelText('Username...'), 'user2');
-    await user.click(getByText('Send Invite'));
+    await user.type(getByLabelText('New member email'), 'user2');
+    await user.click(getByText('Add Member'));
 
-    expect(getByLabelText('Username...')).toHaveValue('');
-    expect(setMembers).toHaveBeenCalledTimes(1);
-    expect(setMembers).toHaveBeenCalledWith(
-      expect.arrayContaining([oldMember, newMember])
-    );
+    expect(getByLabelText('New member email')).toHaveValue('');
+    expect(onMemberEvent).toHaveBeenCalledTimes(1);
+    expect(onMemberEvent).toHaveBeenCalledWith({
+      type: 'AddMember',
+      listId: 'list-id',
+      member: { ...newMember, role: MOCK_ROLE_CAN_VIEW.id }
+    });
   });
 
   it('Displays an error message after adding a member if saving the new member fails', async () => {
-    const oldMember = new ListMember(users[0], true, true, true, true);
+    const oldMember = { user: users[0], role: MOCK_ROLE_CAN_VIEW.id };
 
-    (api.post as jest.Mock).mockRejectedValue(
+    vi.mocked(api.post).mockRejectedValue(
       new Error('Server message about failure')
     );
-    const setMembers = jest.fn();
+    const onMemberEvent = vi.fn();
     const user = userEvent.setup();
 
-    const { getByLabelText, getByRole, getByText } = render(
+    const { getByLabelText, getByText } = render(
       // NOTE: must disable ripple to avoid dynamic import via ESM `import()`
       <HeroUIProvider disableRipple>
         <MemberSettings
           listId='list-id'
-          members={[oldMember]}
-          setMembers={setMembers}
+          members={new Map([[oldMember.user.id, oldMember]])}
+          roles={new Map()}
+          onMemberEvent={onMemberEvent}
         />
       </HeroUIProvider>
     );
 
-    expect(getByLabelText('Username...')).toBeVisible();
-    expect(getByRole('button')).toBeVisible();
+    expect(getByLabelText('New member email')).toBeVisible();
+    expect(getByText('Add Member')).toBeVisible();
 
-    await user.type(getByLabelText('Username...'), 'user2');
-    await user.click(getByText('Send Invite'));
+    await user.type(getByLabelText('New member email'), 'user2');
+    await user.click(getByText('Add Member'));
 
-    expect(getByLabelText('Username...')).toHaveValue('');
-    expect(addToast as jest.Mock).toHaveBeenCalledTimes(1);
-    expect(addToast as jest.Mock).toHaveBeenCalledWith({
+    expect(getByLabelText('New member email')).toHaveValue('user2');
+    expect(addToast).toHaveBeenCalledTimes(1);
+    expect(addToast).toHaveBeenCalledWith({
       color: 'danger',
       title: 'Server message about failure'
     });
-    expect(setMembers).not.toHaveBeenCalled();
+    expect(onMemberEvent).not.toHaveBeenCalled();
   });
 
   it("Displays an error message after adding a member if the server doesn't return the new member", async () => {
-    const oldMember = new ListMember(users[0], true, true, true, true);
+    const oldMember = { user: users[0], role: MOCK_ROLE_CAN_VIEW.id };
 
-    (api.post as jest.Mock).mockResolvedValue({
+    vi.mocked(api.post).mockResolvedValue({
+      code: 200,
+      message: 'Success',
       content: undefined
     });
-    const setMembers = jest.fn();
+    const onMemberEvent = vi.fn();
     const user = userEvent.setup();
 
-    const { getByLabelText, getByRole, getByText } = render(
+    const { getByLabelText, getByText } = render(
       // NOTE: must disable ripple to avoid dynamic import via ESM `import()`
       <HeroUIProvider disableRipple>
         <MemberSettings
           listId='list-id'
-          members={[oldMember]}
-          setMembers={setMembers}
+          members={new Map([[oldMember.user.id, oldMember]])}
+          roles={new Map()}
+          onMemberEvent={onMemberEvent}
         />
       </HeroUIProvider>
     );
 
-    expect(getByLabelText('Username...')).toBeVisible();
-    expect(getByRole('button')).toBeVisible();
+    expect(getByLabelText('New member email')).toBeVisible();
+    expect(getByText('Add Member')).toBeVisible();
 
-    await user.type(getByLabelText('Username...'), 'user2');
-    await user.click(getByText('Send Invite'));
+    await user.type(getByLabelText('New member email'), 'user2');
+    await user.click(getByText('Add Member'));
 
-    expect(getByLabelText('Username...')).toHaveValue('');
-    expect(addToast as jest.Mock).toHaveBeenCalledTimes(1);
-    expect(addToast as jest.Mock).toHaveBeenCalledWith({
+    expect(getByLabelText('New member email')).toHaveValue('user2');
+    expect(addToast).toHaveBeenCalledTimes(1);
+    expect(addToast).toHaveBeenCalledWith({
       color: 'danger',
       title: 'User added, but unable to display'
     });
-    expect(setMembers).not.toHaveBeenCalled();
+    expect(onMemberEvent).not.toHaveBeenCalled();
+  });
+
+  it('New-user role picker does not allow user to select an empty role', async () => {
+    const oldMember = { user: users[0], role: MOCK_ROLE_CAN_VIEW.id };
+
+    const user = userEvent.setup();
+
+    const { getByLabelText, getByRole } = render(
+      // NOTE: must disable ripple to avoid dynamic import via ESM `import()`
+      <HeroUIProvider disableRipple>
+        <MemberSettings
+          listId='list-id'
+          members={new Map([[oldMember.user.id, oldMember]])}
+          roles={
+            new Map([
+              [
+                'viewer',
+                new MemberRole('viewer', 'Definitely not a superuser', {
+                  id: 'viewer'
+                })
+              ]
+            ])
+          }
+          onMemberEvent={vi.fn()}
+        />
+      </HeroUIProvider>
+    );
+
+    await user.click(getByLabelText('New member role'));
+    await user.click(getByRole('option', { name: 'viewer' }));
+
+    expect(getByLabelText('New member role')).toHaveTextContent('viewer');
   });
 });
 
@@ -165,11 +247,14 @@ describe('Updating permissions', () => {
     const { getByText } = render(
       <MemberSettings
         listId='list-id'
-        members={[
-          new ListMember(users[0], true, true, true, true),
-          new ListMember(users[1], false, false, false, false)
-        ]}
-        setMembers={jest.fn()}
+        members={
+          new Map([
+            [users[0].id, { user: users[0], role: MOCK_ROLE_CAN_VIEW.id }],
+            [users[1].id, { user: users[1], role: MOCK_ROLE_CAN_VIEW.id }]
+          ])
+        }
+        roles={new Map()}
+        onMemberEvent={vi.fn()}
       />
     );
 
@@ -178,153 +263,120 @@ describe('Updating permissions', () => {
   });
 
   it("Correctly shows current members' permissions", () => {
-    const { getByText } = render(
+    const { getByLabelText } = render(
       <MemberSettings
         listId='list-id'
-        members={[
-          new ListMember(users[0], true, true, true, true),
-          new ListMember(users[1], false, false, false, false)
-        ]}
-        setMembers={jest.fn()}
+        members={
+          new Map([
+            [users[0].id, { user: users[0], role: MOCK_ROLE_CAN_VIEW.id }],
+            [users[1].id, { user: users[1], role: MOCK_ROLE_CAN_ADMIN.id }]
+          ])
+        }
+        roles={
+          new Map([
+            [MOCK_ROLE_CAN_VIEW.id, MOCK_ROLE_CAN_VIEW],
+            [MOCK_ROLE_CAN_ADMIN.id, MOCK_ROLE_CAN_ADMIN]
+          ])
+        }
+        onMemberEvent={vi.fn()}
       />
     );
 
-    // Another test already assures the non-null assertion is okay - skipcq: JS-0339
-    const user1Row = getByText('user1').closest('tr')!;
-    const user1Checkboxes = within(user1Row).getAllByRole('checkbox');
-
-    // Another test already assures the non-null assertion is okay - skipcq: JS-0339
-    const user2Row = getByText('user2').closest('tr')!;
-    const user2Checkboxes = within(user2Row).getAllByRole('checkbox');
-
-    expect(user1Checkboxes[0]).toBeChecked();
-    expect(user1Checkboxes[1]).toBeChecked();
-    expect(user1Checkboxes[2]).toBeChecked();
-    expect(user1Checkboxes[3]).toBeChecked();
-
-    expect(user2Checkboxes[0]).not.toBeChecked();
-    expect(user2Checkboxes[1]).not.toBeChecked();
-    expect(user2Checkboxes[2]).not.toBeChecked();
-    expect(user2Checkboxes[3]).not.toBeChecked();
+    expect(getByLabelText('user1 Role')).toBeVisible();
+    expect(getByLabelText('user1 Role')).toHaveTextContent('Viewer');
+    expect(getByLabelText('user2 Role')).toBeVisible();
+    expect(getByLabelText('user2 Role')).toHaveTextContent('Admin');
   });
 
-  it('Allows member add permission to be changed', async () => {
-    (api.patch as jest.Mock).mockResolvedValue({});
-    const setMembers = jest.fn();
+  it('Allows member role to be changed', async () => {
+    vi.mocked(api.patch).mockResolvedValue({
+      code: 200,
+      message: 'Success',
+      content: undefined
+    });
+    const onMemberEvent = vi.fn();
     const user = userEvent.setup();
 
-    const { getByText } = render(
+    const { getByLabelText } = render(
       <MemberSettings
         listId='list-id'
-        members={[
-          new ListMember(users[0], true, true, true, true),
-          new ListMember(users[1], false, false, false, false)
-        ]}
-        setMembers={setMembers}
+        members={
+          new Map([
+            [users[0].id, { user: users[0], role: MOCK_ROLE_CAN_VIEW.id }],
+            [users[1].id, { user: users[1], role: MOCK_ROLE_CAN_VIEW.id }]
+          ])
+        }
+        roles={
+          new Map([
+            [MOCK_ROLE_CAN_VIEW.id, MOCK_ROLE_CAN_VIEW],
+            [MOCK_ROLE_CAN_ADMIN.id, MOCK_ROLE_CAN_ADMIN]
+          ])
+        }
+        onMemberEvent={onMemberEvent}
       />
     );
 
-    // Another test already assures the non-null assertion is okay - skipcq: JS-0339
-    const user1Row = getByText('user1').closest('tr')!;
-    const user1Checkboxes = within(user1Row).getAllByRole('checkbox');
+    await user.click(getByLabelText('user1 Role'));
+    await user.click(getByLabelText('Admin'));
 
-    await user.click(user1Checkboxes[0]);
-
-    expect(setMembers).toHaveBeenCalledTimes(1);
-    expect(setMembers).toHaveBeenCalledWith(
-      expect.arrayContaining([
-        new ListMember(users[0], false, true, true, true)
-      ])
+    expect(onMemberEvent).toHaveBeenCalledTimes(1);
+    expect(onMemberEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: 'UpdateMemberPermissions',
+        role: MOCK_ROLE_CAN_ADMIN.id
+      })
     );
   });
 
-  it('Allows member remove permission to be changed', async () => {
-    (api.patch as jest.Mock).mockResolvedValue({});
-    const setMembers = jest.fn();
+  it('Does not allow member role being removed', async () => {
+    const onMemberEvent = vi.fn();
     const user = userEvent.setup();
 
-    const { getByText } = render(
+    const { getByLabelText, getByRole } = render(
       <MemberSettings
         listId='list-id'
-        members={[
-          new ListMember(users[0], true, true, true, true),
-          new ListMember(users[1], false, false, false, false)
-        ]}
-        setMembers={setMembers}
+        members={
+          new Map([
+            [users[0].id, { user: users[0], role: MOCK_ROLE_CAN_VIEW.id }],
+            [users[1].id, { user: users[1], role: MOCK_ROLE_CAN_VIEW.id }]
+          ])
+        }
+        roles={
+          new Map([
+            [MOCK_ROLE_CAN_VIEW.id, MOCK_ROLE_CAN_VIEW],
+            [MOCK_ROLE_CAN_ADMIN.id, MOCK_ROLE_CAN_ADMIN]
+          ])
+        }
+        onMemberEvent={onMemberEvent}
       />
     );
 
-    // Another test already assures the non-null assertion is okay - skipcq: JS-0339
-    const user1Row = getByText('user1').closest('tr')!;
-    const user1Checkboxes = within(user1Row).getAllByRole('checkbox');
+    await user.click(getByLabelText('user1 Role'));
+    await user.click(getByRole('option', { name: 'Viewer' }));
 
-    await user.click(user1Checkboxes[3]);
-
-    expect(setMembers).toHaveBeenCalledTimes(1);
-    expect(setMembers).toHaveBeenCalledWith(
-      expect.arrayContaining([
-        new ListMember(users[0], true, false, true, true)
-      ])
-    );
+    expect(onMemberEvent).not.toHaveBeenCalled();
   });
+});
 
-  it('Allows member complete permission to be changed', async () => {
-    (api.patch as jest.Mock).mockResolvedValue({});
-    const setMembers = jest.fn();
-    const user = userEvent.setup();
+test("Shows a user's name if they don't have a username", () => {
+  const oldMember = {
+    user: { ...users[0], username: null, name: 'SomethingElse' },
+    role: MOCK_ROLE_CAN_VIEW.id
+  };
 
-    const { getByText } = render(
+  const { getByLabelText, getByText } = render(
+    // NOTE: must disable ripple to avoid dynamic import via ESM `import()`
+    <HeroUIProvider disableRipple>
       <MemberSettings
         listId='list-id'
-        members={[
-          new ListMember(users[0], true, true, true, true),
-          new ListMember(users[1], false, false, false, false)
-        ]}
-        setMembers={setMembers}
+        members={new Map([[oldMember.user.id, oldMember]])}
+        roles={new Map()}
+        onMemberEvent={vi.fn()}
       />
-    );
+    </HeroUIProvider>
+  );
 
-    // Another test already assures the non-null assertion is okay - skipcq: JS-0339
-    const user1Row = getByText('user1').closest('tr')!;
-    const user1Checkboxes = within(user1Row).getAllByRole('checkbox');
-
-    await user.click(user1Checkboxes[2]);
-
-    expect(setMembers).toHaveBeenCalledTimes(1);
-    expect(setMembers).toHaveBeenCalledWith(
-      expect.arrayContaining([
-        new ListMember(users[0], true, true, false, true)
-      ])
-    );
-  });
-
-  it('Allows member assign permission to be changed', async () => {
-    (api.patch as jest.Mock).mockResolvedValue({});
-    const setMembers = jest.fn();
-    const user = userEvent.setup();
-
-    const { getByText } = render(
-      <MemberSettings
-        listId='list-id'
-        members={[
-          new ListMember(users[0], true, true, true, true),
-          new ListMember(users[1], false, false, false, false)
-        ]}
-        setMembers={setMembers}
-      />
-    );
-
-    // Another test already assures the non-null assertion is okay - skipcq: JS-0339
-    const user1Row = getByText('user1').closest('tr')!;
-    const user1Checkboxes = within(user1Row).getAllByRole('checkbox');
-
-    await user.click(user1Checkboxes[1]);
-
-    expect(setMembers).toHaveBeenCalledTimes(1);
-    expect(setMembers).toHaveBeenCalledWith(
-      expect.arrayContaining([
-        new ListMember(users[0], true, true, true, false)
-      ])
-    );
-  });
+  expect(getByText('SomethingElse')).toBeVisible();
+  expect(getByLabelText('SomethingElse Role')).toBeVisible();
+  expect(getByLabelText('Remove SomethingElse')).toBeVisible();
 });

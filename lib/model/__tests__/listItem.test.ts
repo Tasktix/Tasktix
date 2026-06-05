@@ -16,8 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-jest.mock('@/lib/generateId', () => ({
-  generateId: jest.fn(() => 'mock-generated-id')
+vi.mock('@/lib/generateId', () => ({
+  generateId: vi.fn(() => 'mock-generated-id')
 }));
 
 import { generateId } from '@/lib/generateId';
@@ -28,26 +28,28 @@ import User from '../user';
 import Tag from '../tag';
 
 beforeEach(() => {
-  (generateId as jest.Mock).mockClear();
+  vi.resetAllMocks();
 });
 
 describe('ListItem constructor', () => {
   test('Generates an id if none provided', () => {
-    const listItem = new ListItem('testListItem', {});
+    const listItem = new ListItem('testListItem', 'section-id', 'list-id', {});
 
     expect(listItem.id).toBe('mock-generated-id');
     expect(generateId).toHaveBeenCalled();
   });
 
   test('Uses the provided id', () => {
-    const listItem = new ListItem('testListItem', { id: 'provided-id' });
+    const listItem = new ListItem('testListItem', 'section-id', 'list-id', {
+      id: 'provided-id'
+    });
 
     expect(listItem.id).toBe('provided-id');
     expect(generateId).not.toHaveBeenCalled();
   });
 
   test('Uses sane defaults for a new item when properties are unspecified', () => {
-    const listItem = new ListItem('testListItem', {});
+    const listItem = new ListItem('testListItem', 'section-id', 'list-id', {});
 
     expect(listItem.status).toBe('Unstarted');
     expect(listItem.priority).toBe('Low');
@@ -59,16 +61,17 @@ describe('ListItem constructor', () => {
     expect(listItem.dateCompleted).toBeNull();
     expect(listItem.assignees).toHaveLength(0);
     expect(listItem.tags).toHaveLength(0);
-    expect(listItem.listId).toBeUndefined();
+    expect(listItem.listId).toBe('list-id');
   });
 
   test('Assigns all properties correctly', () => {
     const assignees = [
       new Assignee(
         new User(
+          'user1Id',
           'user1',
           'test@example.com',
-          'secret',
+          true,
           new Date(),
           new Date(),
           {}
@@ -78,7 +81,7 @@ describe('ListItem constructor', () => {
     ];
     const tags = [new Tag('tag1', 'Amber'), new Tag('tag2', 'Cyan')];
 
-    const listItem = new ListItem('testListItem', {
+    const listItem = new ListItem('testListItem', 'section-id', 'listId', {
       status: 'Completed',
       priority: 'High',
       isUnclear: true,
@@ -91,7 +94,6 @@ describe('ListItem constructor', () => {
       dateCompleted: new Date('2021-01-02'),
       assignees,
       tags,
-      listId: 'listId',
       id: 'provided-id'
     });
 

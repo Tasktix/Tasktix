@@ -105,9 +105,9 @@ run all tests on the repo to validate your PR will pass testing, simply use:
 npm test
 ```
 
-- **Jest** should be used for unit tests. To run just Jest tests, run:
+- **Vitest** should be used for unit tests. To run just Vitest tests, run:
   ```bash
-  npm run test:jest
+  npm run test:vi
   ```
 - **Cypress** should be used for end-to-end tests. To view Cypress tests live for easy
   development/iteration, run:

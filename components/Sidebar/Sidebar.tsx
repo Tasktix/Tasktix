@@ -18,69 +18,50 @@
 
 'use client';
 
-import { setTimeout } from 'timers';
+import { ReactNode } from 'react';
+import { Button, Link, useDisclosure } from '@heroui/react';
+import { Plus } from 'react-bootstrap-icons';
+import { usePathname } from 'next/navigation';
 
-import { ReactNode, useContext, useState } from 'react';
-import { addToast, Button, Input, Link } from '@heroui/react';
-import { Check, Plus } from 'react-bootstrap-icons';
-import { usePathname, useRouter } from 'next/navigation';
-
-import { default as api } from '@/lib/api';
-import { validateListName } from '@/lib/validate';
 import List from '@/lib/model/list';
-import { randomNamedColor } from '@/lib/color';
 
-import { ListContext } from './listContext';
+import CreateListModal from './CreateListModal';
 
-export default function Sidebar({ lists }: { lists: List[] }) {
-  const [addingList, setAddingList] = useState(false);
-  const router = useRouter();
-  const dispatchEvent = useContext(ListContext);
-
-  function finalizeNew(name: string) {
-    const color = randomNamedColor();
-
-    api
-      .post('/list', { name, color })
-      .then(res => {
-        const id = res.content?.split('/').at(-1);
-
-        if (!id) {
-          addToast({ title: 'No list ID returned', color: 'danger' });
-
-          return;
-        }
-        router.push(`${res.content}`);
-        dispatchEvent({ type: 'add', id, name, color });
-      })
-      .catch(err => addToast({ title: err.message, color: 'danger' }));
-  }
-
-  async function removeNew() {
-    function delay(ms: number) {
-      return new Promise(res => setTimeout(res, ms));
-    }
-
-    await delay(100);
-    setAddingList(false);
-  }
+/**
+ * Displays a sidebar with an entry for the "Today" view and an entry for each list the
+ * user has access to
+ *
+ * @param lists The lists the user has access to
+ * @param onNavigate Called after a navigation link is pressed
+ */
+export default function Sidebar({
+  lists,
+  onNavigate
+}: Readonly<{
+  lists: List[];
+  onNavigate?: () => void;
+}>) {
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   return (
-    <aside className='w-48 bg-transparent shadow-l-lg shadow-content4 p-4 pr-0 flex flex-col gap-4 overflow-auto'>
-      <NavItem link='/list' name='Today' />
+    <aside className='bg-transparent flex flex-col gap-4 overflow-auto w-full'>
+      <NavItem link='/list' name='Today' onNavigate={onNavigate} />
       <NavSection
-        endContent={<AddList addList={() => setAddingList(true)} />}
+        endContent={<AddList onListModalOpen={onOpen} />}
         name='Lists'
       >
         {lists
-          .sort((a, b) => (a.name > b.name ? 1 : 0))
+          .sort((a, b) => a.name.localeCompare(b.name))
           .map(list => (
-            <NavItem key={list.id} link={`/list/${list.id}`} name={list.name} />
+            <NavItem
+              key={list.id}
+              link={`/list/${list.id}`}
+              name={list.name}
+              onNavigate={onNavigate}
+            />
           ))}
-        {addingList ? (
-          <NewItem finalize={finalizeNew} remove={removeNew} />
-        ) : null}
       </NavSection>
+      <CreateListModal isOpen={isOpen} onOpenChange={onOpenChange} />
     </aside>
   );
 }
@@ -89,11 +70,11 @@ function NavSection({
   name,
   endContent,
   children
-}: {
+}: Readonly<{
   name: string;
   endContent?: ReactNode;
   children: ReactNode;
-}) {
+}>) {
   return (
     <div className='flex flex-col'>
       <div className='flex justify-between items-center text-xs'>
@@ -104,15 +85,17 @@ function NavSection({
   );
 }
 
-export function NavItem({
+function NavItem({
   name,
   link,
-  endContent
-}: {
+  endContent,
+  onNavigate
+}: Readonly<{
   name: string;
   link: string;
   endContent?: ReactNode;
-}) {
+  onNavigate?: () => void;
+}>) {
   const pathname = usePathname();
   const isActive = pathname === link;
 
@@ -120,7 +103,7 @@ export function NavItem({
     <span
       className={`pl-2 my-1 flex items-center justify-between border-l-2 ${isActive ? 'border-primary' : 'border-transparent'} text-sm`}
     >
-      <Link color='foreground' href={link}>
+      <Link color='foreground' href={link} onPress={onNavigate}>
         {name}
       </Link>
       {endContent}
@@ -128,60 +111,19 @@ export function NavItem({
   );
 }
 
-function AddList({ addList }: { addList: () => unknown }) {
+function AddList({
+  onListModalOpen
+}: Readonly<{ onListModalOpen: () => unknown }>) {
   return (
     <Button
       isIconOnly
+      aria-label='Create new list'
       className='border-0 text-foreground rounded-lg w-8 h-8 min-w-8 min-h-8'
       color='primary'
       variant='ghost'
-      onPress={addList}
+      onPress={onListModalOpen}
     >
       <Plus size={'1.25em'} />
     </Button>
-  );
-}
-
-function NewItem({
-  finalize,
-  remove
-}: {
-  finalize: (name: string) => unknown;
-  remove: () => unknown;
-}) {
-  const [name, setName] = useState('');
-
-  function updateName(name: string) {
-    setName(validateListName(name)[1]);
-  }
-
-  return (
-    <form
-      className={`pl-1 flex items-center justify-between gap-2 text-sm`}
-      onSubmit={e => {
-        e.preventDefault();
-        finalize(name);
-      }}
-    >
-      <Input
-        autoFocus
-        color='primary'
-        placeholder='List name'
-        size='sm'
-        value={name}
-        variant='underlined'
-        onBlur={remove}
-        onValueChange={updateName}
-      />
-      <Button
-        isIconOnly
-        className='rounded-lg w-8 h-8 min-w-8 min-h-8'
-        color='primary'
-        type='submit'
-        variant='ghost'
-      >
-        <Check />
-      </Button>
-    </form>
   );
 }

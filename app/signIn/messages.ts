@@ -61,7 +61,7 @@ export function getPasswordMessage(input: string): InputMessage {
     };
   } else
     return {
-      message: `Password is required`,
+      message: 'Password is required',
       color: 'danger'
     };
 }

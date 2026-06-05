@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `Item` ADD COLUMN `issueId` BIGINT UNSIGNED NULL;

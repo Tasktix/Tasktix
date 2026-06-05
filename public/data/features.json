@@ -1,27 +1,28 @@
 [
   {
-    "title": "Time Tracking",
-    "description": "Track expected vs elapsed time for every task with start and pause buttons.",
+    "title": "Calibrate Your Expectations",
+    "description": "Track how long each task takes to see how well your expectations match reality.",
     "imageBaseName": "timeTracking"
   },
   {
-    "title": "Tag System",
-    "description": "Organize tasks with customizable colored tags for subjects, projects, or contexts.",
-    "imageBaseName": "tagSystem"
+    "title": "See Just What Matters Most",
+    "description": "Filter tasks using any (or every!) detail that's tracked — whether that's the due date, a custom tag, the time you've spent working on it, or anything else.",
+    "imageBaseName": "filtering",
+    "hideImageBorder": true
   },
   {
-    "title": "Priority System",
-    "description": "Mark tasks as low, medium, or high priority to stay focused on what matters most.",
-    "imageBaseName": "priority"
+    "title": "Intelligently Organize Your Tasks",
+    "description": "Let Tasktix intelligently order your day based on tasks' due date and priority or take extra control by ordering your tasks in the exact order you want to complete them.",
+    "imageBaseName": "manualSort"
   },
   {
-    "title": "Filtering Feature",
-    "description": "Filter tasks using any (or every!) detail that's tracked — whether that's a tag, the due date, the time you've spent working on it, or anything else.",
-    "imageBaseName": "filtering"
+    "title": "Collaborate With Granular Permissions",
+    "description": "Use role-based access control to efficiently manage each team member's permissions.",
+    "imageBaseName": "rbac"
   },
   {
-    "title": "Manual Sorting",
-    "description": "Tasks are intelligently sorted based on due date and priority. If you need extra control, however, you're also free to arrange them manually.",
-    "imageBaseName": "sorting"
+    "title": "Self-Host",
+    "description": "Tasktix will always be open source and self-hostable so you can confidently maintain control over your data.",
+    "imageBaseName": "selfHost"
   }
 ]

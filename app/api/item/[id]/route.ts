@@ -16,21 +16,39 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import z from 'zod';
+
 import { ClientError, ServerError, Success } from '@/lib/Response';
-import { getListMemberByItem } from '@/lib/database/list';
+import { getRoleByItem } from '@/lib/database/user';
 import {
   deleteListItem,
   getListItemById,
+  updateItemSection,
   updateListItem
 } from '@/lib/database/listItem';
 import { getUser } from '@/lib/session';
 import { ZodListItem } from '@/lib/model/listItem';
+import { querySectionInList } from '@/lib/database/list';
 
-const PatchBody = ZodListItem.omit({
-  id: true,
-  sectionIndex: true,
-  sectionId: true
-}).partial();
+/**
+ * Allows requestors to modify any combination of fields together, but
+ * restricts section change updates be performed independently. This is done to
+ * prevent multi-status responses (e.g. Section change failed but other updates
+ * succeed)
+ */
+export const PatchBody = z.union([
+  z.strictObject({
+    sectionId: ZodListItem.shape.sectionId
+  }),
+
+  ZodListItem.omit({
+    id: true,
+    sectionIndex: true,
+    sectionId: true
+  })
+    .partial()
+    .strict()
+]);
 
 export async function PATCH(
   request: Request,
@@ -45,9 +63,11 @@ export async function PATCH(
 
   if (!item) return ClientError.NotFound('List item not found');
 
-  const member = await getListMemberByItem(user.id, id);
+  const role = await getRoleByItem(user.id, id);
 
-  if (!member) return ClientError.BadRequest('List item not found');
+  if (!role) return ClientError.NotFound('List item not found');
+  if (!role.canUpdateItems)
+    return ClientError.Forbidden('Insufficient permissions to update item');
 
   const parseResult = PatchBody.safeParse(await request.json());
 
@@ -56,31 +76,40 @@ export async function PATCH(
 
   const requestBody = parseResult.data;
 
-  if (requestBody.name) item.name = requestBody.name;
-  if (requestBody.status) {
-    if (requestBody.status === 'Completed' && !member.canComplete)
-      return ClientError.BadRequest(
-        'Insufficient permissions to complete item'
-      );
-    item.status = requestBody.status;
+  if ('sectionId' in requestBody) {
+    const allowed = await querySectionInList(
+      item.listId,
+      requestBody.sectionId
+    );
+
+    if (!allowed) return ClientError.BadRequest('Section not found');
+    const res = await updateItemSection(item, requestBody.sectionId);
+
+    if (!res) return ServerError.Internal('Failed to change section');
+  } else {
+    if (requestBody.name) item.name = requestBody.name;
+    if (requestBody.description !== undefined)
+      item.description = requestBody.description;
+    if (requestBody.status) item.status = requestBody.status;
+    if (requestBody.priority) item.priority = requestBody.priority;
+    if (requestBody.dateDue) item.dateDue = new Date(requestBody.dateDue);
+    if (requestBody.expectedMs) item.expectedMs = requestBody.expectedMs;
+    if (requestBody.elapsedMs !== undefined)
+      item.elapsedMs = requestBody.elapsedMs;
+    if (requestBody.dateStarted !== undefined)
+      item.dateStarted = requestBody.dateStarted
+        ? new Date(requestBody.dateStarted)
+        : null;
+    if (requestBody.dateCompleted !== undefined)
+      item.dateCompleted = requestBody.dateCompleted
+        ? new Date(requestBody.dateCompleted)
+        : null;
+
+    const { ...pureItem } = item;
+    const result = await updateListItem(pureItem);
+
+    if (!result) return ServerError.Internal('Could not update item');
   }
-  if (requestBody.priority) item.priority = requestBody.priority;
-  if (requestBody.dateDue) item.dateDue = new Date(requestBody.dateDue);
-  if (requestBody.expectedMs) item.expectedMs = requestBody.expectedMs;
-  if (requestBody.elapsedMs !== undefined)
-    item.elapsedMs = requestBody.elapsedMs;
-  if (requestBody.dateStarted !== undefined)
-    item.dateStarted = requestBody.dateStarted
-      ? new Date(requestBody.dateStarted)
-      : null;
-  if (requestBody.dateCompleted !== undefined)
-    item.dateCompleted = requestBody.dateCompleted
-      ? new Date(requestBody.dateCompleted)
-      : null;
-
-  const result = await updateListItem(item);
-
-  if (!result) return ServerError.Internal('Could not update item');
 
   return Success.OK('Item updated');
 }
@@ -94,11 +123,11 @@ export async function DELETE(
 
   if (!user) return ClientError.Unauthenticated('Not logged in');
 
-  const member = await getListMemberByItem(user.id, id);
+  const role = await getRoleByItem(user.id, id);
 
-  if (!member) return ClientError.BadRequest('List not found');
-  if (!member.canRemove)
-    return ClientError.BadRequest('Insufficient permissions to remove item');
+  if (!role) return ClientError.NotFound('List not found');
+  if (!role.canDeleteItems)
+    return ClientError.Forbidden('Insufficient permissions to remove item');
 
   const result = await deleteListItem(id);
 

@@ -18,37 +18,67 @@
 
 import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient();
+import { auth } from '@/lib/auth';
+
+const prisma = new PrismaClient({
+  omit: {
+    item: {
+      issueId: true // Always omit issueId unless explicity necessary to prevent BigInt Serialization issues
+    }
+  }
+});
+const SEEDED_USER_SIGN_IN_VALUE = 'password123';
 
 async function main() {
-  await prisma.user.upsert({
-    where: { id: 'testuser00000000' },
-    update: {},
-    create: {
-      id: 'testuser00000000',
-      username: 'newUser',
+  await auth.api.signUpEmail({
+    body: {
       email: 'newUser@example.com',
-      // Hash below is for password "password123"
-      password:
-        '8dcc5151672288af017bdd9a287e2cfc:pVSn7w5XhzLUSzk9nskA7rSkT5MlCWx5rfjCs4p0XIRUcNJgGZ+ZjFTvlYvcFlstroWanjifTBkI3C3IEuYKfcGPRujnH8ZQIojBCl3epqpO6bI0gIh4hxv2Pm5lfxce6nnhbnu6kZl7zvFqKFHL6wQH98KzI6AHKizXJcR4y+k=',
-      color: 'Blue',
-      dateCreated: new Date('2024-01-01 07:13:02'),
-      dateSignedIn: new Date('2024-01-01 07:13:02')
+      name: 'newUser',
+      password: SEEDED_USER_SIGN_IN_VALUE,
+      username: 'newUser',
+      color: 'Blue'
     }
   });
-  await prisma.user.upsert({
-    where: { id: 'testuser00000001' },
-    update: {},
-    create: {
-      id: 'testuser00000001',
-      username: 'individualUser',
+
+  await auth.api.signUpEmail({
+    body: {
       email: 'individualUser@example.com',
-      // Hash below is for password "5up2r_s3cr3t"
-      password:
-        '932ef89377e9110209432c983e5a4f68:E2bM0eP608ovaC5yKAjGNGKxcBStUDms2ChxkFZl06S8Jz2OOdAAFss0UevLdddlo4cRwhR+xj/dWeLn0q8ZkMfdYNz8ugB6oFuJEkgYq0tJrl/n/CK1Pcc4/dNB2tOr7JI5SzH47wgITtWeW7aCNv4x7W2c/NA6SpKSDBeCjVQ=',
-      color: 'Yellow',
-      dateCreated: new Date('2023-02-14 09:05:53'),
-      dateSignedIn: new Date('2024-01-02 14:37:28')
+      name: 'individualUser',
+      password: '5up2r_s3cr3t',
+      username: 'individualUser',
+      color: 'Yellow'
+    }
+  });
+
+  await auth.api.signUpEmail({
+    body: {
+      email: 'responsiveUser@example.com',
+      name: 'responsiveUser',
+      password: SEEDED_USER_SIGN_IN_VALUE,
+      username: 'responsiveUser',
+      color: 'Cyan'
+    }
+  });
+
+  const [responsiveUser, adminRole] = await Promise.all([
+    prisma.user.findUniqueOrThrow({ where: { username: 'responsiveUser' } }),
+    prisma.memberRole.findUniqueOrThrow({ where: { name: 'Admin' } })
+  ]);
+
+  await prisma.list.create({
+    data: {
+      id: 'responsiveList01',
+      name: 'Responsive Cypress List',
+      color: 'Blue',
+      hasTimeTracking: true,
+      hasDueDates: true,
+      isAutoOrdered: true,
+      members: {
+        create: {
+          roleId: adminRole.id,
+          userId: responsiveUser.id
+        }
+      }
     }
   });
 }

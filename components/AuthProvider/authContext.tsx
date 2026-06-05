@@ -19,12 +19,15 @@
 import { createContext } from 'react';
 
 import User from '@/lib/model/user';
+import { AuthConfig } from '@/lib/auth';
 
 interface AuthContextType {
   loggedInUser: User | false;
   setLoggedInUser: (_: User | false) => void;
+  authConfig: AuthConfig;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(
+  // Typescript compiler requires default value skipcq: JS-W1042
   undefined
 );

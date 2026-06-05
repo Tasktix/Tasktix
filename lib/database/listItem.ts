@@ -30,7 +30,14 @@ export async function createListItem(
 ): Promise<boolean> {
   try {
     await prisma.item.create({
-      data: { ...item, assignees: undefined, tags: undefined, sectionId }
+      data: {
+        ...item,
+        section: { connect: { id: sectionId } },
+        sectionId: undefined,
+        listId: undefined,
+        assignees: undefined,
+        tags: undefined
+      }
     });
   } catch {
     return false;
@@ -39,13 +46,27 @@ export async function createListItem(
   return true;
 }
 
-export async function getListItemById(id: string): Promise<ListItem | false> {
+export async function getListItemById(
+  id: string
+): Promise<(ListItem & { listId: string }) | false> {
   const result = await prisma.item.findUnique({
     where: { id },
-    include: { tags: true, assignees: { include: { user: true } } }
+    include: {
+      tags: true,
+      assignees: { include: { user: true } },
+      section: {
+        select: { listId: true }
+      }
+    }
   });
 
-  return result ?? false;
+  if (!result) return false;
+  const { section, ...item } = result;
+
+  return {
+    ...item,
+    listId: section.listId
+  };
 }
 
 export async function getListItemsByUser(userId: string): Promise<ListItem[]> {
@@ -55,6 +76,20 @@ export async function getListItemsByUser(userId: string): Promise<ListItem[]> {
   });
 
   return result;
+}
+
+/**
+ * Gets all pure listItems that are tracking a given IssueId.
+ * @param issueId the issueId to query for
+ */
+export async function getListItemsByIssueId(
+  issueId: bigint
+): Promise<Omit<ListItem, 'assignees' | 'tags'>[]> {
+  const results = await prisma.item.findMany({
+    where: { issueId }
+  });
+
+  return results;
 }
 
 export async function linkTag(itemId: string, tagId: string): Promise<boolean> {
@@ -80,13 +115,13 @@ export async function linkAssignee(
   role: string
 ): Promise<boolean> {
   try {
-    await prisma.itemAssignee.create({
-      data: {
-        itemId,
-        userId,
-        role
-      }
-    });
+    await prisma.$executeRaw`
+      INSERT INTO \`ItemAssignee\` (\`itemId\`, \`userId\`, \`role\`, \`listId\`)
+      SELECT \`i\`.\`id\`, ${userId}, ${role}, \`s\`.\`listId\`
+        FROM \`Item\` \`i\`
+          JOIN \`ListSection\` \`s\` ON \`i\`.\`sectionId\` = \`s\`.\`id\`
+        WHERE \`i\`.\`id\` = ${itemId};
+    `;
   } catch {
     return false;
   }
@@ -107,7 +142,9 @@ export async function updateListItem(
         sectionId: undefined
       }
     });
-  } catch {
+  } catch (err) {
+    console.log(err);
+
     return false;
   }
 
@@ -184,9 +221,64 @@ export async function unlinkAssignee(
   userId: string
 ): Promise<boolean> {
   try {
-    await prisma.itemAssignee.delete({
-      where: { userId_itemId: { itemId, userId } }
+    // `deleteMany` is only needed because `listId` is omitted from the data but is part
+    // of the table's primary key. Only 1 row will ever be deleted because every item has
+    // a unique ID, so there cannot be >1 List with a given item ID
+    await prisma.itemAssignee.deleteMany({
+      where: {
+        itemId,
+        userId
+        // listId omitted despite being part of primary key because Item is M:1 with List
+      }
     });
+  } catch {
+    return false;
+  }
+
+  return true;
+}
+
+/**
+ * Move a List Item from its current section to a new section given by sectionId.
+ * The selected item is appended to the end of that new section.
+ * @param item The ListItem to change the section of
+ * @param sectionId The sectionId of the target Section
+ */
+export async function updateItemSection(
+  item: ListItem,
+  sectionId: string
+): Promise<boolean> {
+  try {
+    await prisma.$transaction(
+      async tx => {
+        const targetSectionItems = await tx.item.count({
+          where: { sectionId }
+        });
+        const originalIndex = item.sectionIndex;
+
+        await tx.item.update({
+          where: { id: item.id },
+          data: {
+            sectionId,
+            sectionIndex: targetSectionItems
+          }
+        });
+        await tx.item.updateMany({
+          where: {
+            sectionId: item.sectionId,
+            sectionIndex: {
+              gte: originalIndex
+            }
+          },
+          data: {
+            sectionIndex: {
+              decrement: 1
+            }
+          }
+        });
+      },
+      { isolationLevel: Prisma.TransactionIsolationLevel.Serializable }
+    );
   } catch {
     return false;
   }

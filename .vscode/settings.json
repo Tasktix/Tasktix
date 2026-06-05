@@ -1,11 +1,17 @@
 {
   "cSpell.words": [
     "heroui",
+    "hostable",
     "nextui",
+    "permissioned",
     "Reorderable",
+    "skipcq",
     "stringable",
     "Tasktix",
-    "Unstarted"
+    "unhover",
+    "unassigns",
+    "Unstarted",
+    "unstub"
   ],
   "containers.containerClient": "com.microsoft.visualstudio.containers.docker",
   "containers.orchestratorClient": "com.microsoft.visualstudio.orchestrators.dockercompose",
@@ -14,8 +20,6 @@
   "[prisma]": {
     "editor.defaultFormatter": "Prisma.prisma"
   },
-  "jest.jestCommandLine": "npm run test:jest --",
-  "jest.useDashedArgs": true,
   "files.eol": "\n",
   "editor.defaultFormatter": "esbenp.prettier-vscode"
 }

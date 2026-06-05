@@ -28,12 +28,14 @@ import {
 import { ThreeDots, TrashFill } from 'react-bootstrap-icons';
 
 import { NamedColor } from '@/lib/model/color';
-import ListItem from '@/lib/model/listItem';
-import Tag from '@/lib/model/tag';
 import ListMember from '@/lib/model/listMember';
+import List from '@/lib/model/list';
+import Tag from '@/lib/model/tag';
+import ListItem from '@/lib/model/listItem';
 
 import DateInput2 from '../DateInput2';
 import ConfirmedTextInput from '../ConfirmedTextInput';
+import ConfirmedTextarea from '../ConfirmedTextarea';
 
 import Priority from './Priority';
 import Tags from './Tags';
@@ -42,6 +44,7 @@ import ExpectedInput from './ExpectedInput';
 import ElapsedInput from './ElapsedInput';
 import TimeButton from './TimeButton';
 import { ItemHandlers, SetItem } from './types';
+import ItemSection from './ItemSection';
 
 /**
  * The UI for interacting with **all of** a single list item's data, such as the name,
@@ -62,31 +65,38 @@ import { ItemHandlers, SetItem } from './types';
  * @param set Functions for updating the list item timer
  * @param itemHandlers Functions for making API calls & state changes when the item is
  *  interacted with
+ * @param totalSections A total list of sections in the larger list
+ * @param sectionId The list section this component is part of
  * @param addNewTag Callback to propagate state changes when a new tag is created from the
  *  "add tag" menu
+ * @param onUpdateSection The passed function that changes an item's section
  */
 export default function More({
   item,
   tags,
-  tagsAvailable,
   members,
   hasDueDates,
   hasTimeTracking,
   elapsedLive,
   set,
   itemHandlers,
-  addNewTag
+  totalSections,
+  sectionId,
+  addNewTag,
+  onUpdateSection
 }: {
   item: ListItem;
   tags: Tag[];
-  tagsAvailable: Tag[];
-  members: ListMember[];
-  hasDueDates: boolean;
-  hasTimeTracking: boolean;
+  members: Omit<ListMember, 'role'>[];
+  hasDueDates: List['hasDueDates'];
+  hasTimeTracking: List['hasTimeTracking'];
   elapsedLive: number;
   set: SetItem;
   itemHandlers: ItemHandlers;
+  totalSections: Map<string, string>;
+  sectionId: string;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
+  onUpdateSection: (e: React.ChangeEvent<HTMLSelectElement>) => unknown;
 }) {
   const isComplete = item.status === 'Completed';
 
@@ -94,7 +104,13 @@ export default function More({
 
   return (
     <>
-      <Button isIconOnly variant='ghost' onPress={onOpen}>
+      <Button
+        isIconOnly
+        aria-label='More item info'
+        data-testid='more-button'
+        variant='ghost'
+        onPress={onOpen}
+      >
         <ThreeDots />
       </Button>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
@@ -124,6 +140,22 @@ export default function More({
                     />
                   </span>
                 </div>
+                <ConfirmedTextarea
+                  disabled={isComplete}
+                  label='Description'
+                  maxRows={3}
+                  minRows={1}
+                  value={item.description}
+                  variant='underlined'
+                  onValueChange={itemHandlers.setDescription}
+                />
+
+                <ItemSection
+                  sectionId={sectionId}
+                  totalSections={totalSections}
+                  onUpdateSection={onUpdateSection}
+                />
+
                 <div className='flex gap-4 items-center'>
                   <Priority
                     className='w-full'
@@ -148,11 +180,11 @@ export default function More({
                 <Tags
                   addNewTag={addNewTag}
                   className='py-2'
-                  isComplete={item.status === 'Completed'}
-                  linkTag={itemHandlers.linkTag}
-                  tags={tags}
-                  tagsAvailable={tagsAvailable}
-                  unlinkTag={itemHandlers.unlinkTag}
+                  isComplete={isComplete}
+                  tagsAdded={item.tags}
+                  tagsAvailable={tags.values().toArray()}
+                  onTagLink={itemHandlers.linkTag}
+                  onTagUnlink={itemHandlers.unlinkTag}
                 />
 
                 {members.length > 1 ? (
@@ -161,7 +193,7 @@ export default function More({
                     className='py-2'
                     isComplete={isComplete}
                     itemId={item.id}
-                    members={members}
+                    members={members.values().toArray()}
                   />
                 ) : null}
 

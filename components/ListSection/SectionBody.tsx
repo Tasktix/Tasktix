@@ -17,11 +17,8 @@
  */
 
 import { Reorder } from 'framer-motion';
-import { ActionDispatch } from 'react';
+import { ActionDispatch, useState } from 'react';
 
-import ListItemModel from '@/lib/model/listItem';
-import ListMember from '@/lib/model/listMember';
-import Tag from '@/lib/model/tag';
 import {
   ListItem,
   ReorderableListItem,
@@ -29,9 +26,11 @@ import {
 } from '@/components/ListItem';
 import { Filters } from '@/components/SearchBar/types';
 import { NamedColor } from '@/lib/model/color';
-import { sortItems, sortItemsByCompleted } from '@/lib/sortItems';
-
-import { Item, SectionAction } from './types';
+import { sortItems, sortItemsByCompleted, sortItemsByOrder } from '@/lib/sort';
+import ListItemModel from '@/lib/model/listItem';
+import ListMember from '@/lib/model/listMember';
+import Tag from '@/lib/model/tag';
+import { ItemAction, ListItemState } from '@/lib/transformations/list/types';
 
 /**
  * A component that provides the body of the list section - i.e. just the items in it,
@@ -39,6 +38,7 @@ import { Item, SectionAction } from './types';
  * items to reorder them when enabled in list settings. It also handles the logic for
  * excluding list items that don't match the current filters.
  *
+ * @param sectionId The ID of the section this body belongs to
  * @param items The items that currently belong to this section
  * @param filters The filters currently active on the list that should limit which items
  *  are rendered
@@ -47,39 +47,83 @@ import { Item, SectionAction } from './types';
  * @param hasTimeTracking Whether time tracking is enabled in the list's settings
  * @param hasDueDates Whether due dates are enabled in the list's settings
  * @param isAutoOrdered Whether auto-ordering is enabled in the list's settings
- * @param setItems Callback for overwriting the React state of items (used when dragging
- *  items to a different order)
- * @param dispatchSection Callback for updating the given section's useReducer state
- * @param reorderItem Callback for finalizing the new order of items and updating React
- *  state
+ * @param totalSections A total list of sections in the larger list
  * @param addNewTag Callback to propagate state changes when a new tag is created from the
  *  "add tag" menu
+ * @param onItemEvent Callback for updating an item's state
+ * @param onItemReorder Callback for finalizing the new order of items and updating React
+ *  state
  */
 export default function SectionBody({
+  sectionId,
   items,
   filters,
   members,
-  tagsAvailable,
+  tags,
   hasTimeTracking,
   hasDueDates,
   isAutoOrdered,
-  setItems,
-  dispatchSection,
-  reorderItem,
-  addNewTag
+  totalSections,
+  addNewTag,
+  onItemEvent,
+  onItemReorder
 }: {
-  items: Map<string, Item>;
+  sectionId: string;
+  items: ListItemModel[];
   filters: Filters;
   members: ListMember[];
-  tagsAvailable: Tag[];
+  tags: Tag[];
   hasTimeTracking: boolean;
   hasDueDates: boolean;
   isAutoOrdered: boolean;
-  setItems: (items: Item[]) => unknown;
-  dispatchSection: ActionDispatch<[action: SectionAction]>;
-  reorderItem: (item: ListItemModel) => unknown;
+  totalSections: Map<string, string>;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
+  onItemEvent: ActionDispatch<
+    [
+      action:
+        | ItemAction
+        | {
+            type: 'ChangeItemSection';
+            pastSectionId: string;
+            targetSectionId: string;
+            targetItemId: string;
+          }
+        | { type: 'DeleteItem'; sectionId: string; id: string }
+    ]
+  >;
+  onItemReorder: (item: ListItemState, newIndex: number) => unknown;
 }) {
+  /**
+   * Provides a visual index for each list item for use with dragging. This number
+   * indicates the item's index within the list, allowing the item to switch places with
+   * other items when dragged past them. This is kept separate from the sectionIndex
+   * property so that only 1 API call is needed (when the dragging interaction is
+   * completed) to update the index of the list item in the database.
+   */
+  const [itemOrder, setItemOrder] = useState<Map<string, number>>(
+    new Map(items.values().map(item => [item.id, item.sectionIndex]))
+  );
+
+  /**
+   * When the list of items changes, the itemOrder map needs to be updated to include any
+   * changed items' indices. To detect this change (without an effect), we need to track
+   * previous items here. This is more efficient than an effect; see React's "You May Not
+   * Need an Effect" for details.
+   */
+  const [prevItems, setPrevItems] = useState(items);
+
+  if (prevItems !== items) {
+    setPrevItems(items);
+    setItemOrder(
+      new Map(items.values().map(item => [item.id, item.sectionIndex]))
+    );
+
+    // The state is currently out of sync, so don't render anything (sortItemsByOrder may
+    // throw an error if rendering attempted). React will throw away this render result
+    // and immediately rerender the component, anyway, since its state changed.
+    return null;
+  }
+
   const filteredItems = [
     ...items.values().filter(item => checkItemFilter(item, filters))
   ];
@@ -87,37 +131,17 @@ export default function SectionBody({
   const components: ListItemParams[] = (
     isAutoOrdered
       ? filteredItems.sort(sortItems.bind(null, hasTimeTracking, hasDueDates))
-      : filteredItems
+      : filteredItems.sort(sortItemsByOrder.bind(null, itemOrder))
   ).map(item => ({
     addNewTag,
-    deleteItem: () => dispatchSection({ type: 'DeleteItem', itemId: item.id }),
     hasDueDates,
     hasTimeTracking,
     item,
     members,
-    tagsAvailable,
-    resetTime: status =>
-      dispatchSection({ type: 'ResetItemTime', itemId: item.id, status }),
-    setPaused: () =>
-      dispatchSection({ type: 'PauseItemTime', itemId: item.id }),
-    setRunning: () =>
-      dispatchSection({ type: 'StartItemTime', itemId: item.id }),
-    updateDueDate: date =>
-      dispatchSection({ type: 'SetItemDueDate', itemId: item.id, date }),
-    updatePriority: priority =>
-      dispatchSection({ type: 'SetItemPriority', itemId: item.id, priority }),
-    setCompleted: dateCompleted =>
-      dispatchSection({
-        type: 'SetItemComplete',
-        itemId: item.id,
-        dateCompleted
-      }),
-    updateExpectedMs: expectedMs =>
-      dispatchSection({
-        type: 'SetItemExpectedMs',
-        itemId: item.id,
-        expectedMs
-      })
+    sectionId,
+    totalSections,
+    tags,
+    onItemEvent
   }));
 
   return isAutoOrdered ? (
@@ -128,13 +152,27 @@ export default function SectionBody({
       values={filteredItems}
       // Since items are stored in a hashmap now, setItems will update each item's
       // `.visualIndex` with its current index in the list
-      onReorder={items => setItems(items.sort(sortItemsByCompleted))}
+      onReorder={items => {
+        setItemOrder(
+          new Map(
+            items.sort(sortItemsByCompleted).map((item, i) => [item.id, i])
+          )
+        );
+      }}
     >
       {components.map(params => (
         <ReorderableListItem
           {...params}
           key={params.item.id}
-          onDragEnd={reorderItem.bind(null, params.item)}
+          onDragEnd={() => {
+            const index = itemOrder.get(params.item.id);
+
+            if (index === undefined)
+              throw new Error(
+                `Unable to find index for item with ID ${params.item.id}`
+              );
+            onItemReorder(params.item, index);
+          }}
         />
       ))}
     </Reorder.Group>
@@ -180,17 +218,16 @@ function compareFilter(
     case 'tag':
       return (
         value instanceof Set &&
-        item.tags
-          .map(curr => value.has(curr.name))
-          .reduce((prev: boolean, curr: boolean) => prev || curr, false)
+        item.tags.reduce((prev, tag) => prev || value.has(tag.name), false)
       );
 
     case 'user':
       return (
         value instanceof Set &&
-        item.assignees
-          .map(curr => value.has(curr.user.username))
-          .reduce((prev: boolean, curr: boolean) => prev || curr, false)
+        item.assignees.reduce(
+          (prev, assignee) => prev || value.has(assignee.user.id),
+          false
+        )
       );
 
     case 'status':
