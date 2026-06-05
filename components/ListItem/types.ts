@@ -32,8 +32,8 @@ import { itemHandlerFactory } from './handlerFactory';
  * Parameters expected for a ListItem component
  */
 export interface ListItemParams {
-  sectionId: string;
   item: ListItem;
+  totalSections: Map<string, string>;
   list?: Pick<List, 'id' | 'color' | 'name'>;
   members: Omit<ListMember, 'role'>[];
   tags: Tag[];
@@ -41,7 +41,17 @@ export interface ListItemParams {
   hasDueDates: ListState['hasDueDates'];
   reorderControls?: DragControls;
   onItemEvent: ActionDispatch<
-    [action: ItemAction | { type: 'DeleteItem'; sectionId: string; id: string }]
+    [
+      action:
+        | ItemAction
+        | {
+            type: 'ChangeItemSection';
+            pastSectionId: string;
+            targetSectionId: string;
+            targetItemId: string;
+          }
+        | { type: 'DeleteItem'; sectionId: string; id: string }
+    ]
   >;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
 }

@@ -70,6 +70,7 @@ export function listReducer( // skipcq: JS-0045, JS-R1005
     case 'AddSection':
     case 'AddItem':
     case 'ReorderItem':
+    case 'ChangeItemSection':
     case 'DeleteItem':
     case 'DeleteSection':
       return sectionReducer(state, action);
@@ -181,6 +182,7 @@ export function itemGroupReducer( // skipcq: JS-0045, JS-R1005
     case 'AddSection':
     case 'AddItem':
     case 'ReorderItem':
+    case 'ChangeItemSection':
     case 'DeleteItem':
     case 'DeleteSection': {
       const newState = sectionReducer(state, action);
@@ -363,6 +365,51 @@ function sectionReducer<
           if (item.sectionIndex >= lowIndex && item.sectionIndex <= highIndex) {
             item.sectionIndex += wasShiftedUp ? 1 : -1;
           }
+        }
+      }
+      break;
+    }
+
+    case 'ChangeItemSection': {
+      //Copied from 'AddItemToSection'
+      const targetSectionItems = newState.sectionItems.get(
+        action.targetSectionId
+      );
+
+      if (!targetSectionItems)
+        throw new Error(
+          `Unable to find section with ID ${action.targetSectionId}`
+        );
+
+      const newItem = getItem(newState, action.targetItemId);
+      const oldIndex = newItem.sectionIndex;
+
+      newItem.sectionId = action.targetSectionId;
+      newItem.sectionIndex = targetSectionItems.length;
+      newState.items.set(action.targetItemId, newItem);
+
+      targetSectionItems.push(action.targetItemId);
+
+      //Copied from 'DeleteItem'
+      const pastSectionItems = newState.sectionItems.get(action.pastSectionId);
+
+      if (!pastSectionItems)
+        throw new Error(
+          `Unable to find items for section ${action.pastSectionId}`
+        );
+
+      newState.sectionItems.set(
+        action.pastSectionId,
+        pastSectionItems.filter(item => item !== action.targetItemId)
+      );
+
+      //Resets sectionIndex for all items after the target item
+      for (const itemId of pastSectionItems) {
+        const currentItem = getItem(newState, itemId);
+
+        if (currentItem.sectionIndex > oldIndex) {
+          currentItem.sectionIndex--;
+          newState.items.set(itemId, currentItem);
         }
       }
       break;

@@ -67,9 +67,11 @@ export default class ListItem {
   tags: Tag[];
   issueId: bigint | null;
   listId: string;
+  sectionId: string;
 
   constructor(
     name: string,
+    sectionId: string,
     listId: string,
     {
       id,
@@ -102,7 +104,6 @@ export default class ListItem {
       dateCompleted?: Date | null;
       assignees?: Assignee[];
       tags?: Tag[];
-      sectionId?: string;
       issueId?: bigint | null;
     }
   ) {
@@ -124,6 +125,7 @@ export default class ListItem {
     this.assignees = assignees;
     this.tags = tags;
     this.listId = listId;
+    this.sectionId = sectionId;
     this.issueId = issueId;
   }
 }

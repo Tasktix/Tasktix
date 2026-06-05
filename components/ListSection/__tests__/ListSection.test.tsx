@@ -51,6 +51,7 @@ test('Newly created items are added to the section', async () => {
       members={[]}
       section={{ id: 'section-id', name: 'Section Name' }}
       tags={[]}
+      totalSections={new Map<string, string>()}
       onItemChange={vi.fn()}
       onSectionChange={dispatchSectionChange}
       onTagCreate={() => Promise.resolve('')}
@@ -94,6 +95,7 @@ test('Section can be deleted and propagates that event', async () => {
       members={[]}
       section={{ id: 'section-id', name: 'Section Name' }}
       tags={[]}
+      totalSections={new Map<string, string>()}
       onItemChange={vi.fn()}
       onSectionChange={dispatchSectionChange}
       onTagCreate={() => Promise.resolve('')}
@@ -120,7 +122,7 @@ describe('Section expansion/collapse', () => {
         filters={{}}
         items={[
           {
-            ...new ListItem('Item 1', 'list-id', {
+            ...new ListItem('Item 1', 'sectionid1', 'list-id', {
               id: 'aaaaaaaaaaaaaaaa',
               status: 'Unstarted'
             }),
@@ -135,6 +137,7 @@ describe('Section expansion/collapse', () => {
           name: 'Section Name'
         }}
         tags={[]}
+        totalSections={new Map<string, string>()}
         onItemChange={vi.fn()}
         onSectionChange={vi.fn()}
         onTagCreate={() => Promise.resolve('')}
@@ -154,7 +157,7 @@ describe('Section expansion/collapse', () => {
         filters={{}}
         items={[
           {
-            ...new ListItem('Item 1', 'list-id', {
+            ...new ListItem('Item 1', 'sectionid1', 'list-id', {
               id: 'aaaaaaaaaaaaaaaa',
               status: 'Completed',
               dateCompleted: new Date()
@@ -170,6 +173,7 @@ describe('Section expansion/collapse', () => {
           name: 'Section Name'
         }}
         tags={[]}
+        totalSections={new Map<string, string>()}
         onItemChange={vi.fn()}
         onSectionChange={vi.fn()}
         onTagCreate={() => Promise.resolve('')}
@@ -192,6 +196,7 @@ describe('Section expansion/collapse', () => {
         members={[]}
         section={{ id: 'section-id', name: 'Section Name' }}
         tags={[]}
+        totalSections={new Map<string, string>()}
         onItemChange={vi.fn()}
         onSectionChange={vi.fn()}
         onTagCreate={() => Promise.resolve('')}
@@ -213,7 +218,7 @@ describe('Section expansion/collapse', () => {
         filters={{}}
         items={[
           {
-            ...new ListItem('Item 1', 'list-id', {
+            ...new ListItem('Item 1', 'sectionid1', 'list-id', {
               id: 'aaaaaaaaaaaaaaaa',
               status: 'Completed',
               dateCompleted: new Date()
@@ -229,6 +234,7 @@ describe('Section expansion/collapse', () => {
           name: 'Section Name'
         }}
         tags={[]}
+        totalSections={new Map<string, string>()}
         onItemChange={vi.fn()}
         onSectionChange={vi.fn()}
         onTagCreate={() => Promise.resolve('')}
@@ -252,7 +258,7 @@ describe('Section expansion/collapse', () => {
         filters={{}}
         items={[
           {
-            ...new ListItem('Item 1', 'list-id', {
+            ...new ListItem('Item 1', 'sectionid1', 'list-id', {
               id: 'aaaaaaaaaaaaaaaa',
               status: 'Unstarted'
             }),
@@ -267,6 +273,7 @@ describe('Section expansion/collapse', () => {
           name: 'Section Name'
         }}
         tags={[]}
+        totalSections={new Map<string, string>()}
         onItemChange={vi.fn()}
         onSectionChange={vi.fn()}
         onTagCreate={() => Promise.resolve('')}
