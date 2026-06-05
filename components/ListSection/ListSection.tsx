@@ -79,6 +79,7 @@ export default function ListSection({
   totalSections,
   section,
   items,
+  isKanban,
   onSectionChange,
   onItemChange,
   onTagCreate
@@ -93,6 +94,7 @@ export default function ListSection({
   isAutoOrdered: List['isAutoOrdered'];
   section: Omit<ListSectionModel, 'items'>;
   items: ListItem[];
+  isKanban: boolean;
   onSectionChange: ActionDispatch<[action: SectionAction]>;
   onItemChange: ActionDispatch<
     [
@@ -122,7 +124,12 @@ export default function ListSection({
   );
 
   return (
-    <div className='rounded-md w-full overflow-hidden border-2 border-content3 box-border shrink-0 shadow-lg shadow-content2'>
+    <div
+      className={`rounded-md overflow-hidden border-2 border-content3 box-border shrink-0 shadow-lg shadow-content2 ${isKanban ? 'w-100' : 'w-full'}`}
+      data-testid={
+        isKanban ? 'kanban-section-format' : 'vertical-section-format'
+      }
+    >
       <div className='bg-content3 font-bold p-4 h-16 flex items-center justify-between'>
         <span className='min-w-fit shrink-0 flex'>
           <Button

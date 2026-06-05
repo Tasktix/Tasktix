@@ -45,6 +45,7 @@ import { listReducer } from '@/lib/transformations/list/stateToState';
 
 import { getFilterOptions } from './filters';
 import { listHandlerFactory } from './handlerFactory';
+import { useKanbanPref } from './useKanbanPref';
 
 /**
  * This component provides the full list GUI: filters, settings, each section and its
@@ -87,55 +88,68 @@ export default function List({
 
   useEffect(() => subscribe([list.id], dispatchList), [list.id]);
 
+  const [isKanban, setIsKanban] = useKanbanPref(list.id);
+
   return (
     <>
       <span className='flex gap-4 items-center'>
         <SearchBar inputOptions={filterOptions} onValueChange={setFilters} />
         <ListSettings
           addNewTag={listHandlers.addNewTag}
+          isKanban={isKanban}
           list={list}
           roles={builtRoles}
+          onKanbanToggle={setIsKanban}
           onListEvent={dispatchList}
           onListNameChange={listHandlers.setName}
         />
       </span>
 
-      {Array.from(list.sections.values()).map(section => (
-        <ListSection
-          key={section.id}
-          filters={filters}
-          hasDueDates={list.hasDueDates}
-          hasTimeTracking={list.hasTimeTracking}
-          isAutoOrdered={list.isAutoOrdered}
-          items={listStateToItems(
-            list.sectionItems.get(section.id),
-            list.itemAssignees,
-            list.itemTags,
-            list.items,
-            list.members,
-            list.tags
-          )}
-          listId={list.id}
-          members={listStateToMembers(list.members, builtRoles)}
-          section={section}
-          tags={list.tags.values().toArray()}
-          totalSections={
-            new Map(
-              list.sections.values().map(section => [section.id, section.name])
-            )
-          }
-          onItemChange={dispatchList}
-          onSectionChange={dispatchList}
-          onTagCreate={listHandlers.addNewTag}
-        />
-      ))}
-
-      <AddListSection
-        listId={list.id}
-        onSectionAdded={section =>
-          dispatchList({ type: 'AddSection', listId: list.id, section })
-        }
-      />
+      <span
+        className={`flex ${isKanban ? 'gap-4 items-start overflow-x-auto' : 'flex-col gap-8'}`}
+        data-testid={isKanban ? 'kanban-list-format' : 'vertical-list-format'}
+      >
+        {Array.from(list.sections.values()).map(section => (
+          <ListSection
+            key={section.id}
+            filters={filters}
+            hasDueDates={list.hasDueDates}
+            hasTimeTracking={list.hasTimeTracking}
+            isAutoOrdered={list.isAutoOrdered}
+            isKanban={isKanban}
+            items={listStateToItems(
+              list.sectionItems.get(section.id),
+              list.itemAssignees,
+              list.itemTags,
+              list.items,
+              list.members,
+              list.tags
+            )}
+            listId={list.id}
+            members={listStateToMembers(list.members, builtRoles)}
+            section={section}
+            tags={list.tags.values().toArray()}
+            totalSections={
+              new Map(
+                list.sections
+                  .values()
+                  .map(section => [section.id, section.name])
+              )
+            }
+            onItemChange={dispatchList}
+            onSectionChange={dispatchList}
+            onTagCreate={listHandlers.addNewTag}
+          />
+        ))}
+        <span>
+          <AddListSection
+            listId={list.id}
+            onSectionAdded={section =>
+              dispatchList({ type: 'AddSection', listId: list.id, section })
+            }
+          />
+        </span>
+      </span>
     </>
   );
 }

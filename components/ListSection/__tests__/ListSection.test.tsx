@@ -46,6 +46,7 @@ test('Newly created items are added to the section', async () => {
       filters={{}}
       hasDueDates={false}
       hasTimeTracking={false}
+      isKanban={false}
       items={[]}
       listId='test-list'
       members={[]}
@@ -90,6 +91,7 @@ test('Section can be deleted and propagates that event', async () => {
       hasTimeTracking
       isAutoOrdered
       filters={{}}
+      isKanban={false}
       items={[]}
       listId='test-list'
       members={[]}
@@ -120,6 +122,7 @@ describe('Section expansion/collapse', () => {
         hasTimeTracking
         isAutoOrdered
         filters={{}}
+        isKanban={false}
         items={[
           {
             ...new ListItem('Item 1', 'sectionid1', 'list-id', {
@@ -155,6 +158,7 @@ describe('Section expansion/collapse', () => {
         hasTimeTracking
         isAutoOrdered
         filters={{}}
+        isKanban={false}
         items={[
           {
             ...new ListItem('Item 1', 'sectionid1', 'list-id', {
@@ -191,6 +195,7 @@ describe('Section expansion/collapse', () => {
         hasTimeTracking
         isAutoOrdered
         filters={{}}
+        isKanban={false}
         items={[]}
         listId='test-list'
         members={[]}
@@ -216,6 +221,7 @@ describe('Section expansion/collapse', () => {
         hasTimeTracking
         isAutoOrdered
         filters={{}}
+        isKanban={false}
         items={[
           {
             ...new ListItem('Item 1', 'sectionid1', 'list-id', {
@@ -256,6 +262,7 @@ describe('Section expansion/collapse', () => {
         hasTimeTracking
         isAutoOrdered
         filters={{}}
+        isKanban={false}
         items={[
           {
             ...new ListItem('Item 1', 'sectionid1', 'list-id', {
@@ -287,4 +294,30 @@ describe('Section expansion/collapse', () => {
       expect(queryByText('Item 1')).not.toBeInTheDocument();
     });
   });
+});
+
+test('Kanban sections format properly', () => {
+  const { getByTestId } = render(
+    <ListSection
+      hasDueDates
+      hasTimeTracking
+      isAutoOrdered
+      isKanban
+      filters={{}}
+      items={[]}
+      listId='test-list'
+      members={[]}
+      section={{
+        id: 'section-id',
+        name: 'Section Name'
+      }}
+      tags={[]}
+      onItemChange={vi.fn()}
+      onSectionChange={vi.fn()}
+      onTagCreate={() => Promise.resolve('')}
+    />
+  );
+
+  expect(getByTestId('kanban-section-format')).toBeVisible();
+  expect(getByTestId('kanban-section-format')).toHaveClass('w-100');
 });

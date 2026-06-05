@@ -48,6 +48,9 @@ import TagSettings from './TagSettings';
  * permissions, and tags that list items can have.
  *
  * @param list All data for the list
+ * @param roles All roles for this list
+ * @param isKanban The list's Kanban preference
+ * @param onKanbanToggle A callback for updating React state with Kanban preference
  * @param addNewTag A callback for adding a tag to the list
  * @param onListEvent A callback for updating React state with list events
  * @param onListNameChange A callback for updating React state with a new list name,
@@ -56,12 +59,16 @@ import TagSettings from './TagSettings';
 export default function ListSettings({
   list,
   roles,
+  isKanban,
+  onKanbanToggle,
   addNewTag,
   onListEvent,
   onListNameChange
 }: Readonly<{
   list: Omit<ListState, 'items' | 'sections'>;
   roles: Map<string, MemberRole>;
+  isKanban: boolean;
+  onKanbanToggle: (value: boolean) => unknown;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
   onListEvent: ActionDispatch<[action: ListAction | MemberAction | TagAction]>;
   onListNameChange: (name: string) => unknown;
@@ -85,24 +92,26 @@ export default function ListSettings({
           <ModalHeader className='justify-center pb-0'>
             List Settings
           </ModalHeader>
-          <ModalBody className='overflow-clip'>
+          <ModalBody className='min-h-0'>
             <Tabs aria-label='Options' variant='underlined'>
               <Tab
-                className='flex flex-col gap-4 grow justify-between'
+                className='flex flex-col gap-4 grow justify-between min-h-0'
                 title='General'
               >
                 <GeneralSettings
                   hasDueDates={list.hasDueDates}
                   hasTimeTracking={list.hasTimeTracking}
                   isAutoOrdered={list.isAutoOrdered}
+                  isKanban={isKanban}
                   listColor={list.color}
                   listId={list.id}
                   listName={list.name}
-                  setListName={onListNameChange}
+                  onKanbanToggle={onKanbanToggle}
+                  onListNameChange={onListNameChange}
                 />
               </Tab>
               <Tab
-                className='flex flex-col gap-6 grow shrink justify-between overflow-clip'
+                className='flex flex-col gap-6 grow shrink justify-between min-h-0'
                 title='Members'
               >
                 <MemberSettings
@@ -113,7 +122,7 @@ export default function ListSettings({
                 />
               </Tab>
               <Tab
-                className='flex flex-col gap-6 grow shrink justify-between overflow-clip'
+                className='flex flex-col gap-6 grow shrink justify-between min-h-0'
                 title='Tags'
               >
                 <TagSettings

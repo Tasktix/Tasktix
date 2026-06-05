@@ -57,6 +57,18 @@ vi.mock(import('@/components/AuthProvider'), async importOriginal => ({
   )
 }));
 
+//Mocking local storage
+const localStorageMock = {
+  get length() {
+    return 0;
+  },
+  getItem: vi.fn(),
+  setItem: vi.fn(),
+  removeItem: vi.fn(),
+  clear: vi.fn(),
+  key: vi.fn()
+} satisfies Storage;
+
 beforeAll(() => {
   vi.stubEnv('TZ', 'UTC');
 
@@ -75,6 +87,8 @@ beforeAll(() => {
       }
     }
   );
+
+  vi.stubGlobal('localStorage', localStorageMock);
 });
 beforeEach(vi.resetAllMocks);
 afterAll(() => {
@@ -226,6 +240,36 @@ describe('List state changes', () => {
     await waitFor(() => expect(getByText('List Settings')).toBeVisible());
 
     expect(getByLabelText('Auto-order list items')).not.toBeChecked();
+  });
+
+  test('List initiates as Kanban being false', () => {
+    const { getByTestId, queryByTestId } = render(
+      <HeroUIProvider disableRipple>
+        <List startingList={JSON.stringify(MOCK_LIST)} startingRoles='[]' />
+      </HeroUIProvider>
+    );
+
+    expect(localStorageMock.getItem).toHaveBeenCalled();
+    expect(getByTestId('vertical-list-format')).toBeVisible();
+    expect(queryByTestId('kanban-list-format')).not.toBeInTheDocument();
+  });
+
+  test('Lists with kanban true format properly', () => {
+    localStorageMock.getItem.mockReturnValue('[["list-id",true]]');
+
+    const { getByTestId, queryByTestId } = render(
+      <HeroUIProvider disableRipple>
+        <List startingList={JSON.stringify(MOCK_LIST)} startingRoles='[]' />
+      </HeroUIProvider>
+    );
+
+    expect(localStorageMock.getItem).toHaveBeenCalled();
+    expect(localStorageMock.getItem).toHaveReturnedWith('[["list-id",true]]');
+    expect(getByTestId('kanban-list-format')).toBeVisible();
+    expect(getByTestId('kanban-list-format')).toHaveClass(
+      'flex gap-4 items-start overflow-x-auto'
+    );
+    expect(queryByTestId('vertical-list-format')).not.toBeInTheDocument();
   });
 });
 
