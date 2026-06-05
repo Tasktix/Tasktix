@@ -48,10 +48,11 @@ const MOCK_USER = new User(
   { color: 'Amber' }
 );
 const MOCK_OAUTH_CONFIG = {
+  localEnabled: true,
   githubEnabled: true,
   customEnabled: true,
   customProviderId: 'SSO'
-};
+} satisfies AuthConfig;
 
 test('Properly handles failed GitHub authentication', async () => {
   const setLoggedInUserMock = vi.fn();
@@ -156,6 +157,7 @@ test('Properly redirects and sets logged in user on successful custom SSO authen
 test('Throws Error if custom OAuth attempted without being configured', async () => {
   const setLoggedInUserMock = vi.fn();
   const MOCK_UNCONFIGURED_AUTH_CONFIG: AuthConfig = {
+    localEnabled: true,
     githubEnabled: false,
     customEnabled: false
   };
