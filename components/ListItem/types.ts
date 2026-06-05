@@ -32,7 +32,6 @@ import { itemHandlerFactory } from './handlerFactory';
  * Parameters expected for a ListItem component
  */
 export interface ListItemParams {
-  sectionId: string;
   item: ListItem;
   totalSections: Map<string, string>;
   list?: Pick<List, 'id' | 'color' | 'name'>;

@@ -48,7 +48,6 @@ today.setHours(0, 0, 0, 0);
  * The UI for interacting with a single list item's data, such as the name, priority,
  * assignees, etc.
  *
- * @param sectionId The list section this component is part of
  * @param item The list item this component represents
  * @param list The list the item belongs to. If provided, a chip with the list name &
  *  color is displayed. Intended for use on pages with many lists' items to differentiate
@@ -68,7 +67,6 @@ today.setHours(0, 0, 0, 0);
  * @param onItemEvent Callback to propagate state changes for the item
  */
 export default function ListItem({
-  sectionId,
   item,
   list,
   members,
