@@ -47,6 +47,7 @@ import { ItemAction, ListItemState } from '@/lib/transformations/list/types';
  * @param hasTimeTracking Whether time tracking is enabled in the list's settings
  * @param hasDueDates Whether due dates are enabled in the list's settings
  * @param isAutoOrdered Whether auto-ordering is enabled in the list's settings
+ * @param totalSections A total list of sections in the larger list
  * @param addNewTag Callback to propagate state changes when a new tag is created from the
  *  "add tag" menu
  * @param onItemEvent Callback for updating an item's state
@@ -62,6 +63,7 @@ export default function SectionBody({
   hasTimeTracking,
   hasDueDates,
   isAutoOrdered,
+  totalSections,
   addNewTag,
   onItemEvent,
   onItemReorder
@@ -74,9 +76,20 @@ export default function SectionBody({
   hasTimeTracking: boolean;
   hasDueDates: boolean;
   isAutoOrdered: boolean;
+  totalSections: Map<string, string>;
   addNewTag: (name: string, color: NamedColor) => Promise<string>;
   onItemEvent: ActionDispatch<
-    [action: ItemAction | { type: 'DeleteItem'; sectionId: string; id: string }]
+    [
+      action:
+        | ItemAction
+        | {
+            type: 'ChangeItemSection';
+            pastSectionId: string;
+            targetSectionId: string;
+            targetItemId: string;
+          }
+        | { type: 'DeleteItem'; sectionId: string; id: string }
+    ]
   >;
   onItemReorder: (item: ListItemState, newIndex: number) => unknown;
 }) {
@@ -126,6 +139,7 @@ export default function SectionBody({
     item,
     members,
     sectionId,
+    totalSections,
     tags,
     onItemEvent
   }));

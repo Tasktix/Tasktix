@@ -175,7 +175,7 @@ export default function AddItem({
         const id = res.content?.split('/').at(-1);
 
         addItem(
-          new ListItem(values.name, 'list-id', {
+          new ListItem(values.name, sectionId, 'list-id', {
             priority,
             expectedMs: newItem.expectedMs,
             sectionIndex: nextIndex,

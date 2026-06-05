@@ -129,6 +129,13 @@ export default function List({
             members={listStateToMembers(list.members, builtRoles)}
             section={section}
             tags={list.tags.values().toArray()}
+            totalSections={
+              new Map(
+                list.sections
+                  .values()
+                  .map(section => [section.id, section.name])
+              )
+            }
             onItemChange={dispatchList}
             onSectionChange={dispatchList}
             onTagCreate={listHandlers.addNewTag}

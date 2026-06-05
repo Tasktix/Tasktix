@@ -48,18 +48,18 @@ today.setHours(0, 0, 0, 0);
  * The UI for interacting with a single list item's data, such as the name, priority,
  * assignees, etc.
  *
- * @param sectionId The list section this component is part of
  * @param item The list item this component represents
  * @param list The list the item belongs to. If provided, a chip with the list name &
  *  color is displayed. Intended for use on pages with many lists' items to differentiate
  *  which ones they come from
  * @param members The members who have access to the list (used to provide options for
  *  assigning people to tasks)
- * @param tagsAvailable The tags associated with the list that could be added to this item
+ * @param tags The tags associated with the list that could be added to this item
  * @param hasTimeTracking Whether the list settings enable tracking the time it takes to
  *  complete list items. Start/pause buttons, a timer, and expected time-to-complete are
  *  shown if so
  * @param hasDueDates Whether the list settings enable due dates for items
+ * @param totalSections A total list of sections in the larger list
  * @param reorderControls Controller for Framer Motion's reordering feature. Used to
  *  trigger reordering when the user grabs the drag icon in the list item
  * @param addNewTag Callback to propagate state changes when a new tag is created from the
@@ -67,13 +67,13 @@ today.setHours(0, 0, 0, 0);
  * @param onItemEvent Callback to propagate state changes for the item
  */
 export default function ListItem({
-  sectionId,
   item,
   list,
   members,
   tags,
   hasTimeTracking,
   hasDueDates,
+  totalSections,
   reorderControls,
   addNewTag,
   onItemEvent
@@ -88,7 +88,7 @@ export default function ListItem({
 
   const itemHandlers = itemHandlerFactory(
     item.id,
-    sectionId,
+    item.sectionId,
     {
       timer,
       lastTime,
@@ -191,12 +191,31 @@ export default function ListItem({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  //Stops and clears timer
   function _stopRunning() {
     if (timer.current) {
       clearTimeout(timer.current);
       timer.current = undefined;
     }
   }
+
+  //Changes item section to specified section
+  const changeItemSection = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    if (item.sectionId !== e.target.value) {
+      api
+        .patch(`/item/${item.id}`, { sectionId: e.target.value })
+        .then(() => {
+          // Update the internal state
+          onItemEvent({
+            type: 'ChangeItemSection',
+            pastSectionId: item.sectionId,
+            targetSectionId: e.target.value,
+            targetItemId: item.id
+          });
+        })
+        .catch(addToastForError);
+    }
+  };
 
   return (
     <div
@@ -351,8 +370,11 @@ export default function ListItem({
             item={item}
             itemHandlers={itemHandlers}
             members={members}
+            sectionId={item.sectionId}
             set={set}
             tags={tags}
+            totalSections={totalSections}
+            onUpdateSection={changeItemSection}
           />
         </span>
       </span>

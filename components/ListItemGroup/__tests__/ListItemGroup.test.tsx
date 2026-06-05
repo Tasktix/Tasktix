@@ -56,7 +56,9 @@ beforeAll(() => {
 beforeEach(vi.resetAllMocks);
 afterAll(vi.unstubAllEnvs);
 
-const MOCK_ITEM = new ListItem('List item 1', 'list-id', { id: 'item-id' }),
+const MOCK_ITEM = new ListItem('List item 1', 'section-id', 'list-id', {
+    id: 'item-id'
+  }),
   MOCK_SECTION = new ListSection('List section 1', [MOCK_ITEM]),
   MOCK_LIST = new ListModel(
     'List',
@@ -70,11 +72,16 @@ const MOCK_ITEM = new ListItem('List item 1', 'list-id', { id: 'item-id' }),
     { id: 'list-id' }
   );
 
-const MOCK_ITEM_COMPLETE = new ListItem('List item 2', 'list-id', {
-    id: 'item-id-2',
-    status: 'Completed',
-    dateCompleted: new Date()
-  }),
+const MOCK_ITEM_COMPLETE = new ListItem(
+    'List item 2',
+    'section-id',
+    'list-id',
+    {
+      id: 'item-id-2',
+      status: 'Completed',
+      dateCompleted: new Date()
+    }
+  ),
   MOCK_SECTION_ITEMS_COMPLETE = new ListSection('List section 2', [
     MOCK_ITEM_COMPLETE
   ]),
@@ -90,7 +97,9 @@ const MOCK_ITEM_COMPLETE = new ListItem('List item 2', 'list-id', {
     {}
   );
 
-const MOCK_ITEM_3 = new ListItem('List item 3', 'list-id', { id: 'item-id-3' }),
+const MOCK_ITEM_3 = new ListItem('List item 3', 'section-id', 'list-id', {
+    id: 'item-id-3'
+  }),
   MOCK_SECTION_3 = new ListSection('List section 3', [MOCK_ITEM_3]),
   MOCK_LIST_OPTIONS_DISABLED = new ListModel(
     'List 3',

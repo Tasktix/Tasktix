@@ -639,7 +639,9 @@ describe('ListItem state propagation', () => {
               [],
               [
                 new ListSection('List section name', [
-                  new ListItem('List item name', 'list-id', { id: 'item-id' })
+                  new ListItem('List item name', 'section-id', 'list-id', {
+                    id: 'item-id'
+                  })
                 ])
               ],
               [],
@@ -694,7 +696,7 @@ describe('ListItem state propagation', () => {
               [],
               [
                 new ListSection('List section name', [
-                  new ListItem('List item name', 'list-id', {
+                  new ListItem('List item name', 'section-id', 'list-id', {
                     description: 'Initial description',
                     id: 'item-id'
                   })
@@ -756,7 +758,7 @@ describe('ListItem state propagation', () => {
               [],
               [
                 new ListSection('List section name', [
-                  new ListItem('List item name', 'list-id', {
+                  new ListItem('List item name', 'section-id', 'list-id', {
                     priority: 'High',
                     id: 'item-id'
                   })
@@ -807,7 +809,7 @@ describe('ListItem state propagation', () => {
               [],
               [
                 new ListSection('List section name', [
-                  new ListItem('List item name', 'list-id', {
+                  new ListItem('List item name', 'section-id', 'list-id', {
                     status: 'In_Progress',
                     id: 'item-id'
                   })
@@ -862,7 +864,7 @@ describe('ListItem state propagation', () => {
               [],
               [
                 new ListSection('List section name', [
-                  new ListItem('List item name', 'list-id', {
+                  new ListItem('List item name', 'section-id', 'list-id', {
                     status: 'In_Progress',
                     id: 'item-id'
                   })
@@ -919,7 +921,7 @@ describe('ListItem state propagation', () => {
               [],
               [
                 new ListSection('List section name', [
-                  new ListItem('List item name', 'list-id', {
+                  new ListItem('List item name', 'section-id', 'list-id', {
                     status: 'Completed',
                     dateCompleted: new Date('2026-01-01'),
                     id: 'item-id'
@@ -977,7 +979,7 @@ describe('ListItem state propagation', () => {
               [],
               [
                 new ListSection('List section name', [
-                  new ListItem('List item name', 'list-id', {
+                  new ListItem('List item name', 'section-id', 'list-id', {
                     status: 'Completed',
                     dateCompleted: new Date('2026-01-01'),
                     id: 'item-id'
@@ -1042,7 +1044,7 @@ describe('ListItem state propagation', () => {
               [],
               [
                 new ListSection('List section name', [
-                  new ListItem('List item name', 'list-id', {
+                  new ListItem('List item name', 'section-id', 'list-id', {
                     id: 'item-id'
                   })
                 ])
@@ -1108,7 +1110,7 @@ describe('ListItem state propagation', () => {
               [],
               [
                 new ListSection('List section name', [
-                  new ListItem('List item name', 'list-id', {
+                  new ListItem('List item name', 'section-id', 'list-id', {
                     id: 'item-id'
                   })
                 ])
@@ -1160,7 +1162,7 @@ describe('ListItem state propagation', () => {
               [],
               [
                 new ListSection('List section name', [
-                  new ListItem('List item name', 'list-id', {
+                  new ListItem('List item name', 'section-id', 'list-id', {
                     id: 'item-id',
                     tags: [new Tag('Tag name', 'Emerald', 'tag-id')]
                   })
@@ -1208,7 +1210,7 @@ describe('ListItem state propagation', () => {
               [],
               [
                 new ListSection('List section name', [
-                  new ListItem('List item name', 'list-id', {
+                  new ListItem('List item name', 'section-id', 'list-id', {
                     expectedMs: 1000 * 60,
                     id: 'item-id'
                   })
@@ -1265,7 +1267,7 @@ describe('ListItem state propagation', () => {
                 [],
                 [
                   new ListSection('List section name', [
-                    new ListItem('List item name', 'list-id', {
+                    new ListItem('List item name', 'section-id', 'list-id', {
                       status: 'Unstarted',
                       elapsedMs: 0,
                       id: 'item-id'
@@ -1321,7 +1323,7 @@ describe('ListItem state propagation', () => {
                 [],
                 [
                   new ListSection('List section name', [
-                    new ListItem('List item name', 'list-id', {
+                    new ListItem('List item name', 'section-id', 'list-id', {
                       status: 'In_Progress',
                       elapsedMs: 2000 * 60,
                       id: 'item-id'
@@ -1382,7 +1384,7 @@ describe('ListItem state propagation', () => {
               [],
               [
                 new ListSection('List section name', [
-                  new ListItem('List item name', 'list-id', {
+                  new ListItem('List item name', 'section-id', 'list-id', {
                     status: 'Paused',
                     elapsedMs: 1000 * 60 * 5,
                     id: 'item-id'
@@ -1437,11 +1439,15 @@ describe('ListItem state propagation', () => {
               'Amber',
               [],
               [
-                new ListSection('List section name', [
-                  new ListItem('List item name', 'list-id', {
-                    id: 'item-id'
-                  })
-                ])
+                new ListSection(
+                  'List section name',
+                  [
+                    new ListItem('List item name', 'section-id', 'list-id', {
+                      id: 'item-id'
+                    })
+                  ],
+                  'section-id'
+                )
               ],
               [],
               true,

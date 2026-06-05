@@ -159,3 +159,25 @@ export function itemGroupStateToMembers(
     roles
   );
 }
+
+/**
+ * Generates a map of section IDs to section names from the normalized state data tracked
+ * for lists. That is, this function retrieves the section IDs and section names for a
+ * list.
+ *
+ * @param listSections A map of list IDs to the section IDs that belong to that list
+ * @param sections A map of section IDs to full Section objects
+ * @param listId The list to retrieve section names for
+ */
+export function itemGroupStateToSections(
+  listSections: ItemGroupState['listSections'],
+  sections: ItemGroupState['sections'],
+  listId: string
+): Map<string, string> {
+  return new Map(
+    listSections
+      .get(listId)
+      ?.map(sid => [sid, sections.get(sid)?.name])
+      ?.filter(([_, name]) => name !== undefined) as [string, string][]
+  );
+}

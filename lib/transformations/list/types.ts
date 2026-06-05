@@ -115,6 +115,12 @@ export type SectionAction =
       oldIndex: number;
       newIndex: number;
     }
+  | {
+      type: 'ChangeItemSection';
+      pastSectionId: string;
+      targetSectionId: string;
+      targetItemId: string;
+    }
   | { type: 'DeleteItem'; sectionId: string; id: string }
   | { type: 'DeleteSection'; listId: string; id: string };
 
