@@ -52,14 +52,7 @@ it('Updates local storage and state when kanban preference is changed', () => {
 
   setIsKanban(true);
 
-  expect(localStorageMock.setItem).toHaveBeenCalledTimes(2);
-  expect(localStorageMock.setItem).toHaveBeenNthCalledWith(
-    1,
-    'KanbanPreference',
-    '[["listId",false]]'
-  );
-  expect(localStorageMock.setItem).toHaveBeenNthCalledWith(
-    2,
+  expect(localStorageMock.setItem).toHaveBeenCalledExactlyOnceWith(
     'KanbanPreference',
     '[["listId",true]]'
   );
