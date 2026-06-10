@@ -422,10 +422,20 @@ function sectionReducer<
       if (!sectionItems)
         throw new Error(`Unable to find items for section ${action.sectionId}`);
 
+      const oldIndex = getItem(newState, action.id).sectionIndex;
+
       newState.sectionItems.set(
         action.sectionId,
         sectionItems.filter(item => item === action.id)
       );
+      for (const itemId of sectionItems) {
+        const currentItem = getItem(newState, itemId);
+
+        if (currentItem.sectionIndex > oldIndex) {
+          currentItem.sectionIndex--;
+          newState.items.set(itemId, currentItem);
+        }
+      }
 
       newState.items.delete(action.id);
       break;
