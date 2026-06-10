@@ -16,7 +16,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { listReducer } from '../stateToState';
+import ListItem from '@/lib/model/listItem';
+
+import { listReducer, sectionReducer } from '../stateToState';
 import { ListState } from '../types';
 
 test('Throws an error if an ItemAction is requested for a nonexistent list item', () => {
@@ -46,4 +48,53 @@ test('Throws an error if an ItemAction is requested for a nonexistent list item'
       name: 'new name'
     })
   ).toThrow('Unable to find item with ID nonexistent');
+});
+
+test('Decrements section indices for later items when one is deleted', () => {
+  const list: ListState = {
+    id: 'list-id',
+    name: 'List name',
+    color: 'Amber',
+    hasDueDates: true,
+    hasTimeTracking: true,
+    isAutoOrdered: true,
+    items: new Map([
+      [
+        'item-1',
+        new ListItem('item 1', 'section-id', 'list-id', {
+          sectionIndex: 1,
+          id: 'item-1'
+        })
+      ],
+      [
+        'item-2',
+        new ListItem('item 2', 'section-id', 'list-id', {
+          sectionIndex: 2,
+          id: 'item-2'
+        })
+      ]
+    ]),
+    members: new Map(),
+    sections: new Map([
+      ['section-id', { name: 'Section name', id: 'section-id' }]
+    ]),
+    tags: new Map(),
+    sectionItems: new Map([['section-id', ['item-1', 'item-2']]]),
+    itemAssignees: new Map(),
+    itemTags: new Map(),
+    repoId: null
+  };
+
+  const result = sectionReducer(list, {
+    type: 'DeleteItem',
+    id: 'item-1',
+    sectionId: 'section-id'
+  });
+
+  expect(result.items.size).toBe(1);
+  expect(result.items.has('item-1')).toBe(false);
+  expect(result.items.has('item-2')).toBe(true);
+  expect(result.sectionItems.get('section-id')).toEqual(['item-2']);
+
+  expect(result.items.get('item-2')?.sectionIndex).toBe(1);
 });
