@@ -55,7 +55,7 @@ export default function Users({
       .post(`/item/${itemId}/assignee/${userId}`, {})
       .then(res => {
         addToast({
-          title: res.message,
+          description: res.message,
           color: 'success'
         });
         const newAssignees = structuredClone(_assignees);
@@ -73,7 +73,7 @@ export default function Users({
       .delete(`/item/${itemId}/assignee/${userId}`)
       .then(res => {
         addToast({
-          title: res.message,
+          description: res.message,
           color: 'success'
         });
         const newAssignees = structuredClone(_assignees);

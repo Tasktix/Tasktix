@@ -103,7 +103,10 @@ export default function GeneralSettings({
     api
       .delete(`/list/${listId}`)
       .then(res => {
-        addToast({ title: res.message, color: 'success' });
+        addToast({
+          description: res.message,
+          color: 'success'
+        });
         dispatchEvent({ type: 'remove', id: listId });
         router.replace('/list');
       })

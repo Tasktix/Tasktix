@@ -161,7 +161,7 @@ describe('UserProperties functions', () => {
 
     expect(addToast).toHaveBeenCalledTimes(1);
     expect(addToast).toHaveBeenCalledWith({
-      title: 'Please specify a user color',
+      description: 'Please specify a user color',
       color: 'danger'
     });
   });
@@ -199,7 +199,7 @@ describe('UserProperties errors', () => {
 
     expect(addToast).toHaveBeenCalledTimes(1);
     expect(addToast).toHaveBeenCalledWith({
-      title: 'Server message about failure',
+      description: 'Server message about failure',
       color: 'danger'
     });
   });
@@ -228,7 +228,7 @@ describe('UserProperties errors', () => {
 
     expect(addToast).toHaveBeenCalledTimes(1);
     expect(addToast).toHaveBeenCalledWith({
-      title: 'Server message about failure',
+      description: 'Server message about failure',
       color: 'danger'
     });
   });
@@ -254,7 +254,7 @@ describe('UserProperties errors', () => {
 
     expect(addToast).toHaveBeenCalledTimes(1);
     expect(addToast).toHaveBeenCalledWith({
-      title: 'Server message about failure',
+      description: 'Server message about failure',
       color: 'danger'
     });
   });

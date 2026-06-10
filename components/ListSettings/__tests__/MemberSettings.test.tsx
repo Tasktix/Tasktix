@@ -166,7 +166,7 @@ describe('Adding members', () => {
     expect(addToast).toHaveBeenCalledTimes(1);
     expect(addToast).toHaveBeenCalledWith({
       color: 'danger',
-      title: 'Server message about failure'
+      description: 'Server message about failure'
     });
     expect(onMemberEvent).not.toHaveBeenCalled();
   });
@@ -204,7 +204,7 @@ describe('Adding members', () => {
     expect(addToast).toHaveBeenCalledTimes(1);
     expect(addToast).toHaveBeenCalledWith({
       color: 'danger',
-      title: 'User added, but unable to display'
+      description: 'User added, but unable to display'
     });
     expect(onMemberEvent).not.toHaveBeenCalled();
   });
