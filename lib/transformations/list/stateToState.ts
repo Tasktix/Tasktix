@@ -311,7 +311,7 @@ function tagReducer<T extends { tags: Map<string, Tag> }>(
   return newState;
 }
 
-function sectionReducer<
+export function sectionReducer<
   T extends {
     sections: Map<string, ListSectionState>;
     sectionItems: Map<string, string[]>;
@@ -426,7 +426,7 @@ function sectionReducer<
 
       newState.sectionItems.set(
         action.sectionId,
-        sectionItems.filter(item => item === action.id)
+        sectionItems.filter(item => item !== action.id)
       );
       for (const itemId of sectionItems) {
         const currentItem = getItem(newState, itemId);
