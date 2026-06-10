@@ -48,10 +48,26 @@ vi.mock(import('@/components/AuthProvider'), async importOriginal => ({
       ({
         loggedInUser: false,
         setLoggedInUser: vi.fn(),
-        oauthConfig: { githubEnabled: false, customEnabled: false }
+        authConfig: {
+          localEnabled: true,
+          githubEnabled: false,
+          customEnabled: false
+        }
       }) as const
   )
 }));
+
+//Mocking local storage
+const localStorageMock = {
+  get length() {
+    return 0;
+  },
+  getItem: vi.fn(),
+  setItem: vi.fn(),
+  removeItem: vi.fn(),
+  clear: vi.fn(),
+  key: vi.fn()
+} satisfies Storage;
 
 beforeAll(() => {
   vi.stubEnv('TZ', 'UTC');
@@ -71,6 +87,8 @@ beforeAll(() => {
       }
     }
   );
+
+  vi.stubGlobal('localStorage', localStorageMock);
 });
 beforeEach(vi.resetAllMocks);
 afterAll(() => {
@@ -110,7 +128,7 @@ describe('List state changes', () => {
       </HeroUIProvider>
     );
 
-    await user.click(getByLabelText('Settings'));
+    await user.click(getByLabelText('Open list settings'));
     await waitFor(() => expect(getByText('List Settings')).toBeVisible());
 
     expect(getByDisplayValue('New list name')).toBeVisible();
@@ -134,7 +152,7 @@ describe('List state changes', () => {
       </HeroUIProvider>
     );
 
-    await user.click(getByLabelText('Settings'));
+    await user.click(getByLabelText('Open list settings'));
     await waitFor(() => expect(getByText('List Settings')).toBeVisible());
 
     expect(getByLabelText('Pick color')).toHaveClass('bg-blue-500');
@@ -162,7 +180,7 @@ describe('List state changes', () => {
       </HeroUIProvider>
     );
 
-    await user.click(getByLabelText('Settings'));
+    await user.click(getByLabelText('Open list settings'));
     await waitFor(() => expect(getByText('List Settings')).toBeVisible());
 
     expect(getByLabelText('Track due dates')).not.toBeChecked();
@@ -190,7 +208,7 @@ describe('List state changes', () => {
       </HeroUIProvider>
     );
 
-    await user.click(getByLabelText('Settings'));
+    await user.click(getByLabelText('Open list settings'));
     await waitFor(() => expect(getByText('List Settings')).toBeVisible());
 
     expect(getByLabelText('Track completion time')).not.toBeChecked();
@@ -218,10 +236,40 @@ describe('List state changes', () => {
       </HeroUIProvider>
     );
 
-    await user.click(getByLabelText('Settings'));
+    await user.click(getByLabelText('Open list settings'));
     await waitFor(() => expect(getByText('List Settings')).toBeVisible());
 
     expect(getByLabelText('Auto-order list items')).not.toBeChecked();
+  });
+
+  test('List initiates as Kanban being false', () => {
+    const { getByTestId, queryByTestId } = render(
+      <HeroUIProvider disableRipple>
+        <List startingList={JSON.stringify(MOCK_LIST)} startingRoles='[]' />
+      </HeroUIProvider>
+    );
+
+    expect(localStorageMock.getItem).toHaveBeenCalled();
+    expect(getByTestId('vertical-list-format')).toBeVisible();
+    expect(queryByTestId('kanban-list-format')).not.toBeInTheDocument();
+  });
+
+  test('Lists with kanban true format properly', () => {
+    localStorageMock.getItem.mockReturnValue('[["list-id",true]]');
+
+    const { getByTestId, queryByTestId } = render(
+      <HeroUIProvider disableRipple>
+        <List startingList={JSON.stringify(MOCK_LIST)} startingRoles='[]' />
+      </HeroUIProvider>
+    );
+
+    expect(localStorageMock.getItem).toHaveBeenCalled();
+    expect(localStorageMock.getItem).toHaveReturnedWith('[["list-id",true]]');
+    expect(getByTestId('kanban-list-format')).toBeVisible();
+    expect(getByTestId('kanban-list-format')).toHaveClass(
+      'flex gap-4 items-start overflow-x-auto'
+    );
+    expect(queryByTestId('vertical-list-format')).not.toBeInTheDocument();
   });
 });
 
@@ -279,7 +327,7 @@ describe('List member changes', () => {
       </HeroUIProvider>
     );
 
-    await user.click(getByLabelText('Settings'));
+    await user.click(getByLabelText('Open list settings'));
     await waitFor(() => expect(getByText('List Settings')).toBeVisible());
     await user.click(getByText('Members'));
     await waitFor(() => expect(getByText('Test user')).toBeVisible());
@@ -311,7 +359,7 @@ describe('List member changes', () => {
       </HeroUIProvider>
     );
 
-    await user.click(getByLabelText('Settings'));
+    await user.click(getByLabelText('Open list settings'));
     await waitFor(() => expect(getByText('List Settings')).toBeVisible());
     await user.click(getByText('Members'));
     await waitFor(() => expect(getByText('Test user')).toBeVisible());
@@ -345,7 +393,7 @@ describe('List member changes', () => {
       </HeroUIProvider>
     );
 
-    await user.click(getByLabelText('Settings'));
+    await user.click(getByLabelText('Open list settings'));
     await waitFor(() => expect(getByText('List Settings')).toBeVisible());
     await user.click(getByText('Members'));
     await waitFor(() => expect(getByText('Test user')).toBeVisible());
@@ -391,7 +439,7 @@ describe('Tag changes', () => {
         </HeroUIProvider>
       );
 
-    await user.click(getByLabelText('Settings'));
+    await user.click(getByLabelText('Open list settings'));
     await waitFor(() => expect(getByText('List Settings')).toBeVisible());
     await user.click(getByText('Tags'));
     await waitFor(() => expect(getByDisplayValue('Test tag')).toBeVisible());
@@ -430,7 +478,7 @@ describe('Tag changes', () => {
       </HeroUIProvider>
     );
 
-    await user.click(getByLabelText('Settings'));
+    await user.click(getByLabelText('Open list settings'));
     await waitFor(() => expect(getByText('List Settings')).toBeVisible());
     await user.click(getByText('Tags'));
     await waitFor(() => expect(getByDisplayValue('Test tag')).toBeVisible());
@@ -464,7 +512,7 @@ describe('Tag changes', () => {
       </HeroUIProvider>
     );
 
-    await user.click(getByLabelText('Settings'));
+    await user.click(getByLabelText('Open list settings'));
     await waitFor(() => expect(getByText('List Settings')).toBeVisible());
     await user.click(getByText('Tags'));
     await waitFor(() => expect(getByDisplayValue('Test tag')).toBeVisible());
@@ -591,7 +639,9 @@ describe('ListItem state propagation', () => {
               [],
               [
                 new ListSection('List section name', [
-                  new ListItem('List item name', 'list-id', { id: 'item-id' })
+                  new ListItem('List item name', 'section-id', 'list-id', {
+                    id: 'item-id'
+                  })
                 ])
               ],
               [],
@@ -646,7 +696,7 @@ describe('ListItem state propagation', () => {
               [],
               [
                 new ListSection('List section name', [
-                  new ListItem('List item name', 'list-id', {
+                  new ListItem('List item name', 'section-id', 'list-id', {
                     description: 'Initial description',
                     id: 'item-id'
                   })
@@ -708,7 +758,7 @@ describe('ListItem state propagation', () => {
               [],
               [
                 new ListSection('List section name', [
-                  new ListItem('List item name', 'list-id', {
+                  new ListItem('List item name', 'section-id', 'list-id', {
                     priority: 'High',
                     id: 'item-id'
                   })
@@ -759,7 +809,7 @@ describe('ListItem state propagation', () => {
               [],
               [
                 new ListSection('List section name', [
-                  new ListItem('List item name', 'list-id', {
+                  new ListItem('List item name', 'section-id', 'list-id', {
                     status: 'In_Progress',
                     id: 'item-id'
                   })
@@ -814,7 +864,7 @@ describe('ListItem state propagation', () => {
               [],
               [
                 new ListSection('List section name', [
-                  new ListItem('List item name', 'list-id', {
+                  new ListItem('List item name', 'section-id', 'list-id', {
                     status: 'In_Progress',
                     id: 'item-id'
                   })
@@ -871,7 +921,7 @@ describe('ListItem state propagation', () => {
               [],
               [
                 new ListSection('List section name', [
-                  new ListItem('List item name', 'list-id', {
+                  new ListItem('List item name', 'section-id', 'list-id', {
                     status: 'Completed',
                     dateCompleted: new Date('2026-01-01'),
                     id: 'item-id'
@@ -929,7 +979,7 @@ describe('ListItem state propagation', () => {
               [],
               [
                 new ListSection('List section name', [
-                  new ListItem('List item name', 'list-id', {
+                  new ListItem('List item name', 'section-id', 'list-id', {
                     status: 'Completed',
                     dateCompleted: new Date('2026-01-01'),
                     id: 'item-id'
@@ -994,7 +1044,7 @@ describe('ListItem state propagation', () => {
               [],
               [
                 new ListSection('List section name', [
-                  new ListItem('List item name', 'list-id', {
+                  new ListItem('List item name', 'section-id', 'list-id', {
                     id: 'item-id'
                   })
                 ])
@@ -1060,7 +1110,7 @@ describe('ListItem state propagation', () => {
               [],
               [
                 new ListSection('List section name', [
-                  new ListItem('List item name', 'list-id', {
+                  new ListItem('List item name', 'section-id', 'list-id', {
                     id: 'item-id'
                   })
                 ])
@@ -1112,7 +1162,7 @@ describe('ListItem state propagation', () => {
               [],
               [
                 new ListSection('List section name', [
-                  new ListItem('List item name', 'list-id', {
+                  new ListItem('List item name', 'section-id', 'list-id', {
                     id: 'item-id',
                     tags: [new Tag('Tag name', 'Emerald', 'tag-id')]
                   })
@@ -1160,7 +1210,7 @@ describe('ListItem state propagation', () => {
               [],
               [
                 new ListSection('List section name', [
-                  new ListItem('List item name', 'list-id', {
+                  new ListItem('List item name', 'section-id', 'list-id', {
                     expectedMs: 1000 * 60,
                     id: 'item-id'
                   })
@@ -1217,7 +1267,7 @@ describe('ListItem state propagation', () => {
                 [],
                 [
                   new ListSection('List section name', [
-                    new ListItem('List item name', 'list-id', {
+                    new ListItem('List item name', 'section-id', 'list-id', {
                       status: 'Unstarted',
                       elapsedMs: 0,
                       id: 'item-id'
@@ -1273,7 +1323,7 @@ describe('ListItem state propagation', () => {
                 [],
                 [
                   new ListSection('List section name', [
-                    new ListItem('List item name', 'list-id', {
+                    new ListItem('List item name', 'section-id', 'list-id', {
                       status: 'In_Progress',
                       elapsedMs: 2000 * 60,
                       id: 'item-id'
@@ -1334,7 +1384,7 @@ describe('ListItem state propagation', () => {
               [],
               [
                 new ListSection('List section name', [
-                  new ListItem('List item name', 'list-id', {
+                  new ListItem('List item name', 'section-id', 'list-id', {
                     status: 'Paused',
                     elapsedMs: 1000 * 60 * 5,
                     id: 'item-id'
@@ -1389,11 +1439,15 @@ describe('ListItem state propagation', () => {
               'Amber',
               [],
               [
-                new ListSection('List section name', [
-                  new ListItem('List item name', 'list-id', {
-                    id: 'item-id'
-                  })
-                ])
+                new ListSection(
+                  'List section name',
+                  [
+                    new ListItem('List item name', 'section-id', 'list-id', {
+                      id: 'item-id'
+                    })
+                  ],
+                  'section-id'
+                )
               ],
               [],
               true,

@@ -48,18 +48,18 @@ today.setHours(0, 0, 0, 0);
  * The UI for interacting with a single list item's data, such as the name, priority,
  * assignees, etc.
  *
- * @param sectionId The list section this component is part of
  * @param item The list item this component represents
  * @param list The list the item belongs to. If provided, a chip with the list name &
  *  color is displayed. Intended for use on pages with many lists' items to differentiate
  *  which ones they come from
  * @param members The members who have access to the list (used to provide options for
  *  assigning people to tasks)
- * @param tagsAvailable The tags associated with the list that could be added to this item
+ * @param tags The tags associated with the list that could be added to this item
  * @param hasTimeTracking Whether the list settings enable tracking the time it takes to
  *  complete list items. Start/pause buttons, a timer, and expected time-to-complete are
  *  shown if so
  * @param hasDueDates Whether the list settings enable due dates for items
+ * @param totalSections A total list of sections in the larger list
  * @param reorderControls Controller for Framer Motion's reordering feature. Used to
  *  trigger reordering when the user grabs the drag icon in the list item
  * @param addNewTag Callback to propagate state changes when a new tag is created from the
@@ -67,13 +67,13 @@ today.setHours(0, 0, 0, 0);
  * @param onItemEvent Callback to propagate state changes for the item
  */
 export default function ListItem({
-  sectionId,
   item,
   list,
   members,
   tags,
   hasTimeTracking,
   hasDueDates,
+  totalSections,
   reorderControls,
   addNewTag,
   onItemEvent
@@ -88,7 +88,7 @@ export default function ListItem({
 
   const itemHandlers = itemHandlerFactory(
     item.id,
-    sectionId,
+    item.sectionId,
     {
       timer,
       lastTime,
@@ -191,6 +191,7 @@ export default function ListItem({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  //Stops and clears timer
   function _stopRunning() {
     if (timer.current) {
       clearTimeout(timer.current);
@@ -198,12 +199,30 @@ export default function ListItem({
     }
   }
 
+  //Changes item section to specified section
+  const changeItemSection = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    if (item.sectionId !== e.target.value) {
+      api
+        .patch(`/item/${item.id}`, { sectionId: e.target.value })
+        .then(() => {
+          // Update the internal state
+          onItemEvent({
+            type: 'ChangeItemSection',
+            pastSectionId: item.sectionId,
+            targetSectionId: e.target.value,
+            targetItemId: item.id
+          });
+        })
+        .catch(addToastForError);
+    }
+  };
+
   return (
     <div
       className={`p-4 bg-content1 flex gap-4 items-center justify-between w-full ${reorderControls ? '' : 'border-b-1 border-content3 last:border-b-0'}`}
       data-testid={`wrapper-${item.name}`}
     >
-      <span className='flex gap-4 items-center justify-between w-2/5'>
+      <span className='flex grow gap-4 items-center justify-between w-2/5'>
         {reorderControls ? (
           <div
             aria-label='Drag to reorder item'
@@ -227,22 +246,31 @@ export default function ListItem({
           }}
         />
 
-        <span className='flex gap-4 items-center justify-start grow flex-wrap'>
-          <div className='flex grow shrink-0 flex-col w-64 gap-0 -mt-3 -mb-1'>
+        <span className='flex gap-4 items-center justify-start grow flex-wrap min-w-0'>
+          <div className='flex min-w-0 grow shrink flex-col w-56 lg:w-60 gap-0 -mt-3 -mb-1'>
             {item.status === 'Completed' ? (
               <span className='text-sm line-through text-foreground/50 text-nowrap overflow-hidden'>
                 {item.name}
               </span>
             ) : (
-              <span className={`-ml-1 flex ${hasDueDates || 'mt-1'}`}>
-                <ConfirmedTextInput
-                  aria-label='Item name'
-                  className='shrink'
-                  updateValue={itemHandlers.setName}
-                  value={item.name}
-                  variant='underlined'
-                />
-              </span>
+              <>
+                <span
+                  className={`text-sm text-foreground truncate md:hidden ${hasDueDates ? '' : 'mt-1'}`}
+                >
+                  {item.name}
+                </span>
+                <span
+                  className={`-ml-1 hidden md:flex ${hasDueDates || 'mt-1'}`}
+                >
+                  <ConfirmedTextInput
+                    aria-label='Item name'
+                    className='shrink'
+                    updateValue={itemHandlers.setName}
+                    value={item.name}
+                    variant='underlined'
+                  />
+                </span>
+              </>
             )}
 
             {item.status === 'Completed' ? (
@@ -342,8 +370,11 @@ export default function ListItem({
             item={item}
             itemHandlers={itemHandlers}
             members={members}
+            sectionId={item.sectionId}
             set={set}
             tags={tags}
+            totalSections={totalSections}
+            onUpdateSection={changeItemSection}
           />
         </span>
       </span>

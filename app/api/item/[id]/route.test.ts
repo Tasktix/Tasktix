@@ -19,13 +19,15 @@
 import {
   deleteListItem,
   getListItemById,
-  updateListItem
+  updateListItem,
+  updateItemSection
 } from '@/lib/database/listItem';
 import { getRoleByItem } from '@/lib/database/user';
 import ListItem from '@/lib/model/listItem';
 import MemberRole from '@/lib/model/memberRole';
 import User from '@/lib/model/user';
 import { getUser } from '@/lib/session';
+import { querySectionInList } from '@/lib/database/list';
 
 import { DELETE, PATCH } from './route';
 
@@ -38,11 +40,12 @@ const MOCK_USER = new User(
   new Date(),
   { color: 'Amber' }
 );
-const MOCK_ITEM = new ListItem('test item', 'list-id', {});
+const MOCK_ITEM = new ListItem('test tag', 'dummySection', 'dummy-id', {});
 const ITEM_PATH = `http://localhost/api/item/${MOCK_ITEM.id}` as const;
 
 vi.mock('@/lib/session');
 vi.mock('@/lib/database/listItem');
+vi.mock('@/lib/database/list');
 vi.mock('@/lib/database/user');
 
 beforeEach(() => {
@@ -76,6 +79,34 @@ describe('PATCH', () => {
     );
   });
 
+  test('Changes Item section when valid section provided and requestor is permissioned', async () => {
+    vi.mocked(getUser).mockResolvedValue(MOCK_USER);
+    vi.mocked(getListItemById).mockResolvedValue(MOCK_ITEM);
+    vi.mocked(getRoleByItem).mockResolvedValue(
+      new MemberRole('ItemUpdater', 'Updates items and does nothing else', {
+        canUpdateItems: true
+      })
+    );
+    vi.mocked(querySectionInList).mockResolvedValue(true);
+    vi.mocked(updateItemSection).mockResolvedValue(true);
+
+    const response = await PATCH(
+      new Request(ITEM_PATH, {
+        method: 'patch',
+        body: JSON.stringify({ sectionId: 'asdfasdfasdfasdf' })
+      }),
+      {
+        params: Promise.resolve({ id: MOCK_ITEM.id })
+      }
+    );
+
+    expect(response.status).toBe(200);
+    expect(updateItemSection).toHaveBeenCalledExactlyOnceWith(
+      expect.anything(),
+      'asdfasdfasdfasdf'
+    );
+  });
+
   test('Updates item description when provided & requestor has permissions', async () => {
     vi.mocked(getUser).mockResolvedValue(MOCK_USER);
     vi.mocked(getListItemById).mockResolvedValue(MOCK_ITEM);
@@ -84,6 +115,8 @@ describe('PATCH', () => {
         canUpdateItems: true
       })
     );
+    vi.mocked(querySectionInList).mockResolvedValue(true);
+    vi.mocked(updateItemSection).mockResolvedValue(true);
     vi.mocked(updateListItem).mockResolvedValue(true);
 
     const response = await PATCH(
@@ -167,72 +200,14 @@ describe('PATCH', () => {
       expect(response.status).toBe(403);
       expect(updateListItem).not.toHaveBeenCalled();
     });
-  });
-});
 
-describe('DELETE', () => {
-  test('Deletes item when requestor has permissions', async () => {
-    vi.mocked(getUser).mockResolvedValue(MOCK_USER);
-    vi.mocked(getRoleByItem).mockResolvedValue(
-      new MemberRole('ItemRemover', 'Deletes items and does nothing else', {
-        canDeleteItems: true
-      })
-    );
-    vi.mocked(deleteListItem).mockResolvedValue(true);
-
-    const response = await DELETE(
-      new Request(ITEM_PATH, {
-        method: 'delete'
-      }),
-      {
-        params: Promise.resolve({ id: MOCK_ITEM.id })
-      }
-    );
-
-    expect(response.status).toBe(200);
-    expect(deleteListItem).toHaveBeenCalledExactlyOnceWith(MOCK_ITEM.id);
-  });
-
-  describe('Errors', () => {
-    test('Rejects unauthenticated users', async () => {
-      vi.mocked(getUser).mockResolvedValue(false);
-
-      const response = await DELETE(
-        new Request(ITEM_PATH, {
-          method: 'delete'
-        }),
-        {
-          params: Promise.resolve({ id: MOCK_ITEM.id })
-        }
-      );
-
-      expect(response.status).toBe(401);
-      expect(deleteListItem).not.toHaveBeenCalled();
-    });
-
-    test("Indicates no resource exists if requestor is not a member of the list they're deleting an item of", async () => {
-      vi.mocked(getUser).mockResolvedValue(MOCK_USER);
-      vi.mocked(getRoleByItem).mockResolvedValue(false);
-
-      const response = await DELETE(
-        new Request(ITEM_PATH, {
-          method: 'delete'
-        }),
-        {
-          params: Promise.resolve({ id: MOCK_ITEM.id })
-        }
-      );
-
-      expect(response.status).toBe(404);
-      expect(deleteListItem).not.toHaveBeenCalled();
-    });
-
-    test('Rejects request if requestor has insufficient permissions to delete item', async () => {
+    test('Rejects requests to move an item to a section that is part of a different list', async () => {
       vi.mocked(getUser).mockResolvedValue(MOCK_USER);
       vi.mocked(getRoleByItem).mockResolvedValue(
-        new MemberRole('NotItemRemover', 'Does everything but delete items', {
+        new MemberRole('DoesAllThings', 'Does everything', {
           canAddItems: true,
           canUpdateItems: true,
+          canDeleteItems: true,
           canManageTags: true,
           canManageAssignees: true,
           canManageMembers: true,
@@ -240,6 +215,68 @@ describe('DELETE', () => {
           canDeleteList: true
         })
       );
+      vi.mocked(getListItemById).mockResolvedValue(MOCK_ITEM);
+      vi.mocked(querySectionInList).mockResolvedValue(false);
+
+      const response = await PATCH(
+        new Request(ITEM_PATH, {
+          method: 'patch',
+          body: JSON.stringify({ sectionId: 'asdfasdfasdfasdf' })
+        }),
+        {
+          params: Promise.resolve({ id: MOCK_ITEM.id })
+        }
+      );
+
+      expect(querySectionInList).toBeCalledWith('dummy-id', 'asdfasdfasdfasdf');
+      expect(response.status).toBe(400);
+      expect(updateItemSection).not.toHaveBeenCalled();
+    });
+
+    test('Rejects requests to updated sectionId and another field simultaneously', async () => {
+      vi.mocked(getUser).mockResolvedValue(MOCK_USER);
+      vi.mocked(getRoleByItem).mockResolvedValue(
+        new MemberRole('DoesAllThings', 'Does everything', {
+          canAddItems: true,
+          canUpdateItems: true,
+          canDeleteItems: true,
+          canManageTags: true,
+          canManageAssignees: true,
+          canManageMembers: true,
+          canUpdateList: true,
+          canDeleteList: true
+        })
+      );
+      vi.mocked(getListItemById).mockResolvedValue(MOCK_ITEM);
+
+      const response = await PATCH(
+        new Request(ITEM_PATH, {
+          method: 'patch',
+          body: JSON.stringify({
+            sectionId: 'asdfasdfasdfasdf',
+            name: 'newName'
+          })
+        }),
+        {
+          params: Promise.resolve({ id: MOCK_ITEM.id })
+        }
+      );
+
+      expect(response.status).toBe(400);
+      expect(updateItemSection).not.toHaveBeenCalled();
+      expect(updateListItem).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('DELETE', () => {
+    test('Deletes item when requestor has permissions', async () => {
+      vi.mocked(getUser).mockResolvedValue(MOCK_USER);
+      vi.mocked(getRoleByItem).mockResolvedValue(
+        new MemberRole('ItemRemover', 'Deletes items and does nothing else', {
+          canDeleteItems: true
+        })
+      );
+      vi.mocked(deleteListItem).mockResolvedValue(true);
 
       const response = await DELETE(
         new Request(ITEM_PATH, {
@@ -250,8 +287,70 @@ describe('DELETE', () => {
         }
       );
 
-      expect(response.status).toBe(403);
-      expect(deleteListItem).not.toHaveBeenCalled();
+      expect(response.status).toBe(200);
+      expect(deleteListItem).toHaveBeenCalledExactlyOnceWith(MOCK_ITEM.id);
+    });
+
+    describe('Errors', () => {
+      test('Rejects unauthenticated users', async () => {
+        vi.mocked(getUser).mockResolvedValue(false);
+
+        const response = await DELETE(
+          new Request(ITEM_PATH, {
+            method: 'delete'
+          }),
+          {
+            params: Promise.resolve({ id: MOCK_ITEM.id })
+          }
+        );
+
+        expect(response.status).toBe(401);
+        expect(deleteListItem).not.toHaveBeenCalled();
+      });
+
+      test("Indicates no resource exists if requestor is not a member of the list they're deleting an item of", async () => {
+        vi.mocked(getUser).mockResolvedValue(MOCK_USER);
+        vi.mocked(getRoleByItem).mockResolvedValue(false);
+
+        const response = await DELETE(
+          new Request(ITEM_PATH, {
+            method: 'delete'
+          }),
+          {
+            params: Promise.resolve({ id: MOCK_ITEM.id })
+          }
+        );
+
+        expect(response.status).toBe(404);
+        expect(deleteListItem).not.toHaveBeenCalled();
+      });
+
+      test('Rejects request if requestor has insufficient permissions to delete item', async () => {
+        vi.mocked(getUser).mockResolvedValue(MOCK_USER);
+        vi.mocked(getRoleByItem).mockResolvedValue(
+          new MemberRole('NotItemRemover', 'Does everything but delete items', {
+            canAddItems: true,
+            canUpdateItems: true,
+            canManageTags: true,
+            canManageAssignees: true,
+            canManageMembers: true,
+            canUpdateList: true,
+            canDeleteList: true
+          })
+        );
+
+        const response = await DELETE(
+          new Request(ITEM_PATH, {
+            method: 'delete'
+          }),
+          {
+            params: Promise.resolve({ id: MOCK_ITEM.id })
+          }
+        );
+
+        expect(response.status).toBe(403);
+        expect(deleteListItem).not.toHaveBeenCalled();
+      });
     });
   });
 });

@@ -50,13 +50,14 @@ export default function SearchBar({
 
   const inputFields: ReactElement[] = [];
 
-  for (const key in filters) {
+  for (const key of Object.keys(filters)) {
     const option = _options.find(option => option.label === key);
 
     if (!option) throw new Error(`Option ${key} not found`);
 
     inputFields.push(
       <InputElement
+        key={key}
         dispatchFilters={dispatchFilters}
         inputOption={option}
         value={filters}
@@ -112,7 +113,7 @@ export default function SearchBar({
   }
 
   return (
-    <span className='grow rounded-md w-100 overflow-hidden p-4 h-16 flex items-center justify-center gap-4 border-2 border-content3 bg-content1 shadow-lg shadow-content2'>
+    <span className='h-16 w-full min-w-0 grow overflow-hidden rounded-md border-2 border-content3 bg-content1 p-4 shadow-lg shadow-content2 flex items-center justify-center gap-4'>
       {usedOptions.size ? (
         <button aria-label='Clear filter' onClick={clearUsedOptions}>
           <FilterSquareFill className='-mr-1' size={20} />
@@ -122,6 +123,7 @@ export default function SearchBar({
       )}
 
       <Autocomplete
+        aria-label='Filter'
         className='grow'
         classNames={{ selectorButton: 'hidden' }}
         inputValue={value}

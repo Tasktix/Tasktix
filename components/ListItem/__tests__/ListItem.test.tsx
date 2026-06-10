@@ -20,9 +20,11 @@
 
 import '@testing-library/jest-dom';
 
-import { render } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { HeroUIProvider } from '@heroui/react';
 
+import api from '@/lib/api';
 import ListItemModel from '@/lib/model/listItem';
 import User from '@/lib/model/user';
 import List from '@/lib/model/list';
@@ -54,7 +56,7 @@ beforeEach(vi.resetAllMocks);
 afterAll(vi.unstubAllEnvs);
 
 it('Shows everything faded and shows the completion date instead of due date when the item is marked completed', () => {
-  const item = new ListItemModel('Test item', 'list-id', {
+  const item = new ListItemModel('Test item', 'section-id', 'list-id', {
     priority: 'High',
     status: 'Completed',
     expectedMs: 5000 * 60,
@@ -71,8 +73,8 @@ it('Shows everything faded and shows the completion date instead of due date whe
         addNewTag={vi.fn()}
         item={{ ...item, assignees: [], tags: [] }}
         members={[]}
-        sectionId='section-id'
         tags={[]}
+        totalSections={new Map<string, string>()}
         onItemEvent={vi.fn()}
       />
     </HeroUIProvider>
@@ -89,7 +91,7 @@ it('Shows everything faded and shows the completion date instead of due date whe
 });
 
 it('Displays the associated list when one is provided', () => {
-  const item = new ListItemModel('Test item', 'list-id', {});
+  const item = new ListItemModel('Test item', 'testsectionid', 'list-id', {});
 
   const { getByText, getByRole } = render(
     <HeroUIProvider disableRipple>
@@ -104,8 +106,8 @@ it('Displays the associated list when one is provided', () => {
           })
         }
         members={[]}
-        sectionId='section-id'
         tags={[]}
+        totalSections={new Map<string, string>()}
         onItemEvent={vi.fn()}
       />
     </HeroUIProvider>
@@ -121,6 +123,12 @@ it('Displays the associated list when one is provided', () => {
 });
 
 it('Displays all members assigned to the item', () => {
+  vi.mocked(api.patch).mockResolvedValue({
+    code: 200,
+    message: 'Success',
+    content: undefined
+  });
+
   const members = [
     new User(
       'user1Id',
@@ -141,7 +149,7 @@ it('Displays all members assigned to the item', () => {
       { color: 'Blue' }
     )
   ];
-  const item = new ListItemModel('Test item', 'list-id', {
+  const item = new ListItemModel('Test item', 'section-id', 'list-id', {
     assignees: [new Assignee(members[0], ''), new Assignee(members[1], '')]
   });
 
@@ -153,8 +161,8 @@ it('Displays all members assigned to the item', () => {
         hasTimeTracking={false}
         item={item}
         members={members.map(m => new ListMember(m, MOCK_ROLE_CAN_VIEW))}
-        sectionId='section-id'
         tags={[]}
+        totalSections={new Map<string, string>()}
         onItemEvent={vi.fn()}
       />
     </HeroUIProvider>
@@ -165,4 +173,316 @@ it('Displays all members assigned to the item', () => {
 
   expect(getByText('UT')).toBeVisible();
   expect(getByText('UT').parentElement).toHaveClass('bg-blue-500');
+});
+
+it('Calls API when the items section changes', async () => {
+  vi.mocked(api.patch).mockResolvedValue({
+    code: 200,
+    message: 'Success',
+    content: undefined
+  });
+
+  const item = new ListItemModel('Test item', 'sectionid1', 'list-id', {
+    id: 'itemid'
+  });
+
+  const sections = new Map<string, string>();
+
+  sections.set('sectionid1', 'section1');
+  sections.set('sectionid2', 'section2');
+
+  const { getByLabelText } = render(
+    <HeroUIProvider disableRipple>
+      <ListItem
+        addNewTag={vi.fn()}
+        hasDueDates={false}
+        hasTimeTracking={false}
+        item={item}
+        members={[]}
+        tags={[]}
+        totalSections={sections}
+        onItemEvent={vi.fn()}
+      />
+    </HeroUIProvider>
+  );
+  const user = userEvent.setup();
+
+  await user.click(getByLabelText('More item info'));
+  expect(
+    getByLabelText('Select a section to move this item to')
+  ).toHaveTextContent('section1');
+
+  await user.click(getByLabelText('Select a section to move this item to'));
+  expect(getByLabelText('Move to section1')).toHaveTextContent('section1');
+  expect(getByLabelText('Move to section2')).toHaveTextContent('section2');
+
+  await user.click(getByLabelText('Move to section2'));
+  expect(api.patch).toHaveBeenCalledTimes(1);
+  expect(api.patch).toHaveBeenCalledWith(`/item/${item.id}`, {
+    sectionId: 'sectionid2'
+  });
+});
+it('uses read-only task name text on mobile and keeps inline editing desktop-only', () => {
+  const { getByText, getByDisplayValue } = render(
+    <HeroUIProvider disableRipple>
+      <ListItem
+        addNewTag={vi.fn()}
+        hasDueDates={false}
+        hasTimeTracking={false}
+        item={new ListItemModel('Test item', 'section-id', 'list-id', {})}
+        members={[]}
+        tags={[]}
+        totalSections={new Map<string, string>()}
+        onItemEvent={vi.fn()}
+      />
+    </HeroUIProvider>
+  );
+
+  expect(getByText('Test item')).toHaveClass('md:hidden');
+  expect(getByDisplayValue('Test item')).toBeInTheDocument();
+  expect(getByDisplayValue('Test item').closest('span')).toHaveClass('hidden');
+  expect(getByDisplayValue('Test item').closest('span')).toHaveClass('md:flex');
+});
+
+describe('time tracking interactions', () => {
+  async function renderTimeTrackingListItem(
+    item: ListItemModel,
+    onItemEvent = vi.fn()
+  ) {
+    vi.resetModules();
+    vi.doMock('../Priority', () => ({
+      default: ({
+        setPriority
+      }: {
+        setPriority: (priority: 'Low' | 'Medium' | 'High') => void;
+      }) => (
+        <button
+          aria-label='set-priority-high'
+          onClick={() => setPriority('High')}
+        >
+          Set priority
+        </button>
+      )
+    }));
+    vi.doMock('../TimeButton', () => ({
+      default: ({
+        startRunning,
+        pauseRunning
+      }: {
+        startRunning: () => void;
+        pauseRunning: () => void;
+      }) => (
+        <>
+          <button aria-label='start-running' onClick={startRunning}>
+            Start running
+          </button>
+          <button aria-label='pause-running' onClick={pauseRunning}>
+            Pause running
+          </button>
+        </>
+      )
+    }));
+    vi.doMock('../More', () => ({
+      default: ({ set }: { set: { resetTime: () => void } }) => (
+        <button aria-label='reset-time' onClick={set.resetTime}>
+          Reset time
+        </button>
+      )
+    }));
+    vi.doMock('../ConfirmedTextInput', () => ({
+      default: ({ value }: { value: string }) => <span>{value}</span>
+    }));
+    vi.doMock('../DateInput', () => ({
+      default: () => <span>Date input</span>
+    }));
+    vi.doMock('../ExpectedInput', () => ({
+      default: () => <span>Expected input</span>
+    }));
+    vi.doMock('../ElapsedInput', () => ({
+      default: () => <span>Elapsed input</span>
+    }));
+    vi.doMock('../Tags', () => ({
+      default: () => <span>Tags</span>
+    }));
+    vi.doMock('../Users', () => ({
+      default: () => <span>Users</span>
+    }));
+
+    const { default: TimeTrackingListItem } = await import('../ListItem');
+
+    render(
+      <HeroUIProvider disableRipple>
+        <TimeTrackingListItem
+          hasTimeTracking
+          addNewTag={vi.fn()}
+          hasDueDates={false}
+          item={{ ...item, assignees: [], tags: [] }}
+          members={[]}
+          tags={[]}
+          totalSections={new Map<string, string>()}
+          onItemEvent={onItemEvent}
+        />
+      </HeroUIProvider>
+    );
+
+    return { onItemEvent };
+  }
+
+  beforeEach(() => {
+    vi.useRealTimers();
+    vi.setSystemTime(new Date('2026-01-01T00:00:00.000Z'));
+    vi.mocked(api.patch).mockResolvedValue({
+      code: 200,
+      message: 'Success',
+      content: undefined
+    });
+  });
+
+  afterEach(() => {
+    vi.doUnmock('../Priority');
+    vi.doUnmock('../TimeButton');
+    vi.doUnmock('../More');
+    vi.doUnmock('../ConfirmedTextInput');
+    vi.doUnmock('../DateInput');
+    vi.doUnmock('../ExpectedInput');
+    vi.doUnmock('../ElapsedInput');
+    vi.doUnmock('../Tags');
+    vi.doUnmock('../Users');
+  });
+
+  it('covers the priority update success path', async () => {
+    const user = userEvent.setup();
+    const { onItemEvent } = await renderTimeTrackingListItem(
+      new ListItemModel('Priority item', 'section-id', 'list-id', {
+        id: 'item-id'
+      })
+    );
+
+    await user.click(screen.getByRole('button', { name: 'set-priority-high' }));
+
+    await waitFor(() => {
+      expect(api.patch).toHaveBeenCalledWith('/item/item-id', {
+        priority: 'High'
+      });
+      expect(onItemEvent).toHaveBeenCalledWith({
+        type: 'SetItemPriority',
+        id: 'item-id',
+        priority: 'High'
+      });
+    });
+  });
+
+  it('covers the start timer success path', async () => {
+    const user = userEvent.setup();
+    const setTimeoutSpy = vi.spyOn(globalThis, 'setTimeout');
+    const { onItemEvent } = await renderTimeTrackingListItem(
+      new ListItemModel('Start item', 'section-id', 'list-id', {
+        id: 'item-id',
+        status: 'Unstarted',
+        elapsedMs: 0
+      })
+    );
+
+    await user.click(screen.getByRole('button', { name: 'start-running' }));
+
+    await waitFor(() => {
+      expect(api.patch).toHaveBeenCalledWith('/item/item-id', {
+        dateStarted: new Date('2026-01-01T00:00:00.000Z'),
+        status: 'In_Progress'
+      });
+      expect(onItemEvent).toHaveBeenCalledWith({
+        type: 'StartItemTime',
+        id: 'item-id'
+      });
+      expect(setTimeoutSpy).toHaveBeenCalled();
+    });
+  });
+
+  it('clears an existing timer before starting again', async () => {
+    const user = userEvent.setup();
+    const clearTimeoutSpy = vi.spyOn(globalThis, 'clearTimeout');
+    const setTimeoutSpy = vi.spyOn(globalThis, 'setTimeout');
+    const { onItemEvent } = await renderTimeTrackingListItem(
+      new ListItemModel('Restart item', 'section-id', 'list-id', {
+        id: 'item-id',
+        status: 'In_Progress',
+        elapsedMs: 2 * 60 * 1000
+      })
+    );
+
+    await user.click(screen.getByRole('button', { name: 'start-running' }));
+
+    await waitFor(() => {
+      expect(clearTimeoutSpy).toHaveBeenCalled();
+      expect(setTimeoutSpy).toHaveBeenCalled();
+      expect(onItemEvent).toHaveBeenCalledWith({
+        type: 'StartItemTime',
+        id: 'item-id'
+      });
+    });
+  });
+
+  it('covers the pause timer success path for a running item', async () => {
+    const user = userEvent.setup();
+    const { onItemEvent } = await renderTimeTrackingListItem(
+      new ListItemModel('Pause item', 'section-id', 'list-id', {
+        id: 'item-id',
+        status: 'In_Progress',
+        elapsedMs: 2 * 60 * 1000
+      })
+    );
+
+    await user.click(screen.getByRole('button', { name: 'pause-running' }));
+
+    await waitFor(() => {
+      expect(api.patch).toHaveBeenCalledWith('/item/item-id', {
+        dateStarted: null,
+        elapsedMs: 2 * 60 * 1000,
+        status: 'Paused'
+      });
+      expect(onItemEvent).toHaveBeenCalledWith({
+        type: 'PauseItemTime',
+        id: 'item-id'
+      });
+    });
+  });
+
+  it('covers the reset timer success path', async () => {
+    const user = userEvent.setup();
+    const { onItemEvent } = await renderTimeTrackingListItem(
+      new ListItemModel('Reset item', 'section-id', 'list-id', {
+        id: 'item-id',
+        status: 'Paused',
+        elapsedMs: 2 * 60 * 1000
+      })
+    );
+
+    await user.click(screen.getByRole('button', { name: 'reset-time' }));
+
+    await waitFor(() => {
+      expect(api.patch).toHaveBeenCalledWith('/item/item-id', {
+        dateStarted: null,
+        status: 'Unstarted',
+        elapsedMs: 0
+      });
+      expect(onItemEvent).toHaveBeenCalledWith({
+        type: 'ResetItemTime',
+        id: 'item-id'
+      });
+    });
+  });
+
+  it('covers the initial running-state timer scheduling effect', async () => {
+    const setTimeoutSpy = vi.spyOn(globalThis, 'setTimeout');
+
+    await renderTimeTrackingListItem(
+      new ListItemModel('Mounted running item', 'section-id', 'list-id', {
+        id: 'item-id',
+        status: 'In_Progress',
+        elapsedMs: 2 * 60 * 1000
+      })
+    );
+
+    expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 60005);
+  });
 });

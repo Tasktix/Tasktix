@@ -20,7 +20,7 @@
 
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
-import { render, within } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
 
 import ListItem from '@/lib/model/listItem';
 import api from '@/lib/api';
@@ -46,11 +46,13 @@ test('Newly created items are added to the section', async () => {
       filters={{}}
       hasDueDates={false}
       hasTimeTracking={false}
+      isKanban={false}
       items={[]}
       listId='test-list'
       members={[]}
       section={{ id: 'section-id', name: 'Section Name' }}
       tags={[]}
+      totalSections={new Map<string, string>()}
       onItemChange={vi.fn()}
       onSectionChange={dispatchSectionChange}
       onTagCreate={() => Promise.resolve('')}
@@ -89,11 +91,13 @@ test('Section can be deleted and propagates that event', async () => {
       hasTimeTracking
       isAutoOrdered
       filters={{}}
+      isKanban={false}
       items={[]}
       listId='test-list'
       members={[]}
       section={{ id: 'section-id', name: 'Section Name' }}
       tags={[]}
+      totalSections={new Map<string, string>()}
       onItemChange={vi.fn()}
       onSectionChange={dispatchSectionChange}
       onTagCreate={() => Promise.resolve('')}
@@ -118,9 +122,10 @@ describe('Section expansion/collapse', () => {
         hasTimeTracking
         isAutoOrdered
         filters={{}}
+        isKanban={false}
         items={[
           {
-            ...new ListItem('Item 1', 'list-id', {
+            ...new ListItem('Item 1', 'sectionid1', 'list-id', {
               id: 'aaaaaaaaaaaaaaaa',
               status: 'Unstarted'
             }),
@@ -135,6 +140,7 @@ describe('Section expansion/collapse', () => {
           name: 'Section Name'
         }}
         tags={[]}
+        totalSections={new Map<string, string>()}
         onItemChange={vi.fn()}
         onSectionChange={vi.fn()}
         onTagCreate={() => Promise.resolve('')}
@@ -152,9 +158,10 @@ describe('Section expansion/collapse', () => {
         hasTimeTracking
         isAutoOrdered
         filters={{}}
+        isKanban={false}
         items={[
           {
-            ...new ListItem('Item 1', 'list-id', {
+            ...new ListItem('Item 1', 'sectionid1', 'list-id', {
               id: 'aaaaaaaaaaaaaaaa',
               status: 'Completed',
               dateCompleted: new Date()
@@ -170,6 +177,7 @@ describe('Section expansion/collapse', () => {
           name: 'Section Name'
         }}
         tags={[]}
+        totalSections={new Map<string, string>()}
         onItemChange={vi.fn()}
         onSectionChange={vi.fn()}
         onTagCreate={() => Promise.resolve('')}
@@ -187,11 +195,13 @@ describe('Section expansion/collapse', () => {
         hasTimeTracking
         isAutoOrdered
         filters={{}}
+        isKanban={false}
         items={[]}
         listId='test-list'
         members={[]}
         section={{ id: 'section-id', name: 'Section Name' }}
         tags={[]}
+        totalSections={new Map<string, string>()}
         onItemChange={vi.fn()}
         onSectionChange={vi.fn()}
         onTagCreate={() => Promise.resolve('')}
@@ -211,9 +221,10 @@ describe('Section expansion/collapse', () => {
         hasTimeTracking
         isAutoOrdered
         filters={{}}
+        isKanban={false}
         items={[
           {
-            ...new ListItem('Item 1', 'list-id', {
+            ...new ListItem('Item 1', 'sectionid1', 'list-id', {
               id: 'aaaaaaaaaaaaaaaa',
               status: 'Completed',
               dateCompleted: new Date()
@@ -229,6 +240,7 @@ describe('Section expansion/collapse', () => {
           name: 'Section Name'
         }}
         tags={[]}
+        totalSections={new Map<string, string>()}
         onItemChange={vi.fn()}
         onSectionChange={vi.fn()}
         onTagCreate={() => Promise.resolve('')}
@@ -250,9 +262,10 @@ describe('Section expansion/collapse', () => {
         hasTimeTracking
         isAutoOrdered
         filters={{}}
+        isKanban={false}
         items={[
           {
-            ...new ListItem('Item 1', 'list-id', {
+            ...new ListItem('Item 1', 'sectionid1', 'list-id', {
               id: 'aaaaaaaaaaaaaaaa',
               status: 'Unstarted'
             }),
@@ -267,6 +280,7 @@ describe('Section expansion/collapse', () => {
           name: 'Section Name'
         }}
         tags={[]}
+        totalSections={new Map<string, string>()}
         onItemChange={vi.fn()}
         onSectionChange={vi.fn()}
         onTagCreate={() => Promise.resolve('')}
@@ -276,6 +290,34 @@ describe('Section expansion/collapse', () => {
     await user.click(getByLabelText('Collapse section'));
 
     expect(await findByLabelText('Expand section')).toBeVisible();
-    expect(queryByText('Item 1')).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(queryByText('Item 1')).not.toBeInTheDocument();
+    });
   });
+});
+
+test('Kanban sections format properly', () => {
+  const { getByTestId } = render(
+    <ListSection
+      hasDueDates
+      hasTimeTracking
+      isAutoOrdered
+      isKanban
+      filters={{}}
+      items={[]}
+      listId='test-list'
+      members={[]}
+      section={{
+        id: 'section-id',
+        name: 'Section Name'
+      }}
+      tags={[]}
+      onItemChange={vi.fn()}
+      onSectionChange={vi.fn()}
+      onTagCreate={() => Promise.resolve('')}
+    />
+  );
+
+  expect(getByTestId('kanban-section-format')).toBeVisible();
+  expect(getByTestId('kanban-section-format')).toHaveClass('w-100');
 });

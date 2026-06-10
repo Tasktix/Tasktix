@@ -47,12 +47,12 @@ const MOCK_USER = new User(
   new Date(),
   { color: 'Amber' }
 );
-const MOCK_AUTH_CONFIG: AuthConfig = {
+const MOCK_AUTH_CONFIG = {
   localEnabled: true,
   githubEnabled: true,
   customEnabled: true,
   customProviderId: 'SSO'
-};
+} satisfies AuthConfig;
 
 test('Properly handles failed GitHub authentication', async () => {
   const setLoggedInUserMock = vi.fn();

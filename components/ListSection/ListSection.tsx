@@ -61,6 +61,7 @@ import sectionHandlerFactory from './handlerFactory';
  * @param hasTimeTracking Whether time tracking is enabled in the list's settings
  * @param hasDueDates Whether due dates are enabled in the list's settings
  * @param isAutoOrdered Whether auto-ordering is enabled in the list's settings
+ * @param totalSections A total list of sections in the larger list
  * @param section All data for the section to render
  * @param onSectionChange Callback to propagate state changes for the list section
  * @param onItemChange Callback to propagate state changes for an item in the list section
@@ -75,8 +76,10 @@ export default function ListSection({
   hasTimeTracking,
   hasDueDates,
   isAutoOrdered,
+  totalSections,
   section,
   items,
+  isKanban,
   onSectionChange,
   onItemChange,
   onTagCreate
@@ -84,15 +87,27 @@ export default function ListSection({
   listId: string;
   filters: Filters;
   members: ListMember[];
+  totalSections: Map<string, string>;
   tags: Tag[];
   hasTimeTracking: List['hasTimeTracking'];
   hasDueDates: List['hasDueDates'];
   isAutoOrdered: List['isAutoOrdered'];
   section: Omit<ListSectionModel, 'items'>;
   items: ListItem[];
+  isKanban: boolean;
   onSectionChange: ActionDispatch<[action: SectionAction]>;
   onItemChange: ActionDispatch<
-    [action: ItemAction | { type: 'DeleteItem'; sectionId: string; id: string }]
+    [
+      action:
+        | ItemAction
+        | {
+            type: 'ChangeItemSection';
+            pastSectionId: string;
+            targetSectionId: string;
+            targetItemId: string;
+          }
+        | { type: 'DeleteItem'; sectionId: string; id: string }
+    ]
   >;
   onTagCreate: (name: string, color: NamedColor) => Promise<string>;
 }) {
@@ -109,7 +124,12 @@ export default function ListSection({
   );
 
   return (
-    <div className='rounded-md w-full overflow-hidden border-2 border-content3 box-border shrink-0 shadow-lg shadow-content2'>
+    <div
+      className={`rounded-md overflow-hidden border-2 border-content3 box-border shrink-0 shadow-lg shadow-content2 ${isKanban ? 'w-100' : 'w-full'}`}
+      data-testid={
+        isKanban ? 'kanban-section-format' : 'vertical-section-format'
+      }
+    >
       <div className='bg-content3 font-bold p-4 h-16 flex items-center justify-between'>
         <span className='min-w-fit shrink-0 flex'>
           <Button
@@ -173,6 +193,7 @@ export default function ListSection({
               members={members}
               sectionId={section.id}
               tags={tags}
+              totalSections={totalSections}
               onItemEvent={onItemChange}
               onItemReorder={sectionHandlers.reorderItem}
             />

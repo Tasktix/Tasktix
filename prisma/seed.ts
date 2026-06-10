@@ -27,13 +27,14 @@ const prisma = new PrismaClient({
     }
   }
 });
+const SEEDED_USER_SIGN_IN_VALUE = 'password123';
 
 async function main() {
   await auth.api.signUpEmail({
     body: {
       email: 'newUser@example.com',
       name: 'newUser',
-      password: 'password123',
+      password: SEEDED_USER_SIGN_IN_VALUE,
       username: 'newUser',
       color: 'Blue'
     }
@@ -46,6 +47,38 @@ async function main() {
       password: '5up2r_s3cr3t',
       username: 'individualUser',
       color: 'Yellow'
+    }
+  });
+
+  await auth.api.signUpEmail({
+    body: {
+      email: 'responsiveUser@example.com',
+      name: 'responsiveUser',
+      password: SEEDED_USER_SIGN_IN_VALUE,
+      username: 'responsiveUser',
+      color: 'Cyan'
+    }
+  });
+
+  const [responsiveUser, adminRole] = await Promise.all([
+    prisma.user.findUniqueOrThrow({ where: { username: 'responsiveUser' } }),
+    prisma.memberRole.findUniqueOrThrow({ where: { name: 'Admin' } })
+  ]);
+
+  await prisma.list.create({
+    data: {
+      id: 'responsiveList01',
+      name: 'Responsive Cypress List',
+      color: 'Blue',
+      hasTimeTracking: true,
+      hasDueDates: true,
+      isAutoOrdered: true,
+      members: {
+        create: {
+          roleId: adminRole.id,
+          userId: responsiveUser.id
+        }
+      }
     }
   });
 }

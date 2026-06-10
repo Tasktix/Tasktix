@@ -51,7 +51,7 @@ export default function Body({ children }: Readonly<{ children: ReactNode }>) {
   const logoHref = loggedInUser ? '/list' : '/about';
 
   return (
-    <div className='flex flex-col h-screen'>
+    <div className='flex min-h-dvh flex-col'>
       <Navbar maxWidth='full'>
         <NavbarBrand
           as={Link}
@@ -80,7 +80,7 @@ export default function Body({ children }: Readonly<{ children: ReactNode }>) {
 
       <ToastProvider />
 
-      <footer className='text-center text-default-600'>
+      <footer className='mt-auto px-4 py-4 text-center text-default-600'>
         Tasktix is licensed under the GNU AGPL v3. To view Tasktix&apos;s source
         code, visit{' '}
         <Link
