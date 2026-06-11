@@ -130,11 +130,6 @@ You'll also need to run the following command to set up your database:
 podman run --rm --detach --pod tasktix --secret "TASKTIX_DATABASE_URL,type=env,target=DATABASE_URL" ghcr.io/tasktix/tasktix-deploy:latest
 ```
 
-> [!NOTE]
-> The deploy container currently does not respect `SIGTERM` or `SIGQUIT`. We recommend
-  running the above command with the `--detach` flag, giving it ~10 seconds to run, then
-  killing it with `podman stop`.
-
 ### Configuration
 
 As the administrator for your Tasktix instance, you can customize some of Tasktix's
