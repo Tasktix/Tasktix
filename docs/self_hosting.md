@@ -283,8 +283,8 @@ systemctl --user stop tasktix-web
 
 Then, pull the latest version of the `tasktix-web` and `tasktix-deploy` containers:
 ```sh
-podman pull ghcr.io/tasktix-web:latest
-podman pull ghcr.io/tasktix-deploy:latest
+podman pull ghcr.io/tasktix/tasktix-web:latest
+podman pull ghcr.io/tasktix/tasktix-deploy:latest
 ```
 
 Next, run the `tasktix-deploy` container to update your database's configuration:
