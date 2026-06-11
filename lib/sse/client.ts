@@ -51,8 +51,7 @@ export function subscribe(
   const setState = pendingFactory();
 
   es.onopen = () => {
-    if (hasOpened)
-      setState(addToast({ title: 'Reconnected', color: 'success' }));
+    if (hasOpened) location.reload();
     else hasOpened = true;
   };
 
