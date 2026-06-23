@@ -125,13 +125,13 @@ export default function ListSection({
 
   return (
     <div
-      className={`rounded-md overflow-hidden border-2 border-content3 box-border shrink-0 shadow-lg shadow-content2 ${isKanban ? 'w-100' : 'w-full'}`}
+      className={`@container rounded-md overflow-hidden border-2 border-content3 box-border shrink-0 shadow-lg shadow-content2 ${isKanban ? 'w-100' : 'w-full'}`}
       data-testid={
         isKanban ? 'kanban-section-format' : 'vertical-section-format'
       }
     >
       <div className='bg-content3 font-bold p-4 h-16 flex items-center justify-between'>
-        <span className='min-w-fit shrink-0 flex'>
+        <span className='min-w-0 shrink flex'>
           <Button
             isIconOnly
             aria-label={isCollapsed ? 'Expand section' : 'Collapse section'}

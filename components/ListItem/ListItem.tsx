@@ -98,6 +98,8 @@ export default function ListItem({
     onItemEvent
   );
 
+  const showAssignees = members.length > 1;
+
   /**
    * Functions for updating the list item timer
    */
@@ -219,7 +221,7 @@ export default function ListItem({
 
   return (
     <div
-      className={`p-4 bg-content1 flex gap-4 items-center justify-between w-full ${reorderControls ? '' : 'border-b-1 border-content3 last:border-b-0'}`}
+      className={`@container p-4 bg-content1 flex gap-4 items-center justify-between w-full ${reorderControls ? '' : 'border-b-1 border-content3 last:border-b-0'}`}
       data-testid={`wrapper-${item.name}`}
     >
       <span className='flex grow gap-4 items-center justify-between w-2/5'>
@@ -247,20 +249,20 @@ export default function ListItem({
         />
 
         <span className='flex gap-4 items-center justify-start grow flex-wrap min-w-0'>
-          <div className='flex min-w-0 grow shrink flex-col w-56 lg:w-60 gap-0 -mt-3 -mb-1'>
+          <div className='flex min-w-0 grow shrink flex-col w-56 @lg:w-60 gap-0 -mt-3 -mb-1'>
             {item.status === 'Completed' ? (
-              <span className='text-sm line-through text-foreground/50 text-nowrap overflow-hidden'>
+              <span className='h-8 flex items-center text-sm line-through text-foreground/50 truncate'>
                 {item.name}
               </span>
             ) : (
               <>
                 <span
-                  className={`text-sm text-foreground truncate md:hidden ${hasDueDates ? '' : 'mt-1'}`}
+                  className={`h-8 flex items-center text-sm text-foreground truncate @md:hidden ${hasDueDates ? '' : 'mt-1'}`}
                 >
                   {item.name}
                 </span>
                 <span
-                  className={`-ml-1 hidden md:flex ${hasDueDates || 'mt-1'}`}
+                  className={`-ml-1 hidden @md:flex ${hasDueDates || 'mt-1'}`}
                 >
                   <ConfirmedTextInput
                     aria-label='Item name'
@@ -310,7 +312,9 @@ export default function ListItem({
           )}
         </span>
       </span>
-      <span className='flex gap-4 items-center justify-between w-3/5'>
+
+      {/* Breakpoint for width should match tags/users being hidden */}
+      <span className='flex gap-4 items-center justify-between w-fit @md:w-3/5'>
         <Priority
           isComplete={item.status === 'Completed'}
           priority={item.priority}
@@ -319,7 +323,7 @@ export default function ListItem({
 
         <Tags
           addNewTag={addNewTag}
-          className='hidden lg:flex'
+          className={`hidden ${showAssignees ? '@3xl:flex' : '@md:flex'}`}
           isComplete={item.status === 'Completed'}
           tagsAdded={item.tags}
           tagsAvailable={tags.values().toArray()}
@@ -327,18 +331,19 @@ export default function ListItem({
           onTagUnlink={itemHandlers.unlinkTag}
         />
 
-        {members.length > 1 ? (
+        {showAssignees && (
           <Users
             assignees={item.assignees}
+            className='hidden @md:flex'
             isComplete={item.status === 'Completed'}
             itemId={item.id}
             members={members}
           />
-        ) : null}
+        )}
 
-        <span className='flex gap-4 items-center justify-end grow md:grow-0 shrink-0 justify-self-end'>
+        <span className='flex gap-4 items-center justify-end grow-0 shrink-0 justify-self-end'>
           {hasTimeTracking ? (
-            <span className='hidden xl:flex gap-4'>
+            <span className='hidden @6xl:flex gap-4'>
               <span
                 className={`flex gap-4 ${item.status === 'Completed' ? 'opacity-50' : ''}`}
               >

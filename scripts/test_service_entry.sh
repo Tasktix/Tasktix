@@ -7,4 +7,6 @@ npm run prisma:deploy
 touch /tmp/prisma-ready
 
 # Keep container alive for running prisma:reset later
-sleep infinity
+if [ -n "${KEEP_ALIVE+x}" ]; then
+  sleep infinity
+fi
