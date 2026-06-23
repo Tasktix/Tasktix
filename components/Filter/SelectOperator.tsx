@@ -56,6 +56,7 @@ export function SelectBaseFilterOperator<T extends string>({
       <SelectItem key='!=' endContent={<Operator o='!=' />}>
         does not equal
       </SelectItem>
+      {/* JSX fragment needed to satisfy TypeScript - skipcq: JS-0424 */}
       <>{children}</>
     </Select>
   );

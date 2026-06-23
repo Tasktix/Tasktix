@@ -46,6 +46,7 @@ export function FilterModal({
 }: FilterModalProps) {
   const [filterState, setFilterState] = useState<FilterInputGroup>(filters);
 
+  // Modal nesting can't be reasonably reduced - skipcq: JS-0415
   return (
     <Modal
       data-testid='filterModal'
@@ -55,9 +56,7 @@ export function FilterModal({
     >
       <ModalContent>
         <ModalHeader>
-          <div className='flex flex-row w-full'>
-            <h2>Advanced Filters</h2>
-          </div>
+          <h2 className='flex flex-row w-full'>Advanced Filters</h2>
         </ModalHeader>
         <ModalBody>
           <FilterGroup
