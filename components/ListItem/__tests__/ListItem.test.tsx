@@ -238,10 +238,12 @@ it('uses read-only task name text on mobile and keeps inline editing desktop-onl
     </HeroUIProvider>
   );
 
-  expect(getByText('Test item')).toHaveClass('md:hidden');
+  expect(getByText('Test item')).toHaveClass('@md:hidden');
   expect(getByDisplayValue('Test item')).toBeInTheDocument();
   expect(getByDisplayValue('Test item').closest('span')).toHaveClass('hidden');
-  expect(getByDisplayValue('Test item').closest('span')).toHaveClass('md:flex');
+  expect(getByDisplayValue('Test item').closest('span')).toHaveClass(
+    '@md:flex'
+  );
 });
 
 describe('time tracking interactions', () => {
