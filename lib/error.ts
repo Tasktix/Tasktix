@@ -25,7 +25,7 @@ import { addToast } from '@heroui/react';
  *  callback argument is `any` type
  */
 export function addToastForError(error: unknown) {
-  let title = 'An unknown error occurred';
+  let description = 'An unknown error occurred';
 
   if (
     typeof error === 'object' &&
@@ -33,7 +33,7 @@ export function addToastForError(error: unknown) {
     'message' in error &&
     typeof error.message === 'string'
   )
-    title = error.message;
+    description = error.message;
 
-  addToast({ title, color: 'danger' });
+  addToast({ description, color: 'danger' });
 }

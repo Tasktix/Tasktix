@@ -83,7 +83,7 @@ describe('subscribe', () => {
     es.mock.instances[0].onerror!(new Event('Mock disconnect event'));
 
     expect(addToast).toHaveBeenCalledExactlyOnceWith(
-      expect.objectContaining({ title: 'Reconnecting for live updates' })
+      expect.objectContaining({ description: 'Reconnecting for live updates' })
     );
   });
 
@@ -104,10 +104,12 @@ describe('subscribe', () => {
 
     expect(addToast).toHaveBeenCalledTimes(2);
     expect(addToast).toHaveBeenCalledWith(
-      expect.objectContaining({ title: 'Reconnecting for live updates' })
+      expect.objectContaining({ description: 'Reconnecting for live updates' })
     );
     expect(addToast).toHaveBeenLastCalledWith(
-      expect.objectContaining({ title: 'Unable to connect for live updates' })
+      expect.objectContaining({
+        description: 'Unable to connect for live updates'
+      })
     );
   });
 

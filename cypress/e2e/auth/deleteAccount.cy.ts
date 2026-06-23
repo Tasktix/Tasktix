@@ -84,7 +84,7 @@ describe('delete account', () => {
     cy.get('[data-toast="true"]')
       .should('be.visible')
       .within(() => {
-        cy.contains('Account succesfully deleted').should('be.visible');
+        cy.contains('Account successfully deleted').should('be.visible');
       });
   });
 
@@ -106,7 +106,7 @@ describe('delete account', () => {
     cy.get('[data-toast="true"]')
       .should('be.visible')
       .within(() => {
-        cy.contains('Account succesfully deleted').should('be.visible');
+        cy.contains('Account successfully deleted').should('be.visible');
       });
   });
 });
