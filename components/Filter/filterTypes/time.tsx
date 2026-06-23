@@ -16,37 +16,32 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {
-  CalendarEventFill,
-  ChevronDown,
-  InputCursorText,
-  StopwatchFill,
-  Toggle2On
-} from 'react-bootstrap-icons';
-import { ReactElement } from 'react';
+import TimeInput from '../../TimeInput';
+import { SelectComparableFilterOperator } from '../SelectOperator';
+import { TimeFilterInput } from '../types';
 
-import { InputOption } from './types';
-
-/**
- * Default case intentionally omitted to surface TS error if not all cases are explicitly
- * handled (e.g. because the Color type was expanded). All VALID code paths (based on the
- * Color type) do return - skipcq: JS-0045
- */
-export function getIcon(type: InputOption['type']): ReactElement {
-  switch (type) {
-    case 'String':
-      return <InputCursorText />;
-
-    case 'Select':
-      return <ChevronDown />;
-
-    case 'Date':
-      return <CalendarEventFill />;
-
-    case 'Time':
-      return <StopwatchFill />;
-
-    case 'Toggle':
-      return <Toggle2On />;
-  }
+export function TimeFilterInputs({
+  operator,
+  value,
+  onOperatorChange,
+  onValueChange
+}: {
+  operator: TimeFilterInput['operator'];
+  value: TimeFilterInput['value'];
+  onOperatorChange: (operator: TimeFilterInput['operator']) => unknown;
+  onValueChange: (value: TimeFilterInput['value']) => unknown;
+}) {
+  return (
+    <>
+      <SelectComparableFilterOperator
+        value={operator}
+        onChange={onOperatorChange}
+      />
+      <TimeInput
+        aria-label='Value'
+        value={value}
+        onValueChange={onValueChange}
+      />
+    </>
+  );
 }

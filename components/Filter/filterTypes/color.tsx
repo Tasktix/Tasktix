@@ -16,6 +16,31 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-'use client';
+import ColorPicker from '@/components/ColorPicker';
+import { NamedColor } from '@/lib/model/color';
 
-export { default } from './SearchBar';
+import { SelectColorFilterOperator } from '../SelectOperator';
+import { ColorFilterOperator } from '../types';
+
+export function ColorFilterInputs({
+  operator,
+  value,
+  onOperatorChange,
+  onValueChange
+}: {
+  operator: ColorFilterOperator | undefined;
+  value: NamedColor | undefined;
+  onOperatorChange: (operator: ColorFilterOperator | undefined) => unknown;
+  onValueChange: (value: NamedColor | undefined) => unknown;
+}) {
+  return (
+    <>
+      <SelectColorFilterOperator value={operator} onChange={onOperatorChange} />
+      <ColorPicker
+        aria-label='Value'
+        value={value ?? null}
+        onValueChange={value => onValueChange(value ?? undefined)}
+      />
+    </>
+  );
+}

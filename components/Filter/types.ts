@@ -196,7 +196,7 @@ export type FilterGroup = {
 } & ({ operator: 'And' } | { operator: 'Or' });
 
 export type FilterInputGroup = {
-  filters: (FilterGroup | FilterInput)[];
+  filters: (FilterInputGroup | FilterInput)[];
 } & ({ operator: 'And' } | { operator: 'Or' });
 
 export enum TextFilterOperator {
@@ -245,4 +245,30 @@ export enum DateFilterOperator {
   GreaterThanEqual = '>=',
   DayOfWeek = '@dow',
   NotDayOfWeek = '!@dow'
+}
+
+/**
+ * Checks whether the given OptionFilterOperator accepts a single value (e.g. Equal) or
+ * multiple possible values (e.g. In)
+ *
+ * @param operator The operator to check
+ */
+export function isSingleSelectOperator(
+  operator: OptionFilterOperator
+): boolean {
+  return [OptionFilterOperator.Equal, OptionFilterOperator.NotEqual].includes(
+    operator
+  );
+}
+
+/**
+ * Checks whether the given DateFilterOperator accepts a day of the week or a date
+ *
+ * @param operator The operator to check
+ */
+export function isDayOfWeekOperator(operator: DateFilterOperator): boolean {
+  return [
+    DateFilterOperator.DayOfWeek,
+    DateFilterOperator.NotDayOfWeek
+  ].includes(operator);
 }

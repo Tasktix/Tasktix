@@ -24,8 +24,11 @@ import { render, waitFor, within } from '@testing-library/react';
 
 import ListItem from '@/lib/model/listItem';
 import api from '@/lib/api';
+import { FilterGroup } from '@/components/Filter';
 
 import ListSection from '../ListSection';
+
+const DEFAULT_FILTERS = { filters: [], operator: 'And' } satisfies FilterGroup;
 
 vi.mock('@/lib/api');
 
@@ -43,7 +46,7 @@ test('Newly created items are added to the section', async () => {
   const { findByLabelText, findByRole, getByLabelText } = render(
     <ListSection
       isAutoOrdered
-      filters={{}}
+      filters={DEFAULT_FILTERS}
       hasDueDates={false}
       hasTimeTracking={false}
       isKanban={false}
@@ -90,7 +93,7 @@ test('Section can be deleted and propagates that event', async () => {
       hasDueDates
       hasTimeTracking
       isAutoOrdered
-      filters={{}}
+      filters={DEFAULT_FILTERS}
       isKanban={false}
       items={[]}
       listId='test-list'
@@ -121,7 +124,7 @@ describe('Section expansion/collapse', () => {
         hasDueDates
         hasTimeTracking
         isAutoOrdered
-        filters={{}}
+        filters={DEFAULT_FILTERS}
         isKanban={false}
         items={[
           {
@@ -157,7 +160,7 @@ describe('Section expansion/collapse', () => {
         hasDueDates
         hasTimeTracking
         isAutoOrdered
-        filters={{}}
+        filters={DEFAULT_FILTERS}
         isKanban={false}
         items={[
           {
@@ -194,7 +197,7 @@ describe('Section expansion/collapse', () => {
         hasDueDates
         hasTimeTracking
         isAutoOrdered
-        filters={{}}
+        filters={DEFAULT_FILTERS}
         isKanban={false}
         items={[]}
         listId='test-list'
@@ -220,7 +223,7 @@ describe('Section expansion/collapse', () => {
         hasDueDates
         hasTimeTracking
         isAutoOrdered
-        filters={{}}
+        filters={DEFAULT_FILTERS}
         isKanban={false}
         items={[
           {
@@ -261,7 +264,7 @@ describe('Section expansion/collapse', () => {
         hasDueDates
         hasTimeTracking
         isAutoOrdered
-        filters={{}}
+        filters={DEFAULT_FILTERS}
         isKanban={false}
         items={[
           {
@@ -303,7 +306,7 @@ test('Kanban sections format properly', () => {
       hasTimeTracking
       isAutoOrdered
       isKanban
-      filters={{}}
+      filters={DEFAULT_FILTERS}
       items={[]}
       listId='test-list'
       members={[]}
@@ -312,6 +315,7 @@ test('Kanban sections format properly', () => {
         name: 'Section Name'
       }}
       tags={[]}
+      totalSections={new Map()}
       onItemChange={vi.fn()}
       onSectionChange={vi.fn()}
       onTagCreate={() => Promise.resolve('')}

@@ -16,7 +16,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-export { default } from './FilterText';
+export { default } from './Filter';
+
+export {
+  compareText,
+  compareNumber,
+  compareOption,
+  compareMultiOption,
+  compareColor,
+  compareDate,
+  compareTime
+} from './comparators';
 
 export {
   type FilterConfig,
