@@ -18,7 +18,7 @@
 
 'use client';
 
-import { ActionDispatch, useEffect, useReducer } from 'react';
+import { useEffect, useReducer } from 'react';
 
 import List from '@/lib/model/list';
 import { itemGroupReducer } from '@/lib/transformations/list/stateToState';
@@ -40,17 +40,17 @@ import { subscribe } from '@/lib/sse/client';
 import { sortItems } from '@/lib/sort';
 import {
   itemGroupStateToMembers,
+  itemGroupStateToSections,
   itemGroupStateToTags,
   listStateToItem
 } from '@/lib/transformations/list/fromState';
 import MemberRole from '@/lib/model/memberRole';
 import {
-  ItemAction,
   ItemGroupState,
   ListItemState
 } from '@/lib/transformations/list/types';
 
-import { ListItem } from '../ListItem';
+import { ListItem, ListItemParams } from '../ListItem';
 
 import { itemGroupHandlerFactory } from './handlerFactory';
 
@@ -155,9 +155,7 @@ function ListItemWrapper({
   groupHandlers: ReturnType<typeof itemGroupHandlerFactory>;
   itemGroup: ItemGroupState;
   roles: Map<string, MemberRole>;
-  dispatchItemGroup: ActionDispatch<
-    [action: ItemAction | { type: 'DeleteItem'; sectionId: string; id: string }]
-  >;
+  dispatchItemGroup: ListItemParams['onItemEvent'];
 }) {
   return (
     <ListItem
@@ -180,10 +178,14 @@ function ListItemWrapper({
         roles,
         item.listId
       )}
-      sectionId='unknown'
       tags={itemGroupStateToTags(
         itemGroup.listTags,
         itemGroup.tags,
+        item.listId
+      )}
+      totalSections={itemGroupStateToSections(
+        itemGroup.listSections,
+        itemGroup.sections,
         item.listId
       )}
       onItemEvent={dispatchItemGroup}

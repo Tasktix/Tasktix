@@ -70,6 +70,7 @@ export function listReducer( // skipcq: JS-0045, JS-R1005
     case 'AddSection':
     case 'AddItem':
     case 'ReorderItem':
+    case 'ChangeItemSection':
     case 'DeleteItem':
     case 'DeleteSection':
       return sectionReducer(state, action);
@@ -181,6 +182,7 @@ export function itemGroupReducer( // skipcq: JS-0045, JS-R1005
     case 'AddSection':
     case 'AddItem':
     case 'ReorderItem':
+    case 'ChangeItemSection':
     case 'DeleteItem':
     case 'DeleteSection': {
       const newState = sectionReducer(state, action);
@@ -309,7 +311,7 @@ function tagReducer<T extends { tags: Map<string, Tag> }>(
   return newState;
 }
 
-function sectionReducer<
+export function sectionReducer<
   T extends {
     sections: Map<string, ListSectionState>;
     sectionItems: Map<string, string[]>;
@@ -368,6 +370,51 @@ function sectionReducer<
       break;
     }
 
+    case 'ChangeItemSection': {
+      //Copied from 'AddItemToSection'
+      const targetSectionItems = newState.sectionItems.get(
+        action.targetSectionId
+      );
+
+      if (!targetSectionItems)
+        throw new Error(
+          `Unable to find section with ID ${action.targetSectionId}`
+        );
+
+      const newItem = getItem(newState, action.targetItemId);
+      const oldIndex = newItem.sectionIndex;
+
+      newItem.sectionId = action.targetSectionId;
+      newItem.sectionIndex = targetSectionItems.length;
+      newState.items.set(action.targetItemId, newItem);
+
+      targetSectionItems.push(action.targetItemId);
+
+      //Copied from 'DeleteItem'
+      const pastSectionItems = newState.sectionItems.get(action.pastSectionId);
+
+      if (!pastSectionItems)
+        throw new Error(
+          `Unable to find items for section ${action.pastSectionId}`
+        );
+
+      newState.sectionItems.set(
+        action.pastSectionId,
+        pastSectionItems.filter(item => item !== action.targetItemId)
+      );
+
+      //Resets sectionIndex for all items after the target item
+      for (const itemId of pastSectionItems) {
+        const currentItem = getItem(newState, itemId);
+
+        if (currentItem.sectionIndex > oldIndex) {
+          currentItem.sectionIndex--;
+          newState.items.set(itemId, currentItem);
+        }
+      }
+      break;
+    }
+
     case 'DeleteItem': {
       const sectionItems = newState.sectionItems.get(action.sectionId);
 
@@ -375,10 +422,20 @@ function sectionReducer<
       if (!sectionItems)
         throw new Error(`Unable to find items for section ${action.sectionId}`);
 
+      const oldIndex = getItem(newState, action.id).sectionIndex;
+
       newState.sectionItems.set(
         action.sectionId,
-        sectionItems.filter(item => item === action.id)
+        sectionItems.filter(item => item !== action.id)
       );
+      for (const itemId of sectionItems) {
+        const currentItem = getItem(newState, itemId);
+
+        if (currentItem.sectionIndex > oldIndex) {
+          currentItem.sectionIndex--;
+          newState.items.set(itemId, currentItem);
+        }
+      }
 
       newState.items.delete(action.id);
       break;

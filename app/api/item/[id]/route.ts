@@ -16,21 +16,39 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import z from 'zod';
+
 import { ClientError, ServerError, Success } from '@/lib/Response';
 import { getRoleByItem } from '@/lib/database/user';
 import {
   deleteListItem,
   getListItemById,
+  updateItemSection,
   updateListItem
 } from '@/lib/database/listItem';
 import { getUser } from '@/lib/session';
 import { ZodListItem } from '@/lib/model/listItem';
+import { querySectionInList } from '@/lib/database/list';
 
-const PatchBody = ZodListItem.omit({
-  id: true,
-  sectionIndex: true,
-  sectionId: true
-}).partial();
+/**
+ * Allows requestors to modify any combination of fields together, but
+ * restricts section change updates be performed independently. This is done to
+ * prevent multi-status responses (e.g. Section change failed but other updates
+ * succeed)
+ */
+export const PatchBody = z.union([
+  z.strictObject({
+    sectionId: ZodListItem.shape.sectionId
+  }),
+
+  ZodListItem.omit({
+    id: true,
+    sectionIndex: true,
+    sectionId: true
+  })
+    .partial()
+    .strict()
+]);
 
 export async function PATCH(
   request: Request,
@@ -58,27 +76,40 @@ export async function PATCH(
 
   const requestBody = parseResult.data;
 
-  if (requestBody.name) item.name = requestBody.name;
-  if (requestBody.description !== undefined)
-    item.description = requestBody.description;
-  if (requestBody.status) item.status = requestBody.status;
-  if (requestBody.priority) item.priority = requestBody.priority;
-  if (requestBody.dateDue) item.dateDue = new Date(requestBody.dateDue);
-  if (requestBody.expectedMs) item.expectedMs = requestBody.expectedMs;
-  if (requestBody.elapsedMs !== undefined)
-    item.elapsedMs = requestBody.elapsedMs;
-  if (requestBody.dateStarted !== undefined)
-    item.dateStarted = requestBody.dateStarted
-      ? new Date(requestBody.dateStarted)
-      : null;
-  if (requestBody.dateCompleted !== undefined)
-    item.dateCompleted = requestBody.dateCompleted
-      ? new Date(requestBody.dateCompleted)
-      : null;
+  if ('sectionId' in requestBody) {
+    const allowed = await querySectionInList(
+      item.listId,
+      requestBody.sectionId
+    );
 
-  const result = await updateListItem(item);
+    if (!allowed) return ClientError.BadRequest('Section not found');
+    const res = await updateItemSection(item, requestBody.sectionId);
 
-  if (!result) return ServerError.Internal('Could not update item');
+    if (!res) return ServerError.Internal('Failed to change section');
+  } else {
+    if (requestBody.name) item.name = requestBody.name;
+    if (requestBody.description !== undefined)
+      item.description = requestBody.description;
+    if (requestBody.status) item.status = requestBody.status;
+    if (requestBody.priority) item.priority = requestBody.priority;
+    if (requestBody.dateDue) item.dateDue = new Date(requestBody.dateDue);
+    if (requestBody.expectedMs) item.expectedMs = requestBody.expectedMs;
+    if (requestBody.elapsedMs !== undefined)
+      item.elapsedMs = requestBody.elapsedMs;
+    if (requestBody.dateStarted !== undefined)
+      item.dateStarted = requestBody.dateStarted
+        ? new Date(requestBody.dateStarted)
+        : null;
+    if (requestBody.dateCompleted !== undefined)
+      item.dateCompleted = requestBody.dateCompleted
+        ? new Date(requestBody.dateCompleted)
+        : null;
+
+    const { ...pureItem } = item;
+    const result = await updateListItem(pureItem);
+
+    if (!result) return ServerError.Internal('Could not update item');
+  }
 
   return Success.OK('Item updated');
 }

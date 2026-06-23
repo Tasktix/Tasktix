@@ -45,8 +45,8 @@ test('Uses the provided id', () => {
 
 test('Assigns all properties correctly', () => {
   const listItems = [
-    new ListItem('listItem1', 'list-id', {}),
-    new ListItem('listItem2', 'list-id', {})
+    new ListItem('listItem1', 'section-id', 'list-id', {}),
+    new ListItem('listItem2', 'section-id', 'list-id', {})
   ];
 
   const listSection = new ListSection(

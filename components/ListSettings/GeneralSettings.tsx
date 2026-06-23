@@ -40,7 +40,9 @@ import ConfirmModal from '../ConfirmModal';
  * @param hasDueDates Whether due dates are currently enabled for the list
  * @param hasTimeTracking Whether time tracking is currently enabled for the list
  * @param isAutoOrdered Whether auto-ordering is currently enabled for the list
- * @param setListName A callback for updating React state with a new list name
+ * @param isKanban The list's Kanban preference
+ * @param onListNameChange A callback for updating React state with a new list name
+ * @param onKanbanToggle A callback for updating React state with Kanban preference
  */
 export default function GeneralSettings({
   listId,
@@ -49,7 +51,9 @@ export default function GeneralSettings({
   hasDueDates,
   hasTimeTracking,
   isAutoOrdered,
-  setListName
+  isKanban,
+  onListNameChange,
+  onKanbanToggle
 }: Readonly<{
   listId: string;
   listName: string;
@@ -57,7 +61,9 @@ export default function GeneralSettings({
   isAutoOrdered: boolean;
   hasDueDates: boolean;
   hasTimeTracking: boolean;
-  setListName: (name: string) => unknown;
+  isKanban: boolean;
+  onListNameChange: (name: string) => unknown;
+  onKanbanToggle: (value: boolean) => unknown;
 }>) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const router = useRouter();
@@ -97,7 +103,10 @@ export default function GeneralSettings({
     api
       .delete(`/list/${listId}`)
       .then(res => {
-        addToast({ title: res.message, color: 'success' });
+        addToast({
+          description: res.message,
+          color: 'success'
+        });
         dispatchEvent({ type: 'remove', id: listId });
         router.replace('/list');
       })
@@ -106,12 +115,12 @@ export default function GeneralSettings({
 
   return (
     <>
-      <span className='flex flex-col gap-4 overflow-y-auto'>
+      <span className='flex flex-col gap-4 overflow-y-scroll'>
         <span className='flex gap-4 mb-2'>
           <ConfirmedTextInput
             showUnderline
             classNames={{ input: 'text-md' }}
-            updateValue={setListName}
+            updateValue={onListNameChange}
             value={listName}
           />
           <ColorPicker value={listColor} onValueChange={updateColor} />
@@ -136,6 +145,9 @@ export default function GeneralSettings({
           onValueChange={updateIsAutoOrdered}
         >
           Auto-order list items
+        </Switch>
+        <Switch isSelected={isKanban} size='sm' onValueChange={onKanbanToggle}>
+          View in kanban mode
         </Switch>
       </span>
       <span className='flex justify-end'>

@@ -175,7 +175,7 @@ export default function AddItem({
         const id = res.content?.split('/').at(-1);
 
         addItem(
-          new ListItem(values.name, 'list-id', {
+          new ListItem(values.name, sectionId, 'list-id', {
             priority,
             expectedMs: newItem.expectedMs,
             sectionIndex: nextIndex,
@@ -191,7 +191,7 @@ export default function AddItem({
 
   return (
     <span>
-      <span className='hidden xl:flex justify-between items-center overflow-y-visible'>
+      <span className='hidden @2xl:flex justify-between items-center overflow-y-visible'>
         <span className='overflow-x-clip'>
           <form
             className={`flex gap-4 pr-4 transition-transform${isSliderOpen ? '' : ' translate-x-full'}`}
@@ -300,7 +300,7 @@ export default function AddItem({
           />
         </Button>
       </span>
-      <span className='flex xl:hidden'>
+      <span className='flex @2xl:hidden'>
         <Button
           isIconOnly
           color='primary'

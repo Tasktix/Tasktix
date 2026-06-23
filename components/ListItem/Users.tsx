@@ -55,7 +55,7 @@ export default function Users({
       .post(`/item/${itemId}/assignee/${userId}`, {})
       .then(res => {
         addToast({
-          title: res.message,
+          description: res.message,
           color: 'success'
         });
         const newAssignees = structuredClone(_assignees);
@@ -73,7 +73,7 @@ export default function Users({
       .delete(`/item/${itemId}/assignee/${userId}`)
       .then(res => {
         addToast({
-          title: res.message,
+          description: res.message,
           color: 'success'
         });
         const newAssignees = structuredClone(_assignees);
@@ -95,8 +95,10 @@ export default function Users({
     >
       <PopoverTrigger>
         <Button
-          className={`px-4 basis-1/6 grow shrink flex flex-row items-center justify-start overflow-hidden flex-nowrap h-10 shadow-none cursor-pointer bg-transparent ${isComplete ? 'opacity-50 cursor-default' : 'hover:bg-foreground/10 focus:z-10 focus:outline-2 focus:outline-focus focus:outline-offset-2'} ${className}`}
+          className={`basis-1/6 grow shrink flex justify-start ${className}`}
+          isDisabled={isComplete}
           tabIndex={isComplete ? 1 : 0}
+          variant='light'
         >
           <PeopleFill className='shrink-0' />
           <AvatarGroup

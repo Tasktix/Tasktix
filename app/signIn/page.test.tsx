@@ -55,7 +55,7 @@ beforeEach(vi.resetAllMocks);
 afterAll(vi.unstubAllGlobals);
 
 describe('0 providers', () => {
-  test('Only error rendered if all not configured on server ', () => {
+  test('Only error rendered if all not configured on server', () => {
     const { getByText, queryByText, queryByLabelText } = render(
       <HeroUIProvider disableRipple>
         <AuthProvider
@@ -130,7 +130,7 @@ describe('1 provider', () => {
     expect(handleOAuth).toHaveBeenCalled();
   });
 
-  test('SSO buttons not rendered if not configured on server ', () => {
+  test('SSO buttons not rendered if not configured on server', () => {
     const { queryByText, queryByLabelText } = render(
       <HeroUIProvider disableRipple>
         <AuthProvider
@@ -210,7 +210,7 @@ describe('2 providers', () => {
     expect(handleOAuth).toHaveBeenCalled();
   });
 
-  test('GitHub login not rendered if not configured on server ', () => {
+  test('GitHub login not rendered if not configured on server', () => {
     const { getByText, queryByLabelText } = render(
       <HeroUIProvider disableRipple>
         <AuthProvider
@@ -234,7 +234,7 @@ describe('2 providers', () => {
     expect(githubButton).not.toBeInTheDocument();
   });
 
-  test('Custom SSO login not rendered if not configured on server ', () => {
+  test('Custom SSO login not rendered if not configured on server', () => {
     const { getByText, queryByLabelText } = render(
       <HeroUIProvider disableRipple>
         <AuthProvider
@@ -257,7 +257,7 @@ describe('2 providers', () => {
     expect(ssoButton).not.toBeInTheDocument();
   });
 
-  test('Local login not rendered if not configured on server ', () => {
+  test('Local login not rendered if not configured on server', () => {
     const { queryByText, queryByLabelText } = render(
       <HeroUIProvider disableRipple>
         <AuthProvider

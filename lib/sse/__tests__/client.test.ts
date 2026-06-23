@@ -47,6 +47,11 @@ beforeEach(() => {
   vi.resetAllMocks();
 });
 
+afterAll(() => {
+  vi.unstubAllGlobals();
+  vi.resetAllMocks();
+});
+
 describe('subscribe', () => {
   test('Triggers onEvent with JSON-parsed event when SSE message sent', () => {
     const eventHandler = vi.fn();
@@ -78,7 +83,7 @@ describe('subscribe', () => {
     es.mock.instances[0].onerror!(new Event('Mock disconnect event'));
 
     expect(addToast).toHaveBeenCalledExactlyOnceWith(
-      expect.objectContaining({ title: 'Reconnecting for live updates' })
+      expect.objectContaining({ description: 'Reconnecting for live updates' })
     );
   });
 
@@ -99,19 +104,22 @@ describe('subscribe', () => {
 
     expect(addToast).toHaveBeenCalledTimes(2);
     expect(addToast).toHaveBeenCalledWith(
-      expect.objectContaining({ title: 'Reconnecting for live updates' })
+      expect.objectContaining({ description: 'Reconnecting for live updates' })
     );
     expect(addToast).toHaveBeenLastCalledWith(
-      expect.objectContaining({ title: 'Unable to connect for live updates' })
+      expect.objectContaining({
+        description: 'Unable to connect for live updates'
+      })
     );
   });
 
-  test('Displays toast message when SSE connection is regained', () => {
+  test('Reloads page when SSE connection is regained', () => {
+    const reload = vi.fn();
     const eventHandler = vi.fn();
     const es = vi.fn(MockEventSource) as Mock<typeof EventSource>;
 
+    vi.stubGlobal('location', { reload });
     vi.stubGlobal('EventSource', es);
-    vi.mocked(addToast).mockReturnValue('toast-id');
 
     subscribe(['list-id'], eventHandler);
     es.mock.instances[0].onopen!(new Event('Mock connect event'));
@@ -120,13 +128,7 @@ describe('subscribe', () => {
     es.mock.instances[0].onerror!(new Event('Mock disconnect event'));
     es.mock.instances[0].onopen!(new Event('Mock reconnect event'));
 
-    expect(addToast).toHaveBeenCalledTimes(2);
-    expect(addToast).toHaveBeenCalledWith(
-      expect.objectContaining({ title: 'Reconnecting for live updates' })
-    );
-    expect(addToast).toHaveBeenLastCalledWith(
-      expect.objectContaining({ title: 'Reconnected' })
-    );
+    expect(reload).toHaveBeenCalled();
   });
 
   test('Cleans up SSE connection when returned function called', () => {

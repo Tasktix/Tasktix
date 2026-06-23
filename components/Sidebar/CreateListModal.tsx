@@ -86,7 +86,7 @@ export default function CreateListModal({
           const id = res.content?.split('/').at(-1);
 
           if (!id) {
-            addToast({ title: 'No list ID returned', color: 'danger' });
+            addToast({ description: 'No list ID returned', color: 'danger' });
 
             return;
           }
@@ -98,7 +98,7 @@ export default function CreateListModal({
       setSelectedRepoId(undefined); //skipcq JS-W1042:
       onClose();
     } else {
-      addToast({ title: 'Please provide a list name', color: 'warning' });
+      addToast({ description: 'Please provide a list name', color: 'warning' });
     }
   };
 
@@ -168,7 +168,10 @@ function GithubListConfig({
       .get(`/user/${loggedInUser.id}/github/`)
       .then(res => {
         if (!res.content) {
-          addToast({ title: 'No Repositories returned', color: 'danger' });
+          addToast({
+            description: 'No Repositories returned',
+            color: 'danger'
+          });
 
           return;
         }

@@ -415,8 +415,23 @@ export async function deleteTag(id: string): Promise<boolean> {
 }
 
 /**
+ * Queries if a sectionId is in a listId
+ * @param listId The list to query sections of
+ * @param sectionId The target section to find
+ */
+export async function querySectionInList(
+  listId: string,
+  sectionId: string
+): Promise<boolean> {
+  const result = await prisma.listSection.findUnique({
+    where: { id: sectionId, listId }
+  });
+
+  return Boolean(result);
+}
+
+/**
  * Revokes a list member's access and unassigns them from all items in the list
- *
  * @param listId The list to remove a member from
  * @param userId The user to revoke access for
  * @returns Whether the database accepted the update
