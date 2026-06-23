@@ -18,7 +18,7 @@
 
 'use client';
 
-import { addToast, Button, Input } from '@heroui/react';
+import { Button, Input } from '@heroui/react';
 import { FormEvent, startTransition, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { SuccessContext } from 'better-auth/react';
@@ -26,6 +26,7 @@ import { SuccessContext } from 'better-auth/react';
 import { useAuth } from '@/components/AuthProvider';
 import { authClient } from '@/lib/auth-client';
 import User from '@/lib/model/user';
+import { addToastForError } from '@/lib/error';
 
 export default function SignIn() {
   const { setLoggedInUser } = useAuth();
@@ -49,7 +50,7 @@ export default function SignIn() {
         },
         {
           onError: ctx => {
-            addToast({ title: ctx.error.message, color: 'danger' });
+            addToastForError(ctx.error);
           },
           onSuccess: (ctx: SuccessContext<{ user: User }>) => {
             setLoggedInUser(ctx.data.user);
